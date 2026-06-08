@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>城市天际线音乐可视化器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a1a;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .glass-panel {
+      background: rgba(20, 20, 40, 0.55);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    /* 控制面板 */
+    #control-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 280px;
+      padding: 20px;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .control-row {
+      margin-bottom: 16px;
+    }
+
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* 按钮样式 */
+    .btn {
+      background: rgba(100, 120, 255, 0.2);
+      border: 1px solid rgba(120, 140, 255, 0.4);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(100, 120, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      background: rgba(100, 120, 255, 0.35);
+      border-color: rgba(140, 160, 255, 0.6);
+      box-shadow: 0 4px 20px rgba(100, 120, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(100, 150, 255, 0.4), rgba(150, 100, 255, 0.4));
+      border-color: rgba(140, 170, 255, 0.5);
+      box-shadow: 0 0 15px rgba(100, 150, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, rgba(100, 150, 255, 0.6), rgba(150, 100, 255, 0.6));
+      box-shadow: 0 4px 25px rgba(100, 150, 255, 0.5);
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    /* 开关切换 */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 48px;
+      height: 26px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.15);
+      transition: 0.3s;
+      border-radius: 26px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      transition: 0.3s;
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    input:checked + .toggle-slider {
+      background: rgba(100, 150, 255, 0.6);
+      border-color: rgba(120, 170, 255, 0.8);
+      box-shadow: 0 0 10px rgba(100, 150, 255, 0.4);
+    }
+
+    input:checked + .toggle-slider:before {
+      transform: translateX(22px);
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* 音量滑块 */
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(100, 150, 255, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(100, 150, 255, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(100, 150, 255, 0.6);
+    }
+
+    /* 拖拽上传区域 */
+    #drop-zone {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      padding: 40px;
+      text-align: center;
+      z-index: 100;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+    }
+
+    #drop-zone:hover,
+    #drop-zone.drag-over {
+      border-color: rgba(100, 150, 255, 0.8);
+      background: rgba(100, 120, 255, 0.15);
+      box-shadow: 0 0 30px rgba(100, 150, 255, 0.3);
+      transform: translate(-50%, -50%) scale(1.02);
+    }
+
+    #drop-zone.hidden {
+      display: none;
+    }
+
+    .drop-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .drop-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .drop-subtitle {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    #file-input {
+      display: none;
+    }
+
+    /* 信息提示 */
+    #track-info {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      padding: 16px 20px;
+      z-index: 100;
+      display: none;
+    }
+
+    #track-info.visible {
+      display: block;
+    }
+
+    .track-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 4px;
+    }
+
+    .track-status {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* 按钮组 */
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-group .btn {
+      flex: 1;
+      padding: 10px 8px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <!-- 拖拽上传区域 -->
+    <div id="drop-zone" class="glass-panel">
+      <div class="drop-icon">🎵</div>
+      <div class="drop-title">拖拽音频文件到这里</div>
+      <div class="drop-subtitle">支持 MP3 和 WAV 格式，或点击选择文件</div>
+      <input type="file" id="file-input" accept="audio/mp3,audio/wav,audio/mpeg" />
+    </div>
+
+    <!-- 控制面板 -->
+    <div id="control-panel" class="glass-panel" style="display: none;">
+      <div class="panel-title">控制面板</div>
+      
+      <div class="control-row">
+        <button id="play-pause-btn" class="btn btn-primary btn-block">
+          ▶ 播放
+        </button>
+      </div>
+
+      <div class="control-row">
+        <label class="control-label">音量</label>
+        <input type="range" id="volume-slider" class="slider" min="0" max="1" step="0.01" value="0.7" />
+      </div>
+
+      <div class="control-row">
+        <div class="toggle-container">
+          <span class="toggle-label">单色冷蓝色调</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="color-mode-toggle" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="control-row">
+        <button id="day-night-btn" class="btn btn-block">
+          🌙 切换到夜晚
+        </button>
+      </div>
+
+      <div class="control-row">
+        <button id="upload-btn" class="btn btn-block">
+          📁 重新选择文件
+        </button>
+      </div>
+    </div>
+
+    <!-- 曲目信息 -->
+    <div id="track-info" class="glass-panel">
+      <div class="track-name" id="track-name">未加载音频</div>
+      <div class="track-status">
+        <span class="status-dot"></span>
+        <span id="track-status-text">等待上传</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
