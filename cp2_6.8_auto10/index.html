@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>协作会议纪要看板</title>
+  <script type="module" src="/src/client.ts"></script>
+</head>
+<body>
+  <div class="app-container">
+    <aside class="sidebar">
+      <h2>📋 创建会议</h2>
+      <form id="meeting-form">
+        <div class="form-group">
+          <label for="meeting-title">会议标题 *</label>
+          <input type="text" id="meeting-title" placeholder="输入会议标题" required />
+        </div>
+        <div class="form-group">
+          <label for="meeting-date">会议日期 *</label>
+          <input type="date" id="meeting-date" required />
+        </div>
+        <div class="form-group">
+          <label for="meeting-desc">会议描述</label>
+          <textarea id="meeting-desc" placeholder="输入会议描述或纪要..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">创建会议</button>
+      </form>
+    </aside>
+
+    <main class="main-content">
+      <div class="header">
+        <h1>会议看板</h1>
+        <div class="toolbar">
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="search-input" placeholder="搜索会议或动作项..." />
+          </div>
+          <button class="filter-btn" id="filter-uncompleted">
+            显示未完成
+          </button>
+          <button class="btn btn-outline btn-small" id="export-btn">
+            导出 Markdown
+          </button>
+        </div>
+      </div>
+
+      <div class="kanban-board" id="kanban-board">
+        <div class="empty-state">
+          <div class="empty-state-icon">⏳</div>
+          <div class="empty-state-text">加载中...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T10:26:12.881Z",
+  "task_name": "auto10",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：在远程团队协作中，成员需要记录会议关键决策、待办事项和后续跟进，但现有笔记工具分散在聊天记录或本地文档中，查找和回溯非常不便。\n\n构建一个轻量级的协作会议纪要与动作追踪看板应用，使用Node.js + Express后端，前端用TypeScript和Vanilla HTML/CSS（无前端框架），通过REST API交互，数据存储在内存中。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：express、typescript、ts-node、uuid、body-parser、cors，启动脚本：npm run dev：ts-node src/server.ts；还包含一个并发脚本concurrently和lite-server用于前端热更新）\n - tsconfig.json（严格模式，目标ES2020，模块CommonJS）\n - index.html（入口页面，加载dist/bundle.js，放置应用容器div）\n - src/server.ts（Express后端：定义REST API路由，处理会议纪要CRUD、动作项状态更新，数据流向：接收前端请求→操作内存数组→返回JSON响应）\n - src/client.ts（前端逻辑：解析API响应，动态渲染看板；包含DOM操作和事件绑定；数据流向：页面加载时fetch GET /meetings→渲染卡片列表，用户提交表单时POST /meetings→刷新列表）\n - src/styles.css（全部内联样式，包含布局、配色、动画定义）\n - src/bundle.ts（打包入口，引入client.ts和styles.css，供index.html引用；使用esbuild或vite构建，或直接使用tsc编译后script标签引入，确保能直接运行）\n - build.sh或脚本：（可选，但需在package.json里说明直接用tsc编译，或者用vite配置；建议用vite配置）\n\n功能需求：\n1) 创建会议：用户输入会议标题、日期和可选描述，点击提交后创建一条会议记录，并显示在看板中。\n2) 添加动作项：每条会议卡片下方可添加多个动作项（任务），指定负责人和截止日期，每个动作项显示状态（待办/进行中/已完成）。\n3) 状态切换：点击动作项的状态标签可循环切换状态，状态变化即时更新颜色和进度条（如待办红色、进行中黄色、已完成绿色）。\n4) 搜索与过滤：顶部搜索框可实时过滤会议标题和动作项描述；提供筛选按钮仅显示包含未完成动作项的会议卡片。\n5) 导出看板：点击导出按钮，将当前所有会议纪要和动作项整理为Markdown格式文本并自动复制到剪贴板。\n\n界面要求：页面采用简洁的Kanban风格，主色为深蓝灰（#2c3e50）配浅灰（#ecf0f1），卡片圆角8px，带微弱的box-shadow悬浮时加深。会议卡片按日期倒序排列，每张卡片顶部有标题和日期，下方以列表形式展示动作项，每个动作项左侧有圆形状态指示灯（红/黄/绿），右侧有负责人标签和截止日期。页面左侧为固定宽度的添加表单区域，右侧为动态看板区域，响应式以下卡片变为单列。创建或更新时卡片有淡入动画（transition 0.3s），状态切换时指示灯有脉冲闪烁效果。\n\n性能约束：搜索过滤响应时间在200ms以内，所有状态切换不需要整页刷新，仅更新对应DOM节点。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:93648d72bd74e548456c74a594cd5acf_6a2698669d20d9c2d483114e.6a2698b59d20d9c2d483119f.6a2698b597d3023e21ab5ac4:Trae CN.T(2026/6/8 18:25:57)",
+    "user_id": "3986207660317399",
+    "trace_id": "93648d72bd74e548456c74a594cd5acf",
+    "session_id": "6a2698669d20d9c2d483114e",
+    "task_id": "6a2698b59d20d9c2d483119f",
+    "message_id": "6a2698b597d3023e21ab5ac4",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 18:25:57",
+    "format": "full"
+  },
+  "trace": "null"
+}
