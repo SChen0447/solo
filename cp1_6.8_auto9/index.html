@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 元素周期表</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <h1 class="title">3D 化学元素周期表</h1>
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="metal">金属</button>
+      <button class="filter-btn" data-filter="nonmetal">非金属</button>
+    </div>
+  </nav>
+
+  <div id="canvas-container"></div>
+
+  <div id="tooltip" class="tooltip hidden">
+    <div class="tooltip-cn"></div>
+    <div class="tooltip-en"></div>
+  </div>
+
+  <div id="detail-modal" class="detail-modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <button class="modal-close">&times;</button>
+      <div class="modal-symbol"></div>
+      <div class="modal-name"></div>
+      <div class="modal-info">
+        <div class="info-item">
+          <span class="info-label">原子序数</span>
+          <span class="info-value atomic-number"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">原子量</span>
+          <span class="info-value atomic-mass"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">电子排布</span>
+          <span class="info-value electron-config"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">熔点</span>
+          <span class="info-value melting-point"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">发现年份</span>
+          <span class="info-value discovery-year"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">分类</span>
+          <span class="info-value category"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
