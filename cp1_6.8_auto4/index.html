@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>团队便签板</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #board-container {
+      width: 100vw;
+      height: 100vh;
+      background-color: #F5F0EB;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    #board-container.dragging {
+      cursor: grabbing;
+    }
+
+    #board-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform-origin: 0 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(245, 240, 235, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .navbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #5D4E3C;
+    }
+
+    .online-users {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      font-size: 14px;
+      color: #5D4E3C;
+    }
+
+    .online-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4CAF50;
+      position: relative;
+    }
+
+    .online-dot::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4CAF50;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.8);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+      }
+    }
+
+    #add-note-btn {
+      position: relative;
+      padding: 10px 20px;
+      background: #FFF9C4;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #5D4E3C;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+
+    #add-note-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    #add-note-btn:active {
+      transform: translateY(0);
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.6);
+      transform: scale(0);
+      animation: ripple-animation 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-animation {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="board-container">
+    <div id="board-canvas"></div>
+  </div>
+
+  <nav id="navbar">
+    <div class="navbar-left">
+      <span class="navbar-title">📝 团队便签板</span>
+      <div class="online-users">
+        <span class="online-dot"></span>
+        <span id="online-count">1</span> 人在线
+      </div>
+    </div>
+    <button id="add-note-btn">✨ 新建便签</button>
+  </nav>
+
+  <script type="module" src="/src/board.ts"></script>
+</body>
+</html>
