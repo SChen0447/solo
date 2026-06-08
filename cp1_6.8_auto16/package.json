@@ -1,0 +1,20 @@
+{
+  "name": "global-earthquake-visualization",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Interactive 3D global earthquake visualization using Three.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  }
+}
