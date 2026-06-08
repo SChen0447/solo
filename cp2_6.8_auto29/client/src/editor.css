@@ -1,0 +1,161 @@
+.code-editor-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #181825;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.code-editor-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  background-color: #313244;
+  color: #6c7086;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  text-align: right;
+  user-select: none;
+  overflow: hidden;
+  min-width: 50px;
+  flex-shrink: 0;
+}
+
+.line-number {
+  padding: 0 12px;
+  height: 22.4px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.line-number.current {
+  color: #cdd6f4;
+  background-color: rgba(137, 180, 250, 0.2);
+}
+
+.line-number.error {
+  color: #f38ba8;
+  background-color: rgba(243, 139, 168, 0.15);
+}
+
+.editor-area {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.highlight-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 12px 16px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #cdd6f4;
+  pointer-events: none;
+  overflow: auto;
+  white-space: pre;
+  word-wrap: normal;
+}
+
+.code-line {
+  position: relative;
+  height: 22.4px;
+}
+
+.code-line.current-line {
+  background-color: rgba(137, 180, 250, 0.2);
+  margin: 0 -16px;
+  padding: 0 16px;
+}
+
+.code-line.error-line .error-underline {
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    #f38ba8 0px,
+    #f38ba8 4px,
+    transparent 4px,
+    transparent 8px
+  );
+  animation: wiggle 0.3s ease-in-out infinite;
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(1px); }
+}
+
+.line-content {
+  display: inline-block;
+}
+
+.code-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  padding: 12px 16px;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: transparent;
+  caret-color: #f5e0dc;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  overflow: auto;
+  white-space: pre;
+  word-wrap: normal;
+  tab-size: 2;
+}
+
+.code-textarea::selection {
+  background-color: rgba(137, 180, 250, 0.4);
+  color: transparent;
+}
+
+.editor-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 16px;
+  background-color: #313244;
+  color: #6c7086;
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  font-size: 12px;
+  border-top: 1px solid #45475a;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+}
+
+.status-error {
+  color: #f38ba8;
+}
+
+.highlight-layer .line-content {
+  color: #cdd6f4;
+}
