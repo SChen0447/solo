@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中世纪塔防 - Medieval Tower Defense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      font-family: 'Noto Sans SC', sans-serif;
+      color: #e0e0e0;
+      user-select: none;
+    }
+
+    #game-container {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+    }
+
+    #left-panel {
+      width: 10%;
+      min-width: 140px;
+      background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
+      border-right: 2px solid #8b4513;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #game-canvas-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #game-canvas {
+      background-color: #2a2a2a;
+      border: 3px solid #8b4513;
+      border-radius: 4px;
+      box-shadow: 0 0 30px rgba(139, 69, 19, 0.3);
+      cursor: crosshair;
+    }
+
+    #right-panel {
+      width: 10%;
+      min-width: 160px;
+      background: linear-gradient(180deg, #2a2a2a 0%, #1f1f1f 100%);
+      border-left: 2px solid #8b4513;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel-title {
+      font-family: 'Cinzel', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #d4af37;
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #8b4513;
+      margin-bottom: 4px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #999;
+    }
+
+    .stat-value {
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #d4af37;
+    }
+
+    .health-bar-container {
+      width: 100%;
+      height: 16px;
+      background-color: #1a1a1a;
+      border: 1px solid #555;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .health-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #c0392b 0%, #e74c3c 100%);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 8px rgba(231, 76, 60, 0.5);
+    }
+
+    .tower-card {
+      background: linear-gradient(135deg, #3a3a3a 0%, #2a2a2a 100%);
+      border: 2px solid #555;
+      border-radius: 6px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tower-card:hover {
+      border-color: #d4af37;
+      transform: scale(0.97);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .tower-card.selected {
+      border-color: #d4af37;
+      background: linear-gradient(135deg, #4a3f2a 0%, #3a3020 100%);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    }
+
+    .tower-card.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tower-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #8b4513;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .tower-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+
+    .tower-cost {
+      font-size: 11px;
+      color: #d4af37;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 12px;
+      background: linear-gradient(135deg, #8b4513 0%, #6b3410 100%);
+      color: #fff;
+      border: 2px solid #a0522d;
+      border-radius: 5px;
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+      transform: scale(0.97);
+      box-shadow: 0 0 15px rgba(139, 69, 19, 0.5);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+      border-color: #d4af37;
+      color: #1a1a1a;
+    }
+
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #e8c85a 0%, #d4af37 100%);
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .tower-info {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid #555;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .tower-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .tower-info-label {
+      color: #999;
+    }
+
+    .tower-info-value {
+      color: #d4af37;
+      font-weight: 600;
+    }
+
+    #game-over-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #game-over-overlay.visible {
+      display: flex;
+    }
+
+    .game-over-panel {
+      background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+      border: 3px solid #8b4513;
+      border-radius: 10px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(139, 69, 19, 0.5);
+    }
+
+    .game-over-title {
+      font-family: 'Cinzel', serif;
+      font-size: 36px;
+      font-weight: 700;
+      color: #c0392b;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(192, 57, 43, 0.5);
+    }
+
+    .game-over-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+
+    .game-over-stat {
+      font-size: 16px;
+      color: #e0e0e0;
+    }
+
+    .game-over-stat span {
+      color: #d4af37;
+      font-weight: 700;
+      font-family: 'Cinzel', serif;
+    }
+
+    @media (max-width: 1024px) {
+      #game-container {
+        flex-direction: column;
+      }
+
+      #left-panel {
+        width: 100%;
+        height: auto;
+        min-width: unset;
+        border-right: none;
+        border-bottom: 2px solid #8b4513;
+        flex-direction: row;
+        padding: 8px 16px;
+        gap: 24px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      }
+
+      #right-panel {
+        width: 100%;
+        height: auto;
+        min-width: unset;
+        border-left: none;
+        border-top: 2px solid #8b4513;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 8px 16px;
+        gap: 10px;
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+        justify-content: center;
+      }
+
+      .panel-title {
+        display: none;
+      }
+
+      .stat-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .tower-card {
+        flex-direction: row;
+        padding: 6px 12px;
+        gap: 8px;
+        min-width: 120px;
+      }
+
+      .tower-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="left-panel">
+      <div class="panel-title">游戏信息</div>
+      <div class="stat-item">
+        <span class="stat-label">波次</span>
+        <span class="stat-value" id="wave-display">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">生命值</span>
+        <div class="health-bar-container">
+          <div class="health-bar" id="health-bar" style="width: 100%"></div>
+        </div>
+        <span class="stat-value" id="lives-display" style="font-size: 16px;">100</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">金币</span>
+        <span class="stat-value" id="gold-display">500</span>
+      </div>
+      <button class="btn" id="start-btn">开始战斗</button>
+      <button class="btn btn-gold" id="next-wave-btn" disabled>下一波</button>
+      <button class="btn" id="pause-btn">暂停</button>
+    </div>
+
+    <div id="game-canvas-wrapper">
+      <canvas id="game-canvas"></canvas>
+      <div id="game-over-overlay">
+        <div class="game-over-panel">
+          <div class="game-over-title">游戏结束</div>
+          <div class="game-over-stats">
+            <div class="game-over-stat">你坚持到了第 <span id="final-wave">0</span> 波</div>
+            <div class="game-over-stat">获得金币: <span id="final-gold">0</span></div>
+          </div>
+          <button class="btn btn-gold" id="restart-btn">重新开始</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="right-panel">
+      <div class="panel-title">炮塔商店</div>
+      <div class="tower-card" id="tower-arrow" data-type="arrow">
+        <div class="tower-icon" style="background: linear-gradient(135deg, #6b8e23 0%, #556b2f 100%); color: #fff;">🏹</div>
+        <div class="tower-name">箭塔</div>
+        <div class="tower-cost">100 金币</div>
+      </div>
+      <div class="tower-card" id="tower-slow" data-type="slow">
+        <div class="tower-icon" style="background: linear-gradient(135deg, #4169e1 0%, #2c4e9e 100%); color: #fff;">❄️</div>
+        <div class="tower-name">减速塔</div>
+        <div class="tower-cost">150 金币</div>
+      </div>
+      <div class="tower-card" id="tower-splash" data-type="splash">
+        <div class="tower-icon" style="background: linear-gradient(135deg, #b22222 0%, #8b0000 100%); color: #fff;">💥</div>
+        <div class="tower-name">范围塔</div>
+        <div class="tower-cost">250 金币</div>
+      </div>
+      <div class="tower-info" id="tower-info" style="display: none;">
+        <div class="tower-info-row">
+          <span class="tower-info-label">等级</span>
+          <span class="tower-info-value" id="tower-level">-</span>
+        </div>
+        <div class="tower-info-row">
+          <span class="tower-info-label">伤害</span>
+          <span class="tower-info-value" id="tower-damage">-</span>
+        </div>
+        <div class="tower-info-row">
+          <span class="tower-info-label">射程</span>
+          <span class="tower-info-value" id="tower-range">-</span>
+        </div>
+        <button class="btn" id="upgrade-btn" style="margin-top: 8px;">升级</button>
+        <button class="btn" id="sell-btn" style="margin-top: 6px; background: linear-gradient(135deg, #555 0%, #333 100%); border-color: #666;">出售</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
