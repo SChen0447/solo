@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 分子结构可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: #e0e8f0;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #3a4a6a;
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100;
+      min-width: 220px;
+      transition: all 0.3s ease;
+    }
+
+    .control-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #8ab4f8;
+      letter-spacing: 1px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: #a0b0c8;
+      margin-bottom: 6px;
+    }
+
+    .control-group select,
+    .control-group button {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid #3a4a6a;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #e0e8f0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(5px);
+    }
+
+    .control-group select:hover,
+    .control-group button:hover {
+      background: rgba(100, 150, 255, 0.3);
+      border-color: #6a9aff;
+      transform: scale(1.02);
+    }
+
+    .control-group button:active {
+      transform: scale(0.95);
+    }
+
+    .control-group select:focus,
+    .control-group button:focus {
+      outline: none;
+      border-color: #6a9aff;
+    }
+
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-switch .switch {
+      width: 40px;
+      height: 22px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid #3a4a6a;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch .switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #a0b0c8;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active .switch {
+      background: rgba(100, 150, 255, 0.3);
+      border-color: #6a9aff;
+    }
+
+    .toggle-switch.active .switch::after {
+      left: 20px;
+      background: #6a9aff;
+    }
+
+    .atom-label {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.9);
+      color: #1a1f2e;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 50;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      display: none;
+    }
+
+    .atom-label .atom-type {
+      font-weight: 600;
+      color: #2a3f5f;
+      margin-right: 6px;
+    }
+
+    .atom-label .atom-coords {
+      color: #5a6f8f;
+      font-family: monospace;
+      font-size: 11px;
+    }
+
+    .status-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #8a9ab0;
+      z-index: 100;
+      border-top: 1px solid rgba(58, 74, 106, 0.5);
+    }
+
+    .status-bar span {
+      margin: 0 12px;
+    }
+
+    .status-bar .fps {
+      color: #8ab4f8;
+    }
+
+    .status-bar .atom-count {
+      color: #8af8a0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="control-panel">
+      <h3>分子控制面板</h3>
+
+      <div class="control-group">
+        <label>选择分子</label>
+        <select id="molecule-select">
+          <option value="C4H8">C4H8 (丁烯)</option>
+          <option value="C6H6">C6H6 (苯)</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <button id="toggle-rotation">暂停旋转</button>
+      </div>
+
+      <div class="control-group">
+        <div class="toggle-switch" id="wireframe-toggle">
+          <span>线框模式</span>
+          <div class="switch"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <button id="clear-label-btn">清空标签</button>
+      </div>
+    </div>
+
+    <div class="atom-label" id="atom-label">
+      <span class="atom-type"></span>
+      <span class="atom-coords"></span>
+    </div>
+
+    <div class="status-bar">
+      <span class="fps">FPS: --</span>
+      <span class="atom-count">原子数: --</span>
+      <span class="molecule-name">分子: --</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
