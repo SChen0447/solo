@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>3D 云层模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+    #weather-label {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.4);
+      color: white;
+      font-size: 18px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      padding: 8px 16px;
+      border-radius: 8px;
+      z-index: 100;
+      transform: translateX(0);
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      backdrop-filter: blur(4px);
+    }
+    #weather-label.slide-in {
+      animation: slideIn 0.3s ease-out;
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateX(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    #ui-panel {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 16px 24px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .weather-buttons {
+      display: flex;
+      gap: 16px;
+    }
+    .weather-btn {
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .weather-btn:active {
+      transform: scale(0.9);
+      filter: brightness(0.8);
+    }
+    .weather-btn.sunny {
+      background: #FFD700;
+    }
+    .weather-btn.cloudy {
+      background: #B0C4DE;
+    }
+    .weather-btn.rainy {
+      background: #4A6B8F;
+    }
+    .weather-btn.storm {
+      background: #6B2F2F;
+    }
+    .weather-btn .btn-label {
+      position: absolute;
+      bottom: 4px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.9);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+    }
+    .speed-control input[type="range"] {
+      width: 120px;
+      cursor: pointer;
+    }
+    .speed-value {
+      min-width: 36px;
+      text-align: center;
+      font-weight: 500;
+    }
+    @media (max-width: 768px) {
+      #weather-label {
+        font-size: 20px;
+        padding: 10px 18px;
+      }
+      #ui-panel {
+        bottom: 16px;
+        padding: 14px 18px;
+      }
+      .weather-btn {
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+      }
+      .weather-buttons {
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="weather-label">晴天</div>
+  <div id="ui-panel">
+    <div class="weather-buttons">
+      <button class="weather-btn sunny" data-weather="sunny">
+        ☀️
+        <span class="btn-label">晴</span>
+      </button>
+      <button class="weather-btn cloudy" data-weather="cloudy">
+        ☁️
+        <span class="btn-label">多云</span>
+      </button>
+      <button class="weather-btn rainy" data-weather="rainy">
+        🌧️
+        <span class="btn-label">暴雨</span>
+      </button>
+      <button class="weather-btn storm" data-weather="storm">
+        ⛈️
+        <span class="btn-label">雷暴</span>
+      </button>
+    </div>
+    <div class="speed-control">
+      <span>速度</span>
+      <input type="range" id="speed-slider" min="0.5" max="2" step="0.1" value="1">
+      <span class="speed-value" id="speed-value">1.0x</span>
+    </div>
+  </div>
+  <script type="module" src="/src/core.ts"></script>
+</body>
+</html>
