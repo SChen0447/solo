@@ -1,0 +1,21 @@
+{
+  "name": "traffic-simulator",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "stats.js": "^0.17.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "@types/stats.js": "^0.17.3",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
