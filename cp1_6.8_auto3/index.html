@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>节奏跑酷 - Rhythm Runner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a1040 100%);
+      color: #fff;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1040 100%);
+      touch-action: none;
+    }
+
+    .menu-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(10, 10, 46, 0.95) 0%, rgba(26, 16, 64, 0.95) 100%);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .menu-screen.hidden {
+      display: none;
+    }
+
+    .game-title {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(90deg, #00ff88, #ff0088);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+    }
+
+    .game-subtitle {
+      font-size: 1rem;
+      color: #888;
+      margin-bottom: 2rem;
+    }
+
+    .menu-btn {
+      width: 200px;
+      padding: 14px 24px;
+      margin: 8px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      background: transparent;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      min-height: 44px;
+    }
+
+    .menu-btn:hover {
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.6), inset 0 0 20px rgba(0, 255, 136, 0.1);
+      transform: scale(1.05);
+    }
+
+    .menu-btn:active {
+      transform: scale(0.95);
+    }
+
+    .menu-btn.pink {
+      border-color: #ff0088;
+    }
+
+    .menu-btn.pink:hover {
+      box-shadow: 0 0 20px rgba(255, 0, 136, 0.6), inset 0 0 20px rgba(255, 0, 136, 0.1);
+    }
+
+    .difficulty-selector {
+      display: flex;
+      gap: 10px;
+      margin: 1rem 0;
+    }
+
+    .diff-btn {
+      padding: 10px 20px;
+      font-size: 0.9rem;
+      color: #aaa;
+      background: transparent;
+      border: 1px solid #444;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      min-height: 44px;
+    }
+
+    .diff-btn:hover {
+      border-color: #00ff88;
+      color: #fff;
+    }
+
+    .diff-btn.active {
+      background: rgba(0, 255, 136, 0.2);
+      border-color: #00ff88;
+      color: #00ff88;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.4);
+    }
+
+    .file-upload {
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .file-upload-label {
+      padding: 12px 24px;
+      font-size: 0.9rem;
+      color: #ff0088;
+      border: 2px solid #ff0088;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-upload-label:hover {
+      box-shadow: 0 0 15px rgba(255, 0, 136, 0.5);
+      transform: scale(1.05);
+    }
+
+    #music-upload {
+      display: none;
+    }
+
+    .music-name {
+      margin-top: 0.5rem;
+      font-size: 0.8rem;
+      color: #888;
+      max-width: 280px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .hud.hidden {
+      display: none;
+    }
+
+    .hud-top-left {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hud-score {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .hud-combo {
+      font-size: 1rem;
+      color: #ff0088;
+    }
+
+    .hud-lives {
+      display: flex;
+      gap: 6px;
+    }
+
+    .heart {
+      width: 24px;
+      height: 24px;
+      fill: #ff0088;
+      filter: drop-shadow(0 0 5px rgba(255, 0, 136, 0.6));
+    }
+
+    .heart.lost {
+      fill: #333;
+      filter: none;
+    }
+
+    .hud-top-center {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .hud-bpm {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .hud-bpm span {
+      color: #00ff88;
+    }
+
+    .progress-bar-container {
+      width: 200px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #00ff88, #ff0088);
+      transition: width 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .hud-top-right {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .pause-btn {
+      width: 44px;
+      height: 44px;
+      background: transparent;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      color: #00ff88;
+      font-size: 1.2rem;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: all 0.3s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .pause-btn:hover {
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+      transform: scale(1.1);
+    }
+
+    .pause-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 46, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 15;
+    }
+
+    .pause-screen.hidden {
+      display: none;
+    }
+
+    .pause-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 2rem;
+      color: #00ff88;
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+    }
+
+    .gameover-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 46, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 20;
+    }
+
+    .gameover-screen.hidden {
+      display: none;
+    }
+
+    .gameover-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: #ff0088;
+      text-shadow: 0 0 20px rgba(255, 0, 136, 0.5);
+    }
+
+    .gameover-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 1rem 0 2rem;
+      text-align: center;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 40px;
+      font-size: 1rem;
+    }
+
+    .stat-label {
+      color: #888;
+    }
+
+    .stat-value {
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .stat-value.perfect { color: #00ff88; }
+    .stat-value.good { color: #ffcc00; }
+    .stat-value.miss { color: #ff4444; }
+    .stat-value.score { color: #00ff88; font-size: 1.2rem; }
+
+    .leaderboard {
+      width: 300px;
+      margin: 1rem 0;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .leaderboard-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #00ff88;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .leaderboard-item:last-child {
+      border-bottom: none;
+    }
+
+    .leaderboard-rank {
+      color: #ff0088;
+      font-weight: bold;
+      width: 30px;
+    }
+
+    .leaderboard-score {
+      color: #00ff88;
+      font-weight: bold;
+    }
+
+    .leaderboard-date {
+      color: #666;
+      font-size: 0.75rem;
+    }
+
+    .loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 46, 0.95);
+      z-index: 25;
+    }
+
+    .loading-screen.hidden {
+      display: none;
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      color: #00ff88;
+      margin-top: 1rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(0, 255, 136, 0.2);
+      border-top: 3px solid #00ff88;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .touch-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      display: none;
+      z-index: 4;
+      pointer-events: auto;
+    }
+
+    .touch-controls.visible {
+      display: flex;
+    }
+
+    .touch-half {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .touch-label {
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .game-title {
+        font-size: 2rem;
+      }
+
+      .menu-btn {
+        width: 180px;
+        font-size: 0.9rem;
+      }
+
+      .hud-score {
+        font-size: 1.2rem;
+      }
+
+      .progress-bar-container {
+        width: 120px;
+      }
+
+      .leaderboard {
+        width: 260px;
+      }
+
+      .touch-controls.visible {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="hud" class="hud hidden">
+      <div class="hud-top-left">
+        <div class="hud-score" id="hud-score">0</div>
+        <div class="hud-combo" id="hud-combo">Combo: 0</div>
+        <div class="hud-lives" id="hud-lives"></div>
+      </div>
+      <div class="hud-top-center">
+        <div class="hud-bpm">BPM: <span id="hud-bpm-value">--</span></div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+        </div>
+      </div>
+      <div class="hud-top-right">
+        <button class="pause-btn" id="pause-btn" aria-label="暂停">
+          ⏸
+        </button>
+      </div>
+    </div>
+
+    <div class="touch-controls" id="touch-controls">
+      <div class="touch-half" id="touch-left">
+        <span class="touch-label">滑铲 ↓</span>
+      </div>
+      <div class="touch-half" id="touch-right">
+        <span class="touch-label">跳跃 ↑</span>
+      </div>
+    </div>
+
+    <div id="main-menu" class="menu-screen">
+      <h1 class="game-title">节奏跑酷</h1>
+      <p class="game-subtitle">Rhythm Runner</p>
+
+      <div class="file-upload">
+        <label class="file-upload-label" for="music-upload">
+          🎵 上传音乐
+        </label>
+        <input type="file" id="music-upload" accept="audio/*" />
+        <div class="music-name" id="music-name">选择内置音乐或上传MP3</div>
+      </div>
+
+      <div class="difficulty-selector">
+        <button class="diff-btn" data-difficulty="easy">简单</button>
+        <button class="diff-btn active" data-difficulty="normal">普通</button>
+        <button class="diff-btn" data-difficulty="hard">困难</button>
+      </div>
+
+      <button class="menu-btn" id="start-btn">开始游戏</button>
+      <button class="menu-btn pink" id="leaderboard-btn">排行榜</button>
+    </div>
+
+    <div id="pause-screen" class="pause-screen hidden">
+      <h2 class="pause-title">游戏暂停</h2>
+      <button class="menu-btn" id="resume-btn">继续游戏</button>
+      <button class="menu-btn pink" id="menu-btn">返回主菜单</button>
+    </div>
+
+    <div id="gameover-screen" class="gameover-screen hidden">
+      <h2 class="gameover-title">游戏结束</h2>
+      <div class="gameover-stats">
+        <div class="stat-row">
+          <span class="stat-label">本局分数</span>
+          <span class="stat-value score" id="final-score">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">最高分</span>
+          <span class="stat-value" id="high-score">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Perfect</span>
+          <span class="stat-value perfect" id="stat-perfect">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Good</span>
+          <span class="stat-value good" id="stat-good">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Miss</span>
+          <span class="stat-value miss" id="stat-miss">0</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">最大连击</span>
+          <span class="stat-value" id="stat-max-combo">0</span>
+        </div>
+      </div>
+      <button class="menu-btn" id="retry-btn">再来一局</button>
+      <button class="menu-btn pink" id="gameover-menu-btn">返回主菜单</button>
+    </div>
+
+    <div id="loading-screen" class="loading-screen hidden">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loading-text">正在加载...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

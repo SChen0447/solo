@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间线故事编辑器</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1 class="app-title"><i class="fas fa-timeline"></i> 时间线故事编辑器</h1>
+      <div class="player-controls" id="playerControls">
+        <button class="btn-play" id="btnPlay" title="播放">
+          <i class="fas fa-play"></i>
+        </button>
+        <button class="btn-fullscreen" id="btnFullscreen" title="全屏">
+          <i class="fas fa-expand"></i>
+        </button>
+      </div>
+    </header>
+
+    <div class="progress-bar-container" id="progressBarContainer">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <main class="main-content">
+      <div class="timeline-wrapper" id="timelineWrapper">
+        <div class="timeline-track" id="timelineTrack">
+          <div class="timeline-line"></div>
+          <div class="timeline-cards" id="timelineCards"></div>
+          <button class="add-card-btn" id="addCardBtn" title="添加卡片">
+            <i class="fas fa-plus"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="detail-panel" id="detailPanel">
+        <div class="detail-content" id="detailContent">
+          <div class="detail-empty">
+            <i class="fas fa-hand-pointer"></i>
+            <p>点击卡片查看详情</p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="trash-zone" id="trashZone">
+      <i class="fas fa-trash-alt"></i>
+      <span>拖拽到此处删除</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

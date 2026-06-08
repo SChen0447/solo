@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹球解谜 - Pinball Puzzle</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1a3e 100%);
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ui-status-bar {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      padding: 12px 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+
+    .ui-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .level-label {
+      color: #00d4ff;
+      font-size: 16px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+
+    .level-number {
+      color: #00d4ff;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+    }
+
+    .lights-icon {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ffd700;
+      box-shadow: 0 0 10px #ffd700;
+    }
+
+    .lights-count {
+      color: #ffd700;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .retry-icon {
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    .retry-count {
+      color: #ffffff;
+      font-size: 16px;
+    }
+
+    .controls-hint {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      text-align: center;
+      z-index: 100;
+    }
+
+    .controls-hint span {
+      margin: 0 10px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    
+    <div class="ui-status-bar">
+      <div class="ui-item">
+        <span class="level-label">关卡</span>
+        <span class="level-number" id="level-number">1</span>
+      </div>
+      <div class="ui-item">
+        <div class="lights-icon"></div>
+        <span class="lights-count" id="lights-count">0/6</span>
+      </div>
+      <div class="ui-item">
+        <span class="retry-icon">↻</span>
+        <span class="retry-count" id="retry-count">0</span>
+      </div>
+    </div>
+
+    <div class="controls-hint">
+      <span>鼠标移动瞄准</span>
+      <span>|</span>
+      <span>左键发射弹球</span>
+      <span>|</span>
+      <span>点亮所有光点过关</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

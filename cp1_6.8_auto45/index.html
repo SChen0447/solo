@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>弹幕剧情互动游戏</title>
+  <script type="module" src="/src/main.ts"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100vh;
+    }
+
+    .canvas-container {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      background: #0f0f1a;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .scene-title {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 24px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #fff;
+      z-index: 10;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .skip-button {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+
+    .skip-button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.05);
+    }
+
+    .skip-button:active {
+      transform: scale(0.95);
+    }
+
+    .restart-button {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .restart-button:hover {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .restart-button:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    .affection-bar-container {
+      position: absolute;
+      top: 60px;
+      left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .affection-bar {
+      width: 160px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: transform 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .affection-fill {
+      height: 100%;
+      width: 50%;
+      background: #9e9e9e;
+      border-radius: 4px;
+      transition: width 0.5s ease, background-color 0.5s ease;
+    }
+
+    .affection-text {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .vote-panel {
+      height: 25vh;
+      min-height: 180px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px;
+      gap: 10px;
+    }
+
+    .danmaku-container {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .vote-area {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vote-bar-container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 40px;
+      height: 50px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .vote-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      width: 60px;
+    }
+
+    .vote-bar {
+      width: 24px;
+      height: 5%;
+      min-height: 4px;
+      border-radius: 4px 4px 0 0;
+      transition: height 0.3s ease;
+      background: #666;
+    }
+
+    .vote-bar-a {
+      background: linear-gradient(to top, #c0392b, #e74c3c);
+    }
+
+    .vote-bar-b {
+      background: linear-gradient(to top, #2980b9, #3498db);
+    }
+
+    .vote-bar-c {
+      background: linear-gradient(to top, #27ae60, #2ecc71);
+    }
+
+    .vote-bar-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .vote-progress {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .vote-progress-fill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #e74c3c, #f39c12, #2ecc71);
+      transition: width 0.1s linear;
+      border-radius: 2px;
+    }
+
+    .vote-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .vote-btn {
+      flex: 1;
+      max-width: 200px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0.5;
+      transform: scale(0.9);
+      pointer-events: none;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .vote-btn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.02);
+    }
+
+    .vote-btn:active {
+      transform: scale(0.95);
+    }
+
+    .vote-btn-a {
+      background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+      box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+    }
+
+    .vote-btn-b {
+      background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+      box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .vote-btn-c {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    .danmaku-item {
+      will-change: left;
+      user-select: none;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      .canvas-container {
+        height: 60vh;
+        flex: none;
+      }
+
+      .vote-panel {
+        height: 40vh;
+        min-height: 200px;
+        padding: 8px 12px;
+      }
+
+      .vote-btn {
+        padding: 12px 10px;
+        font-size: 13px;
+      }
+
+      .scene-title {
+        font-size: 14px;
+        padding: 6px 16px;
+      }
+
+      .affection-bar {
+        width: 100px;
+      }
+
+      .vote-bar-container {
+        gap: 24px;
+        height: 40px;
+      }
+
+      .vote-bar {
+        width: 18px;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .vote-panel {
+        min-height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="canvas-container">
+      <canvas id="gameCanvas"></canvas>
+      
+      <div class="scene-title" id="sceneTitle">城堡大厅</div>
+      
+      <button class="skip-button" id="skipButton">跳过对话</button>
+      
+      <button class="restart-button" id="restartButton">重新开始</button>
+      
+      <div class="affection-bar-container">
+        <div class="affection-bar" id="affectionBar">
+          <div class="affection-fill" id="affectionFill"></div>
+        </div>
+        <div class="affection-text" id="affectionText">好感度: 0</div>
+      </div>
+    </div>
+
+    <div class="vote-panel">
+      <div class="danmaku-container" id="danmakuContainer"></div>
+      
+      <div class="vote-area">
+        <div class="vote-bar-container" id="voteBarContainer">
+          <div class="vote-bar-wrap">
+            <div class="vote-bar vote-bar-a" id="barA"></div>
+            <div class="vote-bar-label">A</div>
+          </div>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar vote-bar-b" id="barB"></div>
+            <div class="vote-bar-label">B</div>
+          </div>
+          <div class="vote-bar-wrap">
+            <div class="vote-bar vote-bar-c" id="barC"></div>
+            <div class="vote-bar-label">C</div>
+          </div>
+        </div>
+        
+        <div class="vote-progress" id="voteProgressBar">
+          <div class="vote-progress-fill" id="voteProgressFill"></div>
+        </div>
+        
+        <div class="vote-buttons">
+          <button class="vote-btn vote-btn-a" id="voteA">A. 选项A</button>
+          <button class="vote-btn vote-btn-b" id="voteB">B. 选项B</button>
+          <button class="vote-btn vote-btn-c" id="voteC">C. 选项C</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

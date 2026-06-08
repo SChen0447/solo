@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>神经元网络3D信号传导模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background-color: #0a0a1a;
+      color: #e0e0e0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: background-color 1s ease;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 320px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: rgba(26, 58, 92, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #control-panel.collapsed {
+      width: 50px;
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    #control-panel.collapsed .panel-content {
+      display: none;
+    }
+
+    #control-panel.collapsed .panel-toggle span {
+      transform: rotate(180deg);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(74, 158, 255, 0.3);
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #4a9eff;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-toggle {
+      background: none;
+      border: none;
+      color: #4a9eff;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+    }
+
+    .panel-toggle:hover {
+      background: rgba(74, 158, 255, 0.2);
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: #a0c0e0;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-value {
+      font-size: 12px;
+      color: #4a9eff;
+      font-weight: 600;
+      background: rgba(74, 158, 255, 0.15);
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .slider-container {
+      position: relative;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(74, 158, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4a9eff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.6);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px rgba(74, 158, 255, 0.8);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4a9eff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.6);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 8px 12px;
+      background: rgba(74, 158, 255, 0.15);
+      border: 1px solid rgba(74, 158, 255, 0.4);
+      border-radius: 8px;
+      color: #a0d0ff;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background: rgba(74, 158, 255, 0.3);
+      border-color: #4a9eff;
+      color: #ffffff;
+    }
+
+    .btn.active {
+      background: rgba(74, 158, 255, 0.4);
+      border-color: #4a9eff;
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(74, 158, 255, 0.4);
+    }
+
+    .bg-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .bg-btn {
+      flex: 1;
+      height: 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .bg-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .bg-btn.active {
+      border-color: #4a9eff;
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.5);
+    }
+
+    .bg-btn.space-gray {
+      background: #1a1a2e;
+    }
+
+    .bg-btn.deep-blue {
+      background: #0a1628;
+    }
+
+    .bg-btn.pure-black {
+      background: #000000;
+    }
+
+    #stats-panel {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(26, 58, 92, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      z-index: 100;
+      min-width: 220px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .stats-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4a9eff;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .stats-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(74, 158, 255, 0.1);
+    }
+
+    .stats-item:last-child {
+      border-bottom: none;
+    }
+
+    .stats-label {
+      color: #a0c0e0;
+    }
+
+    .stats-value {
+      color: #4a9eff;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #timeline-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      z-index: 100;
+    }
+
+    .timeline-label {
+      font-size: 12px;
+      color: #a0c0e0;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    .timeline-bar {
+      height: 6px;
+      background: rgba(74, 158, 255, 0.2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .timeline-progress {
+      height: 100%;
+      background: linear-gradient(90deg, #4a9eff, #00ff88);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 10px rgba(74, 158, 255, 0.6);
+    }
+
+    #info-overlay {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(26, 58, 92, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 100;
+      font-size: 12px;
+      color: #a0c0e0;
+      line-height: 1.6;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #info-overlay strong {
+      color: #4a9eff;
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        width: 50px;
+        padding: 10px;
+      }
+
+      #control-panel .panel-content {
+        display: none;
+      }
+
+      #control-panel.expanded {
+        width: 280px;
+        padding: 16px;
+      }
+
+      #control-panel.expanded .panel-content {
+        display: block;
+      }
+
+      #stats-panel {
+        min-width: 180px;
+        padding: 12px 14px;
+      }
+
+      #timeline-container {
+        width: 280px;
+      }
+
+      #info-overlay {
+        display: none;
+      }
+    }
+
+    .section-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(74, 158, 255, 0.3), transparent);
+      margin: 16px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div id="control-panel">
+      <div class="panel-header">
+        <span class="panel-title">控制面板</span>
+        <button class="panel-toggle" id="panel-toggle">
+          <span>&#9664;</span>
+        </button>
+      </div>
+      <div class="panel-content">
+        <div class="control-group">
+          <div class="control-label">
+            <span>传递延迟</span>
+            <span class="control-value" id="delay-value">200ms</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="delay-slider" min="0" max="500" value="200" step="10" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>光点速度</span>
+            <span class="control-value" id="speed-value">1.0x</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="speed-slider" min="0.5" max="3" value="1" step="0.1" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>动作电位强度</span>
+            <span class="control-value" id="intensity-value">1.0</span>
+          </div>
+          <div class="slider-container">
+            <input type="range" id="intensity-slider" min="0.5" max="2" value="1" step="0.1" />
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="control-group">
+          <div class="control-label"><span>背景颜色</span></div>
+          <div class="bg-btns">
+            <button class="bg-btn space-gray active" data-bg="space-gray" title="深空灰"></button>
+            <button class="bg-btn deep-blue" data-bg="deep-blue" title="深蓝"></button>
+            <button class="bg-btn pure-black" data-bg="pure-black" title="纯黑"></button>
+          </div>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="control-group">
+          <div class="control-label"><span>预设刺激模式</span></div>
+          <div class="btn-group">
+            <button class="btn" id="stim-single">单点刺激</button>
+            <button class="btn" id="stim-multi">多点同步</button>
+            <button class="btn" id="stim-cycle">循环刺激</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="btn-group">
+            <button class="btn" id="btn-reset">重置网络</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="info-overlay">
+      <strong>操作说明</strong><br />
+      鼠标左键拖动：旋转视角<br />
+      鼠标滚轮：缩放<br />
+      右键拖动：平移<br />
+      点击神经元：触发动作电位
+    </div>
+
+    <div id="timeline-container" style="display: none;">
+      <div class="timeline-label" id="timeline-label">刺激进度</div>
+      <div class="timeline-bar">
+        <div class="timeline-progress" id="timeline-progress"></div>
+      </div>
+    </div>
+
+    <div id="stats-panel">
+      <div class="stats-title">实时统计</div>
+      <div class="stats-item">
+        <span class="stats-label">活跃神经元</span>
+        <span class="stats-value" id="stat-active">0</span>
+      </div>
+      <div class="stats-item">
+        <span class="stats-label">传播总长度</span>
+        <span class="stats-value" id="stat-distance">0.0</span>
+      </div>
+      <div class="stats-item">
+        <span class="stats-label">平均延迟</span>
+        <span class="stats-value" id="stat-delay">0ms</span>
+      </div>
+      <div class="stats-item">
+        <span class="stats-label">帧率</span>
+        <span class="stats-value" id="stat-fps">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

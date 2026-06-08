@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音控跑酷 - Audio Parkour</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: #0a0a1a;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      background: linear-gradient(180deg, #1a1a3e 0%, #4a2a6a 100%);
+      box-shadow: 0 0 60px rgba(138, 43, 226, 0.3);
+      border-radius: 8px;
+    }
+
+    #ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px;
+    }
+
+    .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    #combo-display {
+      color: #ffd700;
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.6);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    #combo-display.active {
+      opacity: 1;
+      animation: comboPulse 0.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes comboPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.1); }
+    }
+
+    #score-display {
+      color: #ffffff;
+      font-size: 32px;
+      font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    #hint-text {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    #start-screen, #game-over-screen, #calibration-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 30, 0.9);
+      color: white;
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .screen-title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .screen-subtitle {
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 40px;
+    }
+
+    .instructions {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 2;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .instructions span {
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    .start-btn {
+      padding: 16px 48px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .start-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 30px rgba(102, 126, 234, 0.7);
+    }
+
+    .score-result {
+      font-size: 24px;
+      margin: 10px 0;
+    }
+
+    .final-score {
+      font-size: 56px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      margin: 20px 0;
+    }
+
+    .high-score {
+      font-size: 20px;
+      color: #ff6b6b;
+      margin-bottom: 30px;
+    }
+
+    #calibration-bar {
+      width: 300px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    #calibration-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4ecdc4, #44a08d);
+      transition: width 0.1s;
+      border-radius: 15px;
+    }
+
+    #calibration-timer {
+      font-size: 36px;
+      font-weight: bold;
+      color: #4ecdc4;
+      margin-top: 10px;
+    }
+
+    .mic-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      animation: micPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes micPulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="ui-overlay">
+      <div class="top-row">
+        <div id="combo-display">连击 x0</div>
+        <div id="score-display">0</div>
+      </div>
+    </div>
+
+    <div id="hint-text">
+      ↑ 高音跳跃 | ↓ 低音下滑
+    </div>
+
+    <div id="start-screen">
+      <div class="screen-title">🎵 音控跑酷</div>
+      <div class="screen-subtitle">用你的声音控制角色！</div>
+      <div class="instructions">
+        <span>高音尖叫</span> → 跳跃<br/>
+        <span>低音轰鸣</span> → 下滑<br/>
+        躲避障碍物，获得高分！
+      </div>
+      <button class="start-btn" id="start-btn">开始游戏</button>
+    </div>
+
+    <div id="calibration-screen" class="hidden">
+      <div class="mic-icon">🎤</div>
+      <div class="screen-title">麦克风校准</div>
+      <div class="screen-subtitle">请发出一个持续的声音</div>
+      <div id="calibration-bar">
+        <div id="calibration-fill"></div>
+      </div>
+      <div id="calibration-timer">3.0s</div>
+      <div class="instructions">
+        保持声音稳定 3 秒来校准灵敏度
+      </div>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+      <div class="screen-title">💥 游戏结束</div>
+      <div class="score-result">本次得分</div>
+      <div class="final-score" id="final-score">0</div>
+      <div class="high-score" id="high-score-display">最高分: 0</div>
+      <button class="start-btn" id="restart-btn">再来一次</button>
+      <div class="instructions" style="margin-top: 20px;">
+        按 <span>空格键</span> 或 <span>再次发声</span> 重新开始
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

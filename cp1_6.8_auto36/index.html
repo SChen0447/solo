@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>贪吃蛇对战 - Snake Battle</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="stars-bg" id="starsBg"></div>
+  
+  <div class="game-container">
+    <div class="panel left-panel">
+      <div class="panel-title">玩家排行</div>
+      <div class="player-list" id="playerList"></div>
+    </div>
+    
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas" width="600" height="600"></canvas>
+      <div class="minimap" id="minimap">
+        <canvas id="minimapCanvas" width="100" height="100"></canvas>
+      </div>
+    </div>
+    
+    <div class="panel right-panel">
+      <div class="panel-title">聊天</div>
+      <div class="chat-messages" id="chatMessages"></div>
+      <div class="chat-input-wrapper">
+        <input type="text" id="chatInput" placeholder="输入消息..." maxlength="50" />
+        <button id="chatSendBtn">发送</button>
+      </div>
+      <div class="emoji-picker" id="emojiPicker">
+        <span class="emoji">😀</span>
+        <span class="emoji">😂</span>
+        <span class="emoji">😍</span>
+        <span class="emoji">👍</span>
+        <span class="emoji">🔥</span>
+        <span class="emoji">💀</span>
+        <span class="emoji">🎉</span>
+        <span class="emoji">💪</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <h1>🐍 贪吃蛇对战</h1>
+      <p>多人实时在线对战</p>
+      <input type="text" id="nicknameInput" placeholder="输入你的昵称 (最多8字符)" maxlength="8" />
+      <button id="startBtn">开始游戏</button>
+      <div class="controls-hint">
+        <p>操作：方向键 或 WASD 控制移动</p>
+        <p>目标：吃食物增长，撞死其他玩家</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

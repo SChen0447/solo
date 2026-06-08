@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>手写体字体生成器</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- 左侧手写板区域 -->
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>手写板</h2>
+        <div class="header-controls">
+          <div class="color-selector">
+            <button class="color-btn active" data-color="#3B4D8F" title="靛蓝"></button>
+            <button class="color-btn" data-color="#8F3B3B" title="暗红"></button>
+          </div>
+          <button class="btn-clear" id="clearCanvas">清空</button>
+          <button class="btn-confirm" id="confirmChar">确认字符</button>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="drawingCanvas"></canvas>
+        <div class="canvas-placeholder" id="canvasPlaceholder">
+          <span>在此书写字符</span>
+          <span class="hint">至少书写 10 个不同字符作为风格样本</span>
+        </div>
+      </div>
+      <div class="char-input-row">
+        <label for="charInput">当前字符：</label>
+        <input type="text" id="charInput" maxlength="1" placeholder="输入对应字符">
+        <span class="sample-count">已收集：<span id="sampleCount">0</span>/10</span>
+      </div>
+    </div>
+
+    <!-- 右侧面板 -->
+    <div class="right-panel">
+      <!-- 生成进度条 -->
+      <div class="progress-section">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+          <span class="progress-text" id="progressText">等待生成</span>
+        </div>
+        <button class="btn-generate" id="generateBtn">生成全套字体</button>
+      </div>
+
+      <!-- 字符库网格 -->
+      <div class="glyph-library">
+        <h3>风格样本库</h3>
+        <div class="glyph-grid" id="glyphGrid">
+          <div class="glyph-empty-hint">书写字符后将显示在这里</div>
+        </div>
+      </div>
+
+      <!-- 预览区域 -->
+      <div class="preview-section">
+        <h3>文本预览</h3>
+        <div class="preview-controls">
+          <div class="control-group">
+            <label>缩放：</label>
+            <input type="range" id="zoomSlider" min="0.5" max="3" step="0.1" value="1">
+            <span id="zoomValue">1.0x</span>
+          </div>
+          <div class="control-group">
+            <label>背景：</label>
+            <div class="bg-switcher">
+              <button class="bg-btn active" data-bg="white" title="白色"></button>
+              <button class="bg-btn" data-bg="grid" title="网格线"></button>
+              <button class="bg-btn" data-bg="transparent" title="透明"></button>
+            </div>
+          </div>
+        </div>
+        <div class="preview-input-wrapper">
+          <input type="text" id="previewInput" placeholder="输入英文文本预览效果..." value="Hello World">
+        </div>
+        <div class="preview-canvas-wrapper" id="previewWrapper">
+          <canvas id="previewCanvas"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

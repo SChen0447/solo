@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-08T10:46:30.695Z",
+  "task_name": "auto22",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够创建并分享自定义旅行地图路线的全栈Web应用，主要解决旅行计划中路线整理和分享协作缺乏直观交互的问题。\n\n它应当具备以下能力：\n1) 地图标记与路线生成：用户在地图上点击添加旅行地点标记（支持搜索城市或地点），标记按点击顺序连接成路线，可拖拽调整标记位置或顺序，路线自动重新计算和绘制。\n2) 路线详情编辑：每个地点标记可编辑标题、日期、笔记和标签（如美食、景点、住宿），笔记支持富文本格式（加粗、列表、链接），标签用彩色胶囊显示可筛选。\n3) 分享与协作：用户可将路线以链接形式分享给他人，他人打开链接可查看路线但不可编辑，支持评论功能（每条评论显示头像和发布时间，带@提及功能）。\n4) 路线收藏与管理：用户可收藏他人分享的路线到自己的收藏夹，个人主页显示创建和收藏的路线列表（卡片式布局，封面为地图缩略图，悬停显示路线概要），支持按日期或标签排序。\n5) 丰富的界面与交互：主布局采用左侧面板（路线列表和详情）与右侧全屏地图（使用互动地图）的分栏设计，整体使用暖色大地色系（米白、棕褐、草绿搭配），标记点弹出气泡带弹性缩放动画，路线绘制时沿路径显示流动光点，评论输入框随输入高度自适应展开，页面在手机和桌面端响应式适配。\n\n界面方面要求：整体风格统一为旅行手账风格，左面板背景为仿纸质纹理肌理，地图标记气泡采用圆角卡片设计并带微阴影，按钮和交互元素在悬停时有平滑颜色过渡动画，路线加载时显示进度圆环动画。\n\n性能上需要地图交互帧率保持在50FPS以上，路线数据加载响应时间不超过600毫秒。\n\n实现采用TypeScript和React（前端地图使用Leaﬂet）与Node.js + Express（后端API存储路线和评论）的组合，按以下文件组织代码：\n - package.json（依赖：react, react-dom, leaflet, react-leaflet, express, uuid, @types/react, @types/leaflet, typescript, vite, @vitejs/plugin-react，启动脚本：npm run dev）\n - vite.config.js（构建配置，开发服务器端口3000）\n - tsconfig.json（严格模式，ES2020模块）\n - index.html（入口页面，包含左面板容器和地图挂载点）\n - src/map/MapView.tsx（右侧地图组件，负责标记、路线绘制和拖拽逻辑，调用后端API保存数据）\n - src/panel/SidePanel.tsx（左侧面板组件，展示路线列表和详情编辑表单）\n - src/api/routeService.ts（封装与后端API的通信函数，如创建路线、获取路线、添加评论）\n - server/index.ts（Express服务器，提供RESTful接口：POST /api/routes, GET /api/routes/:id, POST /api/routes/:id/comments等）\n\n运行方式：npm install && npm run dev。",
+  "session_id": null,
+  "trace": "null"
+}
