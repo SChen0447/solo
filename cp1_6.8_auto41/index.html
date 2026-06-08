@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>多人躲避球对战</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #1a1a4e 0%, #2d1b4e 50%, #0f0a1e 100%);
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .scoreboard {
+      position: absolute;
+      top: 3vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4vw;
+      z-index: 10;
+    }
+
+    .score-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1vh;
+    }
+
+    .score-label {
+      font-size: 1.5vw;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .score-value {
+      font-size: 3vw;
+      padding: 1vh 2vw;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      transition: transform 0.3s ease;
+    }
+
+    .score-value.p1 {
+      color: #ff4444;
+      text-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+    }
+
+    .score-value.p2 {
+      color: #4488ff;
+      text-shadow: 0 0 10px rgba(68, 136, 255, 0.5);
+    }
+
+    .score-value.bounce {
+      animation: scoreBounce 0.3s ease;
+    }
+
+    @keyframes scoreBounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); }
+      100% { transform: scale(1); }
+    }
+
+    .cooldown-indicators {
+      position: absolute;
+      bottom: 3vh;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6vw;
+      z-index: 10;
+    }
+
+    .cooldown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.8vh;
+    }
+
+    .cooldown-label {
+      font-size: 1vw;
+      color: #aaa;
+    }
+
+    .cooldown-bar {
+      width: 8vw;
+      height: 1.5vh;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .cooldown-fill {
+      height: 100%;
+      transition: width 0.1s linear;
+    }
+
+    .cooldown-fill.p1 {
+      background: linear-gradient(90deg, #ff4444, #ff8888);
+    }
+
+    .cooldown-fill.p2 {
+      background: linear-gradient(90deg, #4488ff, #88bbff);
+    }
+
+    .victory-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .victory-overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .victory-banner {
+      text-align: center;
+      transform: scale(0.5);
+      opacity: 0;
+      transition: all 0.5s ease;
+    }
+
+    .victory-overlay.visible .victory-banner {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .victory-text {
+      font-size: 4vw;
+      color: #ffdd44;
+      text-shadow: 0 0 20px rgba(255, 221, 68, 0.8), 4px 4px 8px rgba(0, 0, 0, 0.5);
+      margin-bottom: 2vh;
+    }
+
+    .victory-subtext {
+      font-size: 1.5vw;
+      color: #fff;
+      margin-bottom: 4vh;
+    }
+
+    .restart-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.2vw;
+      padding: 2vh 3vw;
+      background: linear-gradient(180deg, #44aa44, #228822);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 0 #115511, 0 6px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.1s ease;
+    }
+
+    .restart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 #115511, 0 8px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .restart-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #115511, 0 3px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .menu-title {
+      font-size: 3.5vw;
+      color: #ff4488;
+      text-shadow: 0 0 30px rgba(255, 68, 136, 0.6), 4px 4px 8px rgba(0, 0, 0, 0.5);
+      margin-bottom: 6vh;
+    }
+
+    .menu-controls {
+      display: flex;
+      gap: 6vw;
+      margin-bottom: 6vh;
+    }
+
+    .controls-card {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 3vh 2vw;
+      border-radius: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .controls-card h3 {
+      font-size: 1.2vw;
+      margin-bottom: 2vh;
+      text-align: center;
+    }
+
+    .controls-card.p1 h3 { color: #ff4444; }
+    .controls-card.p2 h3 { color: #4488ff; }
+
+    .controls-card p {
+      font-size: 0.8vw;
+      color: #ccc;
+      line-height: 2;
+    }
+
+    .start-btn {
+      font-family: 'Press Start 2P', cursive;
+      font-size: 1.5vw;
+      padding: 2.5vh 4vw;
+      background: linear-gradient(180deg, #ff8844, #ff5522);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 5px 0 #cc3300, 0 8px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.1s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 0 #cc3300, 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .start-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #cc3300, 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 400px) {
+      .cooldown-indicators {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    
+    <div class="scoreboard" id="scoreboard">
+      <div class="score-item">
+        <span class="score-label">P1</span>
+        <span class="score-value p1" id="score-p1">0</span>
+      </div>
+      <div class="score-item">
+        <span class="score-label">P2</span>
+        <span class="score-value p2" id="score-p2">0</span>
+      </div>
+    </div>
+
+    <div class="cooldown-indicators" id="cooldown-indicators">
+      <div class="cooldown-item">
+        <span class="cooldown-label">P1 冷却</span>
+        <div class="cooldown-bar">
+          <div class="cooldown-fill p1" id="cooldown-p1" style="width: 100%;"></div>
+        </div>
+      </div>
+      <div class="cooldown-item">
+        <span class="cooldown-label">P2 冷却</span>
+        <div class="cooldown-bar">
+          <div class="cooldown-fill p2" id="cooldown-p2" style="width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-overlay" id="menu-overlay">
+      <h1 class="menu-title">躲避球对战</h1>
+      <div class="menu-controls">
+        <div class="controls-card p1">
+          <h3>玩家 1</h3>
+          <p>移动：W A S D</p>
+          <p>扔球：Q</p>
+        </div>
+        <div class="controls-card p2">
+          <h3>玩家 2</h3>
+          <p>移动：↑ ↓ ← →</p>
+          <p>扔球：Enter</p>
+        </div>
+      </div>
+      <button class="start-btn" id="start-btn">开始游戏</button>
+    </div>
+
+    <div class="victory-overlay" id="victory-overlay">
+      <div class="victory-banner">
+        <h2 class="victory-text" id="victory-text">玩家获胜！</h2>
+        <p class="victory-subtext">先到3分获胜</p>
+        <button class="restart-btn" id="restart-btn">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
