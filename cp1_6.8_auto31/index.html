@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座探索 - 3D 交互式星空</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A0E27;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #info-card {
+      position: absolute;
+      background: rgba(10, 14, 39, 0.92);
+      border: 1px solid rgba(255, 213, 79, 0.5);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 100;
+      min-width: 180px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+    }
+
+    #info-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #info-card .star-name {
+      font-size: 16px;
+      font-weight: bold;
+      color: #FFD54F;
+      margin-bottom: 8px;
+    }
+
+    #info-card .star-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      color: #b8c1e0;
+    }
+
+    #info-card .star-info span:last-child {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    #navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 50;
+    }
+
+    #navbar .logo {
+      font-size: 18px;
+      font-weight: bold;
+      color: #FFD54F;
+      margin-right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #navbar .search-box {
+      flex: 1;
+      max-width: 300px;
+      position: relative;
+    }
+
+    #navbar .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    #navbar .search-box input:focus {
+      border-color: #FFD54F;
+    }
+
+    #navbar .search-box input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    #navbar .search-box::before {
+      content: '🔍';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      opacity: 0.7;
+    }
+
+    #navbar .nav-buttons {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    #navbar .nav-btn {
+      padding: 8px 16px;
+      background: rgba(26, 35, 126, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #navbar .nav-btn:hover {
+      background: rgba(255, 213, 79, 0.3);
+      border-color: #FFD54F;
+    }
+
+    #navbar .nav-btn.active {
+      background: #FFD54F;
+      color: #0A0E27;
+      font-weight: bold;
+    }
+
+    #constellation-panel {
+      position: absolute;
+      left: 0;
+      top: 56px;
+      bottom: 120px;
+      width: 260px;
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      transform: translateX(-260px);
+      transition: transform 0.3s ease;
+      z-index: 40;
+      overflow-y: auto;
+    }
+
+    #constellation-panel.open {
+      transform: translateX(0);
+    }
+
+    #constellation-panel .panel-header {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #FFD54F;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: sticky;
+      top: 0;
+      background: rgba(10, 14, 39, 0.95);
+    }
+
+    #constellation-list {
+      list-style: none;
+    }
+
+    #constellation-list li {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 3px solid transparent;
+      font-size: 14px;
+    }
+
+    #constellation-list li:hover {
+      background: rgba(255, 213, 79, 0.1);
+      border-left-color: #FFD54F;
+    }
+
+    #constellation-list li.active {
+      background: rgba(255, 213, 79, 0.2);
+      border-left-color: #FFD54F;
+      color: #FFD54F;
+    }
+
+    #toggle-panel-btn {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background: rgba(10, 14, 39, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    #toggle-panel-btn:hover {
+      background: rgba(255, 213, 79, 0.3);
+      border-color: #FFD54F;
+    }
+
+    #story-panel {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 800px;
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 20px 30px;
+      z-index: 30;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    #story-panel.fading {
+      opacity: 0;
+    }
+
+    #story-panel .story-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #FFD54F;
+      margin-bottom: 8px;
+    }
+
+    #story-panel .story-content {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #c5cbe3;
+    }
+
+    #markers-panel {
+      position: absolute;
+      right: 0;
+      top: 56px;
+      bottom: 120px;
+      width: 280px;
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(10px);
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+      transform: translateX(280px);
+      transition: transform 0.3s ease;
+      z-index: 40;
+      overflow-y: auto;
+    }
+
+    #markers-panel.open {
+      transform: translateX(0);
+    }
+
+    #markers-panel .panel-header {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #FFD54F;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #markers-panel .add-marker-btn {
+      padding: 6px 12px;
+      background: rgba(255, 213, 79, 0.2);
+      border: 1px solid #FFD54F;
+      border-radius: 4px;
+      color: #FFD54F;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #markers-panel .add-marker-btn:hover {
+      background: #FFD54F;
+      color: #0A0E27;
+    }
+
+    #markers-list {
+      list-style: none;
+    }
+
+    #markers-list li {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #markers-list .marker-info {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    #markers-list .marker-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    #markers-list .marker-note {
+      font-size: 12px;
+      color: #8890b0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #markers-list .marker-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    #markers-list .marker-actions button {
+      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      color: #fff;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #markers-list .marker-actions button:hover {
+      background: rgba(255, 213, 79, 0.3);
+      border-color: #FFD54F;
+    }
+
+    #marker-input-modal {
+      position: absolute;
+      left: 50%;
+      bottom: -200px;
+      transform: translateX(-50%);
+      width: 400px;
+      background: rgba(10, 14, 39, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 213, 79, 0.5);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 60;
+      transition: bottom 0.3s ease;
+    }
+
+    #marker-input-modal.visible {
+      bottom: 140px;
+    }
+
+    #marker-input-modal .modal-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #FFD54F;
+      margin-bottom: 16px;
+    }
+
+    #marker-input-modal input,
+    #marker-input-modal textarea {
+      width: 100%;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 14px;
+      outline: none;
+      margin-bottom: 12px;
+      font-family: inherit;
+    }
+
+    #marker-input-modal input:focus,
+    #marker-input-modal textarea:focus {
+      border-color: #FFD54F;
+    }
+
+    #marker-input-modal textarea {
+      resize: none;
+      height: 80px;
+    }
+
+    #marker-input-modal .color-picker {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    #marker-input-modal .color-picker label {
+      font-size: 13px;
+      color: #b8c1e0;
+    }
+
+    #marker-input-modal .color-options {
+      display: flex;
+      gap: 6px;
+    }
+
+    #marker-input-modal .color-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    #marker-input-modal .color-dot.selected {
+      border-color: #fff;
+      transform: scale(1.2);
+    }
+
+    #marker-input-modal .modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    #marker-input-modal .modal-btn {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    #marker-input-modal .modal-btn.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    #marker-input-modal .modal-btn.cancel:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    #marker-input-modal .modal-btn.confirm {
+      background: #FFD54F;
+      color: #0A0E27;
+      font-weight: bold;
+    }
+
+    #marker-input-modal .modal-btn.confirm:hover {
+      background: #ffca28;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0A0E27;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loading-screen .loader {
+      width: 50px;
+      height: 50px;
+      border: 3px solid rgba(255, 213, 79, 0.3);
+      border-top-color: #FFD54F;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #loading-screen .loading-text {
+      font-size: 16px;
+      color: #FFD54F;
+    }
+
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      z-index: 20;
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    #toggle-markers-btn {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background: rgba(10, 14, 39, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      z-index: 45;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    #toggle-markers-btn:hover {
+      background: rgba(255, 213, 79, 0.3);
+      border-color: #FFD54F;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="loading-screen">
+      <div class="loader"></div>
+      <div class="loading-text">正在加载星空...</div>
+    </div>
+
+    <nav id="navbar">
+      <div class="logo">✨ 星座探索</div>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="搜索星座或恒星...">
+      </div>
+      <div class="nav-buttons">
+        <button class="nav-btn" id="auto-tour-btn">🚀 自动漫游</button>
+        <button class="nav-btn" id="reset-view-btn">🔄 重置视角</button>
+      </div>
+    </nav>
+
+    <button id="toggle-panel-btn" title="展开/收起星座列表">☰</button>
+    <button id="toggle-markers-btn" title="展开/收起名星标记">⭐</button>
+
+    <div id="constellation-panel">
+      <div class="panel-header">88 星座</div>
+      <ul id="constellation-list"></ul>
+    </div>
+
+    <div id="markers-panel">
+      <div class="panel-header">
+        <span>我的标记</span>
+        <button class="add-marker-btn" id="add-marker-btn">+ 添加</button>
+      </div>
+      <ul id="markers-list"></ul>
+    </div>
+
+    <div id="info-card">
+      <div class="star-name" id="card-star-name">-</div>
+      <div class="star-info"><span>所属星座:</span><span id="card-constellation">-</span></div>
+      <div class="star-info"><span>距离:</span><span id="card-distance">-</span></div>
+      <div class="star-info"><span>视星等:</span><span id="card-magnitude">-</span></div>
+      <div class="star-info"><span>光谱类型:</span><span id="card-spectrum">-</span></div>
+    </div>
+
+    <div id="story-panel">
+      <div class="story-title" id="story-title">猎户座 Orion</div>
+      <div class="story-content" id="story-content">
+        猎户座是最壮观的星座之一，在希腊神话中，俄里翁是一位强大的猎人，
+        他吹嘘自己能杀死任何动物。大地女神盖亚听到后很生气，派出一只蝎子去杀死他。
+        后来，宙斯将俄里翁和蝎子都放到了天上，成为了猎户座和天蝎座。
+      </div>
+    </div>
+
+    <div id="marker-input-modal">
+      <div class="modal-title">添加自定义标记</div>
+      <input type="text" id="marker-name-input" placeholder="输入名称...">
+      <textarea id="marker-note-input" placeholder="添加备注..."></textarea>
+      <div class="color-picker">
+        <label>标记颜色:</label>
+        <div class="color-options" id="color-options">
+          <div class="color-dot selected" style="background: #FFD54F;" data-color="#FFD54F"></div>
+          <div class="color-dot" style="background: #FF6B6B;" data-color="#FF6B6B"></div>
+          <div class="color-dot" style="background: #4ECDC4;" data-color="#4ECDC4"></div>
+          <div class="color-dot" style="background: #A78BFA;" data-color="#A78BFA"></div>
+          <div class="color-dot" style="background: #60A5FA;" data-color="#60A5FA"></div>
+        </div>
+      </div>
+      <div class="modal-buttons">
+        <button class="modal-btn cancel" id="cancel-marker-btn">取消</button>
+        <button class="modal-btn confirm" id="confirm-marker-btn">确认添加</button>
+      </div>
+    </div>
+
+    <div id="instructions">
+      🖱️ 左键拖拽旋转 | 滚轮缩放 | 空格键自动漫游<br>
+      双击星空添加标记 | 悬停恒星查看信息
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
