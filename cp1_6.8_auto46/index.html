@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宇宙射线探测器模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000510;
+      font-family: 'Courier New', monospace;
+    }
+    
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+    
+    #crt-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      width: 360px;
+      height: 280px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    #detector-popup {
+      position: fixed;
+      width: 320px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 100;
+      padding: 20px;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+    }
+    
+    #detector-popup h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+    
+    #detector-popup .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    
+    #detector-popup .info-label {
+      color: #88ffaa;
+    }
+    
+    #detector-popup .info-value {
+      color: #ffffff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <canvas id="crt-panel"></canvas>
+    <div id="detector-popup">
+      <h3 id="popup-title">探测器 #0</h3>
+      <div class="info-row">
+        <span class="info-label">击中次数</span>
+        <span class="info-value" id="popup-hits">0</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">平均能量 (MeV)</span>
+        <span class="info-value" id="popup-avg-energy">0.00</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">最近能量 (MeV)</span>
+        <span class="info-value" id="popup-last-energy">0.00</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
