@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 流体动力学模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #000;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: rgba(0, 20, 40, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(100, 180, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(200, 230, 255, 0.8);
+      font-size: 12px;
+      z-index: 10;
+    }
+
+    #status-bar span {
+      margin: 0 16px;
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 280px;
+      background: rgba(10, 30, 60, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 12px;
+      border: 1px solid rgba(100, 180, 255, 0.2);
+      padding: 20px;
+      color: #fff;
+      z-index: 100;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #control-panel h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: rgba(200, 230, 255, 0.95);
+      letter-spacing: 0.5px;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: rgba(200, 230, 255, 0.85);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-group label .value {
+      font-weight: 600;
+      color: #64b5f6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: background 0.1s ease;
+    }
+
+    .control-group input[type="range"]:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #64b5f6, #2196f3);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 2px 12px rgba(33, 150, 243, 0.6);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #64b5f6, #2196f3);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.4);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(100, 180, 255, 0.15);
+      color: rgba(200, 230, 255, 0.9);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: 1px solid rgba(100, 180, 255, 0.2);
+    }
+
+    .btn:hover {
+      background: rgba(100, 180, 255, 0.3);
+      border-color: rgba(100, 180, 255, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .panel-stats {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(100, 180, 255, 0.15);
+      font-size: 12px;
+      color: rgba(200, 230, 255, 0.6);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .panel-stats .stat-value {
+      color: #64b5f6;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .toggle-btn {
+      display: none;
+      position: fixed;
+      bottom: 52px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 101;
+      padding: 8px 20px;
+      background: rgba(10, 30, 60, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 180, 255, 0.3);
+      border-radius: 20px;
+      color: rgba(200, 230, 255, 0.9);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(30, 60, 100, 0.9);
+    }
+
+    .instructions {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(100, 180, 255, 0.15);
+      font-size: 11px;
+      color: rgba(200, 230, 255, 0.5);
+      line-height: 1.6;
+    }
+
+    .instructions kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 10px;
+      color: rgba(200, 230, 255, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 32px;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        padding: 16px;
+        transform: translateY(0);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #control-panel.collapsed {
+        transform: translateY(calc(100% - 50px));
+      }
+
+      #control-panel h2 {
+        cursor: pointer;
+        margin-bottom: 0;
+        padding-bottom: 12px;
+        border-bottom: 1px solid rgba(100, 180, 255, 0.15);
+      }
+
+      .panel-content {
+        margin-top: 12px;
+      }
+
+      #control-panel.collapsed .panel-content {
+        display: none;
+      }
+
+      .toggle-btn {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <div id="control-panel">
+    <h2 id="panel-title">流体模拟控制面板</h2>
+    <div class="panel-content">
+      <div class="control-group">
+        <label>重力强度 <span class="value" id="gravity-value">-9.8</span></label>
+        <input type="range" id="gravity-slider" min="-10" max="10" step="0.1" value="-9.8">
+      </div>
+      
+      <div class="control-group">
+        <label>风力大小 <span class="value" id="wind-value">1.5</span></label>
+        <input type="range" id="wind-slider" min="0" max="5" step="0.1" value="1.5">
+      </div>
+      
+      <div class="control-group">
+        <label>粒子寿命 <span class="value" id="lifetime-value">5.0</span>s</label>
+        <input type="range" id="lifetime-slider" min="1" max="10" step="0.1" value="5.0">
+      </div>
+
+      <div class="control-group">
+        <label>尾迹衰减 <span class="value" id="trail-value">0.98</span></label>
+        <input type="range" id="trail-slider" min="0.9" max="0.999" step="0.001" value="0.98">
+      </div>
+
+      <div class="btn-group">
+        <button class="btn" id="pause-btn">暂停 (Space)</button>
+        <button class="btn" id="reset-btn">重置 (R)</button>
+      </div>
+
+      <div class="panel-stats">
+        <span>FPS: <span class="stat-value" id="fps-display">60</span></span>
+        <span>粒子: <span class="stat-value" id="particle-count">5000</span></span>
+      </div>
+
+      <div class="instructions">
+        <div>🖱️ 拖拽旋转视角</div>
+        <div>🖱️ 点击添加力场</div>
+        <div><kbd>Space</kbd> 暂停/恢复</div>
+        <div><kbd>R</kbd> 重置粒子</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="toggle-btn" id="toggle-btn">控制面板</button>
+
+  <div id="status-bar">
+    <span>3D 流体动力学模拟器</span>
+    <span>|</span>
+    <span>拖拽旋转 · 点击添加力场 · Space 暂停 · R 重置</span>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
