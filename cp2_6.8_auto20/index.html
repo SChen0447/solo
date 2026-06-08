@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D技能组合演示</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container"></div>
+    
+    <div id="info-panel" class="glass-panel">
+      <div class="info-title">技能信息</div>
+      <div class="info-skill-name" id="skill-name">未选择技能</div>
+      <div class="info-combo-desc" id="combo-desc">拖拽技能到组合槽查看效果</div>
+      <div class="info-speed">
+        <span>播放速度:</span>
+        <span id="speed-value">1.0x</span>
+      </div>
+      <div class="info-particles">
+        <span>粒子数:</span>
+        <span id="particle-count">0</span>
+      </div>
+    </div>
+
+    <div id="skill-bar" class="glass-panel">
+      <div class="skill-bar-title">技能库</div>
+      <div class="skill-icons" id="skill-icons"></div>
+    </div>
+
+    <div id="combo-area">
+      <div class="combo-slots glass-panel" id="combo-slots">
+        <div class="combo-slot" data-slot="0"></div>
+        <div class="combo-slot" data-slot="1"></div>
+        <div class="combo-slot" data-slot="2"></div>
+      </div>
+      <div class="combo-controls">
+        <button id="reset-btn" class="control-btn">重置</button>
+        <div class="speed-control">
+          <label>速度</label>
+          <input type="range" id="speed-slider" min="0.5" max="2" step="0.1" value="1">
+        </div>
+      </div>
+    </div>
+
+    <div id="drag-ghost" class="drag-ghost"></div>
+    <div id="ripple-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
