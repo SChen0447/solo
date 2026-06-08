@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T11:37:54.660Z",
+  "task_name": "auto48",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位用户正在浏览一个音乐专辑展示网站，他想通过一种类似翻阅黑胶唱片封套的沉浸式交互，来感受每张专辑的封面设计、曲目信息和播放体验，而不是传统的列表式浏览。\n\n构建一个基于3D翻转卡片交互的音乐专辑浏览与播放应用，用户可横向拖拽查看专辑封面，点击每张卡片触发3D翻转展示背面曲目列表，点击播放按钮直接播放关联的模拟音效（使用Web Audio API生成简单的随机旋律）。使用TypeScript和React实现，Vite构建，纯前端，无需后端。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, uuid，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件，启用CSS模块化）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext，包含jsx配置）\n - index.html（入口，含一个挂载id为root的div）\n - src/App.tsx（根组件，管理状态：当前选中专辑、播放状态、卡片索引。接收AlbumGrid的交互事件回调，控制AudioEngine的播放行为，数据流向：AlbumGrid触发选择→App设置选中的专辑→调用AudioEngine播放）\n - src/components/AlbumGrid.tsx（负责渲染专辑卡片列表，使用CSS 3D transform实现横向翻页效果，接收专辑数据数组和选中回调。数据流向：接收专辑数组渲染卡片，用户交互时调用App的回调）\n - src/components/FlipCard.tsx（单个专辑卡片组件，接受专辑对象作为props，处理点击翻转动画，背面显示曲目列表和播放按钮。数据流向：从AlbumGrid接收专辑数据，翻转时调用App回调）\n - src/utils/AlbumData.ts（静态数据模块，导出10张虚拟专辑对象数组，每张包含：id、title、artist、coverColor（渐变色字符串）、tracks（曲目名数组）、releaseYear。数据直接注入AlbumGrid）\n - src/audio/AudioEngine.ts（Web Audio API封装，提供playRandomMelody(params)方法，基于传入的专辑信息生成随机旋律（使用振荡器组合，模拟不同风格），以及stop()方法。调用方为App组件）\n\n功能需求：\n1) 横向翻页浏览：用户可通过鼠标拖拽或触摸滑动，横向移动专辑卡片（每次移动一整个卡片宽度，带缓动动画），卡片之间间距为30px，总显示3张（当前+左右各一张），左右超出范围半透明渐变隐藏，暗示更多内容。\n2) 3D翻转交互：点击当前居中的卡片，卡片围绕Y轴进行3D翻转（0到180度，持续时间0.6秒，缓动函数cubic-bezier(0.25, 0.46, 0.45, 0.94)），正面显示专辑封面（从coverColor产生渐变色块+专辑标题与艺术家名称），背面显示曲目列表（有序号、曲名和时长预设，均从AlbumData获取）和一个播放按钮。再次点击背面可翻回正面。\n3) 模拟播放功能：点击背面播放按钮，使用AudioEngine基于该专辑的releaseYear和艺术家名称字符串生成一段约5秒的随机旋律（包含随机音高、时值和音色），同时卡片背面出现一个简单的波形动画（使用Canvas绘制实时频谱，调用getByteFrequencyData），播放完成后自动停止。\n4) 专辑元数据提示：在卡片列表中，每张卡片的正面右下角显示一个小标签，标明发行年份，悬停时显示艺术家的小图标和名称（用CSS颜色渐变表示风格）。\n5) 响应式适配：桌面端（宽度>1024px）卡片宽高比为3:4，卡片宽300px；平板端（768-1024px）卡片宽240px；手机端（<768px）卡片宽180px，且翻页改为垂直滑动。所有设备支持触摸与鼠标交互。\n\n界面要求：整体采用暗色主题（#1a1a2e到#16213e渐变为背景），卡片正面用鲜艳的渐变色块（从AlbumData中取），文字使用白色（#f0f0f0），曲目列表使用浅灰色（#b0b0b0），播放按钮使用#e94560（珊瑚红），悬停变为#ff6b6b。翻页时，卡片之间的切换有轻微3D景深感（perspective:1200px），翻页前后左右卡片自动调整透明度（选中卡片opacity:1，两侧0.6，更远0.3）。波形动画使用青色（#00adb5）和紫色（#6c63ff）渐变填充。所有交互反馈（点击、悬停、翻页）都要有平滑的CSS transition（0.2-0.3秒）。\n\n性能约束：3D翻转动画应保持在60 FPS（使用will-change: transform优化），音频播放期间波形绘制不超过每秒30帧，避免CPU过度占用；页面初始化加载时间不超过1.5秒（所有资源均为静态生成）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2354a0f95cebaac708b086928d731602_6a26a7cb9d20d9c2d4832391.6a26a9809d20d9c2d483256f.6a26a98058377e1956a83004:Trae CN.T(2026/6/8 19:37:36)",
+    "user_id": "3986207660317399",
+    "trace_id": "2354a0f95cebaac708b086928d731602",
+    "session_id": "6a26a7cb9d20d9c2d4832391",
+    "task_id": "6a26a9809d20d9c2d483256f",
+    "message_id": "6a26a98058377e1956a83004",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 19:37:36",
+    "format": "full"
+  },
+  "trace": "null"
+}

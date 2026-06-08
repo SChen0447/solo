@@ -1,0 +1,292 @@
+.cardContainer {
+  width: 300px;
+  height: 400px;
+  perspective: 1200px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.cardContainer.active {
+  cursor: pointer;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.cardFront,
+.cardBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.cardFront {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  position: relative;
+}
+
+.frontContent {
+  position: relative;
+  z-index: 1;
+}
+
+.albumTitle {
+  color: #f0f0f0;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.albumArtist {
+  color: rgba(240, 240, 240, 0.85);
+  font-size: 14px;
+  margin: 0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.yearBadge {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #f0f0f0;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+}
+
+.artistTooltip {
+  position: absolute;
+  bottom: 60px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: 20px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.cardContainer:hover .artistTooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.artistIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+}
+
+.artistName {
+  color: #f0f0f0;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.cardBack {
+  background: #16213e;
+  transform: rotateY(180deg);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tracklistTitle {
+  color: #f0f0f0;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tracklist {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.tracklist::-webkit-scrollbar {
+  width: 4px;
+}
+
+.tracklist::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tracklist::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.trackItem {
+  display: flex;
+  align-items: center;
+  padding: 6px 0;
+  gap: 10px;
+  transition: background 0.2s ease;
+}
+
+.trackItem:hover {
+  background: rgba(255, 255, 255, 0.05);
+  margin: 0 -8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+.trackNumber {
+  color: #b0b0b0;
+  font-size: 12px;
+  font-weight: 500;
+  min-width: 24px;
+}
+
+.trackName {
+  color: #b0b0b0;
+  font-size: 13px;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.trackDuration {
+  color: #b0b0b0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.waveformCanvas {
+  width: 100%;
+  height: 60px;
+  margin-bottom: 12px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.playButton {
+  background: #e94560;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+  text-align: center;
+}
+
+.playButton:hover {
+  background: #ff6b6b;
+  transform: scale(1.02);
+}
+
+.playButton:active {
+  transform: scale(0.98);
+}
+
+.playButton.playing {
+  background: #6c63ff;
+}
+
+@media (max-width: 1024px) {
+  .cardContainer {
+    width: 240px;
+    height: 320px;
+  }
+
+  .albumTitle {
+    font-size: 20px;
+  }
+
+  .waveformCanvas {
+    height: 50px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cardContainer {
+    width: 180px;
+    height: 240px;
+  }
+
+  .albumTitle {
+    font-size: 16px;
+  }
+
+  .albumArtist {
+    font-size: 12px;
+  }
+
+  .yearBadge {
+    font-size: 10px;
+    padding: 3px 8px;
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .cardFront {
+    padding: 16px;
+  }
+
+  .cardBack {
+    padding: 14px;
+  }
+
+  .tracklistTitle {
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+  }
+
+  .trackItem {
+    padding: 4px 0;
+    gap: 6px;
+  }
+
+  .trackName {
+    font-size: 11px;
+  }
+
+  .trackNumber,
+  .trackDuration {
+    font-size: 10px;
+  }
+
+  .waveformCanvas {
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  .playButton {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+}
