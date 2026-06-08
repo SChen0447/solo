@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T10:13:45.446Z",
+  "task_name": "auto5",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线阅读进度追踪器的项目，想法是给那些常在浏览器里追网文或读技术文档的人提供一个轻量工具，能记录每本书的阅读进度、添加书签和笔记，并且支持多设备同步。希望它能做到：第一，用户能添加书籍（填书名、作者和总章节数），每次读完一章就点一下更新进度，系统自动算出百分比并显示在列表里；第二，支持在任意章节添加书签和笔记，笔记要支持纯文本加简单的标签分类，书签能一键跳转到该章节；第三，提供一个可视化的阅读统计仪表盘，用柱状图或环形图展示本周、本月阅读量以及各书籍的完成度对比，数据清晰直观。界面上希望整体走暖色调的米白配深棕，卡片式布局，书籍列表有圆角封面缩略图和柔和的阴影，切换书籍或更新进度时有平滑的淡入淡出动画，按钮悬停时背景色渐变，阅读统计图表要有动态入场动画（数据从零增长到目标值），页面在手机和电脑上都能自适应排版。性能上希望点击更新进度或添加书签后界面应在1秒内刷新，不卡顿，大列表（比如50本书）滚动流畅不丢帧。\n\n实现用TypeScript和React（Vite构建），后端用Node.js加Express提供REST API（数据存内存简单模拟），把代码拆成以下文件：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, express, cors, uuid, recharts, 启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext）\n - index.html（入口，挂载React应用）\n - server.ts（Express后端，定义API路由：POST /books, GET /books, PUT /books/:id/progress, POST /books/:id/bookmarks, GET /stats，使用内存数组存储数据）\n - src/App.tsx（主组件，管理路由和全局状态，调用后端API获取数据）\n - src/BookList.tsx（展示所有书籍的列表，每项显示封面、书名、进度条和百分比，支持点击进入详情）\n - src/BookDetail.tsx（单本书详情页，显示章节列表，进度更新按钮，书签和笔记管理区域）\n - src/StatsDashboard.tsx（阅读统计仪表盘，用recharts绘制柱状图和环形图，数据来自/stats的API）\n - src/types.ts（定义Book, Bookmark, Stats等TypeScript类型接口）\n - src/api.ts（封装对后端API的fetch调用，包含错误处理）\n\n跑 npm install && npm run dev 就能直接看到效果，需要先启动后端server.ts（可以配置为npm run dev同时启动前后端，或者单独说明用node server.ts）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:6c79a9cb6d8f598077f2e1a3d4e7b247_6a2694ec3b7825e2b7070d82.6a2695c93b7825e2b7070e6e.6a2695c933f7989f6fdedba7:Trae CN.T(2026/6/8 18:13:29)",
+    "user_id": "3986207660317399",
+    "trace_id": "6c79a9cb6d8f598077f2e1a3d4e7b247",
+    "session_id": "6a2694ec3b7825e2b7070d82",
+    "task_id": "6a2695c93b7825e2b7070e6e",
+    "message_id": "6a2695c933f7989f6fdedba7",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 18:13:29",
+    "format": "full"
+  },
+  "trace": "null"
+}
