@@ -1,0 +1,15 @@
+{
+  "name": "fireworks-editor",
+  "version": "1.0.0",
+  "description": "A particle physics based fireworks editor",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}
