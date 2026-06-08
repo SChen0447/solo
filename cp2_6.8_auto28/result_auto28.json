@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-08T11:00:14.656Z",
+  "task_name": "auto28",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于浏览器本地存储的交互式知识卡片闪卡项目，想法是给学生和自学者提供一个轻量的记忆辅助工具，可以创建、编辑和复习任意主题的闪卡，并通过间隔重复算法（简化版SM-2）自动安排复习时间，提升学习效率。希望它能做到：第一，用户能创建闪卡包（deck），每个卡包包含标题和描述，可以添加任意数量的闪卡，每张卡片有正面（问题/术语）和背面（答案/解释），支持纯文本内容，每个卡包内卡片数量不限；第二，复习模式：进入复习时，系统按简化SM-2算法（基于连续正确次数调整间隔：首次1天、正确后2天、再正确4天，最多间隔7天；错误则重置为1天）从卡包中筛选出今天到期的卡片，一次展示一张正面，用户点击后翻转显示背面，然后选择记忆等级（困难/一般/容易），系统据此更新下次复习日期；第三，提供统计看板（使用ECharts的环形图）显示每个卡包的到期卡片数和总计卡片数，并高亮显示学习进度（已完成复习的百分比），底部还有一个日历热力图（类似GitHub贡献图），用绿色深浅表示每天复习的卡片数量。界面上希望整体采用暖色调（主色#F5E6CA米色底、深棕色#5D4037文字、卡片边框为浅棕色#8D6E63），主界面是两列布局：左侧是卡包列表（卡片式排列，每张卡片显示标题、卡数和到期数，鼠标悬停轻微上浮阴影过渡），右侧默认展示统计数据与日历热力图，点击卡包后切换为该卡包的复习界面。所有操作都带平滑过渡动画（卡片翻转用CSS 3D transform，页面切换用fade-in，时长300ms），支持响应式（平板和手机端左侧列表变顶部导航栏）。性能上要求首次加载卡包列表<200ms，点击翻转动画无卡顿（60fps）。实现用TypeScript和React（无后端，数据用localStorage持久化），把代码拆成以下文件：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, echarts, echarts-for-react，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件，设置base为'./'）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext，jsx: react-jsx）\n - index.html（入口，引入字体Nunito，设置viewport）\n - src/types.ts（定义卡包、卡片、复习记录的TypeScript接口和简化SM-2算法的类型）\n - src/dataStore.ts（封装localStorage的读写方法，负责保存卡包列表、每个卡包的卡片列表、复习历史记录，导出CRUD函数供UI调用）\n - src/srsEngine.ts（实现简化SM-2算法：计算下次复习日期，初始间隔1天，连续正确时翻倍，上限7天，错误重置；导出schedule函数）\n - src/components/cardDeckList.tsx（展示卡包列表，支持新增卡包弹窗和点击卡包切换复习）\n - src/components/reviewScreen.tsx（展示单张卡片的正面→点击翻转→选择记忆等级，调用srsEngine更新复习日期）\n - src/components/statsDashboard.tsx（用ECharts环形图显示每个卡包的进度，用日历热力图显示每日复习数）\n - src/App.tsx（主组件，管理选中的卡包ID、页面状态（列表/复习/统计）的切换，使用useReducer管理全局状态）\n - src/index.tsx（渲染App到根节点）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}
