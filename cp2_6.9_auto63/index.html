@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>磁力谜题 Magnetic Puzzle</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0B0E14;
+      font-family: 'Courier New', monospace;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, #121826 0%, #0B0E14 70%);
+    }
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      box-shadow: 0 0 60px rgba(50, 80, 200, 0.15);
+      border: 1px solid rgba(50, 80, 200, 0.2);
+    }
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #EEEEEE;
+      font-size: 18px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="loading">正在加载磁力场...</div>
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
