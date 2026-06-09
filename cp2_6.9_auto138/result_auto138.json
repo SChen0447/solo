@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T01:48:57.609Z",
+  "task_name": "auto138",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线词汇闯关拼写测试的全栈Web应用，用户通过接听单词发音（TTS），在限定时间内输入正确拼写并逐步通关晋级。使用TypeScript、React（无外部状态管理库）和Vite实现前端，后端用Express提供单词库和进度存储（仅内存存储）。文件结构如下：\n - package.json（含依赖：react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、express、@types/express、cors、@types/cors，启动脚本：npm run dev）\n - vite.config.js（构建配置，入口指向index.html，代理后端API）\n - tsconfig.json（严格模式）\n - index.html（入口页面）\n - src/App.tsx（主组件，管理路由/状态机：准备-闯关-结果，调用各子组件）\n - src/GameBoard.tsx（游戏面板，显示当前单词发音按钮、输入框、倒计时进度条和得分）\n - src/WordService.ts（封装后端HTTP请求，获取新单词和提交结果）\n - src/LevelProgress.tsx（关卡进度条和生命值显示，生命值耗尽游戏结束）\n - server/index.ts（Express后端，提供/get-word和/submit-answer接口，内存存储当前关卡和生命值）\n\n具体需求：\n1. 游戏开始后，用户点击“听读音”按钮播放当前单词的TTS发音（使用浏览器SpeechSynthesis API），同时启动15秒倒计时（进度条从绿色渐变到红色，动画0.1s线性），用户需在倒计时结束前输入拼写并点击提交。\n2. 拼写正确自动进入下一关（单词难度递增：前5关为CET-4词汇，中间5关为CET-6词汇，最后5关为考研词汇），得分加10分，生命值维持不变；拼写错误扣1点生命值（初始3点），生命值为0时游戏结束，显示总得分和正确率（带缩放弹出动画0.4s ease-out）。连续答对3关额外加5分（有+5特效从输入框向上飘移并淡出1.5s）。\n3. 每关结束后显示当前得分、关卡序号和剩余生命值，过渡动画为卡片翻页效果（rotateY 0.6s ease-in-out）。游戏面板卡片尺寸400x300px，圆角12px，卡片背景为毛玻璃效果（backdrop-filter: blur(10px)），深色主题主色#1E1E2E，辅色#A78BFA，卡片阴影0 8px 32px rgba(0,0,0,0.3)。\n4. 生命值用3个心形图标（❤️）展示在左上角，失去生命时图标以0.3s scale(1.2)抖动后变为灰色，并播放1px红色描边闪烁动画0.5s。顶部分数区域数字实时更新，数字变化时有0.2s向上位移和颜色闪烁（从黄色#FFD700到白色#FFFFFF）。\n5. 界面整体布局：顶部进度条（占30px高，渐变色从#A78BFA到#7C3AED），中部游戏卡片（居中，响应式宽320-480px），底部显示当前关卡难度标签（用彩色圆角标签，CET-4为绿色#34D399，CET-6为蓝色#60A5FA，考研为紫色#A78BFA）。页面支持手机端适配，卡片在窄屏（<640px）时宽度占90%，字体缩小至14px。\n6. 后端提供10个单词（按难度排序），每个单词包含拼写和中文释义；提交答案接口返回正确/错误、下一关单词、当前得分和生命值。后端用内存数组存储，无需持久化。\n7. 拼写输入框支持自动大小写转换（全部转为小写），提交时禁用按钮直到服务器响应（按钮变为loading状态，旋转图标动画0.8s infinite）。\n\n界面方面：整体采用深色主题（#1E1E2E主色，#181825背景，#A78BFA强调色），圆角和毛玻璃元素统一，所有交互均有微动画反馈（缩放、位移、颜色过渡），响应式适配手机和桌面端，视觉风格保持简洁科技感。\n\n性能要求：游戏帧率稳定在60fps，输入响应延迟小于100ms，倒计时进度条更新间隔不超过16ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:781f4f44d72e56bab862d76b3951c33c_6a277080b1f52b65e9bad46b.6a2770fab1f52b65e9bad4c5.6a2770f99bbc89340e6d3e5e:Trae CN.T(2026/6/9 09:48:42)",
+    "user_id": "3986207660317399",
+    "trace_id": "781f4f44d72e56bab862d76b3951c33c",
+    "session_id": "6a277080b1f52b65e9bad46b",
+    "task_id": "6a2770fab1f52b65e9bad4c5",
+    "message_id": "6a2770f99bbc89340e6d3e5e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 09:48:42",
+    "format": "full"
+  },
+  "trace": "null"
+}
