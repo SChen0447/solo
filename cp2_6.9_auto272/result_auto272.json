@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T06:07:29.037Z",
+  "task_name": "auto272",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中模拟键盘乐器演奏与可视化反馈的交互式应用，主要解决用户无法在没有实体乐器的情况下感受真实钢琴演奏体验并观察音符与色彩之间联觉对应的问题。\n\n它应当具备以下能力：\n1) 主画布（全屏自适应，推荐16:9，背景#0F0F23）上渲染一个88键的标准钢琴键盘（低音区键宽渐变，从C1到B8键宽线性缩小25%，白键#F5F5F5带5%灰度渐变和2px暗影，黑键#1A1A1A表面带#333333高光条纹），键盘底部距画布边缘30px，默认显示C3到C5范围（约2个八度），用户可通过底部滑块（样式自定义，滑块轨道#2A2A4C、滑块头#6C63FF带发光效果）水平滚动浏览全部琴键\n2) 当用户点击或用键盘（A-Z映射到白键，W-E-T-Y-U等映射到黑键）弹奏某个琴键时：琴键产生按下动画（下压5px，耗时0.1s，回弹缓出），同时琴键顶部迸发一圈彩色粒子（颜色由音高映射：C红色#FF4444、D橙色#FF8C00、E黄色#FFD700、F绿色#44FF44、G青色#44DDFF、A蓝色#4466FF、B紫色#AA44FF，粒子数10-15个，半径3-6px随机，飞散方向向上和两侧，速度2-5px/帧，衰减系数0.96，持续0.6s后淡出），同时播放对应频率的正弦波音效（使用Web Audio API，波形类型sawtooth，音量0.3，持续0.5s后指数衰减）\n3) 在键盘上方区域（占画布高度60%）渲染实时音符流：每个被弹奏的音符显示为一个横向滚动的长条形面板（宽200px高40px，圆角8px，背景为该音符映射颜色并带15%透明度，边框1px同色半透），面板内容从右向左匀速移动（每秒50px），面板在移动0.5s后开始淡出（透明度每帧降0.02），最终在移出左边界或透明度为0时移除。面板上显示音符名称（如C4）和力度（0-100的数值，用宽度渐变的彩色条表示），字体白色，字号14px，无衬线字体\n4) 支持同时弹奏多个音符（复音上限10个），使用键盘事件keydown/keyup（按下时开始播放，释放时停止播放），鼠标事件mousedown/mousemove/mouseup（允许在琴键上滑动演奏滑音），每个音符独立管理其音效实例和粒子效果，互不干扰\n5) 在画布右上角显示实时频谱可视化（带宽300px高150px，底色#1A1A33，圆角12px，半透明），使用AnalyserNode获取当前音频频谱数据（FFT size 256），以128条竖条显示（条宽2px，间距1px，条颜色从低到高渐变：#FF6B6B→#FFD93D→#6BCB77），条高度根据频率幅值从0到140px动态变化，更新频率约30fps\n\n界面方面：整体采用深色科幻风格（主背景#0F0F23，字体颜色#E0E0FF），键盘区域与音符流区域通过一条发光分割线（#6C63FF到#00D2FF线性渐变，高2px）分隔，所有交互元素（滑块、按钮）统一使用圆角风格（圆角8px）和霓虹蓝紫配色（主色#6C63FF，辅色#00D2FF），点击时应有轻微缩放反馈（scale 0.95→1.0，动画0.15s），音符流区域在无弹奏时显示“等待演奏”字样（居中，字号24px，颜色#FFFFFF30，带有1.5s周期的呼吸闪烁动画）。页面自适应宽度600px以上，低于600px时键盘变为单行紧凑排列（键宽和间距缩小30%）。\n\n性能上需要：键盘帧渲染时间不超过8ms，音频播放延迟低于50ms，粒子系统同时管理不超过200个活动粒子。\n\n实现采用TypeScript、原生HTML/CSS和Vite构建，按以下文件组织代码：\n - package.json（含依赖：vite、typescript，启动脚本：npm run dev）\n - index.html（入口页面，包含全屏Canvas和底部控制面板DOM锚点）\n - vite.config.js（构建配置，入口指向index.html，开发服务器端口8080）\n - tsconfig.json（严格模式，esnext模块，dom类型包含）\n - src/main.ts（初始化应用，创建Canvas、注册事件监听、启动主循环；数据流：接收键盘/鼠标事件→分发到AudioEngine和ParticleSystem→调用Renderer绘制）\n - src/audio.ts（AudioEngine类：管理Web Audio上下文、多个OscillatorNode、AnalyserNode；提供playNote/fadeOutNote/stopNote方法；输出频谱数组给Renderer）\n - src/renderer.ts（Renderer类：负责所有Canvas绘制，包括键盘、音符流、粒子、频谱；接收音符状态和频谱数据；每帧执行draw方法）\n - src/particle.ts（ParticleSystem类：管理粒子池，提供emit方法根据音高生成彩色粒子，每帧更新粒子位置和透明度，移除过期粒子）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:6afb2ed0e4612aea5c1835354be58ae6_6a27abc56c3dfa2f15ef60c0.6a27ad906c3dfa2f15ef621d.6a27ad90454149a65fc5867b:Trae CN.T(2026/6/9 14:07:12)",
+    "user_id": "3986207660317399",
+    "trace_id": "6afb2ed0e4612aea5c1835354be58ae6",
+    "session_id": "6a27abc56c3dfa2f15ef60c0",
+    "task_id": "6a27ad906c3dfa2f15ef621d",
+    "message_id": "6a27ad90454149a65fc5867b",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 14:07:12",
+    "format": "full"
+  },
+  "trace": "null"
+}
