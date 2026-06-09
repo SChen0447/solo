@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>熔岩流3D可视化模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A0A0A;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      width: 280px;
+      padding: 24px;
+      background: rgba(20, 20, 20, 0.8);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #FF6B35, #FF4500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .control-value {
+      font-weight: 600;
+      color: #FF6B35;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .slider:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #FF6B35, #FF4500);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px rgba(255, 69, 0, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #FF6B35, #FF4500);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px rgba(255, 69, 0, 0.8);
+    }
+
+    .erupt-btn {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      background: linear-gradient(135deg, #FF6B35, #FF4500);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .erupt-btn:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 28px rgba(255, 69, 0, 0.6);
+    }
+
+    .erupt-btn:active {
+      transform: scale(0.98);
+    }
+
+    .erupt-btn.pulsing {
+      animation: pulse 0.6s ease-out;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+      }
+      50% {
+        box-shadow: 0 4px 40px rgba(255, 69, 0, 0.9), 0 0 60px rgba(255, 107, 53, 0.4);
+      }
+      100% {
+        box-shadow: 0 4px 20px rgba(255, 69, 0, 0.4);
+      }
+    }
+
+    .info-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .info-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-text {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+    }
+
+    .stats {
+      display: flex;
+      gap: 16px;
+      margin-top: 12px;
+    }
+
+    .stat-item {
+      flex: 1;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FF6B35;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <div class="control-panel">
+    <div class="panel-title">熔岩流模拟器</div>
+    <div class="panel-subtitle">3D交互可视化 · 地质动力学演示</div>
+    
+    <button id="erupt-btn" class="erupt-btn">🌋 开始喷发</button>
+    
+    <div class="control-group" style="margin-top: 24px;">
+      <div class="control-label">
+        <span>熔岩黏度</span>
+        <span class="control-value" id="viscosity-value">1.5</span>
+      </div>
+      <input type="range" id="viscosity-slider" class="slider" 
+             min="0.1" max="5.0" step="0.1" value="1.5" />
+    </div>
+    
+    <div class="control-group">
+      <div class="control-label">
+        <span>冷却速度</span>
+        <span class="control-value" id="cooling-value">1.5</span>
+      </div>
+      <input type="range" id="cooling-slider" class="slider" 
+             min="0.5" max="5.0" step="0.1" value="1.5" />
+    </div>
+    
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-value" id="active-count">0</div>
+        <div class="stat-label">活跃粒子</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="solid-count">0</div>
+        <div class="stat-label">凝固熔岩</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="fps-count">60</div>
+        <div class="stat-label">帧率 FPS</div>
+      </div>
+    </div>
+    
+    <div class="info-section">
+      <div class="info-title">操作说明</div>
+      <div class="info-text">
+        鼠标拖拽旋转视角 · 滚轮缩放 · 调整参数后再次喷发应用新设置
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
