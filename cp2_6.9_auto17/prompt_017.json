@@ -1,0 +1,6 @@
+{
+    "任务类型": "0-1代码生成",
+    "业务领域": "全栈web应用",
+    "修改范围": "模块内多文件",
+    "提示词内容": "我想做一个在线的多人协作音乐播放器项目，想法是几个朋友可以在不同电脑上加入同一个房间，一起控制播放列表、点歌和调整音量，还能看到当前谁在听以及他们的实时反应。希望它能做到：第一，用户进入页面时输入昵称和房间号就能加入一个房间，同一个房间内的所有人共享一个播放队列，任何人对队列的增删或切歌操作都会实时同步给房间内其他成员（延迟不超过500ms）；第二，支持通过输入YouTube或B站视频链接添加歌曲，播放器自动提取视频ID并嵌入播放，同时显示歌曲封面缩略图、标题和时长，已经播放完的歌曲自动从队列移除；第三，每个用户都可以对当前播放的歌曲发送表情反应（比如点赞、爱心、惊讶），反应以小图标形式在播放器区域飘过，每个人发送的反应数量限制为每首歌最多一个，表情选择有6种。界面上希望整体采用深色主题（主背景#1a1a2e），播放器区域居中显示，左侧展示房间内在线用户列表（每个用户头像圆圈+昵称），右侧展示播放队列（列出每首歌的封面缩略图、标题和添加者昵称），队列有流畅的列表插入/移除动画（300ms），音量控制和播放/暂停按钮放在播放器下方，整个页面需适配手机端竖屏模式，顶部固定房间名称和在线人数。性能上需要播放器切歌或同步操作后，前端状态更新不超过500ms，表情飘过动画不低于30fps。\n\n实现用TypeScript、React和Vite，后端用Node.js + Express + Socket.IO处理实时通信。把代码拆成以下文件：\n - package.json（含依赖：react、react-dom、socket.io-client、express、socket.io、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react，启动脚本：npm run dev和node server.js）\n - vite.config.js（前端构建配置，代理/socket.io至本地3000端口，入口index.html）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口，含#root挂载点）\n - src/App.tsx（主组件，负责布局分区和状态管理，调用api和socket模块）\n - src/components/Room.tsx（房间交互组件，包含昵称输入、房间加入和在线用户列表展示）\n - src/components/Player.tsx（播放器控制组件，嵌入iframe播放器、表情反应按钮和队列管理界面）\n - src/socket.ts（Socket.IO连接封装，定义事件名和数据格式，导出连接和事件监听方法）\n\n跑npm install && npm run dev和node server.js就能直接用，前端访问http://localhost:5173，后端在3000端口。"
+}
