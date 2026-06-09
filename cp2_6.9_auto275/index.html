@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星潮涌动 - 3D星云粒子系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000005;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      aspect-ratio: 16 / 9;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #gui-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    #gui-container .dg.main {
+      width: 280px !important;
+    }
+
+    #gui-container .dg.main .close-button {
+      background-color: #1A1A2E !important;
+      width: 100% !important;
+    }
+
+    #gui-container .dg {
+      background-color: #1A1A2E !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+      opacity: 0.85;
+    }
+
+    #gui-container .dg .property-name {
+      color: #A0C4FF !important;
+      font-size: 12px;
+    }
+
+    #gui-container .dg .c {
+      background-color: #252542 !important;
+    }
+
+    #gui-container .dg .slider {
+      background-color: #3B1F6E !important;
+    }
+
+    #gui-container .dg .slider-fg {
+      background-color: #7EC8E3 !important;
+    }
+
+    #gui-container .dg .number {
+      color: #FFD700 !important;
+    }
+
+    #gui-container .dg .boolean {
+      background-color: #3B1F6E !important;
+    }
+
+    #gui-container .dg .function {
+      background-color: #7EC8E3 !important;
+      color: #000 !important;
+      border-radius: 6px;
+      padding: 4px 8px;
+    }
+
+    #gui-container .dg li:not(.folder) {
+      background-color: transparent !important;
+      border-bottom: 1px solid #252542 !important;
+    }
+
+    #gui-container .dg .folder {
+      background-color: transparent !important;
+    }
+
+    #title-overlay {
+      position: fixed;
+      top: 20px;
+      left: 30px;
+      color: rgba(126, 200, 227, 0.6);
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+      text-shadow: 0 0 20px rgba(126, 200, 227, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="title-overlay">星潮涌动</div>
+  <div id="canvas-container"></div>
+  <div id="gui-container"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
