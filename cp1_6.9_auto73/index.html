@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>动态光影沙漏</title>
+  <title>深海灯笼鱼群</title>
   <style>
     * {
       margin: 0;
@@ -14,24 +14,46 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #0a0a20;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #000000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     #app {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    canvas {
+      width: 100vw;
+      height: 100vh;
       display: block;
+    }
+    #info-panel {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 180px;
+      height: 120px;
+      background: rgba(0, 10, 30, 0.7);
+      border-radius: 5px;
+      padding: 14px;
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.8;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+    #info-panel .label {
+      opacity: 0.7;
+    }
+    #info-panel .value {
+      font-weight: 600;
+      color: #ffdd44;
     }
   </style>
 </head>
 <body>
-  <div id="app"></div>
+  <canvas id="app"></canvas>
+  <div id="info-panel">
+    <div><span class="label">坐标：</span><span class="value" id="coord">0.00, 0.00, 0.00</span></div>
+    <div><span class="label">AI鱼数：</span><span class="value" id="ai-count">0</span></div>
+    <div><span class="label">闪光次数：</span><span class="value" id="flash-count">0</span></div>
+  </div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
