@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>时间回溯 - 赛博朋克解谜</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1F2937;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      font-family: monospace;
+    }
+
+    #gameWrapper {
+      position: relative;
+      border: 10px solid #7F1D1D;
+      box-shadow: 
+        0 0 30px rgba(127, 29, 29, 0.6),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+      border-radius: 4px;
+    }
+
+    #gameCanvas {
+      display: block;
+      background: #2C2C2C;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameWrapper">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
