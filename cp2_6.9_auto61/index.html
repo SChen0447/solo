@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>复古日晷 · 时间投影</title>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: Georgia, 'Times New Roman', serif;
+      background-color: #FDF5E6;
+      background-image:
+        radial-gradient(ellipse at 20% 30%, rgba(205, 133, 63, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(139, 90, 43, 0.06) 0%, transparent 50%),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 43, 0.015) 2px,
+          rgba(139, 90, 43, 0.015) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 43, 0.015) 2px,
+          rgba(139, 90, 43, 0.015) 4px
+        );
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: crosshair;
+    }
+
+    #loading {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #FDF5E6;
+      z-index: 999;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #5D4037;
+      letter-spacing: 2px;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .app-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .sundial-container {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+    }
+
+    .sundial-container:hover {
+      transform: scale(1.02);
+      filter: drop-shadow(0 12px 40px rgba(93, 64, 55, 0.35));
+    }
+
+    .sundial-outer-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #D49B5A 0%, #CD853F 30%, #8B5A2B 70%, #6B4423 100%);
+      box-shadow:
+        0 0 0 3px #8B5A2B,
+        0 0 0 6px #CD853F,
+        inset 0 0 30px rgba(0, 0, 0, 0.3),
+        0 8px 32px rgba(93, 64, 55, 0.4);
+    }
+
+    .sundial-face {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      bottom: 16px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 50% 50%, #FAF0DC 0%, #F5E6C8 60%, #E8D4A8 100%);
+      box-shadow:
+        inset 0 0 20px rgba(139, 90, 43, 0.25),
+        inset 0 0 60px rgba(139, 90, 43, 0.1);
+      overflow: hidden;
+    }
+
+    .sundial-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .roman-numerals {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .roman-numeral {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 26px;
+      font-weight: bold;
+      color: #5D4037;
+      transform-origin: center center;
+      text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+    }
+
+    .shadow-mask {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: linear-gradient(
+        to right,
+        rgba(93, 64, 55, 0) 0%,
+        rgba(93, 64, 55, 0) 100%
+      );
+      -webkit-mask-image: radial-gradient(
+        circle at 50% 50%,
+        transparent 0%,
+        transparent 45%,
+        black 45%,
+        black 100%
+      );
+      mask-image: radial-gradient(
+        circle at 50% 50%,
+        transparent 0%,
+        transparent 45%,
+        black 45%,
+        black 100%
+      );
+    }
+
+    .center-gem {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FFE4B5 0%, #CD853F 40%, #8B5A2B 100%);
+      box-shadow:
+        0 0 0 3px #5D4037,
+        0 0 10px rgba(205, 133, 63, 0.6),
+        inset 0 0 6px rgba(255, 255, 255, 0.4);
+      z-index: 10;
+    }
+
+    .time-display {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 42px;
+      font-weight: bold;
+      color: #5D4037;
+      letter-spacing: 4px;
+      text-shadow:
+        0 2px 4px rgba(93, 64, 55, 0.15),
+        0 0 20px rgba(205, 133, 63, 0.15);
+      transition: transform 0.2s ease-in-out, text-shadow 0.2s ease-in-out;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .time-display:hover {
+      transform: scale(1.02);
+      text-shadow:
+        0 4px 8px rgba(93, 64, 55, 0.25),
+        0 0 30px rgba(205, 133, 63, 0.3);
+    }
+
+    .hint-text {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 14px;
+      color: #8B7355;
+      letter-spacing: 1px;
+      font-style: italic;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      .sundial-container {
+        width: 250px;
+        height: 250px;
+      }
+
+      .sundial-outer-ring {
+        box-shadow:
+          0 0 0 2px #8B5A2B,
+          0 0 0 4px #CD853F,
+          inset 0 0 20px rgba(0, 0, 0, 0.3),
+          0 6px 24px rgba(93, 64, 55, 0.4);
+      }
+
+      .sundial-face {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        bottom: 10px;
+      }
+
+      .roman-numeral {
+        font-size: 16px;
+      }
+
+      .time-display {
+        font-size: 28px;
+        letter-spacing: 3px;
+      }
+
+      .hint-text {
+        font-size: 12px;
+      }
+
+      .center-gem {
+        width: 14px;
+        height: 14px;
+        box-shadow:
+          0 0 0 2px #5D4037,
+          0 0 8px rgba(205, 133, 63, 0.6),
+          inset 0 0 4px rgba(255, 255, 255, 0.4);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">⏳ 加载日晷中...</div>
+
+  <div class="app-wrapper">
+    <div class="sundial-container" id="sundialContainer">
+      <div class="sundial-outer-ring"></div>
+      <div class="sundial-face" id="sundialFace">
+        <canvas class="sundial-canvas" id="particleCanvas"></canvas>
+        <div class="roman-numerals" id="romanNumerals"></div>
+        <div class="shadow-mask" id="shadowMask"></div>
+      </div>
+      <div class="center-gem"></div>
+    </div>
+
+    <div class="time-display" id="timeDisplay">00:00:00</div>
+    <div class="hint-text">移动鼠标以调整太阳位置 · Watch the shadow move</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
