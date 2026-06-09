@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Origami 3D Viewer</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="scene-container">
+    <div id="origami-stage"></div>
+  </div>
+
+  <div id="progress-display">
+    <span id="progress-value">0%</span>
+  </div>
+
+  <button id="toggle-button" title="折叠/展开">
+    <span id="toggle-text">折叠</span>
+  </button>
+
+  <div id="hint-bar">
+    <span>点击任意面切换折叠 | 拖拽旋转视图</span>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
