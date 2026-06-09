@@ -1,0 +1,20 @@
+{
+  "name": "stardust-divination-sandbox",
+  "version": "1.0.0",
+  "description": "基于浏览器的动态星尘占卜与命运交织沙盘游戏",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.5.0",
+    "vite": "5.4.0",
+    "@types/three": "^0.160.0"
+  }
+}

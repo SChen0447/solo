@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星尘占卜沙盘</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #1a0a2a 0%, #0a0a1a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e0d0ff;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+    #canvas-container {
+      position: relative;
+      background: radial-gradient(ellipse at center, #1a0a2a 0%, #0a0a1a 100%);
+    }
+    #energy-bar-container {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(74, 42, 255, 0.15);
+      box-shadow: 0 0 4px rgba(74, 42, 255, 0.3);
+      overflow: hidden;
+      z-index: 10;
+    }
+    #energy-bar {
+      height: 100%;
+      width: 50%;
+      background: linear-gradient(90deg, #4a2aff, #ff4aff);
+      border-radius: 3px;
+      box-shadow: 0 0 4px rgba(255, 74, 255, 0.6);
+      transition: width 0.3s ease;
+    }
+    #fortune-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 320px;
+      padding: 16px;
+      background: rgba(26, 26, 46, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      color: #e0d0ff;
+      font-size: 12px;
+      line-height: 1.7;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      z-index: 20;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+    #fortune-panel.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    #fortune-panel h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #ff4aff;
+      text-shadow: 0 0 6px rgba(255, 74, 255, 0.5);
+    }
+    #fortune-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    #fortune-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 74, 255, 0.4);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <div id="energy-bar-container">
+        <div id="energy-bar"></div>
+      </div>
+      <div id="fortune-panel">
+        <h3 id="fortune-title">命运启示</h3>
+        <p id="fortune-text"></p>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
