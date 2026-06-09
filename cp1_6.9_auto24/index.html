@@ -3,290 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>宇宙星云生成器</title>
+  <title>声波水晶 · Sonic Crystal</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: radial-gradient(ellipse at center, #0a0a2e 0%, #000000 100%);
-      color: #8AB4F8;
+      background: linear-gradient(180deg, #1a0030 0%, #000010 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #ffffff;
     }
-
-    #canvas-container {
+    #game-canvas {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 0;
-    }
-
-    #canvas-container canvas {
       display: block;
+    }
+    #hud {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+      user-select: none;
+    }
+    .energy-ring-wrap {
+      position: relative;
+      width: 60px;
+      height: 60px;
+    }
+    .energy-ring-wrap svg {
       width: 100%;
       height: 100%;
+      transform: rotate(-90deg);
     }
-
-    .control-panel {
-      position: fixed;
-      left: 24px;
-      bottom: 24px;
-      width: 320px;
-      padding: 20px;
-      background: rgba(20, 20, 60, 0.45);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(138, 180, 248, 0.15);
-      border-radius: 16px;
-      z-index: 100;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-                  0 0 40px rgba(80, 100, 200, 0.08);
-      animation: breathe 2s ease-in-out infinite;
+    .energy-ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.1);
+      stroke-width: 4;
     }
-
-    @keyframes breathe {
-      0%, 100% {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-                    0 0 40px rgba(80, 100, 200, 0.08);
-      }
-      50% {
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5),
-                    0 0 60px rgba(100, 130, 255, 0.18);
-      }
+    .energy-ring-fg {
+      fill: none;
+      stroke: url(#energyGradient);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 169.65;
+      stroke-dashoffset: 169.65;
+      transition: stroke-dashoffset 0.1s linear;
     }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .panel-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #8AB4F8;
-      letter-spacing: 0.5px;
-    }
-
-    .reset-btn {
-      padding: 6px 16px;
-      background: linear-gradient(135deg, rgba(100, 120, 220, 0.3), rgba(60, 80, 180, 0.3));
-      border: 1px solid rgba(138, 180, 248, 0.25);
-      border-radius: 8px;
-      color: #8AB4F8;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .reset-btn:hover {
-      background: linear-gradient(135deg, rgba(100, 120, 220, 0.5), rgba(60, 80, 180, 0.5));
-      border-color: rgba(138, 180, 248, 0.5);
-      transform: translateY(-1px);
-    }
-
-    .reset-btn:active {
-      transform: translateY(0);
-    }
-
-    .control-group {
-      margin-bottom: 16px;
-    }
-
-    .control-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .control-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+    .energy-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 13px;
-      color: #8AB4F8;
+      font-weight: 600;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(255, 0, 255, 0.8);
     }
-
-    .control-value {
-      font-size: 12px;
-      color: #a0c0ff;
-      background: rgba(138, 180, 248, 0.1);
-      padding: 2px 8px;
-      border-radius: 6px;
-      min-width: 36px;
-      text-align: center;
+    .crystal-count {
+      font-size: 16px;
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(142, 45, 226, 0.8);
+      letter-spacing: 1px;
     }
-
-    .slider-container {
-      position: relative;
-      width: 100%;
-      height: 8px;
-    }
-
-    input[type="range"] {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 8px;
-      background: linear-gradient(90deg, rgba(60, 80, 180, 0.4), rgba(100, 120, 220, 0.4));
-      border-radius: 4px;
-      outline: none;
-      cursor: pointer;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      background: linear-gradient(145deg, #8AB4F8, #6080d0);
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 2px 8px rgba(100, 130, 255, 0.4),
-                  inset 0 1px 2px rgba(255, 255, 255, 0.3);
-      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-                  box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(100, 130, 255, 0.6),
-                  inset 0 1px 2px rgba(255, 255, 255, 0.4);
-    }
-
-    input[type="range"]::-webkit-slider-thumb:active {
-      transform: scale(1.15);
-    }
-
-    input[type="range"]::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: linear-gradient(145deg, #8AB4F8, #6080d0);
-      border-radius: 50%;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 8px rgba(100, 130, 255, 0.4);
-      transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    input[type="range"]::-moz-range-thumb:hover {
-      transform: scale(1.1);
-    }
-
-    input[type="range"].bounce {
-      animation: sliderBounce 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes sliderBounce {
-      0% { transform: scaleX(1); }
-      50% { transform: scaleX(1.02); }
-      100% { transform: scaleX(1); }
-    }
-
-    .panel-fade-in {
-      animation: fadeIn 3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hint {
+    #hint {
       position: fixed;
-      top: 24px;
+      bottom: 30px;
       left: 50%;
       transform: translateX(-50%);
-      padding: 8px 20px;
-      background: rgba(20, 20, 60, 0.4);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(138, 180, 248, 0.12);
-      border-radius: 20px;
       font-size: 12px;
-      color: rgba(138, 180, 248, 0.7);
-      z-index: 100;
-      letter-spacing: 0.5px;
-    }
-
-    @media (max-width: 1280px) {
-      .control-panel {
-        width: 280px;
-        padding: 16px;
-      }
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1.5pxpx;
+      z-index: 10;
     }
   </style>
 </head>
 <body>
-  <div id="canvas-container"></div>
+  <canvas id="game-canvas"></canvas>
 
-  <div class="hint">拖拽旋转视角 · 滚轮缩放 · 空格切换自动旋转</div>
-
-  <div class="control-panel panel-fade-in" id="control-panel">
-    <div class="panel-header">
-      <div class="panel-title">星云控制台</div>
-      <button class="reset-btn" id="reset-btn">重置</button>
+  <div id="hud">
+    <div class="energy-ring-wrap">
+      <svg viewBox="0 0 60 60">
+        <defs>
+          <linearGradient id="energyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff00ff" />
+            <stop offset="100%" stop-color="#00ffff" />
+          </linearGradient>
+        </defs>
+        <circle class="energy-ring-bg" cx="30" cy="30" r="27" />
+        <circle id="energyRing" class="energy-ring-fg" cx="30" cy="30" r="27" />
+      </svg>
+      <span id="energyText" class="energy-text">0</span>
     </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <span>密度</span>
-        <span class="control-value" id="density-value">50</span>
-      </div>
-      <div class="slider-container">
-        <input type="range" id="density" min="0" max="100" value="50" />
-      </div>
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <span>色彩复杂度</span>
-        <span class="control-value" id="complexity-value">50</span>
-      </div>
-      <div class="slider-container">
-        <input type="range" id="complexity" min="0" max="100" value="50" />
-      </div>
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <span>扩散速度</span>
-        <span class="control-value" id="spread-value">50</span>
-      </div>
-      <div class="slider-container">
-        <input type="range" id="spread" min="0" max="100" value="50" />
-      </div>
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <span>旋转扭矩</span>
-        <span class="control-value" id="rotation-value">50</span>
-      </div>
-      <div class="slider-container">
-        <input type="range" id="rotation" min="0" max="100" value="50" />
-      </div>
-    </div>
-
-    <div class="control-group">
-      <div class="control-label">
-        <span>亮度</span>
-        <span class="control-value" id="brightness-value">50</span>
-      </div>
-      <div class="slider-container">
-        <input type="range" id="brightness" min="0" max="100" value="50" />
-      </div>
-    </div>
+    <div id="crystalCount" class="crystal-count">水晶 0/10</div>
   </div>
+
+  <div id="hint">鼠标点击 或 按空格键 发射声波</div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>

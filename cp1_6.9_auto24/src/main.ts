@@ -1,235 +1,139 @@
 import * as THREE from 'three';
-import { NebulaSystem, type NebulaParams } from './nebulaSystem';
-import { UIControls } from './controls';
+import { GameWorld } from './GameWorld';
 
-class NebulaApp {
-  private container: HTMLElement;
-  private scene: THREE.Scene;
-  private camera: THREE.PerspectiveCamera;
-  private renderer: THREE.WebGLRenderer;
-  private nebulaSystem: NebulaSystem;
-  private controls: UIControls;
+class App {
+  private scene!: THREE.Scene;
+  private camera!: THREE.PerspectiveCamera;
+  private renderer!: THREE.WebGLRenderer;
+  private gameWorld!: GameWorld;
+  private raycaster!: THREE.Raycaster;
+  private mouse!: THREE.Vector2;
+  private clock!: THREE.Clock;
+  private canvas!: HTMLCanvasElement;
 
-  private cameraDistance: number = 60;
-  private cameraTheta: number = 0;
-  private cameraPhi: number = Math.PI / 2;
-
-  private targetTheta: number = 0;
-  private targetPhi: number = Math.PI / 2;
-  private targetDistance: number = 60;
-
-  private isDragging: boolean = false;
-  private lastMouseX: number = 0;
-  private lastMouseY: number = 0;
-
-  private autoRotate: boolean = false;
-  private userInteracting: boolean = false;
-  private interactionTimeout: number | null = null;
-
-  private clock: THREE.Clock;
-  private animationFrameId: number = 0;
-
-  private readonly MIN_DISTANCE = 10;
-  private readonly MAX_DISTANCE = 200;
-  private readonly MIN_PHI = (10 * Math.PI) / 180;
-  private readonly MAX_PHI = (170 * Math.PI) / 180;
-  private readonly AUTO_ROTATE_SPEED = (0.5 * Math.PI) / 180;
+  private hudEnergyText!: HTMLElement;
+  private hudEnergyRing!: SVGCircleElement;
+  private hudCrystalCount!: HTMLElement;
 
   constructor() {
-    this.container = document.getElementById('canvas-container')!;
+    this.init();
+    this.animate();
+  }
+
+  private init(): void {
+    this.canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
+
     this.scene = new THREE.Scene();
-    this.clock = new THREE.Clock();
 
     this.camera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
       0.1,
-      1000
+      200
     );
-    this.updateCameraPosition();
+    this.camera.position.set(0, 2, 15);
+    this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
       antialias: true,
       alpha: true
     });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setClearColor(0x000000, 0);
-    this.container.appendChild(this.renderer.domElement);
 
-    this.nebulaSystem = new NebulaSystem(this.scene);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+    this.scene.add(ambientLight);
 
-    this.controls = new UIControls({
-      onParamChange: (params: Partial<NebulaParams>) => {
-        this.nebulaSystem.setParams(params);
-      },
-      onReset: () => {
-        this.nebulaSystem.reset();
-      }
-    });
+    const pointLight = new THREE.PointLight(0x8e2de2, 1, 50);
+    pointLight.position.set(5, 5, 5);
+    this.scene.add(pointLight);
 
-    this.bindEvents();
-    this.animate();
-  }
+    const pointLight2 = new THREE.PointLight(0x00ffff, 0.6, 50);
+    pointLight2.position.set(-5, -3, -5);
+    this.scene.add(pointLight2);
 
-  private updateCameraPosition(): void {
-    this.camera.position.x =
-      this.cameraDistance * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta);
-    this.camera.position.y = this.cameraDistance * Math.cos(this.cameraPhi);
-    this.camera.position.z =
-      this.cameraDistance * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta);
-    this.camera.lookAt(0, 0, 0);
-  }
+    this.gameWorld = new GameWorld(this.scene);
 
-  private bindEvents(): void {
-    const canvas = this.renderer.domElement;
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.clock = new THREE.Clock();
 
-    canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-    window.addEventListener('mousemove', this.onMouseMove.bind(this));
-    window.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.hudEnergyText = document.getElementById('energyText') as HTMLElement;
+    this.hudEnergyRing = document.getElementById('energyRing') as SVGCircleElement;
+    this.hudCrystalCount = document.getElementById('crystalCount') as HTMLElement;
 
-    canvas.addEventListener('wheel', this.onWheel.bind(this), { passive: false });
-
+    window.addEventListener('resize', this.onWindowResize.bind(this));
+    window.addEventListener('click', this.onClick.bind(this));
     window.addEventListener('keydown', this.onKeyDown.bind(this));
-    window.addEventListener('resize', this.onResize.bind(this));
-
-    canvas.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
-    canvas.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
-    canvas.addEventListener('touchend', this.onTouchEnd.bind(this));
   }
 
-  private onMouseDown(e: MouseEvent): void {
-    this.isDragging = true;
-    this.lastMouseX = e.clientX;
-    this.lastMouseY = e.clientY;
-    this.markUserInteraction();
-  }
-
-  private onMouseMove(e: MouseEvent): void {
-    if (!this.isDragging) return;
-
-    const deltaX = e.clientX - this.lastMouseX;
-    const deltaY = e.clientY - this.lastMouseY;
-
-    this.targetTheta -= deltaX * 0.005;
-    this.targetPhi -= deltaY * 0.005;
-    this.targetPhi = Math.max(this.MIN_PHI, Math.min(this.MAX_PHI, this.targetPhi));
-
-    this.lastMouseX = e.clientX;
-    this.lastMouseY = e.clientY;
-  }
-
-  private onMouseUp(): void {
-    this.isDragging = false;
-  }
-
-  private onTouchStart(e: TouchEvent): void {
-    if (e.touches.length === 1) {
-      e.preventDefault();
-      this.isDragging = true;
-      this.lastMouseX = e.touches[0].clientX;
-      this.lastMouseY = e.touches[0].clientY;
-      this.markUserInteraction();
-    }
-  }
-
-  private onTouchMove(e: TouchEvent): void {
-    if (!this.isDragging || e.touches.length !== 1) return;
-    e.preventDefault();
-
-    const deltaX = e.touches[0].clientX - this.lastMouseX;
-    const deltaY = e.touches[0].clientY - this.lastMouseY;
-
-    this.targetTheta -= deltaX * 0.005;
-    this.targetPhi -= deltaY * 0.005;
-    this.targetPhi = Math.max(this.MIN_PHI, Math.min(this.MAX_PHI, this.targetPhi));
-
-    this.lastMouseX = e.touches[0].clientX;
-    this.lastMouseY = e.touches[0].clientY;
-  }
-
-  private onTouchEnd(): void {
-    this.isDragging = false;
-  }
-
-  private onWheel(e: WheelEvent): void {
-    e.preventDefault();
-    this.markUserInteraction();
-
-    const zoomFactor = e.deltaY > 0 ? 1.1 : 0.9;
-    this.targetDistance *= zoomFactor;
-    this.targetDistance = Math.max(this.MIN_DISTANCE, Math.min(this.MAX_DISTANCE, this.targetDistance));
-  }
-
-  private onKeyDown(e: KeyboardEvent): void {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      this.autoRotate = !this.autoRotate;
-    }
-  }
-
-  private onResize(): void {
+  private onWindowResize(): void {
     this.camera.aspect = window.innerWidth / window.innerHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  private markUserInteraction(): void {
-    this.userInteracting = true;
-    if (this.interactionTimeout !== null) {
-      window.clearTimeout(this.interactionTimeout);
+  private getWorldPointFromEvent(clientX: number, clientY: number): THREE.Vector3 {
+    this.mouse.x = (clientX / window.innerWidth) * 2 - 1;
+    this.mouse.y = -(clientY / window.innerHeight) * 2 + 1;
+
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const planeNormal = new THREE.Vector3(0, 0, 1);
+    const planePoint = new THREE.Vector3(0, 0, 0);
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(planeNormal, planePoint);
+
+    const intersectPoint = new THREE.Vector3();
+    this.raycaster.ray.intersectPlane(plane, intersectPoint);
+
+    return intersectPoint;
+  }
+
+  private emitSoundWaveAt(x: number, y: number): void {
+    const worldPoint = this.getWorldPointFromEvent(x, y);
+    this.gameWorld.emitSoundWave(worldPoint);
+  }
+
+  private onClick(event: MouseEvent): void {
+    this.emitSoundWaveAt(event.clientX, event.clientY);
+  }
+
+  private onKeyDown(event: KeyboardEvent): void {
+    if (event.code === 'Space') {
+      event.preventDefault();
+      this.emitSoundWaveAt(window.innerWidth / 2, window.innerHeight / 2);
     }
-    this.interactionTimeout = window.setTimeout(() => {
-      this.userInteracting = false;
-    }, 1500);
+  }
+
+  private updateHUD(): void {
+    const avgEnergy = this.gameWorld.crystals.length > 0
+      ? Math.round(this.gameWorld.totalEnergy / this.gameWorld.crystals.length)
+      : 0;
+    this.hudEnergyText.textContent = String(avgEnergy);
+    const circumference = 169.65;
+    const offset = circumference * (1 - avgEnergy / 100);
+    this.hudEnergyRing.style.strokeDashoffset = String(offset);
+
+    const progress = this.gameWorld.collectedCount % 10;
+    this.hudCrystalCount.textContent = `水晶 ${progress}/10`;
   }
 
   private animate(): void {
-    this.animationFrameId = requestAnimationFrame(() => this.animate());
+    requestAnimationFrame(this.animate.bind(this));
+    const deltaTime = Math.min(this.clock.getDelta(), 0.1);
 
-    const delta = this.clock.getDelta();
-    const lerpFactor = 1 - Math.pow(0.001, delta);
+    this.gameWorld.update(deltaTime);
 
-    if (this.autoRotate && !this.userInteracting) {
-      this.targetTheta += this.AUTO_ROTATE_SPEED * delta * 60;
-    }
+    const t = this.clock.getElapsedTime();
+    this.camera.position.x = Math.sin(t * 0.1) * 0.5;
+    this.camera.position.y = 2 + Math.cos(t * 0.15) * 0.3;
+    this.camera.lookAt(0, 0, 0);
 
-    this.cameraTheta += (this.targetTheta - this.cameraTheta) * lerpFactor;
-    this.cameraPhi += (this.targetPhi - this.cameraPhi) * lerpFactor;
-    this.cameraDistance += (this.targetDistance - this.cameraDistance) * lerpFactor;
-
-    this.updateCameraPosition();
-
-    this.nebulaSystem.update(delta);
-
+    this.updateHUD();
     this.renderer.render(this.scene, this.camera);
-  }
-
-  public dispose(): void {
-    cancelAnimationFrame(this.animationFrameId);
-    if (this.interactionTimeout !== null) {
-      window.clearTimeout(this.interactionTimeout);
-    }
-
-    this.controls.dispose();
-    this.nebulaSystem.dispose();
-
-    this.renderer.dispose();
-    if (this.renderer.domElement.parentNode) {
-      this.renderer.domElement.parentNode.removeChild(this.renderer.domElement);
-    }
   }
 }
 
-let app: NebulaApp | null = null;
-
-document.addEventListener('DOMContentLoaded', () => {
-  app = new NebulaApp();
-});
-
-window.addEventListener('beforeunload', () => {
-  if (app) {
-    app.dispose();
-    app = null;
-  }
-});
+new App();
