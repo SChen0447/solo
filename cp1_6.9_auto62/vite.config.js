@@ -2,13 +2,19 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   root: '.',
+  base: './',
+  publicDir: 'public',
   server: {
-    port: 5180,
-    host: true
+    host: true,
+    port: 5173,
+    open: false
   },
   build: {
     outDir: 'dist',
-    minify: 'esbuild',
+    sourcemap: true,
     target: 'es2020'
+  },
+  resolve: {
+    extensions: ['.ts', '.js', '.json']
   }
 });
