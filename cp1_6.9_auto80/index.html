@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蒸汽朋克挖掘机 - Steampunk Excavator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #3E2723;
+      background-image: 
+        radial-gradient(circle at 25% 25%, #5D4037 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, #5D4037 1px, transparent 1px);
+      background-size: 20px 20px;
+      font-family: 'Georgia', serif;
+      color: #B87333;
+      overflow: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #B87333;
+      text-shadow: 2px 2px 4px #000000;
+      letter-spacing: 4px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #8D6E63;
+      margin-bottom: 15px;
+      letter-spacing: 2px;
+    }
+
+    #game-container {
+      border: 4px solid #B87333;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 0 2px #5D4037,
+        0 0 20px rgba(0, 0, 0, 0.5);
+      background-color: #3E2723;
+      position: relative;
+    }
+
+    .controls-hint {
+      margin-top: 15px;
+      padding: 12px 24px;
+      background-color: rgba(62, 39, 35, 0.8);
+      border: 2px solid #5D4037;
+      border-radius: 6px;
+      color: #D7CCC8;
+      font-size: 14px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .controls-hint strong {
+      color: #FFD700;
+    }
+
+    .key {
+      display: inline-block;
+      padding: 2px 8px;
+      background-color: #5D4037;
+      border: 1px solid #8D6E63;
+      border-radius: 4px;
+      color: #FFD700;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      margin: 0 2px;
+    }
+
+    @media (max-width: 800px) {
+      body {
+        transform: scale(0.9);
+      }
+      .title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="title">⚙ 蒸汽朋克挖掘机 ⚙</div>
+  <div class="subtitle">STEAMPUNK EXCAVATOR</div>
+  <div id="game-container"></div>
+  <div class="controls-hint">
+    <p><strong>操作指南</strong></p>
+    <p>
+      <span class="key">A</span> / <span class="key">D</span> 控制悬臂左右旋转 &nbsp;|&nbsp;
+      <span class="key">W</span> / <span class="key">S</span> 控制挖斗开合
+    </p>
+    <p style="margin-top: 8px; color: #8D6E63;">挖掘矿石获取分数，小心坍塌的岩石和硬质岩层！</p>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
