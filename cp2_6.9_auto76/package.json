@@ -1,0 +1,32 @@
+{
+  "name": "regex-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive regex visualizer with SVG and React",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "vite",
+    "dev:server": "ts-node --project server/tsconfig.json server/index.ts",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@svgdotjs/svg.js": "^3.2.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "concurrently": "^8.2.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0",
+    "vite": "^4.3.0"
+  }
+}
