@@ -1,12 +1,15 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  plugins: [],
   server: {
     port: 5173,
-    host: true,
+    open: true
   },
   build: {
-    target: 'es2020',
-    sourcemap: true,
+    outDir: 'dist',
+    sourcemap: true
   },
+  base: './',
+  assetsInclude: ['**/*.glb', '**/*.gltf', '**/*.png', '**/*.jpg']
 });
