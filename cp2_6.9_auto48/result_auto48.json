@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:35:19.991Z",
+  "task_name": "auto48",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位独立音乐制作人希望拥有一个在线多轨音频混音台，能同时导入多条音轨，调整音量、声相和滤波器，并实时混合播放或导出混音成果。\n\n构建一个在线多轨音频混音器应用，使用TypeScript、React和Vite实现前端，后端用Express处理文件上传和混音导出。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react、react-dom、wavesurfer.js、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、express、multer、cors、uuid、lamejs、fluent-ffmpeg，启动脚本：npm run dev和node server.js）\n - vite.config.js（基础构建配置，代理/api到后端）\n - tsconfig.json（严格模式）\n - index.html（入口页面）\n - src/main.tsx（React根组件，初始化Provider）\n - src/AudioMixer.tsx（主混音面板组件，内嵌8条音轨轨道，每个轨道包含波形可视化、音量滑块（0-100）、声相旋钮（L/R）和滤波器频率滑块（20-20000Hz），调用wavesurfer.js解析音频波形并实时播放；整体状态管理通过React Context传递给子组件）\n - src/TrackControls.tsx（每条音轨的控制组件，接收来自AudioMixer的轨道数据，在滑块变化时触发dispatch更新全局状态，同时通过Web Audio API调整音量节点和滤波节点；调用后端接口上传/删除音频文件）\n - server.js（Express后端，接收前端上传的.wav/.mp3文件，存储为临时文件，提供文件列表和删除接口；导出混音时调用fluent-ffmpeg合并所有轨道并返回混音文件）\n\n功能需求：\n1) 音轨管理：默认提供8条空轨，用户可以点击“添加音轨”按钮新增（最多16条），每条轨道有独立的名称编辑、静音/独奏按钮、删除按钮（删除时释放对应的音频上下文节点）。\n2) 音频导入：点击每条轨道上的“选择文件”按钮，从本地选取.wav或.mp3音频文件，文件上传到后端，返回URL后由前端加载并显示波形，播放时自动对齐到工程开始时间。\n3) 混音控制：每条轨道提供实时响应的音量滑块（0-100，步长1）、声相旋钮（L100至R100，步长5）和一个低通滤波器频率滑块（20-20000Hz，对数刻度），所有调整通过Web Audio API的GainNode、StereoPannerNode和BiquadFilterNode实时生效，延迟不超过50ms。\n4) 播放与导出：主控条包含“播放/暂停”、“停止”按钮和全局音量滑块；点击“导出混音”按钮，后端使用fluent-ffmpeg将所有轨道按当前混音参数混合成单个.wav文件并返回下载。\n5) 视觉反馈：每条轨道在播放时波形随音频实时更新（波浪染色使用从#6366F1到#A78BFA的渐变）；滑块和旋钮操作时有圆形刻度变化的微动效（ease-out 200ms）；静音按钮按下时轨道变灰，独奏按钮按下时其他轨道自动静音但显示虚线边框。\n\n界面要求：整体采用深色主题（背景#0F0F1A，面板#1E1E2E），每条轨道以浅色分隔线（#2A2A3E）隔开，宽度占满容器，左侧固定显示轨道名称和波形（高度100px），右侧排列控制组件；控制区背景为#28284A，按钮统一使用圆角6px，颜色跟随状态（默认#6366F1，悬停#818CF8，按下#4F46E5）；播放进度条（位于波形上方）使用线性渐变填充（#22D3EE至#6366F1），走针为白色细线。响应式适配：桌面端（断点1024px以上）轨道高度120px，控制区水平排列；平板端（768-1023px）轨道高度变为80px，控制区换行为两行；手机端（<768px）轨道缩为60px高度且隐藏波形，仅保留精简控制条。\n\n性能约束：所有混音控制的响应延迟低于50ms（保证实时反馈）；并发播放4条轨道（44100Hz 16bit PCM）时帧率稳定在30fps以上，波形渲染使用requestAnimationFrame节流。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:49a18095a905891f31e42ffe1cd913d4_6a26fc22145c70b575a3c9bc.6a26fd48145c70b575a3caae.6a26fd481676d553c0c87220:Trae CN.T(2026/6/9 01:35:04)",
+    "user_id": "3986207660317399",
+    "trace_id": "49a18095a905891f31e42ffe1cd913d4",
+    "session_id": "6a26fc22145c70b575a3c9bc",
+    "task_id": "6a26fd48145c70b575a3caae",
+    "message_id": "6a26fd481676d553c0c87220",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:35:04",
+    "format": "full"
+  },
+  "trace": "null"
+}
