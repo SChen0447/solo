@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Galaxy Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #controls-panel {
+      position: fixed;
+      right: 2%;
+      bottom: 2%;
+      width: 300px;
+      max-width: 96%;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 16px;
+      backdrop-filter: blur(6px);
+    }
+
+    #controls-panel h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    #button-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .glass-btn {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s ease;
+    }
+
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .glass-btn:active {
+      transform: scale(0.95);
+    }
+
+    #fps-counter {
+      position: fixed;
+      top: 2%;
+      right: 2%;
+      z-index: 10;
+      font-size: 14px;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 10px;
+      border-radius: 8px;
+    }
+
+    .dg.ac {
+      z-index: 11 !important;
+    }
+
+    .dg.main .close-button {
+      border-radius: 8px 8px 0 0 !important;
+    }
+
+    .dg .c .slider {
+      border-radius: 8px !important;
+    }
+
+    .dg .c .slider-fg {
+      border-radius: 8px !important;
+    }
+
+    .dg .c input[type=text] {
+      border-radius: 4px !important;
+    }
+
+    .dg .slider {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .dg .slider-fg {
+      background: rgba(255, 255, 255, 0.8) !important;
+    }
+
+    .dg .slider-handle {
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50% !important;
+      background: #ffffff !important;
+      margin-top: -2px !important;
+    }
+
+    .dg .property-name {
+      color: #ffffff !important;
+    }
+
+    .dg .c .selector {
+      color: #ffffff !important;
+    }
+
+    .dg.ac {
+      color: #ffffff !important;
+    }
+
+    .dg.main {
+      border-radius: 8px !important;
+      background: transparent !important;
+    }
+
+    .dg li:not(.folder) {
+      background: transparent !important;
+    }
+
+    .dg .title {
+      background: rgba(255, 255, 255, 0.1) !important;
+      border-radius: 8px !important;
+      margin-bottom: 2px !important;
+    }
+
+    .dg .folder {
+      background: transparent !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="fps-counter">FPS: --</div>
+  <div id="controls-panel">
+    <h3>星系演化模拟器</h3>
+    <div id="gui-container"></div>
+    <div id="button-group">
+      <button id="toggle-btn" class="glass-btn">演化</button>
+      <button id="reset-btn" class="glass-btn">重置</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
