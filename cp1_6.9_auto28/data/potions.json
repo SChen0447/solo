@@ -1,0 +1,110 @@
+{
+  "potions": [
+    {
+      "id": "sample-potion-1",
+      "name": "隐身药剂",
+      "effect": "隐身",
+      "color": "#88ccff",
+      "rarity": "rare",
+      "volume": 100,
+      "recipeId": "invisibility",
+      "ownerId": "alchemist-2",
+      "ownerName": "神秘炼金师",
+      "createdAt": 1717900000000,
+      "listed": true,
+      "price": 200,
+      "bidHistory": [
+        {
+          "id": "bid-1",
+          "bidderId": "traveler-1",
+          "bidderName": "流浪商人",
+          "price": 180,
+          "timestamp": 1717900100000
+        }
+      ]
+    },
+    {
+      "id": "sample-potion-2",
+      "name": "治愈药剂",
+      "effect": "治愈",
+      "color": "#ff6688",
+      "rarity": "uncommon",
+      "volume": 80,
+      "recipeId": "healing",
+      "ownerId": "alchemist-3",
+      "ownerName": "草药大师",
+      "createdAt": 1717900200000,
+      "listed": true,
+      "price": 100,
+      "bidHistory": []
+    },
+    {
+      "id": "sample-potion-3",
+      "name": "飞行药剂",
+      "effect": "飞行",
+      "color": "#ffaa44",
+      "rarity": "epic",
+      "volume": 100,
+      "recipeId": "flight",
+      "ownerId": "alchemist-4",
+      "ownerName": "天空探索者",
+      "createdAt": 1717900300000,
+      "listed": true,
+      "price": 400,
+      "bidHistory": [
+        {
+          "id": "bid-2",
+          "bidderId": "adventurer-1",
+          "bidderName": "冒险家",
+          "price": 350,
+          "timestamp": 1717900400000
+        },
+        {
+          "id": "bid-3",
+          "bidderId": "knight-1",
+          "bidderName": "骑士团长",
+          "price": 380,
+          "timestamp": 1717900500000
+        }
+      ]
+    },
+    {
+      "id": "sample-potion-4",
+      "name": "力量药剂",
+      "effect": "力量",
+      "color": "#cc4444",
+      "rarity": "rare",
+      "volume": 100,
+      "recipeId": "strength",
+      "ownerId": "alchemist-5",
+      "ownerName": "战士之友",
+      "createdAt": 1717900600000,
+      "listed": true,
+      "price": 220,
+      "bidHistory": []
+    },
+    {
+      "id": "sample-potion-5",
+      "name": "智慧药剂",
+      "effect": "智慧",
+      "color": "#aa66ff",
+      "rarity": "legendary",
+      "volume": 60,
+      "recipeId": "wisdom",
+      "ownerId": "alchemist-6",
+      "ownerName": "大贤者",
+      "createdAt": 1717900700000,
+      "listed": true,
+      "price": 600,
+      "bidHistory": [
+        {
+          "id": "bid-4",
+          "bidderId": "scholar-1",
+          "bidderName": "皇家学者",
+          "price": 550,
+          "timestamp": 1717900800000
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "recipes": [
+    {
+      "id": "invisibility",
+      "name": "隐身药剂",
+      "description": "饮下后可隐匿身形30分钟，连影子都不会留下",
+      "materials": ["moonflower", "dragonscale", "nightdew"],
+      "resultPotion": {
+        "name": "隐身药剂",
+        "effect": "隐身",
+        "color": "#88ccff",
+        "rarity": "rare",
+        "basePrice": 150
+      }
+    },
+    {
+      "id": "healing",
+      "name": "治愈药剂",
+      "description": "迅速恢复体力，治愈大部分外伤",
+      "materials": ["mandrake", "nightdew", "moonflower"],
+      "resultPotion": {
+        "name": "治愈药剂",
+        "effect": "治愈",
+        "color": "#ff6688",
+        "rarity": "uncommon",
+        "basePrice": 80
+      }
+    },
+    {
+      "id": "flight",
+      "name": "飞行药剂",
+      "description": "获得短暂的飞行能力，如羽毛般轻盈",
+      "materials": ["phoenixfeather", "stardust", "crystalshard"],
+      "resultPotion": {
+        "name": "飞行药剂",
+        "effect": "飞行",
+        "color": "#ffaa44",
+        "rarity": "epic",
+        "basePrice": 300
+      }
+    },
+    {
+      "id": "strength",
+      "name": "力量药剂",
+      "description": "短时间内获得巨人般的力量",
+      "materials": ["dragonscale", "wolfsbane", "shadowroot"],
+      "resultPotion": {
+        "name": "力量药剂",
+        "effect": "力量",
+        "color": "#cc4444",
+        "rarity": "rare",
+        "basePrice": 180
+      }
+    },
+    {
+      "id": "wisdom",
+      "name": "智慧药剂",
+      "description": "思维变得无比清晰，灵感如泉涌",
+      "materials": ["stardust", "crystalshard", "dragontear"],
+      "resultPotion": {
+        "name": "智慧药剂",
+        "effect": "智慧",
+        "color": "#aa66ff",
+        "rarity": "legendary",
+        "basePrice": 500
+      }
+    }
+  ]
+}
