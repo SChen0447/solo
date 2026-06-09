@@ -1,27 +1,19 @@
 {
-  "name": "design-collab-app",
-  "private": true,
+  "name": "clay-emotion-wheel",
   "version": "1.0.0",
-  "type": "module",
+  "description": "Dynamic clay animation style character emotion wheel interaction app",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "node server.js"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.20.0",
-    "express": "^4.18.2",
-    "multer": "^1.4.5-lts.1",
-    "cors": "^2.8.5"
+    "three": "^0.160.0",
+    "gsap": "^3.12.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0"
+    "@types/three": "^0.160.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0"
   }
 }

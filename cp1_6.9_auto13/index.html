@@ -1,13 +1,96 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>设计协作批注平台</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>黏土动画表情轮盘</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(ellipse at center, #f5deb3 0%, #ffd700 100%);
+      color: #3a2a1a;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #wheel-container {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      z-index: 10;
+    }
+
+    #replay-btn {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #ff6347;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, transform 0.15s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #replay-btn:hover {
+      background-color: #ff4500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+    }
+
+    #replay-btn:active {
+      transform: scale(0.95);
+    }
+
+    #replay-btn.playing {
+      background-color: #32cd32;
+    }
+
+    @media (max-width: 600px) {
+      #wheel-container {
+        transform: scale(0.7);
+        transform-origin: bottom left;
+        bottom: 15px;
+        left: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="wheel-container"></div>
+    <button id="replay-btn" title="自动播放所有表情">▶</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
