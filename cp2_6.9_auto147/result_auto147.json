@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T02:04:28.471Z",
+  "task_name": "auto147",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线协同的虚拟白板与实时批注项目，想法是让多个用户能在同一个无限画布上同时绘制图形、添加文本和贴图，并且每个操作都实时同步到所有连接的客户端，适合远程会议、头脑风暴或在线教学场景。希望它能做到：第一，用户打开页面后自动生成一个随机会话ID（6位字母数字组合，显示在顶部导航栏中央），同时提供“新建会话”和“加入会话”按钮（输入框接受6位ID），加入后画布内容完全同步，每个用户用不同颜色光标表示（颜色从预设8色调色板中分配），鼠标移动时其他客户端能看到实时光标轨迹（半透明圆形，半径12px，跟随移动无延迟，超过3秒无操作则淡出消失）；第二，画布支持绘图工具：画笔（粗细3种：2px、6px、12px，颜色从底部24色调色板选取）、矩形（边框2px，可填充）、圆形（同矩形）、直线（两端带圆点）、自由曲线（Bezier平滑，采样间隔10ms），每个图形绘制完成后自动生成唯一UUID并记录作者ID，所有图形存储在内存中一份副本并广播给其他客户端；第三，界面设计：顶部固定导航栏（高度56px，深色#1E1E2E，毛玻璃效果blur 8px）左侧显示应用名“协同白板”，中间显示会话ID（复制按钮，点击后toast提示已复制），右侧显示当前在线人数（圆角胶囊标签，背景#4A4E69）和退出按钮；底部绘图工具栏（高度60px，半透明毛玻璃背景blur 10px，圆角16px，居中对齐，内边距12px），从左到右依次为画笔、矩形、圆形、直线、自由曲线、文本按钮（点击后在画布点击处弹出输入框，字体默认14px，颜色白色，可拖拽调整位置）、橡皮擦（擦除半径20px的圆形区域，擦除时背景变为红色半透明警示），工具之间用竖线分隔（宽度1px，颜色#555），选中工具时高亮边框（2px实线，颜色#7C5CFC）；性能上要求绘制操作响应延迟低于16ms（60FPS），同步延迟低于200ms（WebSocket传输），画布支持至少200个图形同时显示无卡顿。\n\n实现用TypeScript、React（无外部状态管理库）、Vite和Express（WebSocket服务器，仅内存存储图形和会话数据），把代码拆成以下文件：\n - package.json（含依赖：react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、express、@types/express、ws、@types/ws、cors、@types/cors，启动脚本：npm run dev）\n - index.html（入口页面，包含#root挂载点和加载动画）\n - vite.config.js（构建配置，入口指向index.html，开发服务器端口3000，代理/api和/ws到Express端口4000）\n - tsconfig.json（严格模式，esnext模块，jsx react-jsx）\n - server/src/index.ts（Express服务器，监听端口4000，提供WebSocket服务管理会话和广播图形操作，接口：GET /api/session/new返回新ID，POST /api/session/join校验ID存在性）\n - client/src/App.tsx（主组件，包含路由：会话页和加入页，管理全局状态：当前会话ID、用户颜色、图形列表，WebSocket连接逻辑）\n - client/src/Canvas.tsx（画布组件，渲染所有图形，响应鼠标事件创建/修改/删除图形，通过WebSocket发送操作并接收广播更新）\n\n跑 npm install && npm run dev 就能直接看到效果，同时启动前端和后端。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:681c7825f0b053c42266576fce321534_6a2774316a4f4f3f952d4c9c.6a27749d6a4f4f3f952d4cf5.6a27749ca437c90292d05afa:Trae CN.T(2026/6/9 10:04:13)",
+    "user_id": "3986207660317399",
+    "trace_id": "681c7825f0b053c42266576fce321534",
+    "session_id": "6a2774316a4f4f3f952d4c9c",
+    "task_id": "6a27749d6a4f4f3f952d4cf5",
+    "message_id": "6a27749ca437c90292d05afa",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 10:04:13",
+    "format": "full"
+  },
+  "trace": "null"
+}
