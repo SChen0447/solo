@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流光幻境 - 交互式3D流体粒子模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0A0A1A 0%, #1B1B3A 100%);
+      font-family: 'Courier New', monospace;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #info-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #00000060;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #FFFFFF;
+      z-index: 10;
+      line-height: 1.6;
+      pointer-events: none;
+    }
+
+    #control-panel {
+      position: fixed;
+      right: 30px;
+      bottom: 30px;
+      width: 240px;
+      background: rgba(30, 30, 46, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 10;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #E0E0E0;
+    }
+
+    #control-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #4FC3F7;
+      letter-spacing: 1px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #B0B0C0;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 10px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #3A3A5C;
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4FC3F7;
+      border: 2px solid #FFFFFF;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4FC3F7;
+      border: 2px solid #FFFFFF;
+      cursor: pointer;
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 6px 8px;
+      background: #2A2A3C;
+      border: 1px solid #3A3A5C;
+      border-radius: 6px;
+      color: #E0E0E0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .control-group select:hover {
+      border-color: #4FC3F7;
+    }
+
+    .control-group select option {
+      background: #2A2A3C;
+      color: #E0E0E0;
+    }
+
+    .control-group select option:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .value-display {
+      display: inline-block;
+      float: right;
+      color: #4FC3F7;
+      font-weight: bold;
+    }
+
+    #reset-btn {
+      width: 100%;
+      padding: 8px 16px;
+      background: rgba(79, 195, 247, 0.25);
+      border: 1px solid rgba(79, 195, 247, 0.4);
+      border-radius: 8px;
+      color: #E0E0E0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 4px;
+    }
+
+    #reset-btn:hover {
+      background: rgba(79, 195, 247, 0.5);
+      transform: scale(1.05);
+    }
+
+    #reset-btn:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="info-panel">
+    <div id="particle-count">粒子数: 0</div>
+    <div id="line-count">连线数: 0</div>
+    <div id="fps">FPS: 0</div>
+  </div>
+
+  <div id="control-panel">
+    <h3>流光幻境</h3>
+
+    <div class="control-group">
+      <label>粒子总数 <span class="value-display" id="particle-value">10000</span></label>
+      <input type="range" id="particle-slider" min="1000" max="20000" step="500" value="10000">
+    </div>
+
+    <div class="control-group">
+      <label>力场强度 <span class="value-display" id="force-value">1.0</span></label>
+      <input type="range" id="force-slider" min="0" max="3" step="0.1" value="1">
+    </div>
+
+    <div class="control-group">
+      <label>速度缩放 <span class="value-display" id="speed-value">1.0</span></label>
+      <input type="range" id="speed-slider" min="0" max="2" step="0.1" value="1">
+    </div>
+
+    <div class="control-group">
+      <label>预设场景</label>
+      <select id="preset-select">
+        <option value="nebula">星云</option>
+        <option value="tornado">龙卷</option>
+        <option value="fountain">喷泉</option>
+      </select>
+    </div>
+
+    <button id="reset-btn">重置系统</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
