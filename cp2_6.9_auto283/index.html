@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>回声探秘</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A0A0A;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #fff;
+      user-select: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      background: #0A0A0A;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ui-overlay.active {
+      pointer-events: auto;
+    }
+
+    .score-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 20px;
+      color: #00FF88;
+      text-shadow: 0 0 10px #00FF88, 0 0 20px #00FF88;
+      pointer-events: none;
+    }
+
+    .menu-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 10, 0.95);
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .menu-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .game-title {
+      font-size: 48px;
+      color: #00FF88;
+      text-shadow: 0 0 15px #00FF88, 0 0 30px #00FF88, 0 0 50px #00FF88;
+      margin-bottom: 60px;
+      letter-spacing: 8px;
+      animation: titleGlow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      from {
+        text-shadow: 0 0 15px #00FF88, 0 0 30px #00FF88, 0 0 50px #00FF88;
+      }
+      to {
+        text-shadow: 0 0 25px #00FF88, 0 0 50px #00FF88, 0 0 80px #00FF88;
+      }
+    }
+
+    .menu-btn {
+      width: 200px;
+      padding: 14px 32px;
+      margin: 10px 0;
+      font-size: 18px;
+      color: #fff;
+      background: #1A1A2E;
+      border: 2px solid #00FF88;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+      font-family: inherit;
+    }
+
+    .menu-btn:hover {
+      background: #00FF88;
+      color: #0A0A0A;
+      box-shadow: 0 0 20px #00FF88;
+      transform: translateY(-2px);
+    }
+
+    .instructions-panel {
+      max-width: 500px;
+      padding: 30px 40px;
+      background: rgba(26, 26, 46, 0.95);
+      border: 1px solid #00FF88;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
+    }
+
+    .instructions-panel h2 {
+      color: #00FF88;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .instructions-panel p {
+      margin: 10px 0;
+      line-height: 1.8;
+      color: #ccc;
+      font-size: 14px;
+    }
+
+    .instructions-panel .tip {
+      color: #FFD700;
+    }
+
+    .instructions-panel .danger {
+      color: #FF4444;
+    }
+
+    .game-over-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 0, 0, 0.3);
+      animation: redFlash 0.5s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    .game-over-screen.hidden {
+      display: none;
+    }
+
+    @keyframes redFlash {
+      from { background: rgba(255, 0, 0, 0.2); }
+      to { background: rgba(255, 0, 0, 0.5); }
+    }
+
+    .game-over-text {
+      font-size: 36px;
+      color: #FF4444;
+      text-shadow: 0 0 20px #FF4444;
+    }
+
+    .countdown {
+      font-size: 72px;
+      color: #FF4444;
+      text-shadow: 0 0 30px #FF4444;
+      margin-top: 20px;
+    }
+
+    .victory-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 10, 10, 0.8);
+      pointer-events: none;
+    }
+
+    .victory-screen.hidden {
+      display: none;
+    }
+
+    .victory-text {
+      font-size: 56px;
+      color: #00FF88;
+      text-shadow: 0 0 30px #00FF88, 0 0 60px #00FF88;
+      animation: victoryPulse 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes victoryPulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .victory-score {
+      font-size: 28px;
+      color: #FFD700;
+      margin-top: 20px;
+      text-shadow: 0 0 15px #FFD700;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div class="ui-overlay" id="ui-overlay">
+      <div class="score-display" id="score-display" style="display:none;">积分: 0 / 50</div>
+      
+      <div class="menu-screen" id="menu-screen">
+        <h1 class="game-title">回声探秘</h1>
+        <button class="menu-btn" id="start-btn">开始游戏</button>
+        <button class="menu-btn" id="instructions-btn">操作说明</button>
+      </div>
+
+      <div class="menu-screen hidden" id="instructions-screen">
+        <div class="instructions-panel">
+          <h2>操作说明</h2>
+          <p>🎮 <strong>WASD</strong> 或 <strong>方向键</strong> — 移动角色</p>
+          <p>🔊 <strong>鼠标点击</strong> — 发射声波脉冲探测环境</p>
+          <p class="tip">💡 <strong>黄色回声</strong> — 表示前方有墙壁</p>
+          <p class="danger">💡 <strong>红色回声</strong> — 表示附近有怪物！</p>
+          <p>🎯 收集所有 <span style="color:#FFD700;">5个金色宝箱</span> 开启出口</p>
+          <p>⚠️ 被声波命中的怪物会眩晕2秒，趁机通过！</p>
+          <p>🏆 到达绿色发光出口即可通关！</p>
+          <div style="text-align:center; margin-top:20px;">
+            <button class="menu-btn" id="back-btn">返回菜单</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="game-over-screen hidden" id="game-over-screen">
+        <div style="text-align:center;">
+          <div class="game-over-text">游戏结束</div>
+          <div class="countdown" id="countdown">3</div>
+        </div>
+      </div>
+
+      <div class="victory-screen hidden" id="victory-screen">
+        <div class="victory-text">恭喜通关！</div>
+        <div class="victory-score" id="victory-score">最终积分: 50</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
