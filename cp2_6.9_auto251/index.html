@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Brownian Motion Visualizer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0A0A2E;
+    }
+
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #info-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: #00000080;
+      color: #ffffff;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 100;
+      min-width: 180px;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #info-panel .info-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 6px 0;
+    }
+
+    #info-panel .info-label {
+      color: #00BFFF;
+      margin-right: 12px;
+    }
+
+    #info-panel .info-value {
+      color: #FF69B4;
+      font-weight: bold;
+    }
+
+    #info-panel h3 {
+      color: #ffffff;
+      margin-bottom: 8px;
+      font-size: 15px;
+      border-bottom: 1px solid #00BFFF40;
+      padding-bottom: 6px;
+    }
+
+    .dg.ac {
+      z-index: 100 !important;
+    }
+
+    .dg.main {
+      border-radius: 8px !important;
+      overflow: hidden !important;
+    }
+
+    .dg .c {
+      background: #1A1A2E !important;
+    }
+
+    .dg .property-name {
+      color: #ffffff !important;
+    }
+
+    .dg .slider {
+      background: #0A0A2E !important;
+    }
+
+    .dg .slider-fg {
+      background: linear-gradient(90deg, #00BFFF, #FF69B4) !important;
+    }
+
+    @media (max-width: 768px) {
+      #info-panel {
+        display: none;
+      }
+
+      .dg.ac {
+        width: 200px !important;
+      }
+
+      .dg.main {
+        font-size: 12px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="info-panel">
+    <h3>Particle Info</h3>
+    <div class="info-item">
+      <span class="info-label">Temperature:</span>
+      <span class="info-value" id="info-temperature">50</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Viscosity:</span>
+      <span class="info-value" id="info-viscosity">30</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">Avg Speed:</span>
+      <span class="info-value" id="info-speed">0.00</span>
+    </div>
+    <div class="info-item">
+      <span class="info-label">FPS:</span>
+      <span class="info-value" id="info-fps">60</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
