@@ -1,15 +1,26 @@
 {
-  "name": "ink-rhythm",
+  "name": "starlight-messenger",
   "version": "1.0.0",
-  "description": "墨韵 - 浏览器端动态水墨画绘制应用",
-  "type": "module",
+  "description": "虚拟星语信使星座编织全栈应用",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "server": "ts-node server/expressServer.ts"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "express": "4.18.0",
+    "uuid": "9.0.0"
   },
   "devDependencies": {
-    "typescript": "5.3.3",
-    "vite": "5.0.0"
+    "@vitejs/plugin-react": "4.0.0",
+    "vite": "5.4.0",
+    "typescript": "5.5.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@types/express": "4.17.0",
+    "@types/uuid": "9.0.0",
+    "ts-node": "10.9.0"
   }
 }
