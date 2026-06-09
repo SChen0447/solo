@@ -1,0 +1,14 @@
+{
+  "name": "echo-weaver",
+  "version": "1.0.0",
+  "description": "回响编织者 - 浏览器端音乐可视化与节奏游戏",
+  "scripts": {
+    "dev": "vite --port 8080",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
