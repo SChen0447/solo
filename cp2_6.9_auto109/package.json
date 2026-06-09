@@ -1,0 +1,15 @@
+{
+  "name": "digital-sand-art",
+  "version": "1.0.0",
+  "description": "Interactive digital sand art canvas with physics simulation",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.3.0"
+  }
+}
