@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星座神话星空投影仪</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #0B1026;
+      --gold: #FFD700;
+      --star-dim: #B0C4DE;
+      --panel-bg: rgba(26, 29, 46, 0.7);
+      --panel-hover: #2A2D40;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.7);
+      --radius-lg: 12px;
+      --radius-md: 8px;
+      --blur-strong: 10px;
+      --transition-base: 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-deep);
+      font-family: 'Noto Serif SC', 'Cinzel', serif;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #star-tooltip {
+      position: fixed;
+      z-index: 100;
+      pointer-events: none;
+      padding: 4px 10px;
+      font-size: 14px;
+      color: #ffffff;
+      text-shadow:
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 0 6px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      white-space: nowrap;
+      font-weight: 600;
+      transform: translate(-50%, -150%);
+    }
+
+    #star-tooltip.visible {
+      opacity: 1;
+    }
+
+    #top-left-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      padding: 16px 20px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(var(--blur-strong));
+      -webkit-backdrop-filter: blur(var(--blur-strong));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    #top-left-panel h1 {
+      font-family: 'Cinzel', 'Noto Serif SC', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    #top-left-panel p {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    #top-left-panel .controls-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .control-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-family: inherit;
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .control-btn:hover {
+      background: var(--panel-hover);
+      border-color: rgba(255, 215, 0, 0.3);
+      color: var(--gold);
+    }
+
+    .slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-wrap label {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .slider-wrap input[type="range"] {
+      width: 80px;
+      accent-color: var(--gold);
+    }
+
+    #constellation-list {
+      position: fixed;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 260px;
+      max-height: 70vh;
+      padding: 14px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(var(--blur-strong));
+      -webkit-backdrop-filter: blur(var(--blur-strong));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #constellation-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #constellation-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #constellation-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    #constellation-list::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 215, 0, 0.4);
+    }
+
+    .list-title {
+      font-family: 'Cinzel', serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+    }
+
+    .constellation-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px;
+      border-radius: var(--radius-md);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    .constellation-item:hover {
+      background: var(--panel-hover);
+    }
+
+    .constellation-item.active {
+      background: rgba(255, 215, 0, 0.08);
+      border-color: var(--gold);
+    }
+
+    .item-thumb {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+      border-radius: 6px;
+      background: #0a0e20;
+      overflow: hidden;
+    }
+
+    .item-thumb canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-info .name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .item-info .latin {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    #info-panel {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translate(-50%, 60px);
+      z-index: 20;
+      width: 100%;
+      max-width: 340px;
+      padding: 20px 22px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(var(--blur-strong));
+      -webkit-backdrop-filter: blur(var(--blur-strong));
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        transform 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+        opacity 0.4s ease,
+        visibility 0.4s ease;
+    }
+
+    #info-panel.visible {
+      transform: translate(-50%, 0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    #info-panel .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    #info-panel .panel-titles .cn {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 2px;
+    }
+
+    #info-panel .panel-titles .lt {
+      font-family: 'Cinzel', serif;
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    #info-panel .close-btn {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.05);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all var(--transition-base);
+    }
+
+    #info-panel .close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--text-primary);
+    }
+
+    #info-panel .mini-star-map {
+      width: 100%;
+      height: 120px;
+      background: #0a0e20;
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    #info-panel .mini-star-map canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #info-panel .story {
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      #top-left-panel {
+        top: 12px;
+        left: 12px;
+        padding: 12px 14px;
+        max-width: calc(100% - 24px);
+      }
+
+      #top-left-panel h1 {
+        font-size: 15px;
+      }
+
+      #top-left-panel .controls-row {
+        flex-wrap: wrap;
+      }
+
+      #constellation-list {
+        right: 12px;
+        width: 200px;
+        max-height: 55vh;
+        padding: 10px;
+      }
+
+      .item-thumb {
+        width: 44px;
+        height: 44px;
+      }
+
+      .item-info .name {
+        font-size: 12px;
+      }
+
+      .item-info .latin {
+        font-size: 10px;
+      }
+
+      #info-panel {
+        bottom: 0;
+        left: 0;
+        right: 0;
+        transform: translateY(100%);
+        max-width: 100%;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        padding: 18px;
+      }
+
+      #info-panel.visible {
+        transform: translateY(0);
+      }
+
+      .slider-wrap input[type="range"] {
+        width: 60px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="star-tooltip"></div>
+
+  <div id="top-left-panel">
+    <h1>✦ 星空投影仪 ✦</h1>
+    <p>拖拽旋转 · 滚轮缩放 · 点击探索星座神话</p>
+    <div class="controls-row">
+      <button class="control-btn" id="btn-reset-view">重置视角</button>
+      <button class="control-btn" id="btn-auto-rotate">自动旋转</button>
+      <div class="slider-wrap">
+        <label>星亮度</label>
+        <input type="range" id="brightness-slider" min="0.3" max="2" step="0.1" value="1" />
+      </div>
+    </div>
+  </div>
+
+  <div id="constellation-list">
+    <div class="list-title">CONSTELLATIONS · 星座</div>
+  </div>
+
+  <div id="info-panel">
+    <div class="panel-header">
+      <div class="panel-titles">
+        <div class="cn" id="panel-cn-name"></div>
+        <div class="lt" id="panel-latin-name"></div>
+      </div>
+      <button class="close-btn" id="panel-close-btn">×</button>
+    </div>
+    <div class="mini-star-map" id="panel-star-map"></div>
+    <div class="story" id="panel-story"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
