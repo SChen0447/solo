@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rhythm Runner - Music Parkour Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f0c29 100%);
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      background: transparent;
+      width: 80%;
+      max-width: 100%;
+      aspect-ratio: 16 / 9;
+      box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+      border-radius: 12px;
+    }
+
+    @media (max-width: 768px) {
+      #game-canvas {
+        width: 100%;
+        border-radius: 0;
+      }
+    }
+
+    .ui-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: opacity 300ms ease;
+    }
+
+    .ui-panel.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .ui-panel.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .ui-content {
+      background: rgba(15, 12, 41, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 40px 60px;
+      border-radius: 20px;
+      text-align: center;
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      box-shadow: 0 0 40px rgba(0, 210, 255, 0.15);
+    }
+
+    .game-title {
+      font-size: 48px;
+      font-weight: bold;
+      color: #00D2FF;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+      letter-spacing: 3px;
+    }
+
+    .game-subtitle {
+      font-size: 16px;
+      color: #8888aa;
+      margin-bottom: 40px;
+      letter-spacing: 1px;
+    }
+
+    .score-display {
+      font-size: 72px;
+      font-weight: bold;
+      color: #00D2FF;
+      text-shadow: 0 0 30px rgba(0, 210, 255, 0.8);
+      margin-bottom: 20px;
+    }
+
+    .score-label {
+      font-size: 18px;
+      color: #aaaacc;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+
+    .final-score {
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 10px;
+    }
+
+    .final-score-value {
+      font-size: 64px;
+      font-weight: bold;
+      color: #ffcc00;
+      text-shadow: 0 0 30px rgba(255, 204, 0, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      background: transparent;
+      border: 2px solid #00D2FF;
+      color: #00D2FF;
+      padding: 14px 36px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 200ms ease;
+      box-shadow: 0 0 15px rgba(0, 210, 255, 0.3);
+      margin: 8px;
+      text-transform: uppercase;
+    }
+
+    .btn:hover {
+      background: rgba(0, 210, 255, 0.15);
+      box-shadow: 0 0 30px rgba(0, 210, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      margin: 8px;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    .top-bar .btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      margin: 0;
+    }
+
+    .hud-score {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #00D2FF;
+      text-shadow: 0 0 15px rgba(0, 210, 255, 0.6);
+      pointer-events: none;
+      z-index: 10;
+      letter-spacing: 2px;
+    }
+
+    .track-name {
+      position: absolute;
+      top: 58px;
+      left: 20px;
+      font-size: 13px;
+      color: #8888aa;
+      pointer-events: none;
+      z-index: 10;
+      max-width: 300px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .instructions {
+      margin-top: 30px;
+      color: #8888aa;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .instructions span {
+      color: #00D2FF;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div class="hud-score" id="hud-score" style="display: none;">0</div>
+    <div class="track-name" id="track-name" style="display: none;"></div>
+
+    <div class="top-bar" id="top-bar" style="display: none;">
+      <button class="btn" id="pause-btn">⏸ Pause</button>
+    </div>
+
+    <div class="ui-panel visible" id="start-screen">
+      <div class="ui-content">
+        <div class="game-title">RHYTHM RUNNER</div>
+        <div class="game-subtitle">Feel the Beat. Run to the Rhythm.</div>
+        <div class="file-input-wrapper">
+          <button class="btn">🎵 Choose Music</button>
+          <input type="file" id="music-input" accept="audio/mp3,audio/wav,audio/mpeg" />
+        </div>
+        <button class="btn" id="start-btn">▶ Start Game</button>
+        <div class="instructions">
+          Character jumps automatically on every <span>strong beat</span><br />
+          You can also press <span>SPACE</span> or <span>↑</span> to jump manually<br />
+          Avoid obstacles and survive as long as you can!
+        </div>
+      </div>
+    </div>
+
+    <div class="ui-panel hidden" id="pause-screen">
+      <div class="ui-content">
+        <div class="game-title" style="font-size: 36px; margin-bottom: 30px;">PAUSED</div>
+        <button class="btn" id="resume-btn">▶ Resume</button>
+        <button class="btn" id="restart-btn-pause">↻ Restart</button>
+      </div>
+    </div>
+
+    <div class="ui-panel hidden" id="game-over-screen">
+      <div class="ui-content">
+        <div class="game-title" style="font-size: 36px; color: #ff5577; text-shadow: 0 0 20px rgba(255, 85, 119, 0.6);">GAME OVER</div>
+        <div class="final-score">Your Score</div>
+        <div class="final-score-value" id="final-score">0</div>
+        <button class="btn" id="restart-btn">↻ Play Again</button>
+        <button class="btn" id="menu-btn">← Main Menu</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
