@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 气泡排序可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, #0B0E17 0%, #1A1B2F 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #374151;
+      z-index: 10;
+      background: rgba(11, 14, 23, 0.8);
+      backdrop-filter: blur(8px);
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .sort-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #3B82F6;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .sort-btn:hover {
+      background: #2563EB;
+      transform: translateY(-2px);
+    }
+
+    .sort-btn:active {
+      transform: translateY(0);
+    }
+
+    .sort-btn:disabled {
+      background: #4B5563;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .footer {
+      padding: 12px 24px;
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      border-top: 1px solid #374151;
+      background: rgba(11, 14, 23, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 14px;
+      color: #9CA3AF;
+    }
+
+    .stat-label {
+      color: #6B7280;
+    }
+
+    .stat-value {
+      color: #9CA3AF;
+      min-width: 50px;
+      text-align: left;
+    }
+
+    @media (max-width: 768px) {
+      .title {
+        font-size: 18px;
+      }
+
+      .sort-btn {
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+
+      .button-group {
+        gap: 8px;
+      }
+
+      .footer {
+        gap: 16px;
+      }
+
+      .stat {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="title">3D 气泡排序算法可视化</div>
+      <div class="button-group">
+        <button class="sort-btn" data-algo="bubble">冒泡排序</button>
+        <button class="sort-btn" data-algo="selection">选择排序</button>
+        <button class="sort-btn" data-algo="insertion">插入排序</button>
+      </div>
+    </div>
+    <div id="canvas-container"></div>
+    <div class="footer">
+      <div class="stat">
+        <span class="stat-label">步骤:</span>
+        <span class="stat-value" id="step-count">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">比较:</span>
+        <span class="stat-value" id="compare-count">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">交换:</span>
+        <span class="stat-value" id="swap-count">0</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
