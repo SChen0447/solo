@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  color: #e0e0ff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: #050510;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.8s ease;
+}
+
+#loading-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loader {
+  text-align: center;
+}
+
+.loader-ring {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 20px;
+  border: 3px solid rgba(200, 200, 255, 0.2);
+  border-top-color: #00ffcc;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loader-text {
+  font-size: 14px;
+  letter-spacing: 2px;
+  color: #aaccff;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #050510;
+}
+
+#scene-canvas {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 8px;
+  box-shadow: 0 0 60px rgba(0, 200, 255, 0.15);
+}
+
+#control-panel {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 220px;
+  padding: 20px 18px;
+  background: rgba(20, 20, 40, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  z-index: 100;
+  transition: all 0.3s ease;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 18px;
+  text-align: center;
+  letter-spacing: 2px;
+  color: #aaccff;
+  text-shadow: 0 0 10px rgba(100, 150, 255, 0.5);
+}
+
+.control-item {
+  margin-bottom: 16px;
+}
+
+.control-item label {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: #c0c0e0;
+}
+
+.control-item label span {
+  float: right;
+  color: #00ffcc;
+  font-weight: 600;
+}
+
+input[type="range"] {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(100, 100, 150, 0.3);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease;
+}
+
+input[type="range"]:hover {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #00ffcc, #cc00ff);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #00ffcc, #cc00ff);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 8px rgba(0, 255, 204, 0.6);
+}
+
+#reset-btn {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  background: linear-gradient(135deg, rgba(0, 255, 204, 0.2), rgba(204, 0, 255, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #e0e0ff;
+  font-size: 13px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#reset-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 204, 0.35), rgba(204, 0, 255, 0.35));
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.4);
+}
+
+.butterfly-count {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 13px;
+}
+
+.butterfly-count span:last-child {
+  color: #00ffcc;
+  font-weight: 600;
+  font-size: 18px;
+  margin-left: 6px;
+  text-shadow: 0 0 8px rgba(0, 255, 204, 0.5);
+}
+
+@media (max-width: 768px) {
+  #control-panel {
+    top: auto;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    transform: none;
+    width: 100%;
+    height: 100px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .panel-title {
+    display: none;
+  }
+
+  .control-item {
+    flex: 0 0 auto;
+    width: 150px;
+    margin-bottom: 0;
+  }
+
+  #reset-btn {
+    flex: 0 0 auto;
+    width: 100px;
+    margin-top: 18px;
+  }
+
+  .butterfly-count {
+    flex: 0 0 auto;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 14px;
+  }
+}
