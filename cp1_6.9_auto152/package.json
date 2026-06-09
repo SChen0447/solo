@@ -1,0 +1,18 @@
+{
+  "name": "void-theodolite",
+  "version": "1.0.0",
+  "description": "Void Theodolite - 3D Interactive Visualization",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.160.0",
+    "typescript": "5.4.5",
+    "vite": "5.4.0"
+  }
+}
