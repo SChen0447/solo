@@ -1,16 +1,191 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet" />
-    <title>童话连环画生成器</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>梦境孢子森林</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #e0c8ff;
+      background: radial-gradient(ellipse at center, #1a0a3e 0%, #0a001a 100%);
+    }
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #control-panel {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 260px;
+      padding: 18px;
+      background: rgba(30, 10, 60, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(180, 140, 255, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      user-select: none;
+      z-index: 10;
+    }
+    #control-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: #c8a0ff;
+      letter-spacing: 1px;
+    }
+    .control-item {
+      margin-bottom: 14px;
+    }
+    .control-item:last-child {
+      margin-bottom: 0;
+    }
+    .control-item label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #b898d8;
+    }
+    .control-item label span {
+      color: #e0c8ff;
+      font-weight: 600;
+    }
+    .control-item input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(80, 50, 130, 0.6);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    .control-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #a070e0;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(160, 112, 224, 0.6);
+      transition: transform 0.15s;
+    }
+    .control-item input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+    .theme-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .theme-btn {
+      flex: 1;
+      padding: 8px 4px;
+      font-size: 11px;
+      border: 1px solid rgba(180, 140, 255, 0.3);
+      background: rgba(60, 35, 100, 0.5);
+      color: #c8a0ff;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .theme-btn:hover {
+      background: rgba(100, 60, 160, 0.6);
+      border-color: rgba(200, 160, 255, 0.5);
+    }
+    .theme-btn.active {
+      background: rgba(160, 112, 224, 0.5);
+      border-color: #c8a0ff;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(160, 112, 224, 0.4);
+    }
+    #stats-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 14px 20px;
+      background: rgba(30, 10, 60, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(180, 140, 255, 0.25);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stat-label {
+      color: #b898d8;
+    }
+    .stat-value {
+      color: #ffe0a0;
+      font-weight: 700;
+      font-size: 16px;
+      min-width: 40px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  
+  <div id="control-panel">
+    <h3>🍄 梦境森林控制</h3>
+    <div class="control-item">
+      <label>风力强度 <span id="wind-value">1.2</span></label>
+      <input type="range" id="wind-slider" min="0" max="4" step="0.1" value="1.2" />
+    </div>
+    <div class="control-item">
+      <label>孢子生成间隔 <span id="interval-value">3.0</span>s</label>
+      <input type="range" id="interval-slider" min="0.5" max="5" step="0.1" value="3" />
+    </div>
+    <div class="control-item">
+      <label>颜色主题</label>
+      <div class="theme-buttons">
+        <button class="theme-btn active" data-theme="purple">紫蓝</button>
+        <button class="theme-btn" data-theme="green">粉绿</button>
+        <button class="theme-btn" data-theme="orange">橙黄</button>
+      </div>
+    </div>
+  </div>
+  
+  <div id="stats-panel">
+    <div class="stat-item">
+      <span class="stat-label">✨ 孢子总数</span>
+      <span class="stat-value" id="spore-count">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">🌳 树木总数</span>
+      <span class="stat-value" id="tree-count">0</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
