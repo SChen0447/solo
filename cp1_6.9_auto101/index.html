@@ -1,201 +1,49 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>雪花晶体生长模拟器</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光影音乐树</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #0a0a2a 0%, #1a0a2a 100%);
     }
-
-    #scene-container {
-      position: fixed;
-      top: 0;
-      left: 0;
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas {
+      display: block;
       width: 100%;
       height: 100%;
-      background: linear-gradient(180deg, #0a0a1a 0%, #1a2a4a 100%);
     }
-
-    #stats-panel {
+    .title {
       position: fixed;
       top: 20px;
-      left: 20px;
-      color: white;
-      font-size: 16px;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
-      line-height: 1.8;
+      right: 30px;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(136, 170, 255, 0.5);
+      pointer-events: none;
       z-index: 100;
-    }
-
-    #control-panel {
-      position: fixed;
-      top: 50%;
-      right: 20px;
-      transform: translateY(-50%);
-      width: 200px;
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 24px 20px;
-      z-index: 100;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-    }
-
-    .control-group {
-      margin-bottom: 24px;
-    }
-
-    .control-group:last-child {
-      margin-bottom: 0;
-    }
-
-    .control-label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      color: #2c3e50;
-    }
-
-    .control-value {
-      background: #e8f4fd;
-      color: #2980b9;
-      padding: 2px 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      transition: transform 0.15s ease;
-    }
-
-    .slider::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-    }
-
-    .slider::-moz-range-thumb {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      cursor: pointer;
-      border: none;
-    }
-
-    #temp-slider {
-      background: #b3d9ff;
-    }
-
-    #humidity-slider {
-      background: #b3ffb3;
-    }
-
-    #info-panel {
-      position: fixed;
-      left: 20px;
-      bottom: 20px;
-      width: 220px;
-      height: 100px;
-      background: white;
-      border-radius: 8px;
-      padding: 14px 16px;
-      z-index: 100;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-      display: none;
-    }
-
-    #info-panel.visible {
-      display: block;
-    }
-
-    .info-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: #2c3e50;
-      margin-bottom: 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid #ecf0f1;
-    }
-
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      line-height: 1.8;
-      color: #34495e;
-    }
-
-    .info-row span:last-child {
-      font-weight: 600;
-      color: #2980b9;
     }
   </style>
 </head>
 <body>
-  <div id="scene-container"></div>
-
-  <div id="stats-panel">
-    <div>晶体总数: <span id="crystal-count">0</span></div>
-    <div>平均生长速率: <span id="avg-growth-rate">0.00</span> 单位/帧</div>
+  <div id="app">
+    <div class="title">光影音乐树</div>
   </div>
-
-  <div id="control-panel">
-    <div class="control-group">
-      <div class="control-label">
-        <span>温度</span>
-        <span class="control-value" id="temp-value">-15°C</span>
-      </div>
-      <input type="range" id="temp-slider" class="slider" min="-25" max="0" step="1" value="-15">
-    </div>
-    <div class="control-group">
-      <div class="control-label">
-        <span>湿度</span>
-        <span class="control-value" id="humidity-value">80%</span>
-      </div>
-      <input type="range" id="humidity-slider" class="slider" min="30" max="100" step="5" value="80">
-    </div>
-  </div>
-
-  <div id="info-panel">
-    <div class="info-title">分支信息</div>
-    <div class="info-row"><span>当前长度:</span><span id="branch-length">0.00</span></div>
-    <div class="info-row"><span>分支数量:</span><span id="branch-count">0</span></div>
-    <div class="info-row"><span>生长速率:</span><span id="branch-rate">0.00</span></div>
-  </div>
-
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

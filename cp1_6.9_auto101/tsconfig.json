@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ES2022",
+    "target": "ES2020",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "lib": ["ES2020", "DOM"],
+    "outDir": "./dist",
+    "rootDir": "./src",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"]
+    "noEmit": false,
+    "sourceMap": true
   },
-  "include": ["src"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
