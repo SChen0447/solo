@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>流光音轨画板</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="control-panel">
+    <div class="control-item">
+      <label for="volume-slider">音量</label>
+      <div class="slider-wrapper">
+        <div class="slider-track">
+          <div id="volume-fill" class="slider-fill"></div>
+        </div>
+        <div id="volume-thumb" class="slider-thumb"></div>
+      </div>
+      <span id="volume-value">50</span>
+    </div>
+    <div class="control-item">
+      <label for="opacity-slider">画布透明度</label>
+      <div class="slider-wrapper">
+        <div class="slider-track">
+          <div id="opacity-fill" class="slider-fill"></div>
+        </div>
+        <div id="opacity-thumb" class="slider-thumb"></div>
+      </div>
+      <span id="opacity-value">100</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
