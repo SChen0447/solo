@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 太阳系交互式教学</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0B0C10;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      position: relative;
+    }
+
+    #three-container {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 260px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
+      transition: transform 0.3s ease;
+    }
+
+    #control-panel h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #FFAA00;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .control-group input[type="range"]:hover {
+      transform: scale(1.05);
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #FFAA00;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #FFAA00;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+
+    .speed-value {
+      display: inline-block;
+      margin-left: 8px;
+      font-weight: 600;
+      color: #FFAA00;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-switch:hover {
+      transform: scale(1.05);
+    }
+
+    .toggle-switch.active {
+      background: #FFAA00;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(22px);
+    }
+
+    #info-card {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 300px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
+      transform: translateX(340px);
+      transition: transform 300ms ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #info-card.visible {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #info-card .card-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: #FFAA00;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 12px;
+    }
+
+    #info-card .card-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #info-card .card-item:last-child {
+      border-bottom: none;
+    }
+
+    #info-card .card-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    #info-card .card-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    #info-card .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      font-size: 22px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      background: none;
+      border: none;
+      line-height: 1;
+      transition: color 0.2s ease;
+    }
+
+    #info-card .close-btn:hover {
+      color: #ffffff;
+    }
+
+    #panel-toggle {
+      display: none;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #FFAA00;
+      font-size: 14px;
+      cursor: pointer;
+      z-index: 10;
+      transition: transform 0.2s ease;
+    }
+
+    #panel-toggle:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        z-index: 20;
+      }
+
+      #control-panel.open {
+        transform: translateY(0);
+      }
+
+      #panel-toggle {
+        display: block;
+      }
+
+      #info-card {
+        top: 20px;
+        left: 20px;
+        right: 20px;
+        width: auto;
+        transform: translateY(-340px);
+      }
+
+      #info-card.visible {
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="three-container"></div>
+
+    <div id="control-panel">
+      <h2>控制面板</h2>
+      <div class="control-group">
+        <label>播放速度 <span class="speed-value" id="speed-value">1.0x</span></label>
+        <input type="range" id="speed-slider" min="0" max="10" step="0.1" value="1" />
+      </div>
+      <div class="control-group">
+        <div class="toggle-container">
+          <label style="margin-bottom: 0;">显示轨道线</label>
+          <div class="toggle-switch active" id="orbit-toggle"></div>
+        </div>
+      </div>
+    </div>
+
+    <button id="panel-toggle">控制面板</button>
+
+    <div id="info-card">
+      <button class="close-btn" id="card-close">&times;</button>
+      <div class="card-title" id="card-title">行星名称</div>
+      <div class="card-item">
+        <span class="card-label">公转周期</span>
+        <span class="card-value" id="card-period">-</span>
+      </div>
+      <div class="card-item">
+        <span class="card-label">轨道倾角</span>
+        <span class="card-value" id="card-inclination">-</span>
+      </div>
+      <div class="card-item">
+        <span class="card-label">平均距离</span>
+        <span class="card-value" id="card-distance">-</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
