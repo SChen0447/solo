@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>波形沙画生成器</title>
+  <link rel="stylesheet" href="./src/styles.css">
+</head>
+<body>
+  <canvas id="sandCanvas"></canvas>
+
+  <aside id="toolbar" class="toolbar">
+    <div class="toolbar-section">
+      <label for="brushSize" class="toolbar-label">笔刷大小</label>
+      <div class="slider-row">
+        <input type="range" id="brushSize" min="5" max="30" value="12" step="1">
+        <span id="brushSizeValue" class="value-display">12</span>
+      </div>
+    </div>
+
+    <div class="toolbar-section">
+      <label for="waveType" class="toolbar-label">波形类型</label>
+      <select id="waveType" class="toolbar-select">
+        <option value="sine">正弦波</option>
+        <option value="sawtooth">锯齿波</option>
+        <option value="square">方波</option>
+      </select>
+    </div>
+
+    <div class="toolbar-section">
+      <label class="toolbar-label">颜色模式</label>
+      <div class="color-mode-row">
+        <label class="radio-label">
+          <input type="radio" name="colorMode" value="hsl" checked>
+          <span>彩虹渐变</span>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="colorMode" value="fixed">
+          <span>固定颜色</span>
+        </label>
+      </div>
+      <input type="color" id="colorPicker" class="color-picker" value="#ff00ff" disabled>
+    </div>
+
+    <div class="toolbar-section">
+      <button id="clearBtn" class="toolbar-btn">清除画布</button>
+    </div>
+
+    <div class="toolbar-section">
+      <button id="exportBtn" class="toolbar-btn">导出 PNG</button>
+    </div>
+  </aside>
+
+  <footer id="statusBar" class="status-bar">
+    <span>粒子数: <span id="particleCount" class="mono">0</span></span>
+    <span>频率: <span id="frequency" class="mono">0</span> Hz</span>
+    <span>音量: <span id="volume" class="mono">0.00</span></span>
+  </footer>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
