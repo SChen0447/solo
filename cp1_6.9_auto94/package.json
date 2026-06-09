@@ -1,17 +1,19 @@
 {
-  "name": "mechanical-hummingbird-maze",
+  "name": "kaleidoscope-fragments",
   "version": "1.0.0",
-  "description": "机械蜂鸟迷宫采集游戏 - Phaser3 + TypeScript + Vite",
+  "type": "module",
+  "description": "Interactive kaleidoscope with thousands of geometric fragments",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "phaser": "3.80.1"
+    "p5": "1.9.0"
   },
   "devDependencies": {
-    "typescript": "5.3.3",
-    "vite": "5.0.0"
+    "@types/p5": "1.7.6",
+    "typescript": "5.5.0",
+    "vite": "5.4.0"
   }
 }
