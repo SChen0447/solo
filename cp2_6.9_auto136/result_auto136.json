@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T01:37:34.145Z",
+  "task_name": "auto136",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个虚拟的宇宙星舰引擎核心可视化交互台的项目，想法是让用户能像工程师一样，在浏览器中实时观察和调节一个科幻风格的引擎核心，核心内部有动态等离子体火焰、能量环和粒子流，调节参数会实时改变颜色、转速和亮度。希望它能做到：第一，引擎核心主体是一个旋转的二十面体框架（金色线框#FFD700，线宽2px，自动绕Y轴旋转，速度每秒10度），内部填充一个动态等离子体球（半透明，颜色渐变从#00BFFF到#FF4500，用噪声模拟湍流纹理，大小随能量参数变化）；第二，用户可以通过右侧控制面板（半透明毛玻璃背景blur 12px，圆角16px，内边距20px）的三个滑块分别调节能量输出（范围0-100%，默认50%）、引擎温度（冷色到暖色映射，范围0-5000K，默认2500K）和粒子密度（范围1-50，默认25），拖动滑块时核心颜色和粒子数量立即变化，过渡动画0.3秒ease-in-out；第三，引擎周围悬浮着大量发光粒子（数量由粒子密度控制），粒子沿随机轨道环绕核心运动，轨道半径3-8单位随机，每个粒子带0.8px的发光光晕（颜色随引擎温度变化），粒子运动速度0.5-2单位/秒，遇到鼠标悬停时自动绕开（斥力半径1单位）。界面上希望整体采用深空蓝黑渐变背景（#0B0E1A到#1A233A），核心居中占据画布60%面积，左侧显示引擎状态面板（温度、能量、粒子数实时数字，白色#FFFFFF字体20px monospace），右侧控制面板有滑块和标签，所有面板都有轻微浮动动画（translateY 0-5px，周期4秒，ease-in-out交替），响应式适配到最小800x600视口，整体科技感、赛博朋克风格统一。性能上希望帧率稳定在60fps，粒子数最多50个时无卡顿，使用Three.js BufferGeometry批量渲染粒子。实现用TypeScript、Three.js和Vite，把代码拆成以下文件： - package.json（含依赖：three、@types/three、typescript、vite，启动脚本：npm run dev） - index.html（入口，全屏div#app） - vite.config.js（构建配置，入口指向index.html，端口3000） - tsconfig.json（严格模式，esnext模块） - src/main.ts（场景初始化、渲染循环、鼠标交互、调节参数响应，调用engine和ui模块） - src/engine.ts（引擎核心几何体、材质、等离子体纹理生成、粒子系统，导出EngineCore类） - src/ui.ts（UI界面生成、状态显示、滑块事件绑定，导出UIController类）。跑npm install && npm run dev就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:3ee01ca53217995bd3c36f02fff10b87_6a276cf2c1a8462c80af5d54.6a276e47c1a8462c80af5ecc.6a276e475969135bb18142f4:Trae CN.T(2026/6/9 09:37:11)",
+    "user_id": "3986207660317399",
+    "trace_id": "3ee01ca53217995bd3c36f02fff10b87",
+    "session_id": "6a276cf2c1a8462c80af5d54",
+    "task_id": "6a276e47c1a8462c80af5ecc",
+    "message_id": "6a276e475969135bb18142f4",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 09:37:11",
+    "format": "full"
+  },
+  "trace": "null"
+}

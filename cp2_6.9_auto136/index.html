@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Starship Engine Core Control</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0B0E1A 0%, #1A233A 100%);
+      font-family: monospace;
+      color: #FFFFFF;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-width: 800px;
+      min-height: 600px;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .status-panel {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      background: rgba(20, 30, 50, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      animation: float 4s ease-in-out infinite alternate;
+      min-width: 220px;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      background: rgba(20, 30, 50, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 20px;
+      animation: float 4s ease-in-out infinite alternate;
+      animation-delay: -2s;
+      min-width: 280px;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+      100% {
+        transform: translateY(5px);
+      }
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #FFD700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      font-size: 20px;
+    }
+
+    .status-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+    }
+
+    .status-value {
+      font-weight: bold;
+      color: #FFFFFF;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .status-value.hot {
+      color: #FF4500;
+    }
+
+    .status-value.cool {
+      color: #00BFFF;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .control-name {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .control-value {
+      font-weight: bold;
+      color: #FFD700;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+    }
+
+    input[type="range"]:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFD700;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFD700;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
