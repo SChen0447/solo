@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PBR 材质与光照预览</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #1E1E2E 0%, #2A1A3E 100%);
+      color: #fff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .top-control-bar {
+      position: absolute;
+      top: clamp(12px, 2vw, 24px);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: clamp(12px, 2vw, 24px);
+      padding: clamp(8px, 1.2vw, 12px) clamp(16px, 2vw, 24px);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .material-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    .material-btn {
+      position: relative;
+      padding: clamp(6px, 1vw, 8px) clamp(12px, 1.5vw, 20px);
+      border: none;
+      background: transparent;
+      color: #888;
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(12px, 1.2vw, 14px);
+      font-weight: 500;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+
+    .material-btn::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #6A5ACD, #8A2BE2);
+      border-radius: 1px;
+      transform: translateX(-50%);
+      transition: width 0.2s ease;
+    }
+
+    .material-btn:hover {
+      color: #ccc;
+    }
+
+    .material-btn.active {
+      color: #FFFFFF;
+    }
+
+    .material-btn.active::after {
+      width: 60%;
+    }
+
+    .lighting-select-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lighting-select-wrap label {
+      font-size: clamp(12px, 1.2vw, 14px);
+      color: #888;
+    }
+
+    #lighting-select {
+      padding: clamp(6px, 1vw, 8px) clamp(10px, 1.2vw, 14px);
+      border: none;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #ccc;
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(12px, 1.2vw, 14px);
+      cursor: pointer;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ccc' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 32px;
+    }
+
+    #lighting-select option {
+      background: #1E1E2E;
+      color: #ccc;
+    }
+
+    .params-panel {
+      position: absolute;
+      top: 50%;
+      right: clamp(12px, 2vw, 24px);
+      transform: translateY(-50%);
+      width: 260px;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .params-panel h3 {
+      font-size: clamp(13px, 1.3vw, 15px);
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+
+    .param-group {
+      margin-bottom: 14px;
+    }
+
+    .param-group.hidden {
+      display: none;
+    }
+
+    .param-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .param-label span:first-child {
+      font-size: clamp(11px, 1.1vw, 13px);
+      color: #aaa;
+    }
+
+    .param-value {
+      font-size: clamp(11px, 1.1vw, 13px);
+      font-weight: 600;
+      color: #8A2BE2;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-wrap {
+      position: relative;
+      width: 100%;
+      height: 20px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      cursor: pointer;
+      z-index: 2;
+      margin: 0;
+    }
+
+    input[type="range"]:focus {
+      outline: none;
+    }
+
+    .slider-track {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      height: 4px;
+      background: #444;
+      border-radius: 2px;
+      transform: translateY(-50%);
+    }
+
+    .slider-fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #6A5ACD, #8A2BE2);
+      border-radius: 2px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #6A5ACD, #8A2BE2);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(106, 90, 205, 0.4);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      border: 2px solid #fff;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 8px rgba(106, 90, 205, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #6A5ACD, #8A2BE2);
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 0 rgba(106, 90, 205, 0.4);
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 0 8px rgba(106, 90, 205, 0.2);
+    }
+
+    input[type="range"]::-moz-range-track {
+      background: transparent;
+    }
+
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .color-picker-wrap input[type="color"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 36px;
+      height: 24px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .color-picker-wrap input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .color-picker-wrap input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .color-hex {
+      font-size: clamp(11px, 1.1vw, 13px);
+      color: #aaa;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fps-counter {
+      position: absolute;
+      bottom: clamp(12px, 2vw, 20px);
+      left: clamp(12px, 2vw, 20px);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      font-variant-numeric: tabular-nums;
+      z-index: 10;
+      font-family: 'Courier New', monospace;
+    }
+
+    .normal-indicator {
+      position: absolute;
+      top: clamp(60px, 8vw, 90px);
+      right: clamp(12px, 2vw, 24px);
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      font-size: clamp(11px, 1.1vw, 12px);
+      color: #ccc;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .normal-indicator.visible {
+      opacity: 1;
+    }
+
+    .normal-indicator .label {
+      color: #888;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+
+    .normal-indicator .values {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.1vw, 13px);
+      color: #6A5ACD;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 768px) {
+      .top-control-bar {
+        flex-direction: column;
+        width: calc(100% - 24px);
+        gap: 8px;
+      }
+
+      .params-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        transform: none;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        max-height: 50vh;
+        overflow-y: auto;
+      }
+
+      .normal-indicator {
+        right: 12px;
+        top: auto;
+        bottom: calc(50vh + 12px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="top-control-bar">
+      <div class="material-buttons" id="material-buttons">
+        <button class="material-btn active" data-type="metal">金属</button>
+        <button class="material-btn" data-type="glass">玻璃</button>
+        <button class="material-btn" data-type="rock">岩石</button>
+      </div>
+      <div class="lighting-select-wrap">
+        <label for="lighting-select">光照</label>
+        <select id="lighting-select">
+          <option value="morning">清晨暖阳</option>
+          <option value="noon">正午烈日</option>
+          <option value="cloudy">阴天漫射</option>
+          <option value="moonlight">月光冷色</option>
+          <option value="neon">粉色霓虹</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="params-panel" id="params-panel">
+      <h3>材质参数</h3>
+      <div class="param-group" data-param="color">
+        <div class="param-label">
+          <span>颜色</span>
+        </div>
+        <div class="color-picker-wrap">
+          <input type="color" id="color-picker" value="#C0A86C" />
+          <span class="color-hex" id="color-hex">#C0A86C</span>
+        </div>
+      </div>
+      <div class="param-group" data-param="roughness">
+        <div class="param-label">
+          <span>粗糙度</span>
+          <span class="param-value" id="roughness-value">0.20</span>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-track">
+            <div class="slider-fill" id="roughness-fill" style="width: 40%"></div>
+          </div>
+          <input type="range" id="roughness-slider" min="0" max="1" step="0.01" value="0.2" />
+        </div>
+      </div>
+      <div class="param-group" data-param="metalness">
+        <div class="param-label">
+          <span>金属度</span>
+          <span class="param-value" id="metalness-value">1.00</span>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-track">
+            <div class="slider-fill" id="metalness-fill" style="width: 100%"></div>
+          </div>
+          <input type="range" id="metalness-slider" min="0" max="1" step="0.01" value="1.0" />
+        </div>
+      </div>
+      <div class="param-group hidden" data-param="ior">
+        <div class="param-label">
+          <span>折射率 (IOR)</span>
+          <span class="param-value" id="ior-value">1.50</span>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-track">
+            <div class="slider-fill" id="ior-fill" style="width: 50%"></div>
+          </div>
+          <input type="range" id="ior-slider" min="1.0" max="2.0" step="0.01" value="1.5" />
+        </div>
+      </div>
+      <div class="param-group hidden" data-param="opacity">
+        <div class="param-label">
+          <span>透明度</span>
+          <span class="param-value" id="opacity-value">0.80</span>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-track">
+            <div class="slider-fill" id="opacity-fill" style="width: 80%"></div>
+          </div>
+          <input type="range" id="opacity-slider" min="0" max="1" step="0.01" value="0.8" />
+        </div>
+      </div>
+    </div>
+
+    <div class="normal-indicator" id="normal-indicator">
+      <div class="label">法线方向 (Normal)</div>
+      <div class="values" id="normal-values">X: 0.000, Y: 0.000, Z: 0.000</div>
+    </div>
+
+    <div class="fps-counter" id="fps-counter">FPS: --</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
