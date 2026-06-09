@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+    <title>深海探险 - Deep Sea Explorer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        min-width: 768px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+        background: #001F3F;
+        color: #ffffff;
+        user-select: none;
+      }
+      #game-container {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+      }
+      #game-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #ui-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      #result-overlay {
+        display: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.75);
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        backdrop-filter: blur(4px);
+      }
+      #result-overlay.active {
+        display: flex;
+      }
+      .result-card {
+        background: rgba(0, 31, 63, 0.85);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(77, 150, 255, 0.3);
+        border-radius: 16px;
+        padding: 40px 56px;
+        text-align: center;
+        min-width: 360px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      .result-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        background: linear-gradient(90deg, #4D96FF, #6BCB77);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .result-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+      }
+      .stat-label {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      .stat-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #FFD93D;
+      }
+      .stat-value.score {
+        font-size: 24px;
+        color: #FF6B6B;
+      }
+      #restart-btn {
+        pointer-events: auto;
+        background: rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 12px 36px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      #restart-btn:hover {
+        background: #FFD93D;
+        color: #1a1a2e;
+        border-color: #FFD93D;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(255, 217, 61, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+      <div id="ui-layer">
+        <div id="result-overlay">
+          <div class="result-card">
+            <div class="result-title" id="result-title">探险结束</div>
+            <div class="result-stats">
+              <div class="stat-row">
+                <span class="stat-label">收集生物总数</span>
+                <span class="stat-value" id="stat-total">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">稀有生物数量</span>
+                <span class="stat-value" id="stat-rare">0</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">总得分</span>
+                <span class="stat-value score" id="stat-score">0</span>
+              </div>
+            </div>
+            <button id="restart-btn">重新开始</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
