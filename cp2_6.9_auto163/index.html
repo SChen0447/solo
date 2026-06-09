@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全球地震活动3D可视化</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="three-canvas"></canvas>
+
+    <div id="time-slider-container">
+      <div class="slider-label">
+        <span>时间线</span>
+        <span id="time-display">24 小时前</span>
+      </div>
+      <input
+        type="range"
+        id="time-slider"
+        min="0"
+        max="24"
+        step="1"
+        value="24"
+      />
+      <div class="slider-ticks">
+        <span>0</span>
+        <span>6</span>
+        <span>12</span>
+        <span>18</span>
+        <span>24</span>
+      </div>
+    </div>
+
+    <div id="info-panel">
+      <h3>地震统计</h3>
+      <div class="info-row">
+        <span class="info-label">当前时间:</span>
+        <span id="current-time">24 小时前</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">可见地震:</span>
+        <span id="visible-count">0</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">最大震级:</span>
+        <span id="max-magnitude">0</span>
+      </div>
+      <div class="legend">
+        <h4>图例</h4>
+        <div class="legend-item">
+          <div class="legend-dot low"></div>
+          <span>浅源 (<50km)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot mid"></div>
+          <span>中源 (50-200km)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot deep"></div>
+          <span>深源 (>200km)</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="tooltip" class="tooltip-hidden">
+      <div class="tooltip-content">
+        <div id="tooltip-magnitude"></div>
+        <div id="tooltip-depth"></div>
+        <div id="tooltip-time"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
