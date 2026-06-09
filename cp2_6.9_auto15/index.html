@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Audio Spectrum Visualizer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a0a;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+      }
+
+      #app {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      #canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #file-input {
+        display: none;
+      }
+
+      #upload-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(10, 10, 10, 0.85);
+        cursor: pointer;
+        z-index: 100;
+        transition: opacity 0.4s ease;
+      }
+
+      #upload-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .upload-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
+        border: 2px solid rgba(0, 255, 255, 0.6);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(0, 255, 255, 0.9);
+        font-size: 36px;
+        transition: all 0.3s ease;
+      }
+
+      #upload-overlay:hover .upload-icon {
+        border-color: #00ffff;
+        color: #00ffff;
+        transform: scale(1.1);
+      }
+
+      .upload-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 18px;
+        letter-spacing: 1px;
+      }
+
+      .upload-hint {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 13px;
+        margin-top: 10px;
+      }
+
+      #controls {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 16px;
+        z-index: 50;
+      }
+
+      .ctrl-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: rgba(255, 255, 255, 0.85);
+        font-size: 14px;
+        padding: 12px 28px;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
+        backdrop-filter: blur(8px);
+        user-select: none;
+        min-width: 90px;
+        letter-spacing: 0.5px;
+      }
+
+      .ctrl-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .ctrl-btn:active {
+        transform: scale(0.95);
+      }
+
+      .ctrl-btn.active {
+        background: rgba(0, 255, 255, 0.3);
+        color: #00ffff;
+      }
+
+      #time-display {
+        position: absolute;
+        bottom: 110px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 14px;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 1px;
+        z-index: 50;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container"></div>
+
+      <input type="file" id="file-input" accept=".mp3,.wav,audio/mpeg,audio/wav" />
+
+      <div id="upload-overlay">
+        <div class="upload-icon">♪</div>
+        <div class="upload-text">点击或拖拽上传音频文件</div>
+        <div class="upload-hint">支持 MP3、WAV 格式</div>
+      </div>
+
+      <div id="time-display">00:00 / 00:00</div>
+
+      <div id="controls">
+        <button class="ctrl-btn" id="btn-play">播放</button>
+        <button class="ctrl-btn" id="btn-stop">停止</button>
+        <button class="ctrl-btn" id="btn-loop">循环</button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
