@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>手写旋律识别</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+        background: #1A1A2E;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      button {
+        height: 36px;
+        padding: 0 16px;
+        border-radius: 8px;
+        background: #0F3460;
+        color: #FFFFFF;
+        border: none;
+        font-size: 14px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.1s ease;
+        transform: scale(1);
+      }
+      button:hover {
+        background: #1A5276;
+      }
+      button:active {
+        background: #0B2545;
+        transform: scale(0.95);
+      }
+      button:focus {
+        outline: none;
+      }
+      @media (max-width: 900px) {
+        .app-content {
+          flex-direction: column !important;
+        }
+        .app-divider {
+          width: 100% !important;
+          height: 2px !important;
+        }
+        .app-left, .app-right {
+          width: 100% !important;
+          height: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
