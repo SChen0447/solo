@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberMix Studio - 在线协作混音工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="mixing-panel">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <div class="logo">
+            <span class="logo-icon">◆</span>
+            <span class="logo-text">CYBERMIX</span>
+            <span class="logo-sub">STUDIO</span>
+          </div>
+        </div>
+        <div class="toolbar-center">
+          <button id="uploadBtn" class="btn btn-upload">
+            <span class="btn-icon">↑</span>
+            <span>上传音频</span>
+          </button>
+          <input type="file" id="fileInput" accept="audio/*" multiple hidden />
+          <button id="playBtn" class="btn btn-play">
+            <span id="playIcon" class="btn-icon">▶</span>
+            <span id="playText">播放</span>
+          </button>
+          <button id="exportBtn" class="btn btn-export">
+            <span class="btn-icon">⬇</span>
+            <span>导出WAV</span>
+          </button>
+        </div>
+        <div class="toolbar-right">
+          <div class="zoom-controls">
+            <button id="zoomOut" class="icon-btn">−</button>
+            <span id="zoomLevel" class="zoom-level">1x</span>
+            <button id="zoomIn" class="icon-btn">+</button>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <aside class="track-list" id="trackList">
+          <div class="track-header">
+            <span class="tracks-count">轨道</span>
+            <button id="addTrackBtn" class="icon-btn icon-btn-small">+</button>
+          </div>
+          <div class="tracks-container" id="tracksContainer"></div>
+        </aside>
+
+        <section class="timeline-section">
+          <div class="timeline-ruler" id="timelineRuler">
+            <canvas id="rulerCanvas"></canvas>
+          </div>
+          <div class="timeline-content" id="timelineContent">
+            <canvas id="waveformCanvas"></canvas>
+            <div class="playhead" id="playhead"></div>
+            <div class="timeline-clips" id="timelineClips"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="global-controls">
+        <div class="time-display">
+          <div class="time-block">
+            <div class="time-label">当前时间</div>
+            <div class="time-value" id="currentTime">00:00:000</div>
+          </div>
+          <div class="time-block">
+            <div class="time-label">总时长</div>
+            <div class="time-value" id="totalTime">00:00:000</div>
+          </div>
+          <div class="time-block">
+            <div class="time-label">轨道数</div>
+            <div class="time-value" id="trackCount">0</div>
+          </div>
+        </div>
+        <div class="master-volume">
+          <div class="volume-label">主音量</div>
+          <div class="knob-wrapper">
+            <canvas id="masterKnob" width="100" height="100"></canvas>
+            <div class="knob-value" id="knobValue">5.0</div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <div class="export-modal" id="exportModal" hidden>
+      <div class="modal-content">
+        <div class="modal-title">正在导出混音作品...</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="exportProgress"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+        <a id="downloadLink" class="download-link" hidden>下载 WAV 文件</a>
+      </div>
+    </div>
+
+    <div class="color-picker" id="colorPicker" hidden>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
