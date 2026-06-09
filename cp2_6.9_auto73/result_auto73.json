@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-08T18:31:46.250Z",
+  "task_name": "auto73",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于CSS Container Queries与动态网格布局的响应式照片墙项目，想法是让用户上传一组图片后，系统根据每张图片的内容（通过图片主色调和构图密度分析）自动安排它们在网格中的位置和大小，同时窗口尺寸变化时布局能无缝重新排列，保证每张图片有最佳的展示区域和视觉权重。希望它能做到：第一，页面背景采用柔和的暖灰色调（#F0EBE3），顶部有一个极简的上传区（虚线边框#B8A99A，圆角12px，hover时边框变为金色#D4AF37并轻微上浮3px，过渡0.3s ease），用户可点击或拖拽上传JPG/PNG图片，最多20张，上传时展示带有涟漪动画的进度条；第二，图片上传后立即进入一个自适应网格容器，该容器使用CSS Container Queries绑定尺寸变化，根据容器宽度动态切换网格列数（当容器大于900px时为4列，600-900px为3列，小于600px为2列），图片单元格的宽高比由算法决定——每张图片的'权重分'（基于主色调的饱和度和明度，加上构图密度因子，饱和度超过70%且构图密集的图片权重高）决定其占据的网格跨度（1x1、2x2或2x1），所有单元格之间有8px间距，图片以cover方式填充并居中，鼠标悬停时图片放大到1.05倍（scale过渡0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)），同时出现半透明黑色遮罩（#00000080）和图片标题（从EXIF或文件名提取，白色字体，0.5s淡入）；第三，用户点击任意图片会触发一个灯箱效果，灯箱背景从透明渐变为半透明深灰（#1A1A1AE6），图片以弹入动画（0.3s ease-out）从点击位置放大到屏幕中央，灯箱内左侧显示图片大图（最大宽度80vw，高度80vh），右侧显示图片信息（文件名、尺寸、主色调色块、权重分），点击遮罩或按ESC键关闭灯箱（图片以0.2s ease-in缩回原位）；第四，窗口大小变化（如从宽屏改为竖屏）时，所有图片的位置和大小的重排过程应平滑（使用CSS Grid的自动放置和container-type:inline-size触发重新计算，重排动画控制在0.5s内完成，帧率不低于30fps）；第五，页面底部提供一个重置按钮（圆角20px，背景#D4AF37，文字白色，hover时背景变深#B8942F），点击后清空所有图片并恢复到初始上传界面。实现使用TypeScript、CSS Container Queries（无需polyfill，仅支持现代浏览器）和Vite，把代码拆成以下文件：\n - package.json（含依赖：typescript、vite，以及可选sharp用于图片分析，启动脚本：npm run dev）\n - index.html（入口，包含基本HTML骨架和meta viewport标签）\n - vite.config.js（基础构建配置，入口指向index.html）\n - tsconfig.json（严格模式，target ES2020）\n - src/main.ts（初始化应用，挂载上传事件、网格容器和灯箱实例，调用其他模块的主流程协调器）\n - src/imageAnalyzer.ts（负责上传图片后，通过Canvas提取主色调（取出现频率最高的三种颜色）、计算饱和度平均值和构图密度（边缘检测的梯度幅值均值），输出权重分0-100，返回包含url、name、width、height、dominantColors、weight的图片对象）\n - src/gridManager.ts（管理自适应网格容器，接收图片数组后根据容器宽度（通过ResizeObserver监听）和图片权重计算grid布局的列数和每个单元格的span值，调用CSS Grid API更新grid-template-columns和grid-row/column，确保重排动画平滑）\n - src/lightbox.ts（渲染灯箱DOM，接收点击的图片对象，以动画形式显示大图和右侧元信息面板，支持键盘ESC和遮罩点击关闭，关闭时反向动画并销毁实例）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>响应式照片墙 - Responsive Photo Wall</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1 class="app-title">响应式照片墙</h1>
+      <p class="app-subtitle">基于 CSS Container Queries 与动态网格布局</p>
+    </header>
+
+    <main class="app-main">
+      <div id="upload-zone" class="upload-zone">
+        <div class="upload-content">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M12 16V4m0 0l-4 4m4-4l4 4M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
+          </svg>
+          <p class="upload-text">点击或拖拽图片到此处上传</p>
+          <p class="upload-hint">支持 JPG / PNG，最多 20 张</p>
+        </div>
+        <input id="file-input" type="file" accept="image/jpeg,image/png" multiple hidden />
+      </div>
+
+      <div id="upload-progress" class="upload-progress hidden">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+          <div class="progress-ripple"></div>
+        </div>
+        <p class="progress-text">上传中... <span id="progress-count">0</span>/<span id="progress-total">0</span></p>
+      </div>
+
+      <div id="grid-container" class="grid-wrapper hidden">
+        <div class="grid-container">
+          <div id="photo-grid" class="photo-grid"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="app-footer">
+      <button id="reset-btn" class="reset-btn hidden">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+        </svg>
+        清空重置
+      </button>
+    </footer>
+  </div>
+
+  <div id="lightbox-root"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
