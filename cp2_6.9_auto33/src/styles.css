@@ -1,0 +1,79 @@
+input:focus {
+  border-color: #6366F1 !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5) !important;
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes overlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.preview-loading {
+  animation: fadeIn 400ms ease-in-out;
+}
+
+.code-restore-animation {
+  animation: slideInLeft 300ms ease-out;
+}
+
+.drawer-overlay {
+  animation: overlayFadeIn 200ms ease-out;
+}
+
+.drawer-panel {
+  animation: slideInRight 300ms ease-out;
+}
+
+.circular-progress {
+  animation: spin 1s linear infinite;
+}
+
+.tab-indicator {
+  transition: left 0.25s ease, width 0.25s ease;
+}
