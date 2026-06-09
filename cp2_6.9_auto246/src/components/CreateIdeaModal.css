@@ -1,0 +1,83 @@
+.create-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: var(--overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+
+.create-modal-container {
+  background-color: #161b22;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 520px;
+  padding: 40px;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  animation: fadeInUp 0.3s ease;
+}
+
+.create-modal-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.create-modal-hint {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.create-textarea {
+  width: 100%;
+  min-height: 160px;
+  padding: 16px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-primary);
+  resize: vertical;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.create-textarea:focus {
+  border-color: var(--accent-blue);
+}
+
+.create-textarea::placeholder {
+  color: var(--text-secondary);
+}
+
+.create-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.char-count {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+@media (max-width: 640px) {
+  .create-modal-container {
+    padding: 24px 20px;
+  }
+
+  .create-modal-title {
+    font-size: 20px;
+  }
+}

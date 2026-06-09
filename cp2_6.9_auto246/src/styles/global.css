@@ -1,0 +1,82 @@
+:root {
+  --bg-primary: #0d1117;
+  --bg-card: #1e2a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #8b949e;
+  --accent-purple: #8b5cf6;
+  --accent-blue: #3b82f6;
+  --shadow-card: #00000040;
+  --overlay: #00000080;
+  --continue-color: #10b981;
+  --refute-color: #ef4444;
+  --border-color: #30363d;
+  --input-bg: #161b22;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-btn {
+  background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+  color: white;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.gradient-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.gradient-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
