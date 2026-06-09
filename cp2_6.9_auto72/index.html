@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>水下生态模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A1A2E;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: none;
+    }
+
+    .hud {
+      position: fixed;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: #E0F7FA;
+      padding: 16px 20px;
+      pointer-events: none;
+    }
+
+    #hud-left {
+      left: 20px;
+      bottom: 20px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    #hud-left .title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #A0D8EF;
+    }
+
+    #hud-left .count {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #hud-left .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    #hud-right {
+      right: 20px;
+      bottom: 20px;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    #hud-right .time-label {
+      font-size: 12px;
+      color: #A0D8EF;
+      opacity: 0.8;
+    }
+
+    #hud-right .time-value {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      font-family: 'Courier New', monospace;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="hud" id="hud-left">
+    <div class="title">🌊 生态监测</div>
+    <div class="count"><span class="dot" style="background: #FF8C00;"></span> 热带鱼：<span id="count-fish">0</span> 条</div>
+    <div class="count"><span class="dot" style="background: #E0B0FF;"></span> 水母：<span id="count-jellyfish">0</span> 只</div>
+    <div class="count"><span class="dot" style="background: #2E8B57;"></span> 海龟：<span id="count-turtle">0</span> 只</div>
+  </div>
+
+  <div class="hud" id="hud-right">
+    <div class="time-label">仿真时间</div>
+    <div class="time-value" id="sim-time">00:00</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
