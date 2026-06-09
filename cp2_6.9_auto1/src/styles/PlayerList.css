@@ -1,0 +1,162 @@
+.player-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.player-list.empty {
+  justify-content: center;
+  align-items: center;
+}
+
+.player-list .empty-state {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.player-list .empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.6;
+}
+
+.player-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-list-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: white;
+}
+
+.answer-progress {
+  display: flex;
+  align-items: center;
+}
+
+.answer-count {
+  font-size: 0.85rem;
+  color: #2ed573;
+  background: rgba(46, 213, 115, 0.1);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.player-grid {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-right: 0.5rem;
+}
+
+.player-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.player-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.player-grid::-webkit-scrollbar-thumb {
+  background: rgba(233, 69, 96, 0.5);
+  border-radius: 3px;
+}
+
+.player-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.player-card.answered {
+  background: rgba(46, 213, 115, 0.08);
+  border-color: rgba(46, 213, 115, 0.3);
+}
+
+.player-avatar {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e94560, #c73659);
+  border-radius: 10px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.player-card.answered .player-avatar {
+  background: linear-gradient(135deg, #2ed573, #1fa85a);
+}
+
+.player-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.player-info .player-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-status {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.player-card.answered .player-status {
+  color: #2ed573;
+}
+
+.player-score-mini {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e94560;
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+  text-align: right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .player-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .player-list {
+    max-height: 350px;
+  }
+}
