@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2D仿生机器人群集运动沙盒</title>
+  <style>
+    :root {
+      --bg-primary: #1B1B2F;
+      --bg-panel: rgba(35, 35, 64, 0.8);
+      --bg-info: rgba(13, 13, 26, 0.9);
+      --accent-cyan: #00D4AA;
+      --accent-orange: #FF8C42;
+      --accent-green: #00FF88;
+      --text-primary: #CCCCCC;
+      --text-secondary: #888888;
+      --obstacle: rgba(136, 136, 136, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-primary);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: var(--text-primary);
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-wrapper {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    #main-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      box-shadow: 0 0 20px rgba(0, 212, 170, 0.3),
+                  inset 0 0 0 1px rgba(0, 212, 170, 0.6);
+      display: block;
+    }
+
+    #toggle-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 36px;
+      height: 36px;
+      background: var(--bg-panel);
+      border: 1px solid rgba(0, 212, 170, 0.4);
+      border-radius: 8px;
+      color: var(--accent-cyan);
+      font-size: 18px;
+      cursor: pointer;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    #toggle-panel:hover {
+      background: rgba(0, 212, 170, 0.15);
+      border-color: var(--accent-cyan);
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 280px;
+      max-height: calc(100vh - 100px);
+      background: var(--bg-panel);
+      border-radius: 10px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 170, 0.25);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      overflow-y: auto;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    #control-panel.collapsed {
+      transform: translateX(calc(100% + 24px));
+    }
+
+    #control-panel h2 {
+      font-size: 16px;
+      color: var(--accent-cyan);
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .slider-label .name {
+      color: var(--text-primary);
+    }
+
+    .slider-label .value {
+      color: var(--accent-cyan);
+      font-weight: bold;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 212, 170, 0.15);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 212, 170, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--accent-cyan);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 212, 170, 0.6);
+    }
+
+    .stats-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 212, 170, 0.2);
+    }
+
+    .stats-section h3 {
+      font-size: 14px;
+      color: var(--accent-cyan);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+
+    .stat-row .stat-label {
+      color: var(--text-secondary);
+    }
+
+    .stat-row .stat-value {
+      color: var(--accent-orange);
+      font-weight: bold;
+    }
+
+    .help-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(0, 212, 170, 0.2);
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .help-section p {
+      margin-bottom: 4px;
+    }
+
+    .help-section kbd {
+      background: rgba(0, 212, 170, 0.15);
+      border: 1px solid rgba(0, 212, 170, 0.4);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--accent-cyan);
+      font-family: inherit;
+      font-size: 11px;
+    }
+
+    #info-bar {
+      position: relative;
+      height: 50px;
+      background: var(--bg-info);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 24px;
+      border-top: 1px solid rgba(0, 212, 170, 0.2);
+      font-size: 14px;
+      z-index: 5;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-item .info-label {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .info-item .info-value {
+      color: var(--accent-cyan);
+      font-weight: bold;
+      font-size: 15px;
+      min-width: 40px;
+      text-align: left;
+    }
+
+    .info-item .info-value.fps {
+      color: var(--accent-orange);
+    }
+
+    @media (max-width: 768px) {
+      #toggle-panel {
+        display: flex;
+        top: 12px;
+        right: 12px;
+      }
+
+      #control-panel {
+        top: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-height: 60vh;
+        border-radius: 0 0 16px 16px;
+        transform: translateY(-100%);
+      }
+
+      #control-panel.mobile-open {
+        transform: translateY(0);
+      }
+
+      #control-panel.collapsed {
+        transform: translateY(-100%);
+      }
+
+      #info-bar {
+        padding: 0 12px;
+        font-size: 12px;
+      }
+
+      .info-item .info-value {
+        font-size: 13px;
+      }
+    }
+
+    #control-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #control-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #control-panel::-webkit-scrollbar-thumb {
+      background: rgba(0, 212, 170, 0.3);
+      border-radius: 3px;
+    }
+
+    #control-panel::-webkit-scrollbar-thumb:hover {
+      background: rgba(0, 212, 170, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-wrapper">
+      <canvas id="main-canvas"></canvas>
+      <button id="toggle-panel" title="切换控制面板">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+      <aside id="control-panel">
+        <h2>⚙ 群集参数</h2>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="name">分离 (Separation)</span>
+            <span class="value" id="sep-value">1.5</span>
+          </div>
+          <input type="range" id="sep-slider" min="0" max="3" step="0.1" value="1.5" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="name">对齐 (Alignment)</span>
+            <span class="value" id="ali-value">1.0</span>
+          </div>
+          <input type="range" id="ali-slider" min="0" max="3" step="0.1" value="1.0" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="name">凝聚 (Cohesion)</span>
+            <span class="value" id="coh-value">1.0</span>
+          </div>
+          <input type="range" id="coh-slider" min="0" max="3" step="0.1" value="1.0" />
+        </div>
+
+        <div class="stats-section">
+          <h3>📊 实时统计</h3>
+          <div class="stat-row">
+            <span class="stat-label">平均速度</span>
+            <span class="stat-value" id="panel-avg-speed">0.00</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">聚类系数</span>
+            <span class="stat-value" id="panel-cluster">0.00</span>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <p>🖱 点击画布放置食物源</p>
+          <p>🖱 拖拽灰色障碍物移动</p>
+          <p>⌨ 按 <kbd>R</kbd> 清除所有食物源</p>
+        </div>
+      </aside>
+    </div>
+
+    <div id="info-bar">
+      <div class="info-item">
+        <span class="info-label">机器人数量</span>
+        <span class="info-value" id="info-count">0</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">平均速度</span>
+        <span class="info-value" id="info-speed">0.00</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">聚类系数</span>
+        <span class="info-value" id="info-cluster">0.00</span>
+      </div>
+      <div class="info-item">
+        <span class="info-label">帧率</span>
+        <span class="info-value fps" id="info-fps">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
