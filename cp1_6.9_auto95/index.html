@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>墨韵 - 动态水墨画</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #faf5e8;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+      overflow-x: hidden;
+    }
+
+    .app-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .app-title {
+      position: absolute;
+      top: -60px;
+      left: -30px;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      font-size: 28px;
+      color: #3a2a1a;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      letter-spacing: 8px;
+      text-shadow: 2px 2px 0 rgba(58, 42, 26, 0.15),
+                   4px 4px 0 rgba(58, 42, 26, 0.08);
+      user-select: none;
+    }
+
+    .main-container {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .palette {
+      width: 40px;
+      height: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 10px 8px;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .palette-item {
+      width: 24px;
+      height: 60px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .palette-item:hover {
+      transform: scale(1.05);
+    }
+
+    .palette-item.active {
+      border-color: #3a2a1a;
+      box-shadow: 0 0 0 3px rgba(58, 42, 26, 0.2);
+    }
+
+    .canvas-area {
+      position: relative;
+    }
+
+    .brush-bar {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .brush-btn {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      padding: 8px;
+    }
+
+    .brush-btn:hover {
+      background: rgba(255, 255, 255, 0.65);
+      transform: translateY(-2px);
+    }
+
+    .brush-btn.active {
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 255, 255, 0.75);
+    }
+
+    .brush-btn svg {
+      width: 100%;
+      height: 100%;
+      fill: #3a2a1a;
+    }
+
+    .canvas-frame {
+      position: relative;
+      border: 2px solid #5a3a1a;
+      border-radius: 4px;
+      box-shadow: 0 8px 32px rgba(90, 58, 26, 0.2);
+    }
+
+    #mainCanvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    #diffusionCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    #animationCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .action-bar {
+      position: absolute;
+      top: -50px;
+      right: 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: #3a2a1a;
+      background: rgba(255, 255, 255, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-100px);
+      background: rgba(58, 42, 26, 0.9);
+      color: #faf5e8;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 1000px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .palette {
+        width: auto;
+        height: 40px;
+        flex-direction: row;
+        order: 2;
+        margin-top: 16px;
+      }
+
+      .palette-item {
+        width: 50px;
+        height: 24px;
+      }
+
+      .canvas-frame {
+        width: 85vw;
+      }
+
+      #mainCanvas,
+      #diffusionCanvas,
+      #animationCanvas {
+        width: 85vw;
+        height: auto;
+      }
+
+      .app-title {
+        position: relative;
+        top: 0;
+        left: 0;
+        writing-mode: horizontal-tb;
+        margin-bottom: 20px;
+        letter-spacing: 4px;
+      }
+
+      .action-bar {
+        top: -45px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-wrapper">
+    <h1 class="app-title">墨韵</h1>
+    <div class="main-container">
+      <div class="palette" id="palette">
+        <div class="palette-item active" data-color="#1a1a1a" style="background-color: #1a1a1a;" title="纯黑"></div>
+        <div class="palette-item" data-color="#555555" style="background-color: #555555;" title="淡墨"></div>
+        <div class="palette-item" data-color="#2a4a6a" style="background-color: #2a4a6a;" title="花青"></div>
+        <div class="palette-item" data-color="#6a4a2a" style="background-color: #6a4a2a;" title="赭石"></div>
+        <div class="palette-item" data-color="#8a7a3a" style="background-color: #8a7a3a;" title="藤黄"></div>
+      </div>
+
+      <div class="canvas-area">
+        <div class="brush-bar" id="brushBar">
+          <button class="brush-btn active" data-brush="normal" title="普通">
+            <svg viewBox="0 0 24 24"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a.996.996 0 00-1.41 0L9 12.25 11.75 15l8.96-8.96a.996.996 0 000-1.41z"/></svg>
+          </button>
+          <button class="brush-btn" data-brush="dry" title="枯笔">
+            <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z" opacity="0.3"/><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z" opacity="0.4"/></svg>
+          </button>
+          <button class="brush-btn" data-brush="splash" title="泼墨">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5" opacity="0.8"/><circle cx="5" cy="8" r="2" opacity="0.5"/><circle cx="19" cy="7" r="1.5" opacity="0.4"/><circle cx="18" cy="17" r="2.5" opacity="0.6"/><circle cx="6" cy="16" r="1.8" opacity="0.45"/></svg>
+          </button>
+          <button class="brush-btn" data-brush="dot" title="点苔">
+            <svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="1.5"/><circle cx="12" cy="4" r="1"/><circle cx="18" cy="7" r="1.2"/><circle cx="4" cy="12" r="1.3"/><circle cx="10" cy="11" r="1.8"/><circle cx="16" cy="13" r="1.1"/><circle cx="7" cy="18" r="1.4"/><circle cx="13" cy="19" r="1"/><circle cx="19" cy="17" r="1.6"/></svg>
+          </button>
+          <button class="brush-btn" data-brush="texture" title="皴擦">
+            <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z" opacity="0.3"/><path d="M4 8h16v1H4zM4 13h16v1H4zM4 18h16v1H4z" stroke="#3a2a1a" stroke-width="0.5" fill="none"/></svg>
+          </button>
+        </div>
+
+        <div class="canvas-frame">
+          <div class="action-bar">
+            <button class="action-btn" id="undoBtn" disabled>撤销</button>
+            <button class="action-btn" id="clearBtn">清空</button>
+            <button class="action-btn" id="exportBtn">导出</button>
+          </div>
+          <canvas id="mainCanvas" width="900" height="600"></canvas>
+          <canvas id="diffusionCanvas" width="900" height="600"></canvas>
+          <canvas id="animationCanvas" width="900" height="600"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="/src/app.ts"></script>
+</body>
+</html>
