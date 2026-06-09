@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:02:02.784Z",
+  "task_name": "auto25",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个用于记录和复盘个人每日时间消耗的时间追踪应用，让用户通过标签化记录每个时间块的活动内容，并生成可视化时间分布报告。使用TypeScript、React和Vite实现，后端用Node.js模拟API。文件结构如下：\n - package.json（含依赖：react、react-dom、react-router-dom、recharts、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、express、uuid，启动脚本：npm run dev和node server.js）\n - vite.config.js（构建配置，代理/api至本地端口3001）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口页面，设置全屏根容器和全局字体样式）\n - server.js（后端模拟API文件，提供REST接口：GET /api/entries返回条目标签和时间数据，POST /api/entries添加新条目，数据存于内存数组）\n - src/App.tsx（主应用组件，配置路由：/对应时间线视图，/report对应报告视图）\n - src/components/Timeline.tsx（时间线组件，职责：渲染今日时间块列表，支持按日期筛选和删除操作，调用fetchEntries和addEntry API）\n - src/components/Report.tsx（报告组件，职责：从API获取全部条目数据，使用recharts绘制柱状图展示各标签累计时长和饼图展示占比，显示总记录天数）\n - src/utils/api.ts（API工具，职责：封装fetch请求，添加统一错误处理和加载状态标记）\n\n具体需求：\n1. 用户可以添加时间条目：选择一个预定义标签（如工作、学习、健身、阅读、娱乐、家务），输入开始时间和结束时间（精确到分钟），提交后自动计算时长（分钟），并通过POST请求保存到后端，提交后列表立即更新，响应时间不超过300ms。\n2. 时间线视图默认展示今日所有条目，按开始时间倒序排列，每条显示标签图标（使用emoji）、时间范围（如14:30-15:45）和时长（分钟），右侧提供删除按钮，点击后发送DELETE请求移除条目并触发列表刷新，删除操作有简单的淡出动画（持续200ms）。\n3. 报告视图从GET /api/entries拉取所有历史数据（模拟至少20条预置数据），用柱状图展示每个标签的总时长（分钟），柱体颜色与标签颜色一致（工作：#4A90D9，学习：#50C878，健身：#FF6B6B，阅读：#FFD93D，娱乐：#C084FC，家务：#FB923C），柱状图带数值标签动画（加载时从底部升起）。\n4. 报告视图还提供一个环形饼图，展示各标签时长占比，饼图中心显示总记录天数（根据日期去重计算，模拟至少5天数据），鼠标悬停在扇区时显示标签名和时长，带有平滑的进入动画（旋转入场，持续时间500ms）。\n5. 页面顶部有导航栏，包含“时间线”和“报告”两个切换链接，当前激活的链接下方有下划线滑动动画（滑动距离与文字宽度自适应），背景为白色，链接文字使用深灰色（#333），激活态使用主色调蓝色（#4A90D9）。\n\n界面方面：整体页面采用浅灰背景（#F5F7FA），中心内容区域最大宽度900px并居中，带圆角白色卡片（#FFFFFF，box-shadow: 0 2px 12px rgba(0,0,0,0.08)）。时间线视图中每个条目为横向卡片布局，左对齐标签emoji，中间显示描述和时长，右侧为删除按钮，鼠标悬停时卡片背景变为浅蓝（#EBF4FF），并有轻微上移效果（transform: translateY(-2px)，transition 0.2s）。添加条目的表单在时间线视图顶部，各输入框之间有合适间距，提交按钮使用主色调蓝色，点击时缩小反馈（transform: scale(0.95)）。响应式适配：在小于600px宽度的屏幕上，表单元素堆叠为纵向排列，卡片内文字缩小至14px，导航栏链接字号缩小至16px。布局整齐，所有交互反馈即时。\n\n性能要求：页面初次加载时通过API获取数据并在1秒内完成渲染，交互响应（添加、删除条目）不超过300ms，动画流畅不掉帧。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:7367b73188a7c1fe58ac0a03c0f0a6db_6a26f548f8ce7c9ff5493001.6a26f57bf8ce7c9ff5493011.6a26f57bd44bd9ae06df9a2c:Trae CN.T(2026/6/9 01:01:47)",
+    "user_id": "3986207660317399",
+    "trace_id": "7367b73188a7c1fe58ac0a03c0f0a6db",
+    "session_id": "6a26f548f8ce7c9ff5493001",
+    "task_id": "6a26f57bf8ce7c9ff5493011",
+    "message_id": "6a26f57bd44bd9ae06df9a2c",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:01:47",
+    "format": "full"
+  },
+  "trace": "null"
+}
