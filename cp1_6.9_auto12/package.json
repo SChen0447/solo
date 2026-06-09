@@ -1,6 +1,7 @@
 {
-  "name": "city-energy-3d-visualization",
+  "name": "origami-studio",
   "version": "1.0.0",
+  "description": "基于浏览器的动态折纸艺术创作与模拟",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,13 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.160.0",
-    "d3": "7.8.5"
+    "three": "0.160.0"
   },
   "devDependencies": {
-    "@types/three": "^0.160.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.8",
-    "@types/d3": "^7.4.3"
+    "typescript": "5.4.5",
+    "vite": "5.4.0",
+    "@types/three": "0.160.0"
   }
 }
