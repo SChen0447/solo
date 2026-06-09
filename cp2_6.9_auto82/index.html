@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生态觅食模拟器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #F0F0F0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #2C2C2C;
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .main-container {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .panel {
+      width: 150px;
+      background: #FFFFFF;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+      padding: 14px;
+      font-size: 14px;
+    }
+
+    .panel-left {
+      border-radius: 8px 0 0 8px;
+    }
+
+    .panel-right {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #2C2C2C;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #E0E0E0;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 14px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2C2C2C;
+    }
+
+    .stat-value.hunger {
+      color: #E67E22;
+    }
+
+    .canvas-wrapper {
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .heatmap-container {
+      margin-top: 8px;
+    }
+
+    .heatmap {
+      width: 100%;
+      image-rendering: pixelated;
+      border-radius: 4px;
+      border: 1px solid #E0E0E0;
+    }
+
+    .heatmap-legend {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #888;
+      margin-top: 6px;
+    }
+
+    .control-bar {
+      margin-top: 16px;
+      background: #333333;
+      border-radius: 10px;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      width: fit-content;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .control-label {
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 140px;
+      height: 6px;
+      background: #555555;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #FF9800;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #FFB74D;
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #FF9800;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s ease, transform 0.15s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #FFB74D;
+      transform: scale(1.1);
+    }
+
+    .slider-value {
+      color: #FF9800;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    .btn {
+      background: #FF9800;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: #FFB74D;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn:disabled {
+      background: #888;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="title">生态觅食模拟器</div>
+    <div class="main-container">
+      <div class="panel panel-left" id="infoPanel">
+        <div class="panel-title">仿真数据</div>
+        <div class="stat-item">
+          <span class="stat-label">兔子存活</span>
+          <span class="stat-value" id="rabbitCount">20/20</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">平均饥饿值</span>
+          <span class="stat-value hunger" id="avgHunger">50%</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">狐狸数量</span>
+          <span class="stat-value" id="foxCount">3</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">食物资源</span>
+          <span class="stat-value" id="foodCount">15</span>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="simCanvas" width="800" height="600"></canvas>
+      </div>
+      <div class="panel panel-right" id="heatmapPanel">
+        <div class="panel-title">食物热力图</div>
+        <div class="heatmap-container">
+          <canvas class="heatmap" id="heatmapCanvas" width="20" height="15"></canvas>
+          <div class="heatmap-legend">
+            <span>低</span>
+            <span>高</span>
+          </div>
+        </div>
+        <div class="panel-title" style="margin-top: 18px;">兔群热点</div>
+        <div class="heatmap-container">
+          <canvas class="heatmap" id="rabbitHeatmapCanvas" width="20" height="15"></canvas>
+          <div class="heatmap-legend">
+            <span>稀疏</span>
+            <span>密集</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="control-bar">
+      <div class="control-group">
+        <span class="control-label">狐狸速度倍率</span>
+        <div class="slider-wrapper">
+          <input type="range" id="foxSpeedSlider" min="0.5" max="2.0" step="0.1" value="1.0" />
+          <span class="slider-value" id="foxSpeedValue">1.0x</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <button class="btn" id="addFoxBtn">添加狐狸</button>
+        <button class="btn" id="resetBtn">重置仿真</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
