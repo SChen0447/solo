@@ -1,23 +1,101 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>虚拟乐器合奏平台</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body {
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-        min-height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        color: #fff;
-        overflow-x: hidden;
-      }
-      #root { min-height: 100vh; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光能齿轮 - Gear of Light</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      min-width: 720px;
+      font-family: 'Courier New', Courier, monospace;
+    }
+    body {
+      background: linear-gradient(180deg, #3d2b1f 0%, #1a0f0a 100%);
+    }
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    #level-label {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 24px;
+      font-family: 'Courier New', Courier, monospace;
+      text-shadow: 0.5px 0.5px 0px rgba(0, 0, 0, 0.3);
+      pointer-events: none;
+      z-index: 10;
+    }
+    #angle-indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 120px;
+      height: 120px;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #tooltip {
+      position: fixed;
+      color: #ffffff;
+      font-size: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.5), 0 0 8px rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      display: none;
+      z-index: 20;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+    #level-complete {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffdd44;
+      font-size: 48px;
+      font-family: 'Courier New', Courier, monospace;
+      text-shadow: 0 0 20px rgba(255, 221, 68, 0.8), 0.5px 0.5px 0px rgba(0, 0, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      transition: opacity 1s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="level-label">LEVEL 1</div>
+  <svg id="angle-indicator" viewBox="0 0 120 120">
+    <defs>
+      <radialGradient id="indicatorGrad" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.05" />
+      </radialGradient>
+    </defs>
+    <circle cx="60" cy="60" r="55" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+    <path id="indicator-sector" d="" fill="url(#indicatorGrad)" />
+    <circle cx="60" cy="60" r="3" fill="rgba(255,255,255,0.5)" />
+    <line id="indicator-line" x1="60" y1="60" x2="60" y2="8" stroke="rgba(255,255,255,0.6)" stroke-width="2" />
+  </svg>
+  <div id="tooltip"></div>
+  <div id="level-complete">关卡完成!</div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
