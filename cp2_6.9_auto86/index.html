@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rhythm Runner - 节奏跑酷</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0F0C29;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    #gameCanvas {
+      display: block;
+      background: linear-gradient(180deg, #0F0C29 0%, #302B63 100%);
+      box-shadow: 0 0 60px rgba(0, 245, 255, 0.15);
+      border-radius: 8px;
+    }
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 32px;
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 8px 8px 0 0;
+    }
+    #hud.hidden {
+      display: none;
+    }
+    .hud-score {
+      font-family: Consolas, monospace;
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+    .hud-combo {
+      font-family: Consolas, monospace;
+      font-size: 20px;
+      font-weight: bold;
+      color: #00FF88;
+      transition: opacity 0.25s;
+    }
+    .hud-combo.flash {
+      animation: comboFlash 0.5s infinite;
+    }
+    @keyframes comboFlash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .hud-lives {
+      display: flex;
+      gap: 6px;
+      margin-left: auto;
+    }
+    .heart {
+      width: 18px;
+      height: 16px;
+      position: relative;
+      transition: filter 0.3s;
+    }
+    .heart.lost {
+      filter: grayscale(1) brightness(0.5);
+    }
+    .heart::before,
+    .heart::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 16px;
+      background: #FF3366;
+      border-radius: 10px 10px 0 0;
+    }
+    .heart::before {
+      left: 0;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+    .heart::after {
+      right: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+    #songSelect {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 26, 46, 0.85);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      transition: opacity 0.4s ease;
+      border-radius: 8px;
+    }
+    #songSelect.fading {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #songSelect.hidden {
+      display: none;
+    }
+    .song-title {
+      font-size: 32px;
+      font-weight: bold;
+      margin-bottom: 32px;
+      background: linear-gradient(90deg, #FF6B6B, #00F5FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 4px;
+    }
+    .song-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 32px;
+      width: 480px;
+    }
+    .song-item {
+      height: 40px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(48, 43, 99, 0.6);
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .song-item:hover {
+      background: rgba(48, 43, 99, 0.9);
+      transform: translateX(8px);
+    }
+    .song-item.selected {
+      border-color: #FF6B6B;
+      box-shadow: 0 0 20px rgba(255, 107, 107, 0.4);
+    }
+    .song-name {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .song-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+      opacity: 0.8;
+    }
+    .song-duration {
+      font-family: Consolas, monospace;
+    }
+    .song-difficulty {
+      color: #FFD700;
+      letter-spacing: 2px;
+    }
+    #startBtn {
+      width: 160px;
+      height: 48px;
+      background: #FF6B6B;
+      color: #ffffff;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 2px;
+    }
+    #startBtn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.03);
+      box-shadow: 0 0 30px rgba(255, 107, 107, 0.5);
+    }
+    #startBtn:active {
+      transform: scale(0.98);
+      filter: brightness(0.95);
+    }
+    #gameOver {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(26, 26, 46, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+    }
+    #gameOver.visible {
+      display: flex;
+    }
+    .gameover-title {
+      font-size: 48px;
+      font-weight: bold;
+      color: #FF6B6B;
+      margin-bottom: 24px;
+      letter-spacing: 4px;
+    }
+    .gameover-score {
+      font-family: Consolas, monospace;
+      font-size: 36px;
+      color: #FFD700;
+      margin-bottom: 8px;
+    }
+    .gameover-maxcombo {
+      font-size: 18px;
+      color: #00FF88;
+      margin-bottom: 32px;
+    }
+    #restartBtn {
+      width: 160px;
+      height: 48px;
+      background: #00F5FF;
+      color: #0F0C29;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 2px;
+    }
+    #restartBtn:hover {
+      filter: brightness(1.1);
+      transform: scale(1.03);
+      box-shadow: 0 0 30px rgba(0, 245, 255, 0.5);
+    }
+    #restartBtn:active {
+      transform: scale(0.98);
+    }
+    .judgement-text {
+      position: absolute;
+      font-family: Consolas, monospace;
+      font-size: 28px;
+      font-weight: bold;
+      pointer-events: none;
+      transition: opacity 0.3s, transform 0.3s;
+      z-index: 20;
+      text-shadow: 0 0 10px currentColor;
+    }
+    .judgement-text.show {
+      animation: judgePopup 0.5s ease-out forwards;
+    }
+    @keyframes judgePopup {
+      0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+      30% { opacity: 1; transform: translateY(0) scale(1.1); }
+      100% { opacity: 0; transform: translateY(-30px) scale(1); }
+    }
+    .perfect-flash {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40%;
+      background: linear-gradient(180deg, transparent, rgba(0, 245, 255, 0.2));
+      pointer-events: none;
+      opacity: 0;
+      z-index: 5;
+      border-radius: 0 0 8px 8px;
+    }
+    .perfect-flash.active {
+      animation: flashActive 0.15s ease-out;
+    }
+    @keyframes flashActive {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+    <div id="hud" class="hidden">
+      <span class="hud-score" id="hudScore">0</span>
+      <span class="hud-combo" id="hudCombo">COMBO 0</span>
+      <div class="hud-lives" id="hudLives"></div>
+    </div>
+    <div class="perfect-flash" id="perfectFlash"></div>
+    <div id="songSelect">
+      <div class="song-title">RHYTHM RUNNER</div>
+      <div class="song-list" id="songList"></div>
+      <button id="startBtn">开 始</button>
+    </div>
+    <div id="gameOver">
+      <div class="gameover-title">GAME OVER</div>
+      <div class="gameover-score" id="finalScore">0</div>
+      <div class="gameover-maxcombo" id="finalMaxCombo">MAX COMBO: 0</div>
+      <button id="restartBtn">重新开始</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
