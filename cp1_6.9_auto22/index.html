@@ -1,12 +1,192 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>图片滤镜工作室</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>熔岩灯气泡实验室</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: 'Courier New', Consolas, monospace;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+    .control-panel {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 220px;
+      padding: 16px;
+      background: rgba(20, 20, 30, 0.85);
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ccccdd;
+      border: 1px solid rgba(255, 136, 51, 0.3);
+      animation: borderGlow 1.5s ease-in-out infinite;
+      z-index: 10;
+    }
+    @keyframes borderGlow {
+      0%, 100% {
+        box-shadow: 0 0 8px rgba(255, 136, 51, 0.2), inset 0 0 8px rgba(255, 136, 51, 0.05);
+        border-color: rgba(255, 136, 51, 0.3);
+      }
+      50% {
+        box-shadow: 0 0 16px rgba(255, 136, 51, 0.4), inset 0 0 12px rgba(255, 136, 51, 0.1);
+        border-color: rgba(255, 136, 51, 0.6);
+      }
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffdd44;
+      margin-bottom: 16px;
+      text-align: center;
+      text-shadow: 0 0 8px rgba(255, 221, 68, 0.5);
+      letter-spacing: 1px;
+    }
+    .control-group {
+      margin-bottom: 12px;
+    }
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: #ccccdd;
+    }
+    .control-value {
+      color: #ffaa44;
+      font-weight: bold;
+      min-width: 40px;
+      text-align: right;
+      transition: color 0.3s ease;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #1a1a3a, #3a1a2a);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff8833, #ffdd44);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 136, 51, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(255, 136, 51, 0.9);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff8833, #ffdd44);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 136, 51, 0.6);
+      border: none;
+    }
+    input[type="color"] {
+      width: 100%;
+      height: 32px;
+      border: none;
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 136, 51, 0.4);
+      border-radius: 4px;
+    }
+    @media (max-width: 768px) {
+      .control-panel {
+        top: 12px;
+        right: 12px;
+        left: 12px;
+        transform: none;
+        width: auto;
+        padding: 10px 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .panel-title {
+        width: 100%;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+      .control-group {
+        flex: 1 1 calc(33% - 8px);
+        min-width: 120px;
+        margin-bottom: 0;
+      }
+      .control-label {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div class="control-panel" id="controlPanel">
+      <div class="panel-title">🔥 熔岩灯控制台</div>
+      <div class="control-group">
+        <label class="control-label">
+          <span>容器背景色</span>
+        </label>
+        <input type="color" id="bgColor" value="#1a1a3a" />
+      </div>
+      <div class="control-group">
+        <label class="control-label">
+          <span>热源强度</span>
+          <span class="control-value" id="heatValue">100%</span>
+        </label>
+        <input type="range" id="heatIntensity" min="0" max="200" value="100" />
+      </div>
+      <div class="control-group">
+        <label class="control-label">
+          <span>速度倍率</span>
+          <span class="control-value" id="speedValue">1.0x</span>
+        </label>
+        <input type="range" id="speedMultiplier" min="50" max="300" value="100" />
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>
