@@ -2,75 +2,121 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>弹幕点歌台</title>
+    <title>数字瀑布流视觉诗</title>
     <style>
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
       }
-      html, body, #root {
+
+      html, body {
         width: 100%;
         height: 100%;
         overflow: hidden;
+        background: #000000;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       }
-      body {
-        background: #1a1a2e;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      }
-      .loader-container {
-        position: fixed;
-        top: 0;
-        left: 0;
+
+      #app {
+        position: relative;
         width: 100vw;
         height: 100vh;
+        overflow: hidden;
+      }
+
+      #canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+
+      #ui-bar {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
-        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        background: #1a1a2e;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
+        gap: 12px;
+        padding: 12px 20px;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid #00ffff;
+        border-radius: 8px;
+        z-index: 10;
       }
-      .loader-container.hidden {
-        opacity: 0;
-        pointer-events: none;
+
+      #keyword-input {
+        width: 240px;
+        height: 36px;
+        padding: 0 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(0, 255, 255, 0.3);
+        border-radius: 6px;
+        color: #ffffff;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
       }
-      .loader {
-        width: 60px;
-        height: 60px;
-        border: 4px solid rgba(106, 17, 203, 0.3);
-        border-top-color: #6a11cb;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
+
+      #keyword-input::placeholder {
+        color: #666666;
       }
-      .loader-text {
-        margin-top: 20px;
-        color: #fff;
-        font-size: 16px;
-        letter-spacing: 2px;
+
+      #keyword-input:focus {
+        border-color: #00ffff;
       }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+
+      .ui-btn {
+        height: 36px;
+        padding: 0 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: inherit;
+      }
+
+      #inject-btn {
+        background: #00ffff;
+        color: #000000;
+      }
+
+      #inject-btn:hover {
+        background: #66ffff;
+      }
+
+      #reset-btn {
+        background: rgba(255, 255, 255, 0.3);
+        color: #ffffff;
+      }
+
+      #reset-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
       }
     </style>
   </head>
   <body>
-    <div id="root"></div>
-    <div class="loader-container" id="loader">
-      <div class="loader"></div>
-      <div class="loader-text">正在进入直播间...</div>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="ui-bar">
+        <input
+          type="text"
+          id="keyword-input"
+          placeholder="输入关键词 (1-10字符)"
+          maxlength="10"
+        />
+        <button class="ui-btn" id="inject-btn">注入</button>
+        <button class="ui-btn" id="reset-btn">重置</button>
+      </div>
     </div>
-    <script type="module" src="/src/main.tsx"></script>
-    <script>
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loader = document.getElementById('loader');
-          if (loader) loader.classList.add('hidden');
-        }, 800);
-      });
-    </script>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
