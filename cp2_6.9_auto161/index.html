@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>声波共振解谜</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #2C2C3A;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      touch-action: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+    #hud {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-size: 24px;
+      text-align: center;
+      pointer-events: none;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      z-index: 10;
+    }
+    #hud .room-name {
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+    #hud .bounce-count {
+      margin-top: 8px;
+      font-size: 18px;
+      opacity: 0.8;
+    }
+    #control-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      width: 180px;
+      padding: 16px;
+      background: rgba(44, 44, 58, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+      transition: all 0.2s ease-in-out;
+    }
+    #control-panel label {
+      color: #ffffff;
+      font-size: 14px;
+      display: block;
+      margin-bottom: 8px;
+      opacity: 0.9;
+    }
+    #frequency-slider {
+      width: 100%;
+      height: 6px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+    }
+    #frequency-slider:hover {
+      transform: scale(1.05);
+    }
+    #reset-btn {
+      width: 100%;
+      padding: 10px;
+      background: #FF1744;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      transition: all 0.2s ease-in-out;
+    }
+    #reset-btn:hover {
+      background: #FF4569;
+      transform: scale(1.05);
+    }
+    #freq-display {
+      color: #00E5FF;
+      font-size: 12px;
+      text-align: right;
+      margin-top: -6px;
+      margin-bottom: 12px;
+    }
+    #victory-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    #victory-screen h1 {
+      color: #FFD700;
+      font-size: 72px;
+      text-shadow: 0 0 30px #FFD700, 0 0 60px #FFD700;
+      letter-spacing: 20px;
+    }
+    @media (max-width: 768px) {
+      #control-panel {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        padding: 20px 16px;
+        border-radius: 12px 12px 0 0;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 12px;
+      }
+      #control-panel label {
+        width: 100%;
+        margin-bottom: 0;
+      }
+      #frequency-slider {
+        flex: 1;
+        margin-bottom: 0;
+        min-width: 120px;
+      }
+      #freq-display {
+        margin-top: 0;
+        margin-bottom: 0;
+        min-width: 50px;
+      }
+      #reset-btn {
+        width: auto;
+        padding: 10px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="hud">
+      <div class="room-name">圆形房间</div>
+      <div class="bounce-count">反射次数: 0 / 10</div>
+    </div>
+    <div id="control-panel">
+      <label for="frequency-slider">频率 (Hz)</label>
+      <input type="range" id="frequency-slider" min="200" max="800" step="50" value="400" />
+      <div id="freq-display">400 Hz</div>
+      <button id="reset-btn">重置房间</button>
+    </div>
+    <div id="victory-screen">
+      <h1>通关</h1>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
