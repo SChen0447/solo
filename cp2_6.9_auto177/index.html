@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>手势绘图应用</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #121212;
+      color: #ffffff;
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: row;
+      gap: 24px;
+      align-items: flex-start;
+      max-width: 1200px;
+      width: 100%;
+    }
+
+    .main-area {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 640px;
+      height: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      padding: 0;
+    }
+
+    #video {
+      width: 640px;
+      height: 480px;
+      transform: scaleX(-1);
+      border-radius: 12px;
+      display: block;
+      object-fit: cover;
+    }
+
+    .status-bar {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+    }
+
+    .status-mode {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .status-mode.drawing {
+      color: #4CAF50;
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    .status-mode.paused {
+      color: #F44336;
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        opacity: 1;
+        text-shadow: 0 0 4px rgba(76, 175, 80, 0.4);
+      }
+      50% {
+        opacity: 0.6;
+        text-shadow: 0 0 12px rgba(76, 175, 80, 0.8);
+      }
+    }
+
+    .status-brush {
+      color: #cccccc;
+    }
+
+    .canvas-wrapper {
+      width: 640px;
+      height: 480px;
+      padding: 0;
+    }
+
+    #canvas {
+      width: 640px;
+      height: 480px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      display: block;
+      border: 2px solid transparent;
+      transition: border-color 0.1s ease;
+    }
+
+    #canvas.flash-border {
+      border-color: #ffffff;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+    }
+
+    .control-panel {
+      background-color: #1E1E1E;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      min-width: 240px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .slider-size {
+      background: #4CAF50;
+    }
+
+    .slider-color {
+      background: linear-gradient(to right,
+        hsl(0, 80%, 55%),
+        hsl(60, 80%, 55%),
+        hsl(120, 80%, 55%),
+        hsl(180, 80%, 55%),
+        hsl(240, 80%, 55%),
+        hsl(300, 80%, 55%),
+        hsl(360, 80%, 55%)
+      );
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    .slider:hover::-webkit-slider-thumb {
+      transform: scale(1.1);
+    }
+
+    .slider:active::-webkit-slider-thumb {
+      transform: scale(0.95);
+    }
+
+    .clear-btn {
+      background-color: #F44336;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 40px;
+    }
+
+    .clear-btn:hover {
+      background-color: #d32f2f;
+    }
+
+    .clear-btn:active {
+      transform: scale(0.95);
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 640px;
+      height: 480px;
+      background: #1E1E1E;
+      border-radius: 12px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    @media (max-width: 900px) {
+      .app-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .control-panel {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 640px;
+        max-width: 100%;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 180px;
+      }
+
+      .clear-btn {
+        flex: 0 0 auto;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .video-wrapper,
+      #video,
+      .canvas-wrapper,
+      #canvas,
+      .loading {
+        width: 100%;
+        max-width: 640px;
+        height: auto;
+        aspect-ratio: 4 / 3;
+      }
+
+      .control-panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="main-area">
+      <div class="video-wrapper">
+      <div class="status-bar">
+        <span id="statusMode" class="status-mode drawing">绘图中</span>
+        <span id="statusBrush" class="status-brush">笔刷: 4px</span>
+      </div>
+      <video id="video" autoplay playsinline muted></video>
+    </div>
+    <div class="canvas-wrapper">
+      <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+    </div>
+    <aside class="control-panel">
+      <div class="control-group">
+        <label class="control-label" for="sizeSlider">笔刷大小 (2-20px)</label>
+        <input id="sizeSlider" class="slider slider-size" type="range" min="2" max="20" step="1" value="4" />
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="colorSlider">颜色 (HSL色相)</label>
+        <input id="colorSlider" class="slider slider-color" type="range" min="0" max="360" step="1" value="60" />
+      </div>
+      <button id="clearBtn" class="clear-btn">清空画布</button>
+    </aside>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
