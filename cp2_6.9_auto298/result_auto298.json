@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T07:02:09.732Z",
+  "task_name": "auto298",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为“气味漂流瓶”的全栈Web应用，让用户像在海边捡到漂流瓶一样，随机收到来自世界某个角落陌生人留下的“气味故事”——一段融合了文字描述和预设香氛标签的留言，用户可以打开瓶子查看故事、添加自己的气味标签，然后将瓶子重新扔回海中等待下一个人拾取。使用TypeScript、React前端和Express后端实现。文件结构如下：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react，启动脚本：npm run dev）\n - index.html（入口页面，包含React挂载点）\n - vite.config.js（构建配置，代理/api到后端）\n - tsconfig.json（严格模式，jsx: react-jsx）\n - server.ts（Express服务器，提供/api/瓶子的CRUD路由，端口3001，返回JSON数据）\n - src/App.tsx（React根组件，管理全局状态和路由）\n - src/components/BottleCard.tsx（展示单个漂流瓶卡片，包括封蜡图标、来源地、故事内容和气味标签）\n\n具体需求：\n1. 用户进入页面后自动收到一个漂流瓶：从服务器随机获取一条未开启的“气味故事”，显示在屏幕中央的瓶形卡片中（卡片尺寸400x500px，圆角12px，背景色#FFF6E5，带有水波纹底纹和轻微阴影），点击“开启”按钮（椭圆形，背景#C2956B，字色#2C2C2C，hover时变为#E0B88A）后，卡片正面从中间裂开动画（使用CSS clip-path或scroll-driven animation）切换为背面显示完整故事内容（包括故事文字、关联气味标签、地理位置和投递时间戳，字体均为无衬线体）\n2. 用户可以为收到的故事添加最多3个自己的气味标签（从预设的20个气味库中选择，如“海盐、檀木、青梅、雨林、焦糖、硝烟、薄荷、玫瑰”等，标签为药丸形状，背景色#EAD5B8，字色#3D3D3D，选中时高亮为#C2956B并加粗），标签选择完成点击“封瓶”按钮（风格同“开启”），瓶子进入发送队列等待两秒后自动“随潮水消失”动画（瓶子缩小并旋转坠入屏幕底部，伴随粒子消散效果）\n3. 每个用户有5次“拾取”机会（每日刷新，显示在右上角圆角矩形计数器中，背景半透明#00000033，字色#2C2C2C），每次拾取后机会减1，用完显示“明日再来”提示（大字#8B4513，居中显示，下方有一个60秒倒计时灰色小字）\n4. 后端提供/api/bottles/random接口，返回单个漂流瓶对象（包含id、content、origin、tags、timestamp字段），/api/bottles/:id/tags接口接收用户提交的标签数组并存储，/api/bottles/:id/status接口返回瓶子是否已被拾取的布尔值\n5. 用户可查看自己的“收集册”：点击左下角书本图标进入，以网格形式展示最近5次拾取的瓶子（每个缩略图100x100px，圆角8px，带半透明遮罩和开启日期水印），点击任一缩略图可以重新打开并查看完整故事\n\n界面方面：整体采用复古航海风格配色，主背景为渐变#CBB894至#E6D6B3，带有手绘地图纹路噪点叠加，页面顶部有罗盘指针装饰SVG（颜色#8B6914），底部有海浪波纹CSS动画（使用@keyframes从透明到半透明#87CEEB循环，高度80px），触摸设备上支持左右滑动切换漂流瓶，加载过程中显示一个旋转的船舵图标（CSS自绘，直径60px，节拍1.5s）。\n\n性能要求：首屏加载时间不超过2秒（使用懒加载和代码分割），交互反馈延迟低于100ms。\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:7087ac2bd271bc4cdbae63e989041530_6a27ba01819b42d487e6dd55.6a27ba62819b42d487e6dda5.6a27ba61bbee69f27d460167:Trae CN.T(2026/6/9 15:01:54)",
+    "user_id": "3986207660317399",
+    "trace_id": "7087ac2bd271bc4cdbae63e989041530",
+    "session_id": "6a27ba01819b42d487e6dd55",
+    "task_id": "6a27ba62819b42d487e6dda5",
+    "message_id": "6a27ba61bbee69f27d460167",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 15:01:54",
+    "format": "full"
+  },
+  "trace": "null"
+}
