@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:34:39.380Z",
+  "task_name": "auto10",
+  "task_type": "0-1代码生成",
+  "business_domain": "游戏开发",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个基于重力模拟的沙盒物理游戏，玩家通过鼠标点击在画布上放置不同材质的沙子、水和石头，观察它们之间发生碰撞、堆积和流动等物理交互。使用TypeScript、HTML5 Canvas和Vite实现。文件结构如下：\n - package.json（含依赖：vite、typescript、@typescript-eslint/parser、@typescript-eslint/eslint-plugin，启动脚本：npm run dev）\n - vite.config.js（基础构建配置，入口指向index.html）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口，加载canvas并包含UI控制面板）\n - src/main.ts（游戏主循环，初始化canvas和粒子系统，处理鼠标事件）\n - src/particle.ts（粒子类，定义粒子位置、速度、材质类型和更新逻辑）\n - src/grid.ts（网格管理器，负责碰撞检测、粒子交换和重力模拟的格子化实现）\n\n具体需求：\n1. 提供三种材质画笔：沙粒（黄色、松散、易堆积）、水滴（蓝色、流动性强、受重力下落）、石块（灰色、不可移动、充当障碍），点击或拖拽鼠标连续放置，每帧最多生成5个新粒子。\n2. 鼠标右键点击可切换为擦除模式，移除半径15px内的所有粒子。\n3. 画布左上角显示实时粒子总数，右上角显示当前帧率（FPS），帧率低于30时自动降低粒子生成上限以保证流畅。\n4. 提供一个滑块控制重力方向（-90度到90度，倾斜时粒子沿斜面滑动），拖动时物理行为即时改变。\n5. 支持清空画布按钮和暂停/继续按钮，暂停时冻结所有粒子状态。\n\n界面方面：整体采用深灰色（#2d2d2d）背景画布，材质选择按钮以等宽排列在底部工具栏中，按钮使用沙色（#d4a373）、水蓝（#84a98c）和石灰色（#6c757d）区分材质；擦除模式按钮使用红色（#e74c3c）。滑块和操作按钮背景为半透明白（rgba(255,255,255,0.15)），鼠标悬停时有0.2s的亮度提升动画。画布区域响应式适配浏览器窗口大小（至少800x600），最小宽度600px时布局自动调整为纵向排列。材质放置时伴有轻微的粒子扩散动画（0.1s内从中心向外扩散）。\n\n性能要求：当粒子数达到3000时仍能保持30FPS以上，粒子碰撞检测复杂度控制在O(n)。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:9fc27e1ded6c80a60da9cf5cad84da53_6a26eec1bc0083c77a54d43c.6a26ef10bc0083c77a54d47d.6a26ef1097465a2a5a0cb35e:Trae CN.T(2026/6/9 00:34:24)",
+    "user_id": "3986207660317399",
+    "trace_id": "9fc27e1ded6c80a60da9cf5cad84da53",
+    "session_id": "6a26eec1bc0083c77a54d43c",
+    "task_id": "6a26ef10bc0083c77a54d47d",
+    "message_id": "6a26ef1097465a2a5a0cb35e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:34:24",
+    "format": "full"
+  },
+  "trace": "null"
+}

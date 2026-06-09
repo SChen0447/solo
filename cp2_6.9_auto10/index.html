@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>沙盒物理游戏 - Sandbox Physics</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: #1a1a1a;
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+      overflow-x: hidden;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 1400px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+    }
+
+    .header-left,
+    .header-right {
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      margin: 12px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #gameCanvas {
+      display: block;
+      cursor: crosshair;
+      background: #2d2d2d;
+    }
+
+    .toolbar {
+      width: 100%;
+      max-width: 1400px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .material-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    button:hover {
+      filter: brightness(1.2);
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.active {
+      box-shadow: 0 0 0 2px #ffffff, 0 0 16px rgba(255, 255, 255, 0.3);
+      filter: brightness(1.15);
+    }
+
+    .btn-sand {
+      background: #d4a373;
+      color: #3d2b1f;
+    }
+
+    .btn-water {
+      background: #84a98c;
+      color: #1e3a2f;
+    }
+
+    .btn-stone {
+      background: #6c757d;
+      color: #ffffff;
+    }
+
+    .btn-erase {
+      background: #e74c3c;
+      color: #ffffff;
+    }
+
+    .btn-clear {
+      background: rgba(231, 76, 60, 0.3);
+    }
+
+    .btn-clear:hover {
+      background: rgba(231, 76, 60, 0.5);
+    }
+
+    .btn-pause {
+      background: rgba(52, 152, 219, 0.3);
+    }
+
+    .btn-pause:hover {
+      background: rgba(52, 152, 219, 0.5);
+    }
+
+    .gravity-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+    }
+
+    .gravity-label {
+      font-size: 13px;
+      color: #ccc;
+      white-space: nowrap;
+    }
+
+    .gravity-value {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      min-width: 48px;
+      text-align: center;
+      color: #3498db;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 160px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      transition: background 0.2s ease;
+    }
+
+    input[type="range"]:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #3498db;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      filter: brightness(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #3498db;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn-icon {
+      font-size: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .material-group,
+      .control-group,
+      .action-group {
+        justify-content: center;
+      }
+
+      input[type="range"] {
+        width: 120px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 8px;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 8px;
+        padding: 4px 8px;
+      }
+
+      button {
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+
+      input[type="range"] {
+        width: 100px;
+      }
+
+      .gravity-control {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-left">
+      <span id="particleCount">粒子: 0</span>
+    </div>
+    <div class="header-right">
+      <span id="fps">FPS: 60</span>
+    </div>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas id="gameCanvas"></canvas>
+  </div>
+
+  <div class="toolbar">
+    <div class="material-group">
+      <button id="sandBtn" class="btn-sand">
+        <span class="btn-icon">🟡</span>
+        <span>沙子</span>
+      </button>
+      <button id="waterBtn" class="btn-water">
+        <span class="btn-icon">🔵</span>
+        <span>水</span>
+      </button>
+      <button id="stoneBtn" class="btn-stone">
+        <span class="btn-icon">⬜</span>
+        <span>石头</span>
+      </button>
+      <button id="eraseBtn" class="btn-erase">
+        <span class="btn-icon">🗑️</span>
+        <span>擦除</span>
+      </button>
+    </div>
+
+    <div class="control-group">
+      <div class="gravity-control">
+        <span class="gravity-label">重力方向</span>
+        <input type="range" id="gravitySlider" min="-90" max="90" value="0" step="1">
+        <span class="gravity-value" id="gravityValue">0°</span>
+      </div>
+    </div>
+
+    <div class="action-group">
+      <button id="clearBtn" class="btn-clear">
+        <span class="btn-icon">🧹</span>
+        <span>清空</span>
+      </button>
+      <button id="pauseBtn" class="btn-pause">
+        <span class="btn-icon">⏸</span>
+        <span>暂停</span>
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
