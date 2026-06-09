@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:31:42.923Z",
+  "task_name": "auto3",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够支持多人实时协作编辑思维导图的Web应用，主要解决远程团队在头脑风暴时无法同步编辑和实时沟通的问题。\n\n它应当具备以下能力：\n1) 核心编辑器：使用画布实现节点拖拽、连接线绘制、缩放平移，支持鼠标和触控操作。\n2) 实时协作：通过WebSocket实现多用户同时编辑的同步，光标位置和操作变化实时展示。\n3) 节点交互：每个节点支持文本编辑、颜色标记、折叠/展开子节点，连接线可添加标签。\n4) 数据持久化：自动保存到浏览器本地存储，并提供导出为JSON或PNG的功能。\n5) 历史记录：记录每次编辑操作，支持撤销/重做（最多50步），冲突时采用后写优先策略。\n\n界面方面要求：采用暗色主题（背景色#1a1a2e，节点色#16213e，高亮#0f3460），节点圆角10px，拖拽时有弹性缓动动画（easeOutCubic），连接线用渐变色（从#e94560到#533483）。左侧有可折叠的缩略图导航面板，右侧有节点属性编辑栏。鼠标悬停节点时出现微光晕效果，缩放时平滑过渡。响应式适配平板和手机，触控手势支持双指缩放和拖拽。性能上需要保持60FPS流畅编辑体验，同时在线协作延迟低于200ms。\n\n实现采用TypeScript、React（使用Canvas API而非第三方库）、WebSocket（原生）和Vite构建。按以下文件组织代码：\n - package.json（依赖：react, react-dom, typescript, @types/react, @types/react-dom, vite, @vitejs/plugin-react, less；包含启动脚本：npm run dev）\n - index.html（入口页面，挂载react根节点，设置暗色主题meta）\n - tsconfig.json（严格模式，esModuleInterop启用）\n - vite.config.js（配置React插件，less支持）\n - src/main.tsx（React入口，渲染App组件）\n - src/App.tsx（主布局，包含画布容器、侧边栏、工具栏、缩略图面板；管理全局状态：节点数据、历史栈、WebSocket连接）\n - src/components/MindMapCanvas.tsx（核心画布组件，实现节点渲染、拖拽、连线、缩放、动画，接收节点数据并触发更新回调）\n - src/utils/websocket.ts（WebSocket客户端封装，连接、消息序列化、重连逻辑）\n - src/utils/storage.ts（本地存储存读取、导出工具函数）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2c734c45192cf7626880e118a944f800_6a26edf46b65814a153c6944.6a26ee5f6b65814a153c6989.6a26ee5fb439b24d49459010:Trae CN.T(2026/6/9 00:31:27)",
+    "user_id": "3986207660317399",
+    "trace_id": "2c734c45192cf7626880e118a944f800",
+    "session_id": "6a26edf46b65814a153c6944",
+    "task_id": "6a26ee5f6b65814a153c6989",
+    "message_id": "6a26ee5fb439b24d49459010",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:31:27",
+    "format": "full"
+  },
+  "trace": "null"
+}
