@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素精灵编辑器</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>像素精灵编辑器</h1>
+    </header>
+
+    <main class="main-content">
+      <section class="canvas-section">
+        <div class="canvas-wrapper">
+          <canvas id="mainCanvas" width="640" height="640"></canvas>
+        </div>
+      </section>
+
+      <aside class="tool-panel">
+        <div class="panel-section">
+          <h3>绘制工具</h3>
+          <div class="tool-buttons" id="toolButtons">
+            <button class="tool-btn active" data-tool="pencil" title="铅笔">✏️</button>
+            <button class="tool-btn" data-tool="eraser" title="橡皮擦">🧽</button>
+            <button class="tool-btn" data-tool="fill" title="填充">🪣</button>
+            <button class="tool-btn" data-tool="picker" title="取色笔">💧</button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>笔刷大小</h3>
+          <select id="brushSize" class="control-select">
+            <option value="1">1 x 1</option>
+            <option value="3">3 x 3</option>
+            <option value="5">5 x 5</option>
+          </select>
+        </div>
+
+        <div class="panel-section">
+          <h3>颜色</h3>
+          <div class="color-palette" id="colorPalette"></div>
+          <div class="custom-color-row">
+            <input type="color" id="customColor" value="#FF0000" />
+            <span class="color-hex" id="colorHex">#FF0000</span>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h3>变换</h3>
+          <div class="transform-buttons">
+            <button class="transform-btn" id="flipH" title="水平翻转">⇋</button>
+            <button class="transform-btn" id="flipV" title="垂直翻转">⇵</button>
+            <button class="transform-btn" id="rotate90" title="旋转90°">↻</button>
+          </div>
+        </div>
+
+        <div class="panel-section animation-section">
+          <h3>动画帧</h3>
+          <div class="frame-actions">
+            <button class="btn btn-add" id="addFrame">+ 添加帧</button>
+            <button class="btn btn-delete" id="deleteFrame">删除</button>
+          </div>
+          <div class="frames-container" id="framesContainer"></div>
+          <div class="animation-controls">
+            <button class="btn btn-play" id="playBtn">▶ 播放</button>
+            <div class="speed-control">
+              <label>速度:</label>
+              <input type="range" id="speedSlider" min="0.5" max="3" step="0.5" value="1" />
+              <span id="speedValue">1x</span>
+            </div>
+          </div>
+          <label class="onion-skin-label">
+            <input type="checkbox" id="onionSkin" /> 洋葱皮效果
+          </label>
+        </div>
+
+        <div class="panel-section">
+          <button class="btn btn-export" id="exportBtn">导出精灵图</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
