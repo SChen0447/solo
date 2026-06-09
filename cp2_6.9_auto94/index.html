@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nebula Particle System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0B0719 0%, #1A0F2E 100%);
+      font-family: 'Courier New', monospace;
+    }
+
+    #canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+    }
+
+    #debug-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 12px;
+      background: rgba(11, 7, 25, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: #E0E0E0;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      line-height: 1.8;
+      z-index: 10;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    #debug-panel .accent {
+      background: linear-gradient(90deg, #FF6B6B, #FFD93D, #6BCB77);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="debug-panel">
+    <div>FPS: <span id="fps" class="accent">0</span></div>
+    <div>Particles: <span id="particle-count" class="accent">0</span></div>
+    <div>Avg Radius: <span id="avg-radius" class="accent">0.00</span>px</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
