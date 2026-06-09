@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手绘转SVG - Sketch to SVG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">手绘转SVG转换器</h1>
+    </header>
+
+    <main class="main-layout">
+      <section class="canvas-section">
+        <div class="canvas-wrapper">
+          <canvas id="drawingCanvas"></canvas>
+          <div class="canvas-corner corner-tl"></div>
+          <div class="canvas-corner corner-tr"></div>
+          <div class="canvas-corner corner-bl"></div>
+          <div class="canvas-corner corner-br"></div>
+        </div>
+      </section>
+
+      <aside class="control-panel">
+        <div class="panel-content">
+          <div class="control-group">
+            <label class="control-label">笔触粗细</label>
+            <input type="range" id="strokeWidth" min="1" max="8" value="3" class="stroke-slider">
+            <span id="strokeWidthValue" class="stroke-value">3px</span>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">风格效果</label>
+            <div class="style-buttons">
+              <button class="style-btn active" data-style="sketch">手绘保留</button>
+              <button class="style-btn" data-style="smooth">流畅曲线</button>
+              <button class="style-btn" data-style="geometric">几何简化</button>
+              <button class="style-btn" data-style="artistic">艺术夸张</button>
+            </div>
+          </div>
+
+          <div class="control-group action-group">
+            <button id="convertBtn" class="action-btn primary">转换</button>
+            <button id="undoBtn" class="action-btn">撤销 (Ctrl+Z)</button>
+            <button id="clearBtn" class="action-btn danger">清空</button>
+          </div>
+
+          <div class="control-group progress-group" id="progressGroup" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">转换中...</span>
+          </div>
+
+          <div class="control-group svg-group">
+            <label class="control-label">SVG 代码</label>
+            <textarea id="svgCode" class="svg-code" readonly></textarea>
+            <div class="svg-actions">
+              <button id="copyBtn" class="action-btn small">复制代码</button>
+              <button id="downloadBtn" class="action-btn small primary">下载 SVG</button>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
