@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>植物根系生长模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F5E6CA;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      filter: url(#noise);
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .main-area {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    .control-panel {
+      width: 200px;
+      background: rgba(30, 58, 95, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 8px;
+      padding: 16px;
+      color: #E0E0E0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #00BCD4;
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0, 188, 212, 0.3);
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #B0BEC5;
+    }
+
+    .slider-value {
+      color: #00BCD4;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #00BCD4;
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #00BCD4;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn:hover {
+      background: #26C6DA;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-secondary {
+      background: #546E7A;
+    }
+
+    .btn-secondary:hover {
+      background: #78909C;
+    }
+
+    .status-bar {
+      background: rgba(30, 58, 95, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 8px;
+      padding: 12px 20px;
+      color: #E0E0E0;
+      font-size: 14px;
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-label {
+      color: #B0BEC5;
+    }
+
+    .status-value {
+      color: #00BCD4;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #90A4AE;
+      text-align: center;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute">
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.05 0"/>
+    </filter>
+  </svg>
+
+  <div class="app-container">
+    <div class="main-area">
+      <div class="canvas-wrapper">
+        <canvas id="mainCanvas" width="800" height="600"></canvas>
+      </div>
+      <aside class="control-panel">
+        <div class="panel-title">控制面板</div>
+        
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>湿度分布种子</span>
+            <span class="slider-value" id="moistureSeedValue">42</span>
+          </div>
+          <input type="range" id="moistureSeed" min="0" max="100" step="1" value="42" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>养分分布种子</span>
+            <span class="slider-value" id="nutrientSeedValue">73</span>
+          </div>
+          <input type="range" id="nutrientSeed" min="0" max="100" step="1" value="73" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>水分消耗速率</span>
+            <span class="slider-value" id="consumptionRateValue">0.05</span>
+          </div>
+          <input type="range" id="consumptionRate" min="0.01" max="0.20" step="0.01" value="0.05" />
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>侧根生成间隔</span>
+            <span class="slider-value" id="branchIntervalValue">70</span>
+          </div>
+          <input type="range" id="branchInterval" min="40" max="120" step="10" value="70" />
+        </div>
+
+        <div class="button-group">
+          <button class="btn" id="toggleBtn">开始生长</button>
+          <button class="btn btn-secondary" id="resetBtn">重置实验</button>
+        </div>
+
+        <div class="hint-text">
+          点击画布放置种子<br/>
+          观察根系的趋水、趋肥、避障行为
+        </div>
+      </aside>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="status-label">根总长度:</span>
+        <span class="status-value" id="totalLength">0 px</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">分支数:</span>
+        <span class="status-value" id="branchCount">0</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">水分消耗(5秒平均):</span>
+        <span class="status-value" id="waterConsumption">0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
