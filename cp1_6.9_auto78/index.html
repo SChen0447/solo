@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全息地球数据可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a1a;
+      font-family: monospace;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.8s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loading-title {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      margin-bottom: 40px;
+      text-shadow: 0 0 20px rgba(100, 180, 255, 0.8);
+    }
+
+    .loader {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #4488ff;
+      border-right-color: #00ff88;
+      animation: spin 1.5s linear infinite;
+      position: relative;
+    }
+
+    .loader::before {
+      content: '';
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      border-top-color: #ff4444;
+      animation: spin 1s linear infinite reverse;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loading-text {
+      color: #8899bb;
+      font-size: 14px;
+      margin-top: 24px;
+      letter-spacing: 2px;
+    }
+
+    #fps-counter {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: #ffffff;
+      font-size: 14px;
+      font-family: monospace;
+      line-height: 1.6;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+      user-select: none;
+    }
+
+    #legend-panel {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background-color: #000000cc;
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 10;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #legend-panel.collapsed {
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    #legend-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    #legend-panel.collapsed #legend-header,
+    #legend-panel.collapsed .legend-item {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #legend-title {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    #legend-toggle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #334466;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      line-height: 1;
+      transition: background-color 0.2s;
+    }
+
+    #legend-toggle:hover {
+      background-color: #556688;
+    }
+
+    #legend-panel.collapsed #legend-toggle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 24px;
+      height: 24px;
+      background-color: #4488ff;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      transition: opacity 0.3s ease;
+    }
+
+    .legend-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .legend-color {
+      width: 30px;
+      height: 30px;
+      border-radius: 4px;
+      margin-right: 12px;
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .legend-color.green {
+      background-color: #00ff88;
+      color: #00ff88;
+    }
+
+    .legend-color.red {
+      background-color: #ff4444;
+      color: #ff4444;
+    }
+
+    .legend-color.blue {
+      background-color: #4488ff;
+      color: #4488ff;
+    }
+
+    .legend-label {
+      color: #ffffff;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading">
+      <div id="loading-title">全息地球数据可视化</div>
+      <div class="loader"></div>
+      <div id="loading-text">正在初始化场景...</div>
+    </div>
+
+    <div id="fps-counter">
+      <div>FPS: <span id="fps-value">0</span></div>
+      <div>数据点: <span id="datapoint-count">0</span></div>
+    </div>
+
+    <div id="legend-panel">
+      <div id="legend-header">
+        <span id="legend-title">数据图例</span>
+        <button id="legend-toggle">×</button>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color green"></div>
+        <span class="legend-label">低温</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color red"></div>
+        <span class="legend-label">高温</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color blue"></div>
+        <span class="legend-label">地震</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
