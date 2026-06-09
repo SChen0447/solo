@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟陶艺拉坯</title>
+  <link rel="stylesheet" href="./src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <h1>虚 拟 陶 艺</h1>
+      <p class="subtitle">Virtual Pottery Wheel</p>
+    </header>
+
+    <aside id="toolbar">
+      <button class="tool-btn" id="glazeBtn" title="上釉">
+        <span class="tool-icon">🎨</span>
+      </button>
+      <div class="divider"></div>
+      <div class="glaze-colors">
+        <button class="color-btn" data-color="#70B8C0" title="青釉" style="background:#70B8C0"></button>
+        <button class="color-btn" data-color="#C04040" title="钧窑红" style="background:#C04040"></button>
+        <button class="color-btn" data-color="#2A2A2A" title="天目黑" style="background:#2A2A2A"></button>
+      </div>
+      <div class="divider"></div>
+      <div class="thickness-control">
+        <label class="thickness-label">釉厚</label>
+        <input type="range" id="thicknessSlider" min="1" max="5" value="3" step="1">
+        <span id="thicknessValue">3</span>
+      </div>
+    </aside>
+
+    <main id="canvas-container">
+      <canvas id="pottery-canvas"></canvas>
+    </main>
+
+    <footer id="hint">
+      <span>上下拖动塑形 · 左右拖动收放 · 滚轮旋转视角</span>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
