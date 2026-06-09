@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>三维地球风场可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0A0A1A;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      min-width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 10px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.75);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-value {
+      font-weight: 600;
+      color: #87CEEB;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: filter 0.2s ease;
+    }
+
+    input[type="range"]:hover {
+      filter: brightness(1.2);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #87CEEB;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #87CEEB;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:active {
+      transform: scale(0.95);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 100px;
+      padding: 10px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .btn:hover {
+      filter: brightness(1.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-primary {
+      background: rgba(135, 206, 235, 0.2);
+      border-color: rgba(135, 206, 235, 0.5);
+      color: #87CEEB;
+    }
+
+    .btn-primary:hover {
+      background: rgba(135, 206, 235, 0.3);
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .legend-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .legend-items {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-gradient {
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #87CEEB, #ADFF2F, #FF4500);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        min-width: auto;
+        width: calc(100% - 24px);
+        padding: 14px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+
+      .panel-title {
+        width: 100%;
+        font-size: 14px;
+        padding-bottom: 8px;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .button-group {
+        width: 100%;
+      }
+
+      .legend {
+        width: 100%;
+        padding-top: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="control-panel">
+    <div class="panel-title">风场控制面板</div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>时间加速</span>
+        <span class="control-value" id="speed-value">1x</span>
+      </div>
+      <input type="range" id="time-slider" min="1" max="10" step="0.5" value="1" />
+    </div>
+
+    <div class="button-group">
+      <button class="btn btn-primary" id="toggle-rotation">暂停自转</button>
+      <button class="btn" id="reset-view">重置视角</button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-title">风速图例 (m/s)</div>
+      <div class="legend-gradient"></div>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #87CEEB;"></span>
+          <span>低速 (0-5)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #ADFF2F;"></span>
+          <span>中速 (5-15)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot" style="background: #FF4500;"></span>
+          <span>高速 (>15)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
