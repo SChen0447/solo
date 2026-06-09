@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 天气系统模拟器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+      background: radial-gradient(ellipse at center, #0B0D3A 0%, #1A0B2E 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #hint-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      z-index: 100;
+    }
+
+    #control-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 60px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 200;
+    }
+
+    .weather-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .weather-btn {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.05);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: all 0.2s ease-out;
+    }
+
+    .weather-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .weather-btn:active {
+      transform: scale(0.95);
+    }
+
+    .weather-btn.active {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.5);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.1);
+    }
+
+    .weather-btn.active::before {
+      content: '';
+      position: absolute;
+      inset: -5px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .weather-label {
+      position: absolute;
+      bottom: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .density-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .density-label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .density-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .density-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease-out;
+    }
+
+    .density-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .density-slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease-out;
+    }
+
+    .density-slider::-moz-range-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .density-value {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      font-weight: 500;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        right: 10px;
+        left: 10px;
+        bottom: 50px;
+        padding: 12px 15px;
+      }
+
+      .weather-buttons {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+      }
+
+      .weather-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+      }
+
+      .density-slider {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="control-panel">
+      <div class="weather-buttons">
+        <button class="weather-btn active" data-weather="sunny" title="晴天">
+          ☀️
+          <span class="weather-label">晴天</span>
+        </button>
+        <button class="weather-btn" data-weather="rainy" title="雨天">
+          🌧️
+          <span class="weather-label">雨天</span>
+        </button>
+        <button class="weather-btn" data-weather="snowy" title="雪天">
+          ❄️
+          <span class="weather-label">雪天</span>
+        </button>
+        <button class="weather-btn" data-weather="thunder" title="雷暴">
+          ⚡
+          <span class="weather-label">雷暴</span>
+        </button>
+      </div>
+      <div class="density-control">
+        <span class="density-label">粒子密度</span>
+        <input type="range" class="density-slider" id="density-slider" min="0.5" max="2" step="0.1" value="1">
+        <span class="density-value" id="density-value">1.0x</span>
+      </div>
+    </div>
+
+    <div id="hint-bar">
+      🖱️ 拖拽旋转视角 · 滚轮缩放 · 点击右侧按钮切换天气 · 调整粒子密度滑块观察效果变化
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
