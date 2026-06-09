@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>节奏跑酷 Rhythm Runner</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D0D1E;
+      font-family: 'Courier New', monospace;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-wrapper {
+      position: relative;
+      width: 600px;
+      height: 450px;
+      transform-origin: center center;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .glow-left, .glow-right {
+      position: absolute;
+      top: 0;
+      width: 100px;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .glow-left {
+      left: 0;
+      background: linear-gradient(to right, #0D0D1E, transparent);
+    }
+
+    .glow-right {
+      right: 0;
+      background: linear-gradient(to left, #0D0D1E, transparent);
+    }
+
+    #hud {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #score {
+      font-size: 18px;
+      color: #00FF88;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.5);
+      transition: transform 0.1s ease-out;
+    }
+
+    #score.bump {
+      transform: scale(1.15);
+    }
+
+    #combo {
+      font-size: 14px;
+      color: #FFD700;
+      font-weight: bold;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+      transition: all 0.15s ease;
+    }
+
+    #combo.highlight {
+      font-size: 16.8px;
+      animation: comboBlink 0.4s ease-in-out infinite;
+    }
+
+    @keyframes comboBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    #progress-container {
+      position: absolute;
+      bottom: 12px;
+      left: 20px;
+      right: 20px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF416C, #FF4B2B);
+      border-radius: 3px;
+      transition: width 0.1s linear;
+    }
+
+    #countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      color: #FFFFFF;
+      font-weight: bold;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #countdown.show {
+      animation: countdownBounce 0.5s ease-out forwards;
+    }
+
+    @keyframes countdownBounce {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 0, 0, 0);
+      pointer-events: none;
+      z-index: 15;
+      transition: background 0.1s ease;
+    }
+
+    #overlay.flash {
+      background: rgba(255, 0, 0, 0.3);
+    }
+
+    #game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(13, 13, 30, 0.9);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 30;
+    }
+
+    #game-over.show {
+      display: flex;
+    }
+
+    #game-over h2 {
+      font-size: 32px;
+      color: #FF416C;
+      margin-bottom: 16px;
+      text-shadow: 0 0 15px rgba(255, 65, 108, 0.6);
+    }
+
+    #final-score {
+      font-size: 24px;
+      color: #00FF88;
+      margin-bottom: 28px;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    #restart-btn {
+      padding: 12px 36px;
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: #0D0D1E;
+      background: linear-gradient(90deg, #FFD700, #FF8C00);
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+
+    #restart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    }
+
+    #restart-btn:active {
+      transform: translateY(0);
+    }
+
+    #start-hint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      z-index: 10;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="game-wrapper">
+      <canvas id="game-canvas" width="600" height="450"></canvas>
+      <div class="glow-left"></div>
+      <div class="glow-right"></div>
+      <div id="hud">
+        <div id="score">0</div>
+        <div id="combo"></div>
+      </div>
+      <div id="progress-container">
+        <div id="progress-bar"></div>
+      </div>
+      <div id="countdown"></div>
+      <div id="overlay"></div>
+      <div id="game-over">
+        <h2>游戏结束</h2>
+        <div id="final-score">最终分数: 0</div>
+        <button id="restart-btn">重新开始</button>
+      </div>
+      <div id="start-hint">点击 / 空格跳跃，长按 / ↓键滑铲</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
