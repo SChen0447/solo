@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>诗词粒子动画</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0B0A26 0%, #1B1340 100%);
+      font-family: 'Noto Serif SC', serif;
+    }
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .controls {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .controls button {
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .controls button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+    .controls button:active {
+      transform: translateY(0);
+    }
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+    }
+    .slider-group input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.125);
+      outline: none;
+      transition: all 0.2s;
+    }
+    .slider-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFD700;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+    .slider-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.6);
+    }
+    .slider-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #FFD700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .poem-info {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .poem-info .title {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 4px;
+    }
+    .poem-info .author {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    @media (max-width: 768px) {
+      .controls {
+        bottom: 16px;
+        left: 16px;
+        right: 16px;
+        transform: none;
+        gap: 10px;
+        padding: 10px 12px;
+      }
+      .controls button {
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+      .slider-group input[type="range"] {
+        width: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div class="poem-info">
+    <div class="title" id="poem-title">鹿柴</div>
+    <div class="author" id="poem-author">王维</div>
+  </div>
+  <div class="controls">
+    <button id="btn-switch">切换诗句</button>
+    <button id="btn-reset">重置布局</button>
+    <div class="slider-group">
+      <span>大小</span>
+      <input type="range" id="slider-size" min="12" max="40" value="24" />
+    </div>
+    <div class="slider-group">
+      <span>强度</span>
+      <input type="range" id="slider-force" min="0.5" max="2" step="0.1" value="1" />
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
