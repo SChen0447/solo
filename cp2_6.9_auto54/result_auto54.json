@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:47:54.544Z",
+  "task_name": "auto54",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中模拟不同种类乐器（钢琴、小提琴、长笛）在演奏同一段旋律时，生成对应音色波形和频谱图的比较应用，主要解决音乐爱好者或学生难以直观对比不同乐器音色在时域和频域上差异的问题。\n\n它应当具备以下能力：\n1) 页面顶部提供一个音乐片段选择区域，包含三段预设的简短短曲（每段时长3-5秒，如C大调音阶、一段简单的旋律片段），用户点击“播放”按钮后，内置的音频合成器（使用Web Audio API）会同时以三种乐器的音色播放选中的旋律片段；播放时，右侧区域应实时（每秒更新至少30帧）绘制三种乐器各自的波形图（时域信号，横轴为时间，纵轴为振幅，波形曲线颜色分别为钢琴#FF6B6B、小提琴#4ECDC4、长笛#FFE66D）和频谱图（频域信号，使用FFT变换，横轴为频率0-8000Hz，纵轴为幅度，用渐变柱状图表示）。\n2) 在播放控制下方，提供一个“录制并对比”功能：用户可以通过麦克风录制一段自己演奏的音频（时长不超过10秒），系统自动提取其音色特征并绘制波形和频谱图，与三种预设乐器并排显示在同一坐标系中（用虚线表示用户录制的波形，颜色使用半透明白色#FFFFFF，透明度0.7），方便用户直观对比自己演奏与标准乐器音色的差异。\n\n界面方面要求整体采用深色实验室风格配色（主背景#0A0E27，卡片背景#1A2040，文字亮白#E0E7FF），功能分区清晰：左侧为控制区（约300px宽），包含下拉选择器、播放/停止按钮和录制的“开始录制”“停止录制”按钮；右侧主区域分为上下两层，上层为波形图区域（占60%高度），下层为频谱图区域（占40%高度），每个图都用浅色网格线（#2A3F5F）辅助读数；所有图表使用Canvas绘制，波形图在播放时线条从左到右平滑扫过并自动滚动，频谱图随音乐变化动态更新；控制区按钮在悬停时有0.3秒的渐变色过渡（从#3B82F6到#6366F1），点击时有轻微的缩放回弹动画；页面需适配屏幕宽度在1024px到1920px之间，布局不会错乱且文字可读。\n\n性能上要求所有图表刷新稳定在30fps以上，音频播放延迟不超过50ms，录制功能从点击到开始采集的响应时间小于200ms。\n\n实现采用TypeScript、React和Vite，按以下文件组织代码：\n - package.json（含依赖：react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react，启动脚本：npm run dev）\n - vite.config.js（基本构建配置，入口指向index.html）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口页面，包含一个id为root的div）\n - src/main.tsx（React应用入口，渲染App根组件）\n - src/App.tsx（主应用组件，布局管理，状态协调，负责将用户交互传递给各子组件）\n - src/components/AudioEngine.ts（音频核心模块，封装Web Audio API的合成器、录制和FFT分析，导出AudioEngine类，供App组件调用）\n - src/components/WaveformChart.tsx（波形图组件，接收AudioEngine输出的时域数据数组，使用Canvas绘制实时波形曲线，支持多色并排显示）\n - src/components/SpectrumChart.tsx（频谱图组件，接收AudioEngine输出的频域数据数组，使用Canvas绘制实时频谱柱状图，支持多色并排显示）\n - src/components/ControlPanel.tsx（控制面板组件，包含旋律选择器、播放/停止按钮、录制按钮，将用户操作通过props回调给App组件）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:ed01f88a9de92ec5a428faf20318a21c_6a26ff7a74563aa18e00e400.6a27003b74563aa18e00e4aa.6a27003bfd7cbe1745e1e4cb:Trae CN.T(2026/6/9 01:47:39)",
+    "user_id": "3986207660317399",
+    "trace_id": "ed01f88a9de92ec5a428faf20318a21c",
+    "session_id": "6a26ff7a74563aa18e00e400",
+    "task_id": "6a27003b74563aa18e00e4aa",
+    "message_id": "6a27003bfd7cbe1745e1e4cb",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:47:39",
+    "format": "full"
+  },
+  "trace": "null"
+}
