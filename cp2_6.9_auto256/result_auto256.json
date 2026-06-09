@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T05:32:57.569Z",
+  "task_name": "auto256",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一家独立游戏工作室想要一个在线团队协作工具，让成员可以像在实体白板上一样，通过便签纸自由表达创意，并立即对他人想法进行投票或评论，快速迭代出游戏原型设计方案。\n\n构建一个名为“灵感碰撞板”的全栈Web应用，让用户创建项目并添加便签（Sticky Notes），每张便签可以被拖动、缩放、点赞和评论，支持实时同步。使用TypeScript、React前端和Express后端实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、uuid、date-fns，启动脚本：npm run dev）\n - index.html（入口页面，含全屏布局的DOM锚点）\n - vite.config.ts（前端构建配置，入口指向index.html，开发服务器端口3000）\n - tsconfig.json（严格模式，jsx保留，esnext模块，dom类型包含）\n - src/App.tsx（主组件，管理路由与应用状态，通过props将项目数据传递给Board组件）\n - src/Board.tsx（核心白板组件，使用transform和transition实现拖拽、缩放便签，便签数据通过props接收，交互后通过回调更新父组件状态）\n - src/Note.tsx（单张便签组件，渲染便签内容、点赞数和评论列表，支持拖拽移动，通过props接收便签数据和事件回调）\n - server/index.js（Express服务器，提供REST API：GET /api/projects、POST /api/projects、POST /api/notes、PUT /api/notes/:id/like，使用内存数组存储数据，cors中间件允许跨域）\n\n功能需求：\n1) 主页面显示一个类似物理白板的无限画布区域，用户可以在任意位置双击创建一张便签（便签默认尺寸200x200px，背景色#FFEB3B，字体深灰#333，圆角8px，带有轻微阴影#00000020）。\n2) 每张便签支持内容编辑（点击后进入编辑模式，textarea自动获取焦点，按Alt+Enter确认保存），并显示创建时间和点赞数、评论数。\n3) 便签支持拖拽（通过mousedown + mousemove实现，拖拽时半透明，释放后粘滞到网格上）和缩放（右下角拖拽手柄，缩放时保持文本自适应），拖拽时其他便签不会响应事件。\n4) 每张便签有“赞”按钮（点击后数字+1，按钮颜色从灰变蓝#1976D2）和“评论”按钮（点击后在便签下方展开评论输入框和已有评论列表）。\n5) 右侧有一个侧边栏面板（宽度320px，底色#1E1E2E半透明，圆角12px），面板内显示：当前项目所有便签的缩略列表、一个用于创建新项目的“+”按钮、以及一个按点赞数排序的筛选开关。面板本身可折叠（动画0.3s，ease-out）。\n\n界面要求：整体采用暗色主题（背景#0D1117，主色调蓝灰#58A6FF，强调色琥珀#FFB74D），所有交互要有平滑过渡（transition: all 0.2s cubic-bezier）。便签在画布上以10x10网格对齐（网格线在放大时以虚线#FFFFFF15显示），缩放时画布背景保持无限延伸感（使用repeat的棋盘格图案，小方格16x16px，色差#1E1E2E和#2A2A3A）。响应式方面，当屏幕宽度小于768px时，侧边栏改为底部滑动抽屉（从下弹出，高度40vh，圆角左上右上16px）。\n\n性能约束：拖拽和缩放便签时FPS不低于55，整个画布同时容纳30张便签时页面响应流畅（初始渲染<500ms）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:ca427ead5f53f4c6ab3e36aba328ceab_6a27a41836cf454ee1a2bacb.6a27a57936cf454ee1a2bc34.6a27a579442469145a13490f:Trae CN.T(2026/6/9 13:32:41)",
+    "user_id": "3986207660317399",
+    "trace_id": "ca427ead5f53f4c6ab3e36aba328ceab",
+    "session_id": "6a27a41836cf454ee1a2bacb",
+    "task_id": "6a27a57936cf454ee1a2bc34",
+    "message_id": "6a27a579442469145a13490f",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 13:32:41",
+    "format": "full"
+  },
+  "trace": "null"
+}
