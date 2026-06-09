@@ -1,28 +1,20 @@
 {
-  "name": "collaborative-whiteboard",
+  "name": "black-hole-accretion",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "node server/index.js"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "socket.io-client": "^4.7.2",
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2",
-    "uuid": "^9.0.0",
-    "cors": "^2.8.5"
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
-    "typescript": "^5.0.2",
-    "vite": "^5.0.0"
+    "typescript": "5.4.5",
+    "vite": "5.4.10",
+    "@types/three": "^0.160.0"
   }
 }
