@@ -1,0 +1,17 @@
+{
+  "name": "gravity-breakout",
+  "version": "1.0.0",
+  "description": "2D breakout game with gravity and terrain destruction",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.3.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "@typescript-eslint/eslint-plugin": "^6.15.0"
+  }
+}
