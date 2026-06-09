@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>视觉诗生成器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="toolbar" class="toolbar">
+      <button id="btn-clear" class="toolbar-btn">清空画布</button>
+      <button id="btn-undo" class="toolbar-btn">撤销</button>
+      <button id="btn-export" class="toolbar-btn toolbar-btn-primary">导出 PNG</button>
+    </header>
+
+    <main class="main-container">
+      <aside id="word-panel" class="word-panel">
+        <h2 class="panel-title">词语库</h2>
+        <div id="word-list" class="word-list"></div>
+      </aside>
+
+      <section id="grid-container" class="grid-container">
+        <div id="grid" class="grid"></div>
+        <div id="placed-words" class="placed-words"></div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
