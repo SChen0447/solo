@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光影捕手 - 交互式光线追踪演示器</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+    <div id="toolbar">
+      <button class="tool-btn active" data-tool="select">选择</button>
+      <button class="tool-btn" data-tool="light">放置光源</button>
+      <button class="tool-btn" data-tool="mirror">放置反射镜</button>
+      <button class="tool-btn" data-tool="lens">放置透镜</button>
+    </div>
+    <div id="panel">
+      <div class="panel-header">
+        <span>控制面板</span>
+        <button id="panel-toggle">▼</button>
+      </div>
+      <div class="panel-body">
+        <div class="control-group">
+          <label>光线数量: <span id="ray-count-value">36</span></label>
+          <input type="range" id="ray-count" min="12" max="72" step="4" value="36" />
+        </div>
+        <div class="control-group">
+          <label>光源强度: <span id="light-intensity-value">0.8</span></label>
+          <input type="range" id="light-intensity" min="0.1" max="1.0" step="0.1" value="0.8" />
+        </div>
+        <div class="control-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="show-labels" />
+            <span>显示光路标签</span>
+          </label>
+        </div>
+      </div>
+    </div>
+    <div id="tooltip" class="tooltip"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
