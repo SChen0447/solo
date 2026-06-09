@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>魔药炼成 - 魔法学院炼金模拟器</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="app">
+    <div class="score-panel">
+      <span class="score-label">得分</span>
+      <span id="score" class="score-value">0</span>
+      <span id="combo" class="combo-text"></span>
+    </div>
+
+    <button id="reset-btn" class="reset-btn" title="重置游戏">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+    </button>
+
+    <header class="top-bar">
+      <div class="recipe-hint">
+        <span id="recipe-name" class="recipe-name">目标：紫焰药水</span>
+        <div id="recipe-colors" class="recipe-colors"></div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar-bg">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <span id="progress-text" class="progress-text">0/3</span>
+      </div>
+    </header>
+
+    <main class="main-area">
+      <div class="cauldron-wrapper">
+        <canvas id="cauldron-canvas" width="320" height="320"></canvas>
+        <div id="message" class="message"></div>
+      </div>
+    </main>
+
+    <footer class="shelf-bar">
+      <div id="shelf" class="shelf"></div>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
