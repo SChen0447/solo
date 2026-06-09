@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>熔岩灯模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #0a0a0a;
+    }
+
+    #gameContainer {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    #hint {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(200, 200, 200, 0.7);
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    #hint.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      #gameContainer {
+        transform: scale(0.8);
+        transform-origin: center center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="gameContainer">
+      <div id="hint">拖动滑块改变颜色和强度</div>
+      <canvas id="lavaCanvas" width="400" height="600"></canvas>
+      <canvas id="controlCanvas" width="120" height="500"></canvas>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
