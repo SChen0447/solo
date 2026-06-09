@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>个性签名生成器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <div class="control-group">
+          <label class="control-label">笔触粗细</label>
+          <input type="range" id="brushWidth" min="2" max="20" value="8" class="slider" />
+          <span class="value-display" id="widthValue">8px</span>
+        </div>
+        <div class="control-group">
+          <label class="control-label">墨色</label>
+          <div class="color-picker" id="colorPicker">
+            <button class="color-option active" data-color="#1A1A1A" style="background-color: #1A1A1A;"></button>
+            <button class="color-option" data-color="#8B0000" style="background-color: #8B0000;"></button>
+            <button class="color-option" data-color="#1B3A5C" style="background-color: #1B3A5C;"></button>
+            <button class="color-option" data-color="#D4AF37" style="background-color: #D4AF37;"></button>
+          </div>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn btn-clear" id="clearBtn">清空</button>
+        <div class="save-wrapper">
+          <button class="btn btn-save" id="saveBtn">保存</button>
+          <span class="save-checkmark" id="saveCheckmark">✓</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="canvas-container">
+      <canvas id="signatureCanvas"></canvas>
+      <canvas id="trailCanvas"></canvas>
+      <div class="canvas-fade-overlay" id="fadeOverlay"></div>
+    </main>
+
+    <footer class="status-bar">
+      <span id="strokeCount">笔画：0/10</span>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
