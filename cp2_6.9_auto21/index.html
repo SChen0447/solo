@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>社区咖啡馆 · 互动菜单看板</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;900&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="status-bar" style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 32px;
+      background: #1E3A5F;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      z-index: 1000;
+    ">
+      <span>☕ 社区咖啡馆</span>
+      <span id="current-time"></span>
+    </div>
+    <div id="root" style="padding-top: 32px; height: 100vh; box-sizing: border-box;"></div>
+    <script>
+      function updateTime() {
+        const el = document.getElementById('current-time');
+        if (el) {
+          el.textContent = new Date().toLocaleString('zh-CN');
+        }
+      }
+      updateTime();
+      setInterval(updateTime, 1000);
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

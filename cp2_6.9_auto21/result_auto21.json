@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:50:05.198Z",
+  "task_name": "auto21",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一家社区咖啡馆希望将手写菜单数字化为一套动态互动菜单看板，让顾客在店内大屏上浏览菜品，看到每道菜的历史受欢迎变化曲线以及当前等待制作时间。\n\n构建一个实时菜单数据分析看板应用，使用TypeScript、React和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react、react-dom、recharts、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、socket.io-client，启动脚本：npm run dev）\n - vite.config.js（基础构建配置，代理 /api 请求至端口3001的json-server模拟数据源）\n - tsconfig.json（严格模式，module为ESNext，jsx设置为react-jsx）\n - index.html（入口，含全屏div容器和顶部状态栏，引入Google Fonts字体Inter和Playfair Display）\n - src/types.ts（定义MenuItem、OrderHistory、WaitTime等接口）\n - src/mockData.ts（生成模拟的菜单历史和排队数据，每隔5秒随机更新等待时间，数据流向：mockData.ts → 组件消费）\n - src/components/MenuBoard.tsx（主导组件，接收usersocket传来的实时数据，渲染左侧分类标签页和右侧详情面板，通过props向下传递数据）\n - src/components/PopularityChart.tsx（接收单个item的历史订单数组，用Recharts绘制折线图显示过去24小时每小时的点击量变化，传入数据格式：{hour: string, orders: number}[]）\n - src/components/OrderWaitBadge.tsx（接收当前平均等待时间数字（分钟），根据数值区间显示不同背景色：<5绿色、5-15黄色、>15红色，并伴随脉冲动画）\n\n功能需求：\n1) 菜单展示：页面左侧显示按类别（咖啡、甜点、轻食、特调）分组的菜名列表，每个菜名旁显示一个表示当前等待时间的圆形徽章（数值分钟），点击菜名右侧高亮并展示详情。\n2) 历史热度曲线：右侧详情面板顶部显示该菜品在过去24小时内的订单量折线图，X轴为小时（0-23），Y轴为订单数，折线颜色使用深蓝（#1E3A5F），鼠标悬停时显示十字准星和数据提示框。\n3) 实时更新：等待时间徽章每5秒从模拟数据源（src/mockData.ts）获取新数值，更新时徽章背景色随数值区间变化，并伴随一个放大再缩小的脉冲过渡动画（持续时间400ms），动画使用CSS keyframes实现。\n4) 分类筛选：顶部展示四个类别标签按钮，点击切换时右侧详情面板淡出（opacity 0，200ms）再淡入新数据（opacity 1，300ms），使用CSS过渡实现。\n5) 提醒功能：当某道菜品的平均等待时间超过20分钟时，其左侧列表项的最外侧边框变为红色（#E53E3E），并持续缓慢闪烁（闪烁周期2s，CSS animation infinite），帮助顾客快速识别拥挤菜品。\n\n界面要求：页面采用浅灰色（#F7F9FC）背景，卡片区域使用白色（#FFFFFF）圆角卡片（border-radius: 16px）并带微弱阴影（box-shadow: 0 4px 12px rgba(0,0,0,0.06)）。左侧菜单列表区域占屏幕宽度的35%，详情面板占65%，响应式适配：在屏幕宽度小于768px时堆叠为上下布局。整体字体使用Inter（正文）和Playfair Display（菜品名称，粗体，深灰#2D3748）。所有UI组件（标签按钮、徽章、卡片）在hover时有轻微的向上位移（transform: translateY(-2px)）和阴影加深效果。\n\n性能约束：模拟数据更新间隔为5秒，界面响应帧率保持在30fps以上，图表重新渲染应在每次数据更新后200ms内完成。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:15a1dcae0fb32811a1e9ff10f9296f8c_6a26f20963b53d5e639389ce.6a26f2ad63b53d5e63938a5d.6a26f2ad31d93ef0dff0658c:Trae CN.T(2026/6/9 00:49:49)",
+    "user_id": "3986207660317399",
+    "trace_id": "15a1dcae0fb32811a1e9ff10f9296f8c",
+    "session_id": "6a26f20963b53d5e639389ce",
+    "task_id": "6a26f2ad63b53d5e63938a5d",
+    "message_id": "6a26f2ad31d93ef0dff0658c",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:49:49",
+    "format": "full"
+  },
+  "trace": "null"
+}
