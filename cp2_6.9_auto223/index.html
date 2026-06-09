@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nebula Particle Sandbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A0A1A;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #fps-counter {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 14px;
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+      user-select: none;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 320px;
+      height: 100%;
+      padding: 24px 20px;
+      background: rgba(30, 30, 46, 0.9);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      overflow-y: auto;
+      z-index: 20;
+    }
+
+    #control-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    #control-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #control-panel::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #C084FC, #22D3EE);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .param-group {
+      margin-bottom: 24px;
+    }
+
+    .group-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .param-item {
+      margin-bottom: 14px;
+    }
+
+    .param-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .param-value {
+      font-family: 'Consolas', monospace;
+      font-size: 12px;
+      color: #22D3EE;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(135deg, #C084FC, #22D3EE);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: linear-gradient(135deg, #C084FC, #22D3EE);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+    }
+
+    .color-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .color-item {
+      flex: 1;
+    }
+
+    .color-item .param-label {
+      margin-bottom: 6px;
+    }
+
+    .color-input-wrapper {
+      position: relative;
+      width: 100%;
+      height: 36px;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    input[type="color"] {
+      position: absolute;
+      top: -5px;
+      left: -5px;
+      width: calc(100% + 10px);
+      height: calc(100% + 10px);
+      border: none;
+      cursor: pointer;
+      background: transparent;
+    }
+
+    select {
+      width: 100%;
+      height: 36px;
+      padding: 0 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23ffffff' stroke-opacity='0.6' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    select:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    select option {
+      background: #1E1E2E;
+      color: #fff;
+    }
+
+    #screenshot-btn {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, rgba(192, 132, 252, 0.2), rgba(34, 211, 238, 0.2));
+      border: 1px solid rgba(192, 132, 252, 0.4);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #screenshot-btn:hover {
+      background: linear-gradient(135deg, rgba(192, 132, 252, 0.35), rgba(34, 211, 238, 0.35));
+      border-color: rgba(192, 132, 252, 0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(192, 132, 252, 0.25);
+    }
+
+    #screenshot-btn:active {
+      transform: translateY(0);
+    }
+
+    .camera-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    #flash-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    #flash-overlay.flash {
+      animation: flashAnim 1s ease-out forwards;
+    }
+
+    @keyframes flashAnim {
+      0% { opacity: 0; }
+      20% { opacity: 0.8; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="fps-counter">FPS: --</div>
+    <div id="control-panel">
+      <div class="panel-title">Nebula Sandbox</div>
+      <div id="controls-content"></div>
+    </div>
+    <button id="screenshot-btn">
+      <svg class="camera-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+        <circle cx="12" cy="13" r="4"></circle>
+      </svg>
+      截图保存
+    </button>
+    <div id="flash-overlay"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
