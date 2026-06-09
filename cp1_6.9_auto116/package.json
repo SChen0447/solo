@@ -1,0 +1,19 @@
+{
+  "name": "oil-paint-mixer",
+  "version": "1.0.0",
+  "description": "Dynamic oil paint brush stroke mixer with p5.js and TypeScript",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "1.9.0"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.6",
+    "typescript": "5.5.0",
+    "vite": "5.4.0"
+  }
+}
