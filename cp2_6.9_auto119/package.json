@@ -1,0 +1,12 @@
+{
+  "name": "snake-battle",
+  "version": "1.0.0",
+  "description": "Two-player snake battle game",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "typescript": "^5.3.0"
+  }
+}
