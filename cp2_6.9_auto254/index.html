@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星际物流塔 - Stellar Logistics</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      background: #0E0B1A;
+      color: #E0E0FF;
+      user-select: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 60px);
+      background: linear-gradient(180deg, #0E0B1A 0%, #1A1528 100%);
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 280px;
+      background: rgba(30, 30, 46, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid #2A2A4A;
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 10;
+    }
+
+    #control-panel h2 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #4FC3F7;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .panel-section {
+      margin-bottom: 16px;
+    }
+
+    .panel-section label {
+      display: block;
+      font-size: 12px;
+      color: #8888AA;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .panel-section select {
+      width: 100%;
+      padding: 8px 12px;
+      background: #12121F;
+      border: 1px solid #2A2A4A;
+      border-radius: 6px;
+      color: #E0E0FF;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .panel-section select:hover,
+    .panel-section select:focus {
+      border-color: #4FC3F7;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(180deg, #2A2A3E 0%, #252538 100%);
+      border: 1px solid #3A3A5E;
+      border-radius: 8px;
+      color: #E0E0FF;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+
+    .btn:hover:not(:disabled) {
+      background: linear-gradient(180deg, #3A3A5E 0%, #353558 100%);
+      border-color: #4FC3F7;
+      box-shadow: 0 0 12px rgba(79, 195, 247, 0.3);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-dispatch {
+      background: linear-gradient(180deg, #1B5E20 0%, #0D3D11 100%);
+      border-color: #00E676;
+      color: #00E676;
+    }
+
+    .btn-dispatch:hover:not(:disabled) {
+      background: linear-gradient(180deg, #2E7D32 0%, #1B5E20 100%);
+      box-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+    }
+
+    .btn-gate {
+      background: linear-gradient(180deg, #5D4E1B 0%, #3D3311 100%);
+      border-color: #FFD700;
+      color: #FFD700;
+    }
+
+    .btn-gate:hover:not(:disabled) {
+      background: linear-gradient(180deg, #7D6A2B 0%, #5D4E1B 100%);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+    }
+
+    .btn-price {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-left: 6px;
+    }
+
+    #resource-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: #1A1C2E;
+      border-top: 1px solid #3A3C5E;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 40px;
+      z-index: 10;
+    }
+
+    .resource-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      position: relative;
+    }
+
+    .resource-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .resource-label {
+      font-size: 11px;
+      color: #8888AA;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 2px;
+    }
+
+    .resource-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #E0E0FF;
+    }
+
+    .resource-value.currency {
+      color: #FFD700;
+    }
+
+    .resource-value.drones {
+      color: #00E676;
+    }
+
+    .resource-value.cargo {
+      color: #4FC3F7;
+    }
+
+    .progress-container {
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .progress-label {
+      font-size: 11px;
+      color: #8888AA;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #12121F;
+      border: 1px solid #2A2A4A;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00E676 0%, #4FC3F7 100%);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+    }
+
+    .currency-popup {
+      position: absolute;
+      font-size: 14px;
+      font-weight: bold;
+      color: #66BB6A;
+      pointer-events: none;
+      animation: floatUp 1s ease-out forwards;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+    }
+
+    #tooltip {
+      position: absolute;
+      background: #0D0D1A;
+      border: 1px solid #3A3A5E;
+      border-radius: 12px;
+      padding: 10px 14px;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      font-size: 12px;
+      min-width: 140px;
+    }
+
+    #tooltip.visible {
+      opacity: 1;
+    }
+
+    #tooltip .planet-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #E0E0FF;
+      margin-bottom: 4px;
+    }
+
+    #tooltip .planet-info {
+      color: #8888AA;
+      font-size: 11px;
+    }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, #2A2A4A 50%, transparent 100%);
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="control-panel">
+      <h2>⚡ 物流控制台</h2>
+
+      <div class="panel-section">
+        <label>起点星球</label>
+        <select id="start-planet"></select>
+      </div>
+
+      <div class="panel-section">
+        <label>终点星球</label>
+        <select id="end-planet"></select>
+      </div>
+
+      <button class="btn btn-dispatch" id="btn-dispatch">🚀 派遣无人机</button>
+
+      <div class="divider"></div>
+
+      <button class="btn btn-gate" id="btn-build-gate">
+        ✦ 建造星门
+        <span class="btn-price">💰 50</span>
+      </button>
+
+      <button class="btn" id="btn-upgrade-speed">
+        ⚡ 升级速度
+        <span class="btn-price">💰 30</span>
+      </button>
+
+      <button class="btn" id="btn-add-drone">
+        🛸 增加无人机
+        <span class="btn-price">💰 80</span>
+      </button>
+    </div>
+
+    <div id="resource-bar">
+      <div class="resource-item" id="currency-container">
+        <div class="resource-icon">💰</div>
+        <div>
+          <div class="resource-label">货币</div>
+          <div class="resource-value currency" id="currency-value">100</div>
+        </div>
+      </div>
+
+      <div class="resource-item">
+        <div class="resource-icon">🛸</div>
+        <div>
+          <div class="resource-label">无人机</div>
+          <div class="resource-value drones" id="drone-count">3 / 5</div>
+        </div>
+      </div>
+
+      <div class="resource-item">
+        <div class="resource-icon">📦</div>
+        <div>
+          <div class="resource-label">累计运输</div>
+          <div class="resource-value cargo" id="cargo-count">0</div>
+        </div>
+      </div>
+
+      <div class="progress-container">
+        <div class="progress-label">
+          <span>星图点亮进度</span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tooltip"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
