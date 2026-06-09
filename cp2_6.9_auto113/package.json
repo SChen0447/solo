@@ -1,0 +1,21 @@
+{
+  "name": "climate-earth-visualization",
+  "version": "1.0.0",
+  "description": "Interactive 3D Earth visualization for global temperature changes",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "d3-geo": "^3.1.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "@types/d3-geo": "^3.1.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}
