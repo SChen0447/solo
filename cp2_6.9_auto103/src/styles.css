@@ -1,0 +1,233 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(ellipse at center, #0a0a1a 0%, #020208 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  color: #ffffff;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#scene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#fps-counter {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #88ccff;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  z-index: 100;
+  font-family: 'Consolas', 'Monaco', monospace;
+  letter-spacing: 0.5px;
+}
+
+#fps-warning {
+  position: fixed;
+  top: 60px;
+  left: 16px;
+  background: rgba(255, 200, 0, 0.9);
+  color: #1a1a1a;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  z-index: 101;
+  font-weight: 500;
+  transition: opacity 0.3s ease;
+}
+
+#fps-warning.hidden {
+  display: none;
+}
+
+#param-panel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 260px;
+  background: rgba(20, 20, 40, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  z-index: 99;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+#param-panel .tp-lblv_l {
+  color: #aaccff !important;
+  font-size: 12px !important;
+}
+
+#param-panel .tp-txtv {
+  color: #88ccff !important;
+}
+
+#param-panel .tp-rotv_g {
+  background: rgba(60, 80, 140, 0.6) !important;
+}
+
+#param-panel .tp-rotv_f {
+  background: linear-gradient(90deg, #5a8aff, #aa6aff) !important;
+}
+
+#param-panel .tp-sldv {
+  color: #ffffff !important;
+}
+
+#param-panel .tp-sldg_b {
+  background: rgba(60, 80, 140, 0.5) !important;
+}
+
+#param-panel .tp-sldg_f {
+  background: linear-gradient(90deg, #5a8aff, #aa6aff) !important;
+}
+
+#param-panel .tp-dpwv {
+  background: rgba(30, 30, 50, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+#param-panel .tp-dpwv:hover {
+  background: rgba(50, 60, 90, 0.95) !important;
+}
+
+#param-panel .tp-dpdl {
+  background: rgba(30, 30, 50, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+#param-panel .tp-dpdi {
+  color: #ffffff !important;
+}
+
+#param-panel .tp-dpdi:hover {
+  background: rgba(90, 138, 255, 0.2) !important;
+}
+
+#param-panel .tp-lblv_l {
+  color: #aaccff !important;
+}
+
+#param-panel input {
+  background: rgba(30, 40, 70, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+#param-panel .tp-ndfw {
+  background: transparent !important;
+  border: none !important;
+}
+
+#panel-toggle {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #3a5a8a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(58, 90, 138, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+#panel-toggle:hover {
+  background: #4a6aaa;
+  transform: scale(1.05);
+}
+
+#panel-toggle.hidden {
+  display: none;
+}
+
+#param-panel.mobile-hidden {
+  display: none;
+}
+
+#hint-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: rgba(10, 10, 30, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 90;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#hint-bar span {
+  color: #88aacc;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  #param-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    width: calc(100% - 32px);
+    max-width: 320px;
+    z-index: 102;
+  }
+
+  #panel-toggle {
+    display: flex;
+  }
+
+  #panel-toggle.hidden {
+    display: none;
+  }
+
+  #hint-bar {
+    height: 50px;
+    padding: 0 16px;
+    text-align: center;
+  }
+
+  #hint-bar span {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  #fps-counter {
+    top: 8px;
+    left: 8px;
+    font-size: 12px;
+  }
+}

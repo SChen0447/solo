@@ -1,0 +1,18 @@
+{
+  "name": "interactive-nebula-generator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "@tweakpane/core": "^2.0.5",
+    "three": "^0.160.0",
+    "tweakpane": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
