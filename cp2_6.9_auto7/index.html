@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>太空障碍躲避</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="ui-layer">
+      <div id="speed-indicator">
+        <div class="speed-bar-bg">
+          <div class="speed-bar-fill" id="speed-bar-fill"></div>
+        </div>
+        <span class="speed-label">速度</span>
+      </div>
+
+      <div id="score-panel">
+        <div class="score-item">
+          <span class="score-label">得分</span>
+          <span class="score-value" id="score-value">0</span>
+        </div>
+        <div class="score-item">
+          <span class="score-label">速度倍率</span>
+          <span class="score-value" id="speed-value">1.0x</span>
+        </div>
+      </div>
+
+      <div id="start-screen" class="overlay">
+        <div class="overlay-content">
+          <h1 class="game-title">太空障碍躲避</h1>
+          <p class="game-desc">使用 ↑ ↓ 键控制飞船，躲避障碍物！</p>
+          <button class="game-btn" id="start-btn">开始游戏</button>
+        </div>
+      </div>
+
+      <div id="pause-screen" class="overlay hidden">
+        <div class="overlay-content">
+          <h2 class="overlay-title">游戏暂停</h2>
+          <button class="game-btn" id="resume-btn">继续游戏</button>
+        </div>
+      </div>
+
+      <div id="gameover-screen" class="overlay hidden">
+        <div class="overlay-content">
+          <h2 class="overlay-title">游戏结束</h2>
+          <p class="final-score-label">最终得分</p>
+          <p class="final-score-value" id="final-score">0</p>
+          <button class="game-btn" id="restart-btn">重新开始</button>
+        </div>
+      </div>
+
+      <button class="control-btn" id="pause-btn" title="暂停 (P)">⏸</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
