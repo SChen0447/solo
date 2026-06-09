@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T11:20:57.908Z",
+  "task_name": "auto40",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个基于浏览器原生IntersectionObserver API的滚动驱动故事叙述页面应用，用户通过上下滚动页面，触发一系列章节图片、文字和动画的自动展示与切换，形成沉浸式的叙事体验。使用TypeScript和React实现，Vite构建，纯前端，无需后端。文件结构如下：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext，包含jsx配置）\n - index.html（入口页面，加载src/main.tsx）\n - src/main.tsx（应用挂载入口）\n - src/App.tsx（主组件，管理章节序列、滚动监听和全局状态）\n - src/components/StoryChapter.tsx（单个章节组件，接收章节数据、动画配置，利用IntersectionObserver触发进入/离开动画）\n - src/data/storyData.ts（定义章节数据的类型和数组，每章包含标题、描述、背景图片URL、动画类型和持续时间）\n - src/styles/story.css（全局样式：深色渐变背景、章节全屏布局、内容居中、平滑滚动、滤镜过渡）\n\n具体需求：\n1. 页面由至少5个全屏章节组成，每个章节包含一张背景图片（占满视口）、一个居中的标题（大号字，带阴影和渐变颜色）、一段精简的描述文字（小号字，半透明背景衬底），首次进入该章节时背景图片从模糊(blur(8px))渐变为清晰(blur(0))，标题从下方滑入(Y轴从50px到0)，描述文字在标题之后0.5秒淡入。\n2. 滚动触发逻辑：使用IntersectionObserver检测每个章节是否进入视口50%区域，进入时触发该章节的入场动画序列，离开时触发离场动画（内容缩小并淡出到透明度0），一章节动画完成后才允许触发下一章节的检测，避免多个动画同时执行造成性能抖动。\n3. 导航指示：页面右侧固定显示一个由5个小圆点组成的垂直导航条，每个圆点对应一个章节，当前可见的章节对应的圆点高亮显示（颜色从灰变为主题色#ff6b6b），点击任意圆点页面平滑滚动到对应章节（scroll-behavior: smooth），滚动过程中导航条自动更新高亮状态。\n4. 进度条：页面顶部固定一条细线（4px高），随滚动进度从左到右填充颜色（渐变色从#667eea到#764ba2），表示当前阅读进度百分比，底色为半透明白。\n5. 章节交互：每个章节内有一个可点击的“了解更多”按钮（扁平设计，背景透明，边框白色，悬停时背景变为白色字变黑），点击后弹出一个模态框显示该章节的扩展内容（400字左右文本，配一张小图），模态框背景模糊遮罩，点击遮罩关闭，具有平滑的弹出和淡入动画。\n\n界面方面：整体采用深色主题（背景#1a1a2e至#16213e的黑色渐变），文字主色#ffffff，标题使用渐变（从左下到右上，从#f7971e到#ffd200），章节间的过渡使用大面积的色彩斜线切割（CSS clip-path实现多边形裁剪动画），滚动时页面背景色缓慢变化（从深蓝到紫黑循环）。每个章节的背景图片应覆盖整个视口且固定（background-attachment: fixed），实现视差效果。所有动画持续时间统一为0.8秒，缓动函数为ease-out。\n\n性能要求：页面滚动帧率稳定在60FPS，各章节的IntersectionObserver回调中不进行繁重DOM操作，动画全部使用CSS transform和opacity触发GPU合成层，避免layout和paint回流。首次加载时所有背景图片懒加载（仅加载当前视口附近两章图片），其余章节图片在滚动临近时预加载。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:ffa10b7f194c0bf6443e3592e2a0561a_6a26a3e49d20d9c2d4832032.6a26a5879d20d9c2d4832186.6a26a587ea745706321aeca3:Trae CN.T(2026/6/8 19:20:39)",
+    "user_id": "3986207660317399",
+    "trace_id": "ffa10b7f194c0bf6443e3592e2a0561a",
+    "session_id": "6a26a3e49d20d9c2d4832032",
+    "task_id": "6a26a5879d20d9c2d4832186",
+    "message_id": "6a26a587ea745706321aeca3",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 19:20:39",
+    "format": "full"
+  },
+  "trace": "null"
+}

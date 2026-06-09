@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Particle Camera Filter</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="control-panel">
+      <h2 class="panel-title">控制面板</h2>
+      
+      <div class="control-group">
+        <label for="particle-count" class="control-label">
+          粒子数量
+          <span class="tooltip" data-tooltip="调整场景中的粒子总数，2000-8000之间">?</span>
+        </label>
+        <div class="slider-wrapper">
+          <input type="range" id="particle-count" min="2000" max="8000" step="100" value="5000" />
+          <span class="slider-value" id="particle-count-value">5000</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="rotation-speed" class="control-label">
+          旋转速度
+          <span class="tooltip" data-tooltip="粒子群围绕Y轴旋转的速度，0-5度/秒">?</span>
+        </label>
+        <div class="slider-wrapper">
+          <input type="range" id="rotation-speed" min="0" max="5" step="0.1" value="1" />
+          <span class="slider-value" id="rotation-speed-value">1.0°/s</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">
+          色彩模式
+          <span class="tooltip" data-tooltip="切换粒子的色彩渲染模式">?</span>
+        </label>
+        <div class="color-mode-buttons">
+          <button class="mode-btn active" data-mode="original">原始色彩</button>
+          <button class="mode-btn" data-mode="thermal">热力图</button>
+          <button class="mode-btn" data-mode="neon">霓虹渐变</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">
+          音频驱动
+          <span class="tooltip" data-tooltip="启用后粒子会随音乐节奏动态变化">?</span>
+        </label>
+        <div class="toggle-wrapper">
+          <span class="toggle-label">关闭</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="audio-toggle" />
+            <span class="toggle-slider"></span>
+          </label>
+          <span class="toggle-label">开启</span>
+        </div>
+      </div>
+
+      <div class="control-group info-group">
+        <div class="info-item">
+          <span class="info-label">FPS</span>
+          <span class="info-value" id="fps-value">--</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">渲染延迟</span>
+          <span class="info-value" id="latency-value">--</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <video id="video" autoplay muted playsinline style="display: none;"></video>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

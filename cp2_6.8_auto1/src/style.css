@@ -1,0 +1,68 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0f1d;
+  color: #e0e8f5;
+  -webkit-font-smoothing: antialiased;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes flash-score {
+  0% { text-shadow: 0 0 10px currentColor; transform: scale(1); }
+  50% { text-shadow: 0 0 30px currentColor, 0 0 60px currentColor; transform: scale(1.1); }
+  100% { text-shadow: 0 0 10px currentColor; transform: scale(1); }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 5px currentColor; }
+  50% { box-shadow: 0 0 20px currentColor, 0 0 40px currentColor; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes health-pulse {
+  0%, 100% { box-shadow: 0 0 3px #ff4466; }
+  50% { box-shadow: 0 0 15px #ff4466, 0 0 30px #ff4466; }
+}
+
+@keyframes ping-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.flash-blue {
+  animation: flash-score 0.8s ease-out;
+  color: #00aaff !important;
+}
+
+.flash-red {
+  animation: flash-score 0.8s ease-out;
+  color: #ff4466 !important;
+}
+
+.ping-blink {
+  animation: ping-blink 1.5s ease-in-out infinite;
+}

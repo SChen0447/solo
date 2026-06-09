@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T11:17:17.108Z",
+  "task_name": "auto36",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助自媒体运营者对多平台多账号的评论进行聚合分析的应用，主要解决运营人员在手动切换平台查看回评、分析用户情绪和提取热点话题时效率过低的问题。\n\n它应当具备以下能力：\n1) 模拟数据层：预制三条评论流（来自三个不同虚拟平台），每条流包含至少200条评论，每条评论有文本、时间戳、平台标识和情绪标签（正面/负面/中性），应用启动后自动每日随机生成部分新评论，模拟实时更新。\n2) 聚合看板视图：顶部显示总评论数、正面/负面/中性比例（用三色渐变进度条表示），中间区域用可滚动评论流列表展示所有平台的评论（按时间倒序排列，每条评论前显示平台图标和情绪色块，点击展开详情），列表下方有一个简易分页控件（每页20条）。\n3) 情绪趋势图：使用折线图展示过去7天每天的情绪分布变化（横轴日期，纵轴评论数，三条折线分别对应正面/负面/中性），折线颜色固定为绿/红/灰，鼠标悬停显示精确数字。\n4) 热点关键词提取：从所有评论中提取高频词（英文，忽略停用词，统计前20个），以词云形式在侧边区域展示，词的大小与出现频率成正比，点击某词过滤下方评论列表仅显示包含该词的评论。\n\n界面方面要求采用卡片式布局，整体配色使用柔和的蓝灰色调为主（#2d3436底色，#dfe6e9文字色），组件边框用圆角12px和轻微阴影，评论卡片在加载时以淡入+向上位移0.3秒动画入场，情绪比例进度条的数值变化使用1秒缓动动画，折线图有平滑曲线和渐变填充区域，所有图表和列表在窗口宽度小于768px时自动变为纵向堆叠布局，视觉风格统一为扁平+轻微毛玻璃效果。\n\n性能上需要列表滚动和图表渲染至少保持30fps，情绪趋势图和词云在数据更新时重新计算的耗时不超过200ms。\n\n实现采用TypeScript + React，前端基于Vite构建，纯前端使用lorem-ipsum模拟评论数据和chart.js绘制图表、d3-cloud生成词云，无需后端，所有数据存储于内存。按以下文件组织代码：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, chart.js, react-chartjs-2, d3-cloud, lorem-ipsum，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext）\n - index.html（入口页面，含基础meta和title）\n - src/types.ts（定义 Comment, Platform, Emotion 等类型）\n - src/dataGenerator.ts（生成模拟评论数据，提供 getPageComments, getEmotionTrend, getKeywords 等函数）\n - src/components/Dashboard.tsx（聚合看板主组件，组合过滤、列表和图表）\n - src/components/CommentList.tsx（评论流列表，实现分页和关键词过滤）\n - src/components/EmotionTrendChart.tsx（情绪趋势折线图组件）\n - src/components/KeywordCloud.tsx（词云组件，支持点击过滤）\n - src/App.tsx（根组件，加载数据并渲染 Dashboard）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:8517dfbed4545d3409078cbf1ab8eccc_6a26a3db9d20d9c2d483202a.6a26a4ac9d20d9c2d48320b2.6a26a4aba16c44f3c48d6dd3:Trae CN.T(2026/6/8 19:17:00)",
+    "user_id": "3986207660317399",
+    "trace_id": "8517dfbed4545d3409078cbf1ab8eccc",
+    "session_id": "6a26a3db9d20d9c2d483202a",
+    "task_id": "6a26a4ac9d20d9c2d48320b2",
+    "message_id": "6a26a4aba16c44f3c48d6dd3",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 19:17:00",
+    "format": "full"
+  },
+  "trace": "null"
+}

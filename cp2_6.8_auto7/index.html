@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 空间声场可视化</title>
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas"></canvas>
+
+    <div class="mini-waveform" id="mini-waveform">
+      <canvas id="waveform-canvas" width="60" height="20"></canvas>
+    </div>
+
+    <div class="control-bar" id="control-bar">
+      <button class="mic-button" id="mic-btn" title="启动麦克风">
+        <div class="mic-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="2" width="6" height="12" rx="3" />
+            <path d="M5 10a7 7 0 0 0 14 0" />
+            <line x1="12" y1="19" x2="12" y2="23" />
+          </svg>
+        </div>
+        <span class="mic-pulse"></span>
+      </button>
+
+      <div class="shape-switcher">
+        <button class="shape-btn active" data-shape="sphere" title="球形云">球形云</button>
+        <button class="shape-btn" data-shape="spiral" title="螺旋环">螺旋环</button>
+        <button class="shape-btn" data-shape="wave" title="平面波前">平面波</button>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-item">
+          <label>粒子数</label>
+          <input type="range" id="particle-count" min="200" max="1500" value="800" step="50" />
+          <span class="slider-value" id="particle-count-value">800</span>
+        </div>
+        <div class="slider-item">
+          <label>旋转速度</label>
+          <input type="range" id="rotation-speed" min="0" max="200" value="50" step="1" />
+          <span class="slider-value" id="rotation-speed-value">0.5</span>
+        </div>
+        <div class="slider-item">
+          <label>颜色过渡</label>
+          <input type="range" id="color-speed" min="10" max="200" value="50" step="1" />
+          <span class="slider-value" id="color-speed-value">0.5</span>
+        </div>
+      </div>
+
+      <div class="theme-switcher">
+        <button class="theme-btn active" data-theme="neon" title="霓虹极光"></button>
+        <button class="theme-btn" data-theme="amber" title="暖阳琥珀"></button>
+        <button class="theme-btn" data-theme="deepsea" title="深海幽蓝"></button>
+      </div>
+
+      <button class="collapse-btn" id="collapse-btn" title="折叠控制栏">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="18 15 12 9 6 15" />
+        </svg>
+      </button>
+    </div>
+
+    <button class="expand-btn" id="expand-btn" title="展开控制栏">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="6 9 12 15 18 9" />
+      </svg>
+    </button>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>

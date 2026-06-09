@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T10:11:33.053Z",
+  "task_name": "auto2",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线协同白板应用，支持多人实时绘制、图形标注和文本编辑。使用TypeScript和React实现，前端基于Vite构建，后端使用Node.js + Express + Socket.IO实现实时通信。文件结构如下：\n - package.json（含依赖：react, react-dom, typescript, vite, express, socket.io, socket.io-client, uuid, 启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件）\n - tsconfig.json（严格模式，目标ES2022，模块ESNext）\n - index.html（入口页面，提供画布容器和工具栏占位）\n - src/client.ts（前端主逻辑：初始化Socket.IO连接，管理画布元素状态，处理鼠标事件生成绘图指令并通过Socket发送，监听远程指令并渲染图形，支持矩形、圆形、直线和文字标注）\n - src/server.ts（后端服务：创建Express应用，集成Socket.IO，维护画布元素列表，处理客户端连接/断开，转发绘图指令、清除操作和同步请求，定时发送ping保活）\n\n具体需求：\n1. 支持三种绘图工具：画笔（自由手绘）、矩形、圆形，可通过工具栏切换，每个工具对应不同的鼠标交互逻辑（画笔连续追踪，矩形/圆形从落点到释放拉伸）\n2. 支持文字标注模式：点击画布位置弹出输入框，确认后生成带文本框的标注元素，支持字体大小和颜色选择\n3. 实现撤销/重做功能：每个客户端维护本地操作历史栈，undo移除最后一条本机指令并发送删除通知，redo恢复再发送添加指令，远程端同步执行\n4. 提供画布导出功能：将当前所有图形元素转换为SVG格式，生成下载链接，保留颜色、位置和文本内容\n5. 支持清空画布：点击清空按钮发送clear事件，所有客户端清空图形列表并清除画布渲染\n\n界面方面：采用深色主题配色（背景#1e1e2e，画布#2d2d44，工具栏#3b3b5c），工具栏置于左侧竖排（图标+文字标签），工具切换时有平滑的底色高亮过渡（0.3s ease）。画布区域占窗口剩余空间，支持鼠标滚轮缩放（缩放中心跟随鼠标位置）。文字输入框带浅色毛玻璃背景（backdrop-filter blur(4px)）和圆角。交互反馈：工具选中时图标旋转10度并加边框，绘图过程中光标变为十字准星，文字模式下为文本光标。导出和清空按钮置灰在无元素时，点击时轻微弹动动画。整体响应式：小屏幕下工具栏折叠为底部横条，画布高度自适应。\n\n性能要求：绘图操作响应时间不超过16ms（60FPS流畅），通过requestAnimationFrame合并渲染；Socket.IO通信频率限制（每帧最多发送5条指令），避免网络阻塞；本地操作历史栈上限100步，超出时自动丢弃最旧记录。\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:012a3e3b1d555b2c08bc70930c6049b0_6a2694e73b7825e2b7070d7c.6a2695453b7825e2b7070dd8.6a269545a3ae94da3650c0ac:Trae CN.T(2026/6/8 18:11:17)",
+    "user_id": "3986207660317399",
+    "trace_id": "012a3e3b1d555b2c08bc70930c6049b0",
+    "session_id": "6a2694e73b7825e2b7070d7c",
+    "task_id": "6a2695453b7825e2b7070dd8",
+    "message_id": "6a269545a3ae94da3650c0ac",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/8 18:11:17",
+    "format": "full"
+  },
+  "trace": "null"
+}

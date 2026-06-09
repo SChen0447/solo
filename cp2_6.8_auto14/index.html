@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>禅意画板 · Ink Zen</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: #F5F0E8;
+      transition: background-color 1s ease;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: crosshair;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .toolbar-left {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .toolbar-right {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .brush-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(200, 200, 200, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+    }
+
+    .brush-btn:hover {
+      transform: scale(1.1);
+      background: rgba(180, 180, 180, 0.4);
+    }
+
+    .brush-btn.active {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(80, 80, 80, 0.4), inset 0 0 8px rgba(255, 255, 255, 0.3);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px rgba(80, 80, 80, 0.3), inset 0 0 6px rgba(255, 255, 255, 0.2);
+      }
+      to {
+        box-shadow: 0 0 16px rgba(80, 80, 80, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.4);
+      }
+    }
+
+    .brush-icon {
+      width: 20px;
+      height: 20px;
+      stroke: #333;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+    }
+
+    .divider {
+      width: 1px;
+      height: 28px;
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(200, 200, 200, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: rgba(180, 180, 180, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .action-icon {
+      width: 18px;
+      height: 18px;
+      stroke: #333;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .zoom-display {
+      font-size: 13px;
+      color: #555;
+      min-width: 44px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .theme-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .theme-btn.active {
+      border-color: rgba(0, 0, 0, 0.5);
+      transform: scale(1.2);
+    }
+
+    .theme-rice { background: #F5F0E8; }
+    .theme-slate { background: #D1CDC4; }
+    .theme-ink { background: #1A1A1A; }
+
+    .export-btn {
+      width: 80px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(60, 60, 60, 0.85);
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .export-btn:hover {
+      background: rgba(40, 40, 40, 0.9);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .export-btn:active {
+      transform: translateY(0);
+    }
+
+    .export-icon {
+      width: 16px;
+      height: 16px;
+      stroke: #fff;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .particles-canvas {
+      pointer-events: none;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+      <canvas id="particles-canvas" class="particles-canvas"></canvas>
+    </div>
+
+    <div class="toolbar-left" id="toolbar-left">
+      <button class="brush-btn active" data-brush="fine" title="细线笔">
+        <svg class="brush-icon" viewBox="0 0 24 24">
+          <line x1="12" y1="4" x2="12" y2="20" />
+        </svg>
+      </button>
+      <button class="brush-btn" data-brush="wash" title="晕染刷">
+        <svg class="brush-icon" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="7" stroke-width="3" />
+        </svg>
+      </button>
+      <button class="brush-btn" data-brush="splatter" title="散点喷墨">
+        <svg class="brush-icon" viewBox="0 0 24 24">
+          <circle cx="8" cy="10" r="2" />
+          <circle cx="14" cy="8" r="1.5" />
+          <circle cx="16" cy="14" r="2.5" />
+          <circle cx="10" cy="16" r="1.8" />
+          <circle cx="12" cy="12" r="1.2" />
+        </svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <button class="action-btn" id="undo-btn" title="撤销">
+        <svg class="action-icon" viewBox="0 0 24 24">
+          <polyline points="9 14 4 9 9 4" />
+          <path d="M20 20v-7a4 4 0 0 0-4-4H4" />
+        </svg>
+      </button>
+      <button class="action-btn" id="redo-btn" title="重做">
+        <svg class="action-icon" viewBox="0 0 24 24">
+          <polyline points="15 14 20 9 15 4" />
+          <path d="M4 20v-7a4 4 0 0 1 4-4h12" />
+        </svg>
+      </button>
+
+      <div class="divider"></div>
+
+      <span class="zoom-display" id="zoom-display">1.0x</span>
+    </div>
+
+    <div class="toolbar-right" id="toolbar-right">
+      <button class="theme-btn theme-rice active" data-theme="rice" title="米白宣纸"></button>
+      <button class="theme-btn theme-slate" data-theme="slate" title="浅灰石板"></button>
+      <button class="theme-btn theme-ink" data-theme="ink" title="深色墨底"></button>
+
+      <div class="divider"></div>
+
+      <button class="export-btn" id="export-btn">
+        <svg class="export-icon" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        导出
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

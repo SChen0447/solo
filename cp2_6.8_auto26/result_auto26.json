@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-08T10:58:39.494Z",
+  "task_name": "auto26",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助创业者或产品经理对多个项目创意进行快速对比和评审的应用，主要解决在头脑风暴后，面对一堆零散的想法，缺乏一个结构化工具来从多个维度（如可行性、创新性、成本等）进行评分、排序和决策输出的问题。\n\n它应当具备以下能力：\n1) 用户可以创建一个评分会议，输入会议标题和需要评估的5-10个项目创意的名称与简短描述，每个创意自动生成一张可拖拽排序的卡片。\n2) 系统预设4个核心评价维度：可行性（权重30%）、创新性（权重25%）、市场潜力（权重25%）和成本投入（权重20%），用户可以对每个维度针对每个创意进行1-10分的评分（通过滑动条输入），权重可由用户自定义调整。\n3) 所有评分数据提交后，系统后台自动加权计算每个创意的总分，并以降序排列展示在结果看板上。看板包含一个横向柱状图（每个创意一根柱子，颜色深浅代表总分高低，柱子上标注具体分数），以及一个雷达图（在同一坐标系内用不同颜色的多边形展示各创意在每个维度的表现）。\n4) 看板支持导出为PDF报告（使用html2canvas截图然后生成PDF），报告中包含会议基本信息、所有创意的总分排名列表和两张图表，布局为A4竖版。\n\n界面方面要求：主布局采用三栏式结构，左侧为创意列表区（带拖拽排序），中间为评分编辑区（使用卡片形式展示每个创意的维度滑块，颜色统一为柔和的蓝灰调），右侧为实时预览结果区（初始为空，点击“生成看板”后动态渲染图表）。图表配色使用一套定制的色板（#4A90D9浅蓝、#5DAE8B薄荷绿、#E8A838金橙、#D96C6C珊瑚红），雷达图和柱状图背景带极浅的网格线。添加平滑的卡片切换动画（translateY 300ms ease-out）和滑动条数值变化的淡入数字提示。所有面板均适配响应式，当屏幕宽度小于768px时，三栏合为单栏纵向排列。\n\n性能上需要：当同时显示10个创意的5维度评分时（总计50个滑动条），用户拖动任何滑动条应触发对应卡片的数值动画，且整体响应延迟不超过100ms，浏览器的帧率应稳定在55fps以上，不得出现明显卡顿或掉帧。\n\n实现采用TypeScript和React（Vite构建），后端使用Node.js + Express（无数据库，数据存储在后端内存中），前后端通过REST API交互。按以下文件组织代码：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, express, uuid, body-parser, cors, recharts, html2canvas, jspdf，启动脚本：npm run dev 同时启动前后端）\n - index.html（入口，meta viewport配置适配移动端）\n - vite.config.js（构建配置，启用React插件，并配置代理将/api请求转发到后端Express端口）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - server/server.ts（Express后端，职责：处理REST API路由，如POST /api/session创建会议、POST /api/session/:id/score提交评分、GET /api/session/:id/result获取计算结果，所有会议数据存储在内存中的Map对象里）\n - src/App.tsx（前端主组件，职责：管理整体状态与页面路由，包含三个主要区域（左侧拖拽列表、中间评分编辑器、右侧结果展示），负责向后端发送API请求并更新视图）\n - src/components/ScoringPanel.tsx（前端组件，职责：渲染每个创意的评分卡片，包含四个维度的滑动条（1-10分）和权重调整输入框，每个滑动条值变化时触发卡片内的数值动画并更新本地状态）\n - src/components/ResultBoard.tsx（前端组件，职责：接收后端计算的总分数据，使用Recharts库渲染横向柱状图和雷达图，提供“导出PDF”按钮触发截图和PDF生成逻辑）\n\n运行方式：npm install && npm run dev，浏览器打开http://localhost:5173即可使用。",
+  "session_id": null,
+  "trace": "null"
+}

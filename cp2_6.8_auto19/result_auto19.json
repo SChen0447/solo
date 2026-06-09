@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-08T10:43:03.469Z",
+  "task_name": "auto19",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够将日常待办事项转化为可视化时间线的应用，主要解决手动管理任务时缺乏直观的时间分布感知、无法快速识别日程冲突或空闲时段的问题。\n\n它应当具备以下能力：\n1) 用户可以添加、编辑和删除待办事项，每个事项包括标题、优先级（高/中/低）、开始时间和结束时间（精确到分钟），系统自动校验时间重叠并弹窗警告用户（标记冲突事项在列表中高亮变红）。\n2) 主界面以24小时时间轴横条展示今天的所有事项，每个事项显示为色块条（长度按时间比例缩放），色块颜色按优先级区分——高优先级红色、中优先级橙色、低优先级绿色，色块上方悬浮显示标题和时长。鼠标悬停色块弹出详细信息卡片，包含优先级、时间段和备注（若有）。\n3) 支持拖拽调整事项时间：用户可以直接在时间轴上横向拖拽色块的左/右边缘来修改开始或结束时间，拖拽时其他相邻色块自动弹性避让（间距保持至少4px），松开后自动更新数据并重新渲染。\n\n界面方面要求采用高对比度的极简风格，背景使用深灰 #1e1e2e，时间轴刻度线为浅灰虚线，事项色块采用圆角矩形（圆角半径8px）并带有微弱投影（rgba(0,0,0,0.3)）。整体为暗色主题，配合细微的渐变背景，左右两侧留有20px内边距，时间轴上方固定显示当前时间指示线（红色竖线，闪烁动画每秒一次）。添加修改事项时弹窗带入场动画（从底部向上滑入，持续300ms ease-out）。响应式适配：在大屏（≥1024px）显示完整24小时轴，平板（768-1023px）缩小字体但保留全宽，手机（<768px）改为上下滑动模式并加粗时间标签。\n\n性能上要求拖拽调整时间时，页面帧率不低于50fps，同时冲突检测在100ms内完成。\n\n实现采用TypeScript + Vue 3 + Vite，并且使用Pinia管理状态，按以下文件组织代码：\n - package.json（含依赖：vue 3、typescript、vite、@vitejs/plugin-vue、pinia，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用Vue插件，设置别名@指向src）\n - tsconfig.json（严格模式，目标ES2022，模块ESNext）\n - index.html（入口页面，挂载#app）\n - src/main.ts（应用入口，创建Vue实例并安装Pinia）\n - src/store/taskStore.ts（使用Pinia定义任务状态管理，包含addTask、editTask、deleteTask、checkConflict、updateTaskTime五个action，以及任务列表的时间排序逻辑）\n - src/components/TimeLine.vue（主时间轴组件，负责渲染24小时刻度、色块、当前时间指示线，处理拖拽事件和冲突高亮）\n - src/components/TaskForm.vue（弹出表单组件，用于添加/编辑任务，包含标题输入、优先级选择、时间选择器，提交前调用冲突检测）\n - src/composables/useDrag.ts（自定义Composable，封装拖拽逻辑，返回鼠标事件处理器和色块新位置的计算函数）\n - src/utils/timeUtils.ts（工具函数：格式化时间、计算色块像素宽度、检测两个时间段是否冲突）\n\n运行方式：在项目根目录下执行 npm install && npm run dev，浏览器打开 http://localhost:5173 即可使用。",
+  "session_id": null,
+  "trace": "null"
+}

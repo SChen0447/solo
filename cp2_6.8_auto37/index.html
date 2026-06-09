@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 曲线动画编辑器</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div class="app-container">
+    <div class="left-panel">
+      <div class="panel-header">
+        <h2>2D 画板</h2>
+        <div class="panel-controls">
+          <button id="undoBtn" class="control-btn">撤销</button>
+          <button id="clearBtn" class="control-btn">清除</button>
+        </div>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="drawBoard" width="200" height="200"></canvas>
+      </div>
+      <div class="panel-hint">
+        <p>在画板上拖拽鼠标绘制路径</p>
+      </div>
+    </div>
+
+    <div class="divider" id="divider"></div>
+
+    <div class="right-panel">
+      <div class="panel-header">
+        <h2>3D 视图</h2>
+      </div>
+      <div class="scene-wrapper" id="sceneWrapper">
+        <canvas id="threeCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

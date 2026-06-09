@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Star Browser</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="star-canvas"></canvas>
+
+  <div class="ui-overlay">
+    <div class="title">Star Browser</div>
+
+    <div class="search-container">
+      <input
+        type="text"
+        id="star-search"
+        class="search-input"
+        placeholder="搜索恒星 (如 Sirius)"
+        autocomplete="off"
+      />
+      <div id="search-suggestions" class="search-suggestions"></div>
+    </div>
+
+    <div class="magnitude-filter">
+      <div class="filter-label">
+        <span class="filter-icon">✦</span>
+        <span class="filter-text">视星等筛选</span>
+      </div>
+      <div class="slider-wrapper">
+        <input
+          type="range"
+          id="magnitude-slider"
+          class="magnitude-slider"
+          min="-1"
+          max="6"
+          step="0.5"
+          value="6"
+        />
+        <div class="slider-glow" id="slider-glow"></div>
+      </div>
+      <div class="magnitude-value">
+        <span id="mag-min">-1</span>
+        <span id="mag-current">6.0</span>
+        <span id="mag-max">6</span>
+      </div>
+      <div class="slider-ticks">
+        <span>-1</span><span>0</span><span>1</span><span>2</span>
+        <span>3</span><span>4</span><span>5</span><span>6</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="star-tooltip" class="star-tooltip">
+    <div class="tooltip-name" id="tooltip-name"></div>
+    <div class="tooltip-magnitude" id="tooltip-magnitude"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
