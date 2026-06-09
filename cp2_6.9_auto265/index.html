@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D晶体生长可视化</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+
+    <div id="control-panel" class="control-panel">
+      <div class="panel-header">
+        <span class="panel-title">晶体生长参数</span>
+        <button id="toggle-panel" class="toggle-btn" aria-label="折叠面板">
+          <span class="chevron"></span>
+        </button>
+      </div>
+      <div class="panel-content">
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="label-text">温度</span>
+            <span id="temp-value" class="value-text">25°C</span>
+          </div>
+          <input type="range" id="temperature" min="0" max="100" step="1" value="25" class="slider" />
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="label-text">过饱和度</span>
+            <span id="sat-value" class="value-text">2.0</span>
+          </div>
+          <input type="range" id="saturation" min="1.0" max="5.0" step="0.1" value="2.0" class="slider" />
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span class="label-text">生长速率</span>
+            <span id="rate-value" class="value-text">1.0</span>
+          </div>
+          <input type="range" id="growthRate" min="0.1" max="3.0" step="0.1" value="1.0" class="slider" />
+        </div>
+        <div class="status-info">
+          <div class="status-row">
+            <span class="status-label">阶段:</span>
+            <span id="phase-text" class="status-value">晶核期</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">棱柱数:</span>
+            <span id="prism-count" class="status-value">0</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">晶核半径:</span>
+            <span id="radius-text" class="status-value">0.50</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button id="playPauseBtn" class="circle-btn play-pause-btn" aria-label="生长/暂停">
+      <svg id="playIcon" viewBox="0 0 24 24" class="btn-icon">
+        <polygon points="8,5 19,12 8,19" fill="#4FC3F7"/>
+      </svg>
+      <svg id="pauseIcon" viewBox="0 0 24 24" class="btn-icon hidden">
+        <rect x="6" y="5" width="4" height="14" fill="#FFE66D"/>
+        <rect x="14" y="5" width="4" height="14" fill="#FFE66D"/>
+      </svg>
+    </button>
+
+    <button id="resetBtn" class="circle-btn reset-btn" aria-label="重置">
+      <svg viewBox="0 0 24 24" class="btn-icon">
+        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" fill="#FF6B6B"/>
+      </svg>
+    </button>
+
+    <div id="tooltip" class="tooltip hidden">
+      <div class="tooltip-row"><span class="tooltip-label">法线方向:</span><span id="tip-normal" class="tooltip-value"></span></div>
+      <div class="tooltip-row"><span class="tooltip-label">尺寸:</span><span id="tip-size" class="tooltip-value"></span></div>
+      <div class="tooltip-row"><span class="tooltip-label">形成时间:</span><span id="tip-time" class="tooltip-value"></span></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
