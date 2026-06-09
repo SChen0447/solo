@@ -1,0 +1,196 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #1B1B2F;
+  color: #EAEAEA;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  min-width: 1024px;
+}
+
+#app {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.app-main.visible {
+  opacity: 1;
+}
+
+/* Top Search Bar */
+.search-bar {
+  padding: 16px 32px;
+  background-color: #1B1B2F;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-bar h1 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #EAEAEA;
+  white-space: nowrap;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 500px;
+  margin-left: auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 16px 10px 40px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #2A2A40;
+  color: #EAEAEA;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: #A0A0B0;
+}
+
+.search-input:focus {
+  border-color: rgba(244, 208, 63, 0.5);
+  box-shadow: 0 0 0 3px rgba(244, 208, 63, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #A0A0B0;
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Left Panel - Wheel */
+.wheel-panel {
+  width: 50%;
+  background-color: #1B1B2F;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wheel-panel-header {
+  padding: 20px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.wheel-panel-header h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #EAEAEA;
+  margin-bottom: 4px;
+}
+
+.wheel-panel-header p {
+  font-size: 12px;
+  color: #A0A0B0;
+}
+
+.wheel-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  min-height: 0;
+}
+
+/* Right Panel - Timeline */
+.timeline-panel {
+  width: 50%;
+  background-color: #1B1B2F;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+.timeline-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.timeline-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Pulse Highlight Animation */
+@keyframes pulse-highlight {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px currentColor;
+  }
+  50% {
+    transform: scale(1.5);
+    box-shadow: 0 4px 20px currentColor;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 2px 8px currentColor;
+  }
+}
+
+/* Scent dot hover and active states */
+.scent-dot:active {
+  transform: scale(0.95) !important;
+}
+
+/* Buttons generic */
+button {
+  font-family: inherit;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+textarea:focus {
+  outline: none;
+}
+
+/* Welcome animation overlay cleanup */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: rgba(244, 208, 63, 0.3);
+  color: #fff;
+}
