@@ -1,0 +1,98 @@
+[
+  {
+    "id": "book-1",
+    "title": "百年孤独",
+    "author": "加西亚·马尔克斯",
+    "description": "《百年孤独》是魔幻现实主义文学的代表作，描写了布恩迪亚家族七代人的传奇故事，以及加勒比海沿岸小镇马孔多的百年兴衰，反映了拉丁美洲一个世纪以来风云变幻的历史。",
+    "coverUrl": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=220&h=330&fit=crop",
+    "color": "#8B4513"
+  },
+  {
+    "id": "book-2",
+    "title": "追风筝的人",
+    "author": "卡勒德·胡赛尼",
+    "description": "12岁的阿富汗富家少爷阿米尔与仆人哈桑情同手足。然而，在一场风筝比赛后，发生了一件悲惨的事，阿米尔为自己的懦弱感到自责和痛苦，逼走了哈桑。",
+    "coverUrl": "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=220&h=330&fit=crop",
+    "color": "#A0522D"
+  },
+  {
+    "id": "book-3",
+    "title": "小王子",
+    "author": "圣埃克苏佩里",
+    "description": "以一位飞行员作为故事叙述者，讲述了小王子从自己星球出发前往地球的过程中，所经历的各种历险。作者以小王子的孩子式的眼光，透视出成人的空虚、盲目。",
+    "coverUrl": "https://images.unsplash.com/photo-1629992101753-56d196c8aabb?w=220&h=330&fit=crop",
+    "color": "#CD853F"
+  },
+  {
+    "id": "book-4",
+    "title": "活着",
+    "author": "余华",
+    "description": "讲述了农村人福贵悲惨的人生遭遇。福贵本是个阔少爷，可他嗜赌如命，终于赌光了家业，一贫如洗。他的父亲被他活活气死，母亲则在穷困中患了重病。",
+    "coverUrl": "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=220&h=330&fit=crop",
+    "color": "#D2691E"
+  },
+  {
+    "id": "book-5",
+    "title": "围城",
+    "author": "钱钟书",
+    "description": "《围城》是钱钟书所著的长篇小说，是中国现代文学史上一部风格独特的讽刺小说。被誉为\"新儒林外史\"。故事主要写抗战初期知识分子的群相。",
+    "coverUrl": "https://images.unsplash.com/photo-1541963463532-d68292c34b19?w=220&h=330&fit=crop",
+    "color": "#8B6914"
+  },
+  {
+    "id": "book-6",
+    "title": "挪威的森林",
+    "author": "村上春树",
+    "description": "《挪威的森林》是日本作家村上春树于1987年所著的一部长篇爱情小说。故事讲述主角纠缠在情绪不稳定且患有精神疾病的直子和开朗活泼的小林绿子之间。",
+    "coverUrl": "https://images.unsplash.com/photo-1519682337058-a94d519337bc?w=220&h=330&fit=crop",
+    "color": "#2F4F4F"
+  },
+  {
+    "id": "book-7",
+    "title": "三体",
+    "author": "刘慈欣",
+    "description": "《三体》是刘慈欣创作的系列长篇科幻小说，由《三体》、《三体Ⅱ·黑暗森林》、《三体Ⅲ·死神永生》组成，第一部于2006年5月起在《科幻世界》杂志上连载。",
+    "coverUrl": "https://images.unsplash.com/photo-1614544048536-0d28caf77f41?w=220&h=330&fit=crop",
+    "color": "#191970"
+  },
+  {
+    "id": "book-8",
+    "title": "红楼梦",
+    "author": "曹雪芹",
+    "description": "《红楼梦》是中国古代章回体长篇小说，中国古典四大名著之一，一般认为是清代作家曹雪芹所著。小说以贾、史、王、薛四大家族的兴衰为背景。",
+    "coverUrl": "https://images.unsplash.com/photo-1589998059171-988d887df646?w=220&h=330&fit=crop",
+    "color": "#800000"
+  },
+  {
+    "id": "book-9",
+    "title": "平凡的世界",
+    "author": "路遥",
+    "description": "《平凡的世界》以中国70年代中期到80年代中期十年间为背景，通过复杂的矛盾纠葛，以孙少安和孙少平两兄弟为中心，刻画了当时社会各阶层众多普通人的形象。",
+    "coverUrl": "https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=220&h=330&fit=crop",
+    "color": "#8B7355"
+  },
+  {
+    "id": "book-10",
+    "title": "白夜行",
+    "author": "东野圭吾",
+    "description": "《白夜行》是日本作家东野圭吾创作的长篇小说，也是其代表作。故事围绕着一对有着不同寻常情愫的小学生展开，将无望却坚守的凄凉爱情和执著而缜密的冷静推理完美结合。",
+    "coverUrl": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=220&h=330&fit=crop",
+    "color": "#2c2c2c"
+  },
+  {
+    "id": "book-11",
+    "title": "解忧杂货店",
+    "author": "东野圭吾",
+    "description": "《解忧杂货店》是日本作家东野圭吾写作的长篇小说。该书讲述了在僻静街道旁的一家杂货店，只要写下烦恼投进店前门卷帘门的投信口，第二天就会在店后的牛奶箱里得到回答。",
+    "coverUrl": "https://images.unsplash.com/photo-1524578271613-d550eacf6090?w=220&h=330&fit=crop",
+    "color": "#CD853F"
+  },
+  {
+    "id": "book-12",
+    "title": "月亮与六便士",
+    "author": "毛姆",
+    "description": "《月亮和六便士》是英国小说家威廉· 萨默赛特·毛姆的创作的长篇小说，成书于1919年。作品以法国印象派画家保罗·高更的生平为蓝本，描述了一个原本平凡的伦敦证券经纪人思特里克兰德。",
+    "coverUrl": "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=220&h=330&fit=crop",
+    "color": "#B8860B"
+  }
+]

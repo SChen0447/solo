@@ -1,0 +1,52 @@
+[
+  {
+    "id": "note-1",
+    "bookId": "book-1",
+    "content": "多年以后，当我再拿起这本书，依然会被那句开头震撼。魔幻现实主义的巅峰之作，每读一遍都有新的感悟。",
+    "likes": 12,
+    "createdAt": 1717891200000,
+    "rotation": -2.5,
+    "offsetX": 5,
+    "offsetY": -3
+  },
+  {
+    "id": "note-2",
+    "bookId": "book-1",
+    "content": "布恩迪亚家族的命运就像一个轮回，孤独是刻在骨子里的诅咒。好书，值得反复品味。",
+    "likes": 8,
+    "createdAt": 1717977600000,
+    "rotation": 3.2,
+    "offsetX": -4,
+    "offsetY": 2
+  },
+  {
+    "id": "note-3",
+    "bookId": "book-3",
+    "content": "所有的大人都曾经是小孩，虽然只有少数人记得。——小王子教会我如何保持一颗童心。",
+    "likes": 25,
+    "createdAt": 1718064000000,
+    "rotation": -1.8,
+    "offsetX": 0,
+    "offsetY": 0
+  },
+  {
+    "id": "note-4",
+    "bookId": "book-4",
+    "content": "人是为活着本身而活着的，而不是为了活着之外的任何事物所活着。余华的文字太有力量了。",
+    "likes": 18,
+    "createdAt": 1718150400000,
+    "rotation": 2.1,
+    "offsetX": 3,
+    "offsetY": -5
+  },
+  {
+    "id": "note-5",
+    "bookId": "book-7",
+    "content": "黑暗森林法则让人不寒而栗！刘慈欣的想象力真是无与伦比，这才是真正的硬科幻！",
+    "likes": 30,
+    "createdAt": 1718236800000,
+    "rotation": -3.5,
+    "offsetX": -2,
+    "offsetY": 4
+  }
+]
