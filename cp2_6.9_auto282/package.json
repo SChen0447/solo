@@ -1,0 +1,15 @@
+{
+  "name": "ink-tide",
+  "version": "1.0.0",
+  "description": "墨迹潮汐 - 交互式汉字笔画生成与动画工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}

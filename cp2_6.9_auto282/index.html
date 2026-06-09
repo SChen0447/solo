@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>墨迹潮汐 - 交互式汉字笔画生成</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "SimSun", "STSong", "Songti SC", serif;
+      background-color: #F5E6C8;
+      color: #5C4033;
+      user-select: none;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+
+    #toolbar {
+      height: 60px;
+      background-color: #E8D5B7;
+      box-shadow: inset 0 2px 8px rgba(92, 64, 51, 0.3),
+                  inset 0 -2px 4px rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 24px;
+      gap: 16px;
+      flex-wrap: nowrap;
+    }
+
+    .tool-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-label {
+      font-size: 14px;
+      color: #5C4033;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 6px;
+      background: #333333;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 12px;
+      background: #1A1A1A;
+      cursor: pointer;
+      border: 2px solid #F5E6C8;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      transition: transform 0.2s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.05);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 12px;
+      background: #1A1A1A;
+      cursor: pointer;
+      border: 2px solid #F5E6C8;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .color-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 12px;
+      border: 2px solid #8B7355;
+      cursor: pointer;
+      transition: transform 0.2s ease-out;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .color-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .color-btn:active {
+      transform: scale(0.95);
+    }
+
+    .color-btn.active {
+      border-color: #5C4033;
+      box-shadow: 0 0 0 2px #D4C4A8, inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .action-btn {
+      padding: 8px 16px;
+      background-color: #8B7355;
+      color: #FDF5E6;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2),
+                  inset 0 2px 4px rgba(255,255,255,0.1);
+      transition: transform 0.2s ease-out, background-color 0.2s;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      background-color: #9B8365;
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background-color: #F5E6C8;
+    }
+
+    #canvas {
+      width: 80%;
+      height: 75%;
+      background-color: #FDF5E6;
+      border: 2px solid #8B7355;
+      border-radius: 4px;
+      box-shadow: 0 4px 16px rgba(92, 64, 51, 0.3);
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    #statusbar {
+      height: 50px;
+      background-color: #D4C4A8;
+      box-shadow: inset 0 2px 8px rgba(92, 64, 51, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      gap: 16px;
+    }
+
+    .status-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #dot-matrix {
+      display: grid;
+      grid-template-columns: repeat(7, 12px);
+      grid-template-rows: repeat(7, 12px);
+      gap: 2px;
+      padding: 4px;
+      background-color: rgba(92, 64, 51, 0.1);
+      border-radius: 4px;
+    }
+
+    .dot-cell {
+      width: 12px;
+      height: 12px;
+      background-color: #C0B090;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .dot-cell:hover {
+      transform: scale(1.1);
+    }
+
+    .dot-cell.active {
+      background-color: #5C4033;
+    }
+
+    .dot-cell.covered {
+      background-color: #2B5B84;
+    }
+
+    .dot-cell.flash-green {
+      animation: flashGreen 0.5s infinite;
+    }
+
+    @keyframes flashGreen {
+      0%, 100% { background-color: #5C4033; }
+      50% { background-color: #4CAF50; }
+    }
+
+    #status-text {
+      font-size: 14px;
+      color: #5C4033;
+      font-weight: 600;
+      min-width: 100px;
+    }
+
+    #status-text.complete {
+      color: #4CAF50;
+    }
+
+    #fps-display {
+      font-size: 12px;
+      color: #8B7355;
+      font-family: monospace;
+      min-width: 50px;
+    }
+
+    #playback-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .speed-btn {
+      padding: 4px 10px;
+      background-color: #C0B090;
+      color: #5C4033;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, background-color 0.2s;
+    }
+
+    .speed-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .speed-btn:active {
+      transform: scale(0.95);
+    }
+
+    .speed-btn.active {
+      background-color: #8B7355;
+      color: #FDF5E6;
+    }
+
+    @media (max-width: 768px) {
+      #toolbar {
+        height: auto;
+        min-height: 60px;
+        flex-wrap: wrap;
+        padding: 8px 16px;
+      }
+
+      #canvas {
+        width: 90%;
+        height: 60%;
+      }
+
+      #statusbar {
+        height: 40px;
+        padding: 0 12px;
+      }
+
+      input[type="range"] {
+        width: 80px;
+      }
+
+      .tool-label {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="toolbar">
+      <div class="tool-group">
+        <span class="tool-label">笔刷大小</span>
+        <div class="slider-container">
+          <input type="range" id="brush-size" min="2" max="40" step="1" value="12">
+          <span id="brush-size-value" class="tool-label">12px</span>
+        </div>
+      </div>
+      <div class="tool-group">
+        <span class="tool-label">墨色浓度</span>
+        <div class="slider-container">
+          <input type="range" id="ink-density" min="10" max="100" step="5" value="70">
+          <span id="ink-density-value" class="tool-label">70%</span>
+        </div>
+      </div>
+      <div class="tool-group">
+        <span class="tool-label">墨色</span>
+        <div class="color-btns" id="color-btns">
+          <button class="color-btn active" data-color="#1A1A1A" style="background:#1A1A1A" title="纯黑"></button>
+          <button class="color-btn" data-color="#8B4513" style="background:#8B4513" title="赭石"></button>
+          <button class="color-btn" data-color="#9E3B3B" style="background:#9E3B3B" title="胭脂"></button>
+          <button class="color-btn" data-color="#2B5B84" style="background:#2B5B84" title="花青"></button>
+          <button class="color-btn" data-color="#DAA520" style="background:#DAA520" title="藤黄"></button>
+        </div>
+      </div>
+      <button class="action-btn" id="clear-btn">清空画布</button>
+    </div>
+
+    <div id="canvas-container">
+      <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="statusbar">
+      <div class="status-section">
+        <span class="tool-label">汉字模板</span>
+        <div id="dot-matrix"></div>
+      </div>
+      <div id="status-text">请在模板上预设目标汉字</div>
+      <div class="status-section">
+        <div id="playback-controls">
+          <span class="tool-label">回放</span>
+          <button class="speed-btn" id="playback-btn">▶</button>
+          <button class="speed-btn active" data-speed="1">1x</button>
+          <button class="speed-btn" data-speed="0.5">0.5x</button>
+          <button class="speed-btn" data-speed="2">2x</button>
+        </div>
+        <div id="fps-display">-- FPS</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
