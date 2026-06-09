@@ -1,0 +1,36 @@
+{
+  "name": "codeshare",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "client:dev": "vite",
+    "server:dev": "tsx watch server/index.ts",
+    "dev": "concurrently \"npm run client:dev\" \"npm run server:dev\"",
+    "build": "tsc -b && vite build",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "prismjs": "^1.29.0",
+    "express": "^4.21.1",
+    "cors": "^2.8.5",
+    "uuid": "^10.0.0",
+    "lucide-react": "^0.453.0"
+  },
+  "devDependencies": {
+    "@types/prismjs": "^1.26.4",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@types/express": "^5.0.0",
+    "@types/cors": "^2.8.17",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.9",
+    "@vitejs/plugin-react": "^4.3.2",
+    "concurrently": "^9.0.1",
+    "tsx": "^4.19.1"
+  }
+}
