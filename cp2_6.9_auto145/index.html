@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>空间站轨道碎片追踪看板</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <aside id="control-panel">
+    <div class="panel-header">
+      <h2>🛰️ 轨道碎片监控</h2>
+      <p class="subtitle">实时追踪 · 碰撞预警</p>
+    </div>
+
+    <div class="control-group">
+      <label for="debris-count">碎片数量</label>
+      <div class="slider-row">
+        <input type="range" id="debris-count" min="50" max="500" value="200" />
+        <span id="debris-count-value">200</span>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label for="orbit-filter">轨道类型筛选</label>
+      <select id="orbit-filter">
+        <option value="all">全部轨道</option>
+        <option value="low">低轨 (LEO)</option>
+        <option value="medium">中轨 (MEO)</option>
+        <option value="high">高轨 (GEO)</option>
+      </select>
+    </div>
+
+    <div class="control-group toggle-group">
+      <label for="collision-alert">碰撞预警高亮</label>
+      <label class="switch">
+        <input type="checkbox" id="collision-alert" checked />
+        <span class="slider-round"></span>
+      </label>
+    </div>
+
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">低轨碎片</span>
+        <span class="stat-value" id="stat-low">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">中轨碎片</span>
+        <span class="stat-value" id="stat-medium">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">高轨碎片</span>
+        <span class="stat-value" id="stat-high">0</span>
+      </div>
+    </div>
+
+    <div class="legend">
+      <h3>图例</h3>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#FF5252"></span>
+        <span>低轨 &lt; 2000km</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#FFD740"></span>
+        <span>中轨 2000-35786km</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot" style="background:#69F0AE"></span>
+        <span>高轨 &gt; 35786km</span>
+      </div>
+    </div>
+  </aside>
+
+  <div id="info-label" class="hidden">
+    <div class="label-row"><span class="label-key">ID:</span><span id="label-id">-</span></div>
+    <div class="label-row"><span class="label-key">高度:</span><span id="label-altitude">- km</span></div>
+    <div class="label-row"><span class="label-key">速度:</span><span id="label-velocity">- km/s</span></div>
+    <div class="label-row"><span class="label-key">碰撞风险:</span><span id="label-risk">-</span></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
