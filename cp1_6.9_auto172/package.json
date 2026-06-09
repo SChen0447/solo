@@ -1,0 +1,14 @@
+{
+  "name": "stardust-alchemy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Stardust Alchemy - Virtual Stardust Recipe Lab",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm install && npx ts-node src/index.ts",
+    "dev:client": "cd client && npm install && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+}
