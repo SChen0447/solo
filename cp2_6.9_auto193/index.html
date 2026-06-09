@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古生物化石拼图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(180deg, #0A0A1A 0%, #1A1A3A 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #three-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #ui-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .progress-panel {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      pointer-events: auto;
+    }
+
+    .progress-label {
+      color: #ffffff;
+      font-size: 16px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .progress-bar {
+      width: 240px;
+      height: 14px;
+      background: #333333;
+      border-radius: 7px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4A90D9, #50C878);
+      border-radius: 7px;
+      transition: width 0.4s ease;
+    }
+
+    .progress-text {
+      color: #ffffff;
+      font-size: 16px;
+      margin-top: 6px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .button-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      gap: 12px;
+      pointer-events: auto;
+    }
+
+    .ui-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: background 0.3s ease, transform 0.2s ease;
+    }
+
+    .ui-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .ui-button:active {
+      transform: translateY(0);
+    }
+
+    .hint-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
+      padding: 28px 36px;
+      border-radius: 16px;
+      color: #ffffff;
+      pointer-events: auto;
+      max-width: 420px;
+      display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .hint-overlay.visible {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translate(-50%, -48%); }
+      to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    .hint-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #D4AF37;
+    }
+
+    .hint-list {
+      list-style: none;
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .hint-list li {
+      padding-left: 16px;
+      position: relative;
+    }
+
+    .hint-list li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: #50C878;
+    }
+
+    .hint-close {
+      position: absolute;
+      top: 12px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 22px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .hint-close:hover {
+      opacity: 1;
+    }
+
+    .success-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: auto;
+      display: none;
+    }
+
+    .success-overlay.visible {
+      display: block;
+      animation: successIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes successIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    .success-text {
+      padding: 20px 48px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      color: #D4AF37;
+      font-size: 48px;
+      font-weight: 700;
+      letter-spacing: 8px;
+      text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="three-container"></div>
+    <div id="ui-container">
+      <div class="progress-panel">
+        <div class="progress-label">拼合进度</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text">0 / 15</div>
+      </div>
+
+      <div class="button-panel">
+        <button class="ui-button" id="reset-btn">重置</button>
+        <button class="ui-button" id="hint-btn">提示</button>
+      </div>
+
+      <div class="hint-overlay" id="hint-overlay">
+        <button class="hint-close" id="hint-close">&times;</button>
+        <div class="hint-title">位置提示</div>
+        <ul class="hint-list" id="hint-list"></ul>
+      </div>
+
+      <div class="success-overlay" id="success-overlay">
+        <div class="success-text">复原成功</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
