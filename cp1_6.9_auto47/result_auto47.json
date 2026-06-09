@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:31:37.732Z",
+  "task_name": "auto47",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助用户创建并分享个性化创意食谱的社交应用，主要解决用户难以记录和传播自己的独家菜品配方问题。\n\n它应当具备以下能力：\n1) 用户注册与登录：支持邮箱注册和密码登录，用户信息存储在本地JSON文件中（无需数据库），注册后自动生成用户头像（基于用户名首字母和随机背景色）。登录成功后跳转到食谱广场，顶部导航栏显示用户头像和昵称。\n2) 食谱创建与编辑：提供一个表单页面，用户可以输入食谱标题（最多50字）、食材列表（每项包含名称和用量，支持动态添加和删除）、制作步骤（按顺序编号，每步可插入图片的URL地址）、烹饪时间（整数分钟）和难度等级（简单/中等/困难）。点击发布后，食谱数据通过POST请求保存到后端，并自动跳转到详情页。\n3) 食谱广场与搜索：主界面以三列瀑布流网格展示所有公开食谱（每张卡片包含缩略图占位、标题、作者头像和点赞数），支持按标题关键词模糊搜索，搜索结果即时刷新（每次输入延迟300ms后发起请求）。\n4) 点赞与收藏：用户可以给任意食谱点赞（红心动画：从中心扩散并缩小）和收藏，已点赞的食谱卡片上红心保持实心状态，收藏的食谱会出现在个人中心的收藏列表里。鼠标悬停在卡片上时显示浅灰色渐入的“编辑”和“删除”按钮（仅作者可见，点击后跳转编辑页或弹出确认删除弹窗）。\n\n界面方面：整体采用暖色调（主色#E8A87C，辅色#F4D03F，背景#FFF8E7），卡片为白色圆角（12px）带浅灰色阴影，毛玻璃效果的侧边栏（背景模糊15px）。页面顶部固定导航栏，带品牌Logo和搜索框。响应式适配：大屏（>1024px）三列网格，平板（768-1024px）两列，手机（<768px）单列且导航收起为汉堡菜单。动画效果：页面切换使用平滑淡入（0.3秒），点赞时红心从0.8倍放大到1.2倍再恢复（0.2秒），卡片加载时从底部向上平移并淡入（随机延迟0-0.2秒）。\n\n性能上要求在500条食谱数据下，搜索响应时间低于300ms，页面滚动时保持60fps的帧率。\n\n实现采用TypeScript、React和Node.js + Express，前端用Vite构建，按以下文件组织代码：\n - package.json（前端依赖：react、react-dom、typescript、@types/react、@types/react-dom、@vitejs/plugin-react、vite、react-router-dom@6.20.0；后端依赖：express、uuid、cors、body-parser；启动脚本：前端npm run dev，后端npm start）\n - index.html（入口页面，包含根div和meta标签）\n - tsconfig.json（严格模式，esModuleInterop开启）\n - vite.config.js（配置proxy将/api请求转发到后端3001端口）\n - src/main.tsx（React入口，渲染BrowserRouter包裹的App组件）\n - src/components/RecipeCard.tsx（食谱卡片组件，接收食谱数据和回调函数，包含点赞、收藏、悬停编辑删除按钮、跳转到详情页的逻辑）\n - src/pages/Home.tsx（首页组件，包含搜索框和瀑布流网格布局，从后端获取食谱列表并分页展示）\n - server/index.js（Express服务器，提供/api/recipes和/api/auth接口，使用uuid生成ID，读写data/recipes.json和data/users.json文件）。\n\n可以直接跑 npm install && npm run dev 看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:dbf5dab5c86008e94ffce98e1f6f92db_6a26fb30de6f1012ab47ca4f.6a26fc69de6f1012ab47cb37.6a26fc693081a611f6974994:Trae CN.T(2026/6/9 01:31:21)",
+    "user_id": "3986207660317399",
+    "trace_id": "dbf5dab5c86008e94ffce98e1f6f92db",
+    "session_id": "6a26fb30de6f1012ab47ca4f",
+    "task_id": "6a26fc69de6f1012ab47cb37",
+    "message_id": "6a26fc693081a611f6974994",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:31:21",
+    "format": "full"
+  },
+  "trace": "null"
+}

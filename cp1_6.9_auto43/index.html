@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>酒吧记忆配对</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #2c1810 0%, #4a1a1a 100%);
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #splash-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(ellipse at center, #2c1810 0%, #4a1a1a 100%);
+      z-index: 10;
+      transition: opacity 0.5s ease-out;
+    }
+    #splash-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #splash-title {
+      font-size: 48px;
+      color: #d4a85a;
+      text-shadow: 0 0 20px rgba(212, 168, 90, 0.5);
+      margin-bottom: 20px;
+      letter-spacing: 4px;
+    }
+    #splash-subtitle {
+      font-size: 20px;
+      color: #c9a050;
+      margin-bottom: 50px;
+      opacity: 0.8;
+    }
+    #start-btn {
+      padding: 16px 48px;
+      font-size: 22px;
+      font-family: Georgia, serif;
+      color: #fff;
+      background: linear-gradient(180deg, #daa520 0%, #b8860b 100%);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+    #start-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px rgba(218, 165, 32, 0.6), 0 4px 15px rgba(0, 0, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="splash-screen">
+    <h1 id="splash-title">🍸 酒吧记忆配对</h1>
+    <p id="splash-subtitle">翻转卡片，为客人找到正确的饮品</p>
+    <button id="start-btn">开始游戏</button>
+  </div>
+  <div id="game-container"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

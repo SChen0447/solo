@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>深海火山勘探模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    #three-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+    #hud-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(10, 10, 26, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 150, 200, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      width: 200px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    #hud-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #aaccff;
+      border-bottom: 1px solid rgba(100, 150, 200, 0.3);
+      padding-bottom: 8px;
+    }
+    .inventory-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .inventory-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 12px;
+    }
+    .inventory-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+      flex-shrink: 0;
+    }
+    .inventory-count {
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .inventory-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #synthesize-btn {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5);
+      transition: all 0.2s ease;
+      display: none;
+    }
+    #synthesize-btn:hover {
+      transform: translateX(-50%) scale(1.1);
+      box-shadow: 0 6px 30px rgba(76, 175, 80, 0.8);
+    }
+    #synthesize-btn.active {
+      display: block;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5); }
+      50% { box-shadow: 0 6px 40px rgba(76, 175, 80, 1); }
+    }
+    #notification {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      background: rgba(10, 10, 26, 0.9);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      border-radius: 16px;
+      padding: 24px 48px;
+      color: #ffffff;
+      font-size: 18px;
+      text-align: center;
+      box-shadow: 0 8px 40px rgba(255, 215, 0, 0.3);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    #notification.show {
+      opacity: 1;
+    }
+    .scene-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a1a;
+      z-index: 50;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .scene-overlay.transitioning {
+      opacity: 1;
+    }
+    .controls-hint {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(10, 10, 26, 0.75);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 150, 200, 0.3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #aaccff;
+    }
+    .controls-hint div {
+      margin: 4px 0;
+    }
+    .key {
+      display: inline-block;
+      background: rgba(100, 150, 200, 0.2);
+      border: 1px solid rgba(100, 150, 200, 0.4);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin: 0 2px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="three-canvas"></div>
+  <div id="hud-panel">
+    <h3>📦 矿物背包</h3>
+    <div class="inventory-grid" id="inventory-grid"></div>
+  </div>
+  <button id="synthesize-btn">合成</button>
+  <div id="notification"></div>
+  <div class="scene-overlay" id="scene-overlay"></div>
+  <div class="controls-hint">
+    <div><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 移动机器人</div>
+    <div><span class="key">鼠标左键</span> 抓取矿物</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

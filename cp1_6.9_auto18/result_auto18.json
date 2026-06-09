@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:58:41.166Z",
+  "task_name": "auto18",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个能让设计师在线收集和管理灵感图片的 moodboard 拼贴板项目，想法是用户可以把喜欢的图片拖拽到一块画布上，自由排列、缩放、旋转，形成一张视觉灵感拼图，还能给每张图加上标签和备注，方便后续分类检索。\n\n希望它能做到：第一，主界面是一个空白画布（形状像A3纸张大小，浅米色背景），用户通过点击上传或拖拽本地图片到画布上，每张图片加载后显示为可拖动的卡片，卡片右下角带一个小手柄用于缩放旋转（双击卡片重置为原始大小）；第二，每张卡片上方可以添加一个短标签（限10个字符，显示为半透明胶囊样式，字体小但清晰），点击卡片还会弹出一个侧边菜单，里面可以写多行备注（最多200字），右上角有个删除按钮（红色圆形小图标）；第三，画布右侧有一个素材池面板（窄条，深灰色磨砂背景），里面按时间倒序显示所有上传过的图片缩略图（每张缩略图约80x80像素），用户可以从这里直接拖拽到画布上复用；第四，所有数据保存在浏览器的localStorage里，每次刷新后自动恢复画布状态（包括位置、大小、旋转角度、标签和备注），并且提供一个一键导出的功能，把当前拼贴板保存为一张PNG图片（用canvas实现，背景色和画布一致，图片清晰度至少2x）。\n\n界面上希望走极简主义风格，主色调是浅米色（#F5F0E8）配深炭灰（#2C2C2C），所有卡片带微妙投影（偏移2px，模糊6px，透明度0.15），按钮用圆角方形（border-radius: 8px），交互时卡片有平滑的弹性过渡（transition: all 0.3s cubic-bezier(.25,.46,.45,.94)），响应式方面在平板（768px以上）和桌面（1024px以上）布局自适应，平板时素材池折叠成一个可滑出的抽屉。性能上要求拖拽操作保持60fps流畅度，单次导出PNG生成时间不超过2秒。\n\n实现用TypeScript、React（带React DnD库实现拖拽）和Vite构建，把代码拆成以下文件：\n - package.json（依赖：react、react-dom、react-dnd、react-dnd-html5-backend、html-to-image、typescript、@types/react、@vitejs/plugin-react、vite，启动脚本：npm run dev）\n - index.html（入口，挂载React根节点）\n - tsconfig.json（严格模式）\n - vite.config.js（使用@vitejs/plugin-react插件）\n - src/App.tsx（主组件，整体布局和拖拽上下文）\n - src/Canvas.tsx（画布区域，管理卡片的位置、缩放旋转状态，提供删除菜单）\n - src/MaterialPool.tsx（右侧素材池，显示缩略图列表，支持拖拽到画布）\n - src/store.ts（数据集中管理，包含localStorage读写和状态更新函数）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:84bf7bee35fed2c85a2de9bf76f9bb45_6a26f4642e989544cc9b32ac.6a26f4b22e989544cc9b32f9.6a26f4b17ef2eb74484a17eb:Trae CN.T(2026/6/9 00:58:26)",
+    "user_id": "3986207660317399",
+    "trace_id": "84bf7bee35fed2c85a2de9bf76f9bb45",
+    "session_id": "6a26f4642e989544cc9b32ac",
+    "task_id": "6a26f4b22e989544cc9b32f9",
+    "message_id": "6a26f4b17ef2eb74484a17eb",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:58:26",
+    "format": "full"
+  },
+  "trace": "null"
+}

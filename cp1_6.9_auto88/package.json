@@ -1,0 +1,29 @@
+{
+  "name": "team-brainstorm-mindmap",
+  "version": "1.0.0",
+  "description": "团队头脑风暴虚拟思维导图协作平台",
+  "scripts": {
+    "dev": "vite",
+    "server": "ts-node server/server.ts",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "express": "4.18.2",
+    "socket.io": "4.7.2",
+    "socket.io-client": "4.7.2",
+    "html2canvas": "1.4.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "@types/express": "4.17.21",
+    "@types/node": "20.10.0",
+    "typescript": "5.3.2",
+    "vite": "5.0.0",
+    "@vitejs/plugin-react": "4.2.0",
+    "ts-node": "10.9.1"
+  }
+}

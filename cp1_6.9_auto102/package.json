@@ -1,0 +1,18 @@
+{
+  "name": "cultural-symbol-evolution",
+  "version": "1.0.0",
+  "description": "Dynamic cultural symbol evolution sandbox",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "1.10.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "5.4.10",
+    "@types/p5": "1.7.6"
+  }
+}

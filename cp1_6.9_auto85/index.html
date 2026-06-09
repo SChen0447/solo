@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>动态沙画表演模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at center, #2a1810 0%, #120803 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      aspect-ratio: 16 / 9;
+      margin: 0 auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 0 80px rgba(255, 140, 60, 0.15), 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    #sand-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .clear-btn {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: rgba(217, 84, 64, 0.6);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 10;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .clear-btn:hover {
+      background-color: rgba(217, 84, 64, 1);
+      transform: scale(1.1);
+    }
+
+    .clear-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: #fff;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .stroke-preview {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      width: 60px;
+      height: 40px;
+      background-color: rgba(200, 200, 200, 0.25);
+      backdrop-filter: blur(4px);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .stroke-preview-dot {
+      border-radius: 50%;
+      background-color: #4a2c15;
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      #canvas-container {
+        max-width: 100%;
+        width: 100%;
+        border-radius: 0;
+      }
+
+      .clear-btn {
+        transform: scale(1.2);
+        right: 16px;
+        bottom: 16px;
+      }
+
+      .clear-btn:hover {
+        transform: scale(1.32);
+      }
+
+      .stroke-preview {
+        transform: scale(1.2);
+        left: 16px;
+        top: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="sand-canvas"></canvas>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

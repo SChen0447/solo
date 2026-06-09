@@ -1,0 +1,135 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
+  background-color: #F5F0EB;
+  color: #2C3E50;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-container {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: #F5F0EB;
+}
+
+.bg-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(44, 62, 80, 0.03) 0%,
+    transparent 70%
+  );
+  animation: radialPulse 4s ease-in-out infinite alternate;
+}
+
+@keyframes radialPulse {
+  0% {
+    background: radial-gradient(
+      circle at center,
+      rgba(44, 62, 80, 0.02) 0%,
+      transparent 50%
+    );
+  }
+  100% {
+    background: radial-gradient(
+      circle at center,
+      rgba(44, 62, 80, 0.06) 0%,
+      transparent 70%
+    );
+  }
+}
+
+.filter-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-bar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.gallery-grid {
+  position: relative;
+  z-index: 1;
+}
+
+.flip-card-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1200px) {
+  .gallery-grid {
+    grid-template-columns: repeat(3, 280px) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 280px) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, 200px) !important;
+    gap: 24px !important;
+  }
+
+  .flip-card-wrapper {
+    width: 200px !important;
+    height: 270px !important;
+  }
+
+  .filter-bar {
+    justify-content: flex-start !important;
+    padding: 8px 16px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 0 16px;
+  }
+
+  .flip-card-wrapper {
+    width: 100% !important;
+    min-width: 260px;
+    height: 350px !important;
+  }
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 2px solid rgba(44, 62, 80);
+  outline-offset: 2px;
+}
+
+img {
+  user-select: none;
+  -webkit-user-drag: none;
+}

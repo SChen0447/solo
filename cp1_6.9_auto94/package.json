@@ -1,0 +1,17 @@
+{
+  "name": "mechanical-hummingbird-maze",
+  "version": "1.0.0",
+  "description": "机械蜂鸟迷宫采集游戏 - Phaser3 + TypeScript + Vite",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "3.80.1"
+  },
+  "devDependencies": {
+    "typescript": "5.3.3",
+    "vite": "5.0.0"
+  }
+}

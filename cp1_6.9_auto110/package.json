@@ -1,0 +1,20 @@
+{
+  "name": "tectonic-plate-simulator",
+  "version": "1.0.0",
+  "description": "A 3D tectonic plate motion simulator built with Three.js and TypeScript",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "three-mesh-bvh": "0.7.2"
+  },
+  "devDependencies": {
+    "@types/three": "0.160.0",
+    "typescript": "5.5.4",
+    "vite": "5.4.0"
+  }
+}

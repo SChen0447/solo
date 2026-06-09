@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:34:14.069Z",
+  "task_name": "auto8",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个互动式食谱管理平台，实现用户上传自定义食谱、按食材或标签智能搜索、并一键生成购物清单的功能。使用TypeScript、React（前端）和Node.js + Express（后端）实现，前端用Vite构建。文件结构如下：\n - package.json（前端依赖：react、react-dom、react-router-dom、typescript、@types/react、@vitejs/plugin-react、vite；后端依赖：express、cors、multer、uuid、body-parser；启动脚本：前端npm run dev，后端npm start）\n - index.html（入口页面）\n - vite.config.js（Vite配置）\n - tsconfig.json（严格模式）\n - server/index.ts（Express服务器，处理菜谱CRUD、图片上传、搜索接口）\n - src/App.tsx（主组件，路由管理）\n - src/components/RecipeList.tsx（显示食谱列表，支持搜索过滤）\n - src/components/RecipeDetail.tsx（展示单个食谱详情，含编辑删除按钮）\n - src/components/ShoppingList.tsx（从选中食谱生成购物清单）\n - src/types.ts（共享类型定义：Recipe, Ingredient等）\n\n具体需求：\n1. 食谱管理：支持新增、编辑、删除食谱，每个食谱包含标题、描述、食材列表（名称+数量）、步骤（有序列表）、封面图片（支持拖拽上传，限制为jpg/png，大小不超过2MB）。\n2. 搜索与过滤：实现按食材名称模糊搜索（如输入“鸡肉”显示所有含鸡肉的食谱），并能按标签（早餐、午餐、甜点等）多选过滤，结果实时刷新（无延迟感）。\n3. 购物清单生成：用户勾选多个食谱后，系统自动合并所有食材并去重（相同食材数量累加），显示为一个可手动调整数量的列表（支持增减和删除单项），并可一键清空。\n4. 配方推荐：根据用户近期查看或编辑的食谱标签，在首页显示三条随机推荐食谱（不重复）。\n5. 响应式布局：在桌面端（宽度>1024px）采用两栏布局（左侧列表+右侧详情详情），在移动端（宽度<768px）变为上下堆叠的单栏布局，且导航栏折叠为汉堡菜单。\n\n界面方面：整体采用暖色调（主色#f5a623，辅色#4a90e2），卡片式设计，每个食谱卡片有精致阴影（box-shadow: 0 4px 12px rgba(0,0,0,0.1)）和轻微悬停上移效果（transform: translateY(-4px)），按钮有脉冲点击反馈动画（CSS scale 0.95瞬间恢复）。搜索框带清除图标，输入时有柔和的高亮边框过渡动画（0.3秒）。移动端菜单从左侧滑入，半透明遮罩层渐显。全局字体使用系统无衬线字体栈，行高1.6保证可读性。\n\n性能要求：前端图片懒加载（使用IntersectionObserver），列表滚动渲染不超过50条时无卡顿（FPS>55）。后端响应时间<200ms（本地环境），图片存储于服务器文件系统并用缓存头控制。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:de33f1ea69d9c9efa8a6e977e5a3ba07_6a26edfa6b65814a153c694d.6a26eef66b65814a153c6a27.6a26eef6b79d713ae452cdec:Trae CN.T(2026/6/9 00:33:58)",
+    "user_id": "3986207660317399",
+    "trace_id": "de33f1ea69d9c9efa8a6e977e5a3ba07",
+    "session_id": "6a26edfa6b65814a153c694d",
+    "task_id": "6a26eef66b65814a153c6a27",
+    "message_id": "6a26eef6b79d713ae452cdec",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:33:58",
+    "format": "full"
+  },
+  "trace": "null"
+}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>AR 家具预览</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #000;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    .guide-panel {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.6;
+      z-index: 10;
+      pointer-events: none;
+      transition: opacity 1s ease;
+      opacity: 1;
+    }
+
+    .guide-panel.hidden {
+      opacity: 0;
+    }
+
+    .guide-panel h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .guide-panel p {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .furniture-toolbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 80px;
+      padding: 0 16px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      z-index: 10;
+      scrollbar-width: none;
+    }
+
+    .furniture-toolbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .furniture-item {
+      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border: 2px solid transparent;
+    }
+
+    .furniture-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .furniture-item.selected {
+      transform: scale(1.1);
+      border-color: #ffd700;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+    }
+
+    .furniture-icon {
+      font-size: 28px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .furniture-label {
+      font-size: 11px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 14px;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 16px;
+      z-index: 100;
+      text-align: center;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      .furniture-toolbar {
+        height: 60px;
+        padding: 0 12px;
+        gap: 10px;
+      }
+
+      .furniture-item {
+        width: 60px;
+        height: 60px;
+      }
+
+      .furniture-icon {
+        font-size: 22px;
+      }
+
+      .furniture-label {
+        font-size: 10px;
+      }
+
+      .guide-panel {
+        padding: 10px 14px;
+        font-size: 14px;
+      }
+
+      .guide-panel h3 {
+        font-size: 14px;
+      }
+
+      .guide-panel p {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="guide-panel" id="guide-panel">
+      <h3>操作指南</h3>
+      <p>拖拽移动 · 双指缩放 · 单指旋转 · 双击移除</p>
+    </div>
+
+    <div class="furniture-toolbar" id="furniture-toolbar"></div>
+
+    <div class="toast" id="toast"></div>
+
+    <div class="loading" id="loading">
+      <div class="loading-spinner"></div>
+      <div>正在启动摄像头...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>梦幻水族馆</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1a4e 100%);
+      min-height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .page-title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 36px;
+      font-weight: bold;
+      color: white;
+      text-shadow: 0 0 5px #001a33, 0 0 10px #001a33, 0 0 15px #001a33;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .aquarium-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .frame {
+      border: 10px solid #5d4037;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(0, 0, 0, 0.3);
+      background: #3e2723;
+      padding: 0;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 1000px;
+      height: 700px;
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .info-panel {
+      width: 200px;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      color: #1a2a3a;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .info-panel h3 {
+      color: #1a2a3a;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .fish-count {
+      font-size: 16px;
+      font-weight: bold;
+      color: #1a2a3a;
+    }
+
+    .progress-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .progress-bar {
+      width: 160px;
+      height: 10px;
+      background: #cccccc;
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: #ff69b4;
+      transition: width 0.3s ease;
+      border-radius: 5px;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      font-weight: bold;
+      color: #333;
+      text-shadow: 0 0 2px white;
+    }
+
+    .last-event {
+      font-size: 14px;
+      color: #555;
+      font-style: italic;
+    }
+
+    .help-btn {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4a90d9;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .help-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .help-tooltip {
+      position: absolute;
+      left: 70px;
+      bottom: 25px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 200;
+    }
+
+    .help-btn:hover + .help-tooltip {
+      opacity: 1;
+    }
+
+    .reset-btn {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      transition: transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .reset-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .achievement {
+      position: absolute;
+      left: 20px;
+      bottom: 80px;
+      background: rgba(255, 20, 147, 0.9);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 300;
+    }
+
+    .achievement.show {
+      animation: fadeInOut 10s ease forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateX(-20px); }
+      15% { opacity: 1; transform: translateX(0); }
+      70% { opacity: 1; }
+      100% { opacity: 0; transform: translateX(-20px); }
+    }
+
+    .mobile-btns {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 200;
+    }
+
+    .mobile-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .mobile-btn.feed { background: #f1c40f; }
+    .mobile-btn.reset { background: #e74c3c; }
+    .mobile-btn.help { background: #4a90d9; }
+
+    @media (max-width: 768px) {
+      .info-panel { display: none; }
+      .help-btn, .help-tooltip, .reset-btn { display: none; }
+      .mobile-btns { display: flex; }
+      .page-title { font-size: 24px; top: 10px; }
+      #canvas-container {
+        width: 800px !important;
+        height: 560px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-title">梦幻水族馆</h1>
+
+  <div class="aquarium-wrapper">
+    <div class="frame">
+      <div id="canvas-container"></div>
+    </div>
+
+    <div class="info-panel" id="info-panel">
+      <div>
+        <h3>水族箱状态</h3>
+        <p class="fish-count">鱼类数量: <span id="fish-count">15</span></p>
+      </div>
+      <div class="progress-wrapper">
+        <div class="progress-label">珊瑚生长进度</div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+          <span class="progress-text" id="progress-text">0%</span>
+        </div>
+      </div>
+      <div>
+        <h3>特殊事件</h3>
+        <p class="last-event" id="last-event">尚未触发</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="help-btn" id="help-btn">?</button>
+  <div class="help-tooltip">操作提示：点击投食，空格键放鱼食</div>
+  <button class="reset-btn" id="reset-btn">↻</button>
+
+  <div class="achievement" id="achievement">罕见事件：水母潮汐！</div>
+
+  <div class="mobile-btns">
+    <button class="mobile-btn feed" id="mobile-feed">🍞</button>
+    <button class="mobile-btn help" id="mobile-help">?</button>
+    <button class="mobile-btn reset" id="mobile-reset">↻</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

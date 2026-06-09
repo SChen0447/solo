@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>3D 恒星可视化</title>
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <canvas id="star-canvas"></canvas>
+
+    <div id="info-panel" class="info-panel">
+      <div class="info-header">★ 恒星信息</div>
+      <div class="info-content" id="info-content">
+        <div class="info-empty">将鼠标悬停在恒星上查看信息</div>
+      </div>
+    </div>
+
+    <div id="control-panel" class="control-panel">
+      <div class="panel-header">
+        <span>⚙ 筛选控制</span>
+        <button class="drawer-toggle" id="drawer-toggle" aria-label="切换面板">
+          <span class="drawer-handle"></span>
+        </button>
+      </div>
+      <div class="panel-body">
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>亮度阈值</span>
+            <span class="slider-value" id="magnitude-value">6.0</span>
+          </div>
+          <div class="slider-sub">显示低于此星等的恒星</div>
+          <input type="range" id="magnitude-slider" min="-2" max="6" step="0.5" value="6" />
+          <div class="slider-ticks">
+            <span>-2.0</span>
+            <span>6.0</span>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-label">
+            <span>距离范围</span>
+            <span class="slider-value" id="distance-value">10 - 500 ly</span>
+          </div>
+          <div class="slider-sub">显示此距离区间内的恒星</div>
+          <div class="dual-slider">
+            <input type="range" id="distance-min-slider" min="10" max="500" step="10" value="10" />
+            <input type="range" id="distance-max-slider" min="10" max="500" step="10" value="500" />
+          </div>
+          <div class="slider-ticks">
+            <span>10 ly</span>
+            <span>500 ly</span>
+          </div>
+        </div>
+
+        <div class="legend">
+          <div class="legend-title">光谱类型</div>
+          <div class="legend-items">
+            <div class="legend-item"><span class="dot" style="background:#9bb0ff"></span>O 蓝白</div>
+            <div class="legend-item"><span class="dot" style="background:#aabfff"></span>B 蓝</div>
+            <div class="legend-item"><span class="dot" style="background:#cad7ff"></span>A 白</div>
+            <div class="legend-item"><span class="dot" style="background:#f8f7ff"></span>F 黄白</div>
+            <div class="legend-item"><span class="dot" style="background:#fff4ea"></span>G 黄</div>
+            <div class="legend-item"><span class="dot" style="background:#ffd2a1"></span>K 橙</div>
+            <div class="legend-item"><span class="dot" style="background:#ffcc6f"></span>M 红</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="fps-counter" class="fps-counter">-- FPS</div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
