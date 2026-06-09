@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>分形火焰交互式画板</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #1a1a2e;
+        color: #e0e0e0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          sans-serif;
+        font-size: 16px;
+      }
+
+      #app {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      #canvas-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #1a1a2e;
+      }
+
+      #flame-canvas {
+        display: block;
+        background: #0d0d0d;
+        border-radius: 4px;
+        box-shadow: 0 0 60px rgba(108, 99, 255, 0.15);
+      }
+
+      .panel {
+        position: fixed;
+        top: 0;
+        height: 100vh;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow-y: auto;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 10;
+      }
+
+      #left-panel {
+        left: 0;
+        width: 280px;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      #right-panel {
+        right: 0;
+        width: 220px;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      #left-panel.collapsed {
+        transform: translateX(-279px);
+      }
+
+      #right-panel.collapsed {
+        transform: translateX(219px);
+      }
+
+      .panel-toggle {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 48px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #e0e0e0;
+        cursor: pointer;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s;
+      }
+
+      .panel-toggle:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      #toggle-left {
+        right: -20px;
+        border-radius: 0 4px 4px 0;
+        border-left: none;
+      }
+
+      #toggle-right {
+        left: -20px;
+        border-radius: 4px 0 0 4px;
+        border-right: none;
+      }
+
+      .panel-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .control-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .control-label {
+        font-size: 13px;
+        color: #b0b0c0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .control-value {
+        color: #6c63ff;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+
+      input[type='range'] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        outline: none;
+        cursor: pointer;
+      }
+
+      input[type='range']::-webkit-slider-runnable-track {
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(
+          to right,
+          #6c63ff 0%,
+          #ff6584 var(--value, 50%),
+          rgba(255, 255, 255, 0.1) var(--value, 50%),
+          rgba(255, 255, 255, 0.1) 100%
+        );
+      }
+
+      input[type='range']::-moz-range-track {
+        height: 4px;
+        border-radius: 2px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      input[type='range']::-moz-range-progress {
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(to right, #6c63ff, #ff6584);
+      }
+
+      input[type='range']::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffffff;
+        cursor: pointer;
+        margin-top: -6px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(108, 99, 255, 0.3);
+        transition: transform 0.15s;
+      }
+
+      input[type='range']::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+
+      input[type='range']::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffffff;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(108, 99, 255, 0.3);
+      }
+
+      select {
+        width: 100%;
+        padding: 8px 10px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        color: #e0e0e0;
+        font-size: 14px;
+        font-family: inherit;
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      select:hover,
+      select:focus {
+        border-color: rgba(108, 99, 255, 0.5);
+      }
+
+      select option {
+        background: #1a1a2e;
+        color: #e0e0e0;
+      }
+
+      .color-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .color-picker-wrap {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      input[type='color'] {
+        width: 100%;
+        height: 36px;
+        padding: 2px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        cursor: pointer;
+        outline: none;
+      }
+
+      input[type='color']::-webkit-color-swatch-wrapper {
+        padding: 0;
+      }
+
+      input[type='color']::-webkit-color-swatch {
+        border: none;
+        border-radius: 2px;
+      }
+
+      button {
+        width: 100%;
+        padding: 10px 14px;
+        background: linear-gradient(135deg, #6c63ff, #ff6584);
+        border: none;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+        letter-spacing: 0.3px;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(108, 99, 255, 0.4);
+      }
+
+      button:active {
+        transform: translateY(0);
+        opacity: 0.9;
+      }
+
+      #footer {
+        position: fixed;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 12px;
+        color: #666;
+        pointer-events: none;
+        z-index: 5;
+        letter-spacing: 0.5px;
+      }
+
+      .spacer {
+        flex: 1;
+      }
+
+      .divider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin: 4px 0;
+      }
+
+      .fn-label {
+        font-size: 12px;
+        color: #888;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container">
+        <canvas id="flame-canvas"></canvas>
+      </div>
+
+      <aside id="left-panel" class="panel">
+        <button id="toggle-left" class="panel-toggle" title="收起/展开">›</button>
+        <div class="panel-title">分形参数</div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>点数量</span>
+            <span class="control-value" id="points-value">50000</span>
+          </label>
+          <input
+            id="points-slider"
+            type="range"
+            min="20000"
+            max="200000"
+            step="1000"
+            value="50000"
+          />
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="control-group">
+          <span class="fn-label">变换函数 1</span>
+          <select id="function-1"></select>
+        </div>
+        <div class="control-group">
+          <span class="fn-label">变换函数 2</span>
+          <select id="function-2"></select>
+        </div>
+        <div class="control-group">
+          <span class="fn-label">变换函数 3</span>
+          <select id="function-3"></select>
+        </div>
+        <div class="control-group">
+          <span class="fn-label">变换函数 4</span>
+          <select id="function-4"></select>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="panel-title" style="border-bottom: none; padding-bottom: 0">
+          颜色渐变
+        </div>
+
+        <div class="color-row">
+          <div class="color-picker-wrap">
+            <span class="fn-label">起始色</span>
+            <input id="color-start" type="color" value="#FF4500" />
+          </div>
+          <div class="color-picker-wrap">
+            <span class="fn-label">结束色</span>
+            <input id="color-end" type="color" value="#FFD700" />
+          </div>
+        </div>
+
+        <button id="random-color">随机颜色</button>
+
+        <div class="spacer"></div>
+      </aside>
+
+      <aside id="right-panel" class="panel">
+        <button id="toggle-right" class="panel-toggle" title="收起/展开">‹</button>
+        <div class="panel-title">动画控制</div>
+
+        <div class="control-group">
+          <label class="control-label">
+            <span>旋转速度</span>
+            <span class="control-value" id="rotation-value">1.0</span>
+          </label>
+          <input
+            id="rotation-slider"
+            type="range"
+            min="0"
+            max="5"
+            step="0.1"
+            value="1"
+          />
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="control-group" style="gap: 4px">
+          <span class="fn-label">度/秒</span>
+          <span class="fn-label">范围: 0.0 - 5.0</span>
+        </div>
+
+        <div class="spacer"></div>
+      </aside>
+
+      <div id="footer">使用鼠标拖拽平移、滚轮缩放</div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      const sliderFill = (el) => {
+        const min = parseFloat(el.min || '0');
+        const max = parseFloat(el.max || '100');
+        const val = parseFloat(el.value);
+        const pct = ((val - min) / (max - min)) * 100;
+        el.style.setProperty('--value', pct + '%');
+      };
+      document.querySelectorAll('input[type="range"]').forEach((s) => {
+        sliderFill(s);
+        s.addEventListener('input', () => sliderFill(s));
+      });
+    </script>
+  </body>
+</html>
