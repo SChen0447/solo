@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时间回溯协作解谜</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #2A1B38;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+    }
+    #game-title {
+      color: #C9D1D9;
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #63B8FF;
+      letter-spacing: 4px;
+    }
+    #game-container {
+      position: relative;
+      border: 2px solid #4A90D9;
+      box-shadow: 0 0 30px rgba(99, 184, 255, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    #start-btn {
+      margin-top: 20px;
+      padding: 12px 36px;
+      background-color: #1A1127;
+      color: #C9D1D9;
+      border: 2px solid #4A90D9;
+      border-radius: 12px;
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 2px;
+    }
+    #start-btn:hover {
+      background-color: #4A90D9;
+      color: #1A1127;
+      box-shadow: 0 0 20px rgba(99, 184, 255, 0.6);
+    }
+    #instructions {
+      margin-top: 20px;
+      color: #C9D1D9;
+      font-size: 14px;
+      text-align: center;
+      line-height: 1.8;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-title">⏱ 时间回溯协作解谜 ⏱</div>
+  <div id="game-container"></div>
+  <button id="start-btn">开始游戏</button>
+  <div id="instructions">
+    A/D 键：左右移动 &nbsp;|&nbsp; W 键：跳跃 &nbsp;|&nbsp; 空格键：记录/回放时间轨迹
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
