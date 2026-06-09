@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>发条机械钟塔 - 蒸汽朋克解谜</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Playfair Display', serif;
+      background: linear-gradient(180deg, #3E2723 0%, #1B5E20 100%);
+    }
+
+    #game-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #info-panel {
+      position: fixed;
+      bottom: calc(20px + 1vw);
+      left: calc(20px + 1vw);
+      width: min(320px, 35vw);
+      height: min(240px, 30vh);
+      min-width: 240px;
+      min-height: 180px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 16px;
+      padding: 20px;
+      z-index: 100;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+      backdrop-filter: blur(5px);
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .info-label {
+      color: #CD7F32;
+      font-size: clamp(12px, 1.1vw, 16px);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      color: #FFD700;
+      font-size: clamp(14px, 1.3vw, 18px);
+      font-weight: 900;
+    }
+
+    .progress-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .circular-progress {
+      position: relative;
+      width: clamp(50px, 6vw, 60px);
+      height: clamp(50px, 6vw, 60px);
+    }
+
+    .circular-progress svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .circular-progress .bg {
+      fill: none;
+      stroke: rgba(255, 215, 0, 0.2);
+      stroke-width: 4;
+    }
+
+    .circular-progress .fg {
+      fill: none;
+      stroke: #FFD700;
+      stroke-width: 4;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s ease;
+      filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.5));
+    }
+
+    .circular-progress .text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFD700;
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 900;
+    }
+
+    .horizontal-progress {
+      flex: 1;
+      margin-left: 15px;
+      height: 10px;
+      background: rgba(255, 215, 0, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .horizontal-progress .fill {
+      height: 100%;
+      background: linear-gradient(90deg, #CD7F32, #FFD700);
+      border-radius: 5px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .horizontal-progress .label {
+      position: absolute;
+      top: -18px;
+      left: 0;
+      color: #CD7F32;
+      font-size: clamp(10px, 0.9vw, 12px);
+      font-weight: 700;
+    }
+
+    #game-over-screen, #victory-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 200;
+      background: rgba(0, 0, 0, 0.85);
+    }
+
+    #game-over-screen.active, #victory-screen.active {
+      display: flex;
+    }
+
+    .screen-title {
+      color: #FF4500;
+      font-size: clamp(40px, 6vw, 72px);
+      font-weight: 900;
+      text-shadow: 0 0 30px rgba(255, 69, 0, 0.6);
+      margin-bottom: 30px;
+      letter-spacing: 4px;
+    }
+
+    #victory-screen .screen-title {
+      color: #FFD700;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    }
+
+    .screen-subtitle {
+      color: #CD7F32;
+      font-size: clamp(16px, 2vw, 24px);
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    .restart-button {
+      position: relative;
+      width: clamp(100px, 10vw, 120px);
+      height: clamp(100px, 10vw, 120px);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.5s ease;
+    }
+
+    .restart-button:hover {
+      transform: rotate(180deg);
+    }
+
+    .restart-button svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.5));
+    }
+
+    .restart-button .button-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFD700;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(10px, 1vw, 12px);
+      font-weight: 900;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <div id="info-panel">
+    <div class="info-row">
+      <span class="info-label">当前层数</span>
+      <span class="info-value" id="current-level">1 / 4</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">目标传动比</span>
+      <span class="info-value" id="target-ratio">24 : 1</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">当前传动比</span>
+      <span class="info-value" id="current-ratio">0 : 1</span>
+    </div>
+    <div class="progress-container">
+      <div class="circular-progress">
+        <svg>
+          <circle class="bg" cx="50%" cy="50%" r="45%"></circle>
+          <circle class="fg" cx="50%" cy="50%" r="45%" id="steps-progress"></circle>
+        </svg>
+        <span class="text" id="steps-text">0/60</span>
+      </div>
+      <div class="horizontal-progress">
+        <span class="label">层完成度</span>
+        <div class="fill" id="level-progress" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-over-screen">
+    <h1 class="screen-title">发条过载</h1>
+    <p class="screen-subtitle">步数耗尽，钟塔崩塌...</p>
+    <button class="restart-button" id="restart-btn-fail">
+      <svg viewBox="0 0 100 100">
+        <g fill="#FFD700">
+          <circle cx="50" cy="50" r="25" />
+          <circle cx="50" cy="50" r="15" fill="#3E2723" />
+          <rect x="47" y="10" width="6" height="20" rx="2" />
+          <rect x="47" y="70" width="6" height="20" rx="2" />
+          <rect x="10" y="47" width="20" height="6" rx="2" />
+          <rect x="70" y="47" width="20" height="6" rx="2" />
+          <rect x="20" y="20" width="6" height="15" rx="2" transform="rotate(45 23 27)" />
+          <rect x="74" y="20" width="6" height="15" rx="2" transform="rotate(-45 77 27)" />
+          <rect x="20" y="65" width="6" height="15" rx="2" transform="rotate(-45 23 73)" />
+          <rect x="74" y="65" width="6" height="15" rx="2" transform="rotate(45 77 73)" />
+        </g>
+      </svg>
+      <span class="button-text">重新开始</span>
+    </button>
+  </div>
+
+  <div id="victory-screen">
+    <h1 class="screen-title">钟塔启动</h1>
+    <p class="screen-subtitle">符文阵觉醒，时光之门开启！</p>
+    <button class="restart-button" id="restart-btn-victory">
+      <svg viewBox="0 0 100 100">
+        <g fill="#FFD700">
+          <circle cx="50" cy="50" r="25" />
+          <circle cx="50" cy="50" r="15" fill="#1B5E20" />
+          <rect x="47" y="10" width="6" height="20" rx="2" />
+          <rect x="47" y="70" width="6" height="20" rx="2" />
+          <rect x="10" y="47" width="20" height="6" rx="2" />
+          <rect x="70" y="47" width="20" height="6" rx="2" />
+          <rect x="20" y="20" width="6" height="15" rx="2" transform="rotate(45 23 27)" />
+          <rect x="74" y="20" width="6" height="15" rx="2" transform="rotate(-45 77 27)" />
+          <rect x="20" y="65" width="6" height="15" rx="2" transform="rotate(-45 23 73)" />
+          <rect x="74" y="65" width="6" height="15" rx="2" transform="rotate(45 77 73)" />
+        </g>
+      </svg>
+      <span class="button-text">重新开始</span>
+    </button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
