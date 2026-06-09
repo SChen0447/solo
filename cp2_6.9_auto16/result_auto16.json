@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:38:01.216Z",
+  "task_name": "auto16",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个团队灵感白板应用，让多个用户可以在共享画布上实时添加、移动和编辑便签卡片，卡片支持文字、颜色标签和简单涂鸦。使用TypeScript、React和Vite实现，后端用Node.js和Socket.IO模拟实时同步。文件结构如下：\n - package.json（含依赖：react、react-dom、socket.io-client、socket.io、express、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react，启动脚本：npm run dev与node server.js）\n - vite.config.js（基础构建配置）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口页面）\n - src/App.tsx（主应用组件，管理全局状态和Socket连接）\n - src/Board.tsx（白板画布组件，渲染所有便签卡片，处理拖拽和缩放）\n - src/Card.tsx（便签卡片组件，展示文字、颜色和涂鸦，支持双击编辑）\n - server.js（Node.js后端，提供Socket.IO服务，管理房间和同步消息）\n\n具体需求：\n1. 用户进入页面时自动分配一个随机颜色头像，并自动加入名为lobby的公共房间；所有在线用户头像显示在侧边栏，实时更新。\n2. 双击白板空白区域创建一张便签卡片，卡片默认显示当前时间戳和用户头像，用户可编辑文字内容、通过颜色选择器更换卡片背景色（预设12种柔和色盘），并支持拖拽卡片在画布上任意移动。\n3. 点击卡片右下角的小画笔图标，进入涂鸦模式，卡片上出现一个微型画板（200x150px），用户可用鼠标绘制任意线条，线条颜色与卡片当前背景色互补，涂鸦完成后自动保存到卡片。\n4. 所有操作（创建、移动、编辑文字、换色、涂鸦）通过Socket.IO广播给房间内其他用户，接收端响应时间不超过300ms；当用户断开连接时，其创建的所有卡片变为灰色并显示离线标签。\n5. 提供一键清空白板按钮（需二次确认弹窗），清空后所有用户画布同时重置，且操作不可撤销。\n\n界面方面：整体采用浅灰（#F5F5F5）为背景，便签卡片使用圆角矩形（border-radius: 12px）和轻微阴影（box-shadow: 0 4px 12px rgba(0,0,0,0.1)），卡片拖拽时有平滑的transform过渡（duration 200ms）。侧边栏在左边缘，宽度240px，半透明毛玻璃效果（backdrop-filter: blur(10px)），显示在线用户头像列表。颜色选择器展开时带有弹出动画（scale从0.9到1.0）。涂鸦模式下卡片边框变为虚线动画（闪烁）。页面支持响应式布局，当屏幕宽度小于768px时，侧边栏收起为底部固定条。\n\n性能要求：便签卡片数量达到100张时，拖拽和滚动画布保持60FPS流畅度，涂鸦绘制延迟不超过50ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:468691d4597d15d1f6612765dc2eb533_6a26eecabc0083c77a54d448.6a26efd9bc0083c77a54d51d.6a26efd92f59037847e9cf4f:Trae CN.T(2026/6/9 00:37:45)",
+    "user_id": "3986207660317399",
+    "trace_id": "468691d4597d15d1f6612765dc2eb533",
+    "session_id": "6a26eecabc0083c77a54d448",
+    "task_id": "6a26efd9bc0083c77a54d51d",
+    "message_id": "6a26efd92f59037847e9cf4f",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:37:45",
+    "format": "full"
+  },
+  "trace": "null"
+}
