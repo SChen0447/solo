@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:00:31.226Z",
+  "task_name": "auto21",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线协作的故事接龙平台，想法是让一群朋友或者写作爱好者能一起接力创作一个故事，每个人每次只能写一段（最多300字），写完提交后自动锁定当前段落，下一个人接着写，同时能看到整个故事的进展，最终形成一个完整的、多人共创的叙事作品。希望它能做到：第一，用户进入页面后先输入一个笔名（不需要注册），然后可以选择加入一个已有的故事（用故事ID加入）或者自己创建一个新故事，创建时需要设定故事标题和初始一段话作为开头，创建成功后系统自动生成一个6位字母数字混合的ID，创建者可以复制这个ID分享给其他人；第二，故事阅读界面采用书信体格式，每段话前面标注笔名和写作时间（格式像 2024-01-15 14:30），段落之间用一条浅灰色的装饰线分隔，整个页面背景是泛黄的羊皮纸纹理（用CSS渐变模拟，从#F5E6CA到#EDD9A8），文字字体用Georgia或serif，行间距宽松，阅读体验像翻开一本旧日记；第三，接龙写作时，当前正在写的人会看到一个文本输入框（固定在页面底部，像聊天输入框一样），但输入框上方会醒目标注“当前轮到你了”，如果还没轮到你，则显示为只读的“当前用户在写作中，请稍候”的状态，防止多人同时编辑同一个故事段落，采用简单的先到先得锁定机制（一次只能有一个人在写）；第四，每个故事页面右侧有一个侧边栏（占页面宽度的25%），以时间线的方式展示写作历史，每条记录包含笔名、写到的段落序号、和写作用时（从上次写完到这次写完的时间差，格式如3分20秒），点击每条记录可以高亮对应段落，侧边栏最底部显示当前故事的总字数统计和总参与人数；第五，后端需要保存每个故事的完整内容（段落列表、创作顺序、时间戳、用户笔名），并支持当用户刷新页面后，通过故事ID重新加载完整故事视图，保持所有数据和锁定状态；第六，所有页面切换（创建→故事页、加入→故事页）用淡入淡出动画，过渡时间0.4秒，锁定状态变化时（轮到/未轮到）输入框有平滑的高度变化动画（0.3秒ease-out）。性能上要求：页面加载后首屏渲染时间不超过2秒，故事内容更新（新段落提交后）在1秒内同步到所有在线用户的屏幕。实现采用全栈架构：前端用TypeScript和React（Vite构建），后端用Node.js和Express，实时通信用Socket.IO。把代码拆成以下文件： - package.json（前端依赖：react、react-dom、react-router-dom、socket.io-client、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react；后端依赖：express、socket.io、uuid、cors、body-parser；启动脚本：前端npm run dev，后端npm start） - index.html（入口页面，挂载React根节点） - tsconfig.json（严格模式） - vite.config.js（Vite配置，包含React插件） - src/client/main.tsx（前端主入口，配置React Router和Socket.IO连接，渲染App根组件） - src/client/App.tsx（前端应用组件，管理路由：/create创建页、/story/:id故事阅读页，处理Socket事件分发） - server/index.ts（后端服务入口，初始化Express和Socket.IO，管理故事数据缓存、锁定状态、事件广播）。跑 npm install && npm run dev（前端）和 npm start（后端）就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:c0ec388b73eb69fcb48100fe6962d0d0_6a26f4682e989544cc9b32b2.6a26f50b2e989544cc9b3329.6a26f50b9187b34ec19c1d36:Trae CN.T(2026/6/9 00:59:55)",
+    "user_id": "3986207660317399",
+    "trace_id": "c0ec388b73eb69fcb48100fe6962d0d0",
+    "session_id": "6a26f4682e989544cc9b32b2",
+    "task_id": "6a26f50b2e989544cc9b3329",
+    "message_id": "6a26f50b9187b34ec19c1d36",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:59:55",
+    "format": "full"
+  },
+  "trace": "null"
+}
