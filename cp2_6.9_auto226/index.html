@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星辰矿场 v1.0</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="game-container">
+    <header class="game-header">
+      <h1 class="game-title">星辰矿场 v1.0</h1>
+    </header>
+    <main class="game-main">
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas" width="600" height="600"></canvas>
+        <div id="darkMatterEffect" class="dark-matter-effect"></div>
+      </div>
+      <aside id="uiPanel" class="ui-panel">
+        <div class="panel-section credits-section">
+          <h2 class="section-title">积分余额</h2>
+          <div id="creditsDisplay" class="credits-value">0</div>
+        </div>
+        <div class="panel-section inventory-section">
+          <h2 class="section-title">矿物库存</h2>
+          <div id="inventoryList" class="inventory-list"></div>
+        </div>
+        <div class="panel-section shop-section">
+          <h2 class="section-title">升级商店</h2>
+          <div id="shopList" class="shop-list"></div>
+        </div>
+        <div class="panel-section info-section">
+          <p class="info-text">点击星球空地部署机器人</p>
+          <p class="info-text">机器人: <span id="robotCount">0</span></p>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

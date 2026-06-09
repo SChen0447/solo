@@ -1,0 +1,262 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Courier New', 'Consolas', monospace;
+  background-color: #0B0B1E;
+  color: #E0E0FF;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.game-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.game-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #1A1A3E;
+  border: 2px solid #3A3A6E;
+  border-radius: 4px;
+}
+
+.game-title {
+  font-size: 28px;
+  color: #00D4FF;
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.6);
+  letter-spacing: 4px;
+  font-weight: bold;
+}
+
+.game-main {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 600px;
+  height: 600px;
+  flex-shrink: 0;
+}
+
+#gameCanvas {
+  display: block;
+  border: 3px solid #3A3A6E;
+  border-radius: 4px;
+  background-color: #1A1A3E;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+}
+
+.dark-matter-effect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+  box-shadow: inset 0 0 80px 20px rgba(138, 43, 226, 0.7);
+  border-radius: 4px;
+  transition: opacity 0.5s ease-out;
+}
+
+.dark-matter-effect.active {
+  opacity: 1;
+}
+
+.ui-panel {
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-section {
+  background: #1A1A3E;
+  border: 2px solid #3A3A6E;
+  border-radius: 4px;
+  padding: 16px;
+}
+
+.section-title {
+  font-size: 14px;
+  color: #00D4FF;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #3A3A6E;
+  letter-spacing: 2px;
+}
+
+.credits-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #00D4FF;
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+  text-align: center;
+}
+
+.inventory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  background: rgba(58, 58, 110, 0.3);
+  border-radius: 2px;
+}
+
+.inventory-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+  box-shadow: 0 0 4px currentColor;
+}
+
+.inventory-name {
+  flex: 1;
+  font-size: 12px;
+  color: #B0B0D0;
+}
+
+.inventory-count {
+  font-size: 14px;
+  font-weight: bold;
+  color: #E0E0FF;
+}
+
+.shop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.shop-item-name {
+  font-size: 12px;
+  color: #E0E0FF;
+}
+
+.shop-item-level {
+  font-size: 11px;
+  color: #8A2BE2;
+}
+
+.shop-button {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #00D4FF;
+  border: 2px solid #00D4FF;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-button:hover:not(:disabled) {
+  background: rgba(0, 212, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.4);
+}
+
+.shop-button:disabled {
+  color: #5A5A8A;
+  border-color: #3A3A6E;
+  cursor: not-allowed;
+}
+
+.shop-button.flash {
+  animation: buttonFlash 0.2s ease-out;
+}
+
+@keyframes buttonFlash {
+  0% { background-color: rgba(255, 255, 255, 0.6); }
+  100% { background-color: transparent; }
+}
+
+.info-section {
+  text-align: center;
+}
+
+.info-text {
+  font-size: 11px;
+  color: #8080B0;
+  margin: 4px 0;
+}
+
+.info-text span {
+  color: #00D4FF;
+  font-weight: bold;
+}
+
+@media (max-width: 940px) {
+  .game-main {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .ui-panel {
+    width: 600px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .game-container {
+    padding: 10px;
+  }
+
+  .canvas-wrapper {
+    width: 100%;
+    height: auto;
+  }
+
+  #gameCanvas {
+    width: 100%;
+    height: auto;
+  }
+
+  .ui-panel {
+    width: 100%;
+  }
+
+  .game-title {
+    font-size: 20px;
+  }
+}
