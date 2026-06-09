@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wormhole Network Visualization</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0B0C10 0%, #1A1A2E 100%);
+      cursor: crosshair;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #gui-container {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      z-index: 100;
+    }
+
+    .dg .c {
+      border-left: 3px solid #1ABC9C !important;
+    }
+
+    .dg .property-name {
+      color: #CDD6F4 !important;
+    }
+
+    .dg.main {
+      background-color: #1E1E2E !important;
+    }
+
+    .dg .cr.function,
+    .dg .cr.number,
+    .dg .cr.boolean,
+    .dg .cr.string {
+      border-left: 3px solid #1ABC9C !important;
+      background-color: #1E1E2E !important;
+    }
+
+    .dg .slider {
+      background-color: #45475A !important;
+    }
+
+    .dg .slider-fg {
+      background-color: #89B4FA !important;
+    }
+
+    .dg li.title {
+      background-color: #313244 !important;
+      color: #CDD6F4 !important;
+    }
+
+    .dg li:not(.folder) {
+      background-color: #1E1E2E !important;
+      border-bottom: 1px solid #313244 !important;
+    }
+
+    .dg .c input[type="text"] {
+      color: #CDD6F4 !important;
+      background-color: #313244 !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="gui-container"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
