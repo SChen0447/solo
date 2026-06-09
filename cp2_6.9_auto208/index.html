@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>动态万花筒生成器</title>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="canvas-wrapper">
+        <canvas id="kaleidoscopeCanvas" class="kaleidoscope-canvas"></canvas>
+        <div class="status-bar">
+          <span id="fpsDisplay">60 FPS</span>
+          <span class="copyright">© 2026 Kaleidoscope Studio</span>
+        </div>
+      </div>
+
+      <aside class="control-panel" draggable="false">
+        <h2 class="panel-title">万花筒参数</h2>
+
+        <div class="control-group">
+          <label class="control-label">
+            对称轴数
+            <span class="value-tag" id="symmetryValue">6</span>
+          </label>
+          <input
+            type="range"
+            id="symmetrySlider"
+            class="custom-slider"
+            min="3"
+            max="12"
+            step="1"
+            value="6"
+          />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">
+            旋转速度 (转/分钟)
+            <span class="value-tag" id="speedValue">1.5</span>
+          </label>
+          <input
+            type="range"
+            id="speedSlider"
+            class="custom-slider"
+            min="0"
+            max="5"
+            step="0.1"
+            value="1.5"
+          />
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">颜色渐变</label>
+          <div class="color-row">
+            <input
+              type="color"
+              id="color1"
+              class="color-picker"
+              value="#FF6B6B"
+            />
+            <input
+              type="color"
+              id="color2"
+              class="color-picker"
+              value="#FFE66D"
+            />
+            <input
+              type="color"
+              id="color3"
+              class="color-picker"
+              value="#4ECDC4"
+            />
+            <input
+              type="color"
+              id="color4"
+              class="color-picker"
+              value="#292F36"
+            />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">形状类型</label>
+          <select id="shapeSelect" class="shape-select">
+            <option value="triangle">三角形</option>
+            <option value="circle">圆形</option>
+            <option value="star">星形</option>
+            <option value="mixed">混合随机</option>
+          </select>
+        </div>
+
+        <button id="exportBtn" class="export-btn">导出 PNG</button>
+      </aside>
+    </div>
+  </body>
+</html>
