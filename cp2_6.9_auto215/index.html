@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代占星术 - 星象预言</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <div id="canvas-wrapper">
+      <canvas id="star-canvas" width="800" height="600"></canvas>
+      <button id="settings-btn" title="设置">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+    <div id="astrology-panel">
+      <div id="history-panel">
+        <div class="panel-title">历史记录</div>
+        <div id="history-list"></div>
+      </div>
+      <div id="constellation-name">霜月之冠</div>
+      <div id="planet-sliders"></div>
+      <div id="center-panel">
+        <div id="fate-bar-wrapper">
+          <div id="fate-bar"></div>
+          <div id="fate-label">命运指数</div>
+        </div>
+        <div id="prediction-scroll">
+          <div id="prediction-text"></div>
+        </div>
+        <button id="divine-btn">占 卜</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="settings-overlay" class="hidden">
+    <div id="settings-modal">
+      <div class="modal-title">设置</div>
+      <div class="setting-item">
+        <label>星星总数: <span id="star-count-value">150</span></label>
+        <input type="range" id="star-count-slider" min="100" max="300" value="150" />
+      </div>
+      <div class="setting-item">
+        <label>行星刷新间隔: <span id="planet-interval-value">10</span>秒</label>
+        <input type="range" id="planet-interval-slider" min="5" max="20" value="10" />
+      </div>
+      <button id="reset-btn">重置</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
