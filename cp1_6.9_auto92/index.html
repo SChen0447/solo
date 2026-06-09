@@ -1,43 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>荒岛生存 - Island Survival</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(135deg, #1a3a3a 0%, #0a2a2a 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Courier New', monospace;
-    }
-    #game-container {
-      position: relative;
-      width: 800px;
-      height: 600px;
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    canvas {
-      display: block;
-      background: linear-gradient(135deg, #1a3a3a 0%, #0a2a2a 100%);
-    }
-  </style>
-</head>
-<body>
-  <div id="game-container">
-    <div id="game"></div>
-  </div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>虚拟磁流体雕塑模拟器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a1a;
+        font-family: 'Fira Code', monospace;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
