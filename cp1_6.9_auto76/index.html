@@ -1,40 +1,146 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>地牢迷踪</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: linear-gradient(135deg, #0d0d1a 0%, #1a1a2e 100%);
-      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
-    }
-    #game-container {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    canvas {
-      display: block;
-      image-rendering: pixelated;
-      image-rendering: -moz-crisp-edges;
-      image-rendering: crisp-edges;
-      touch-action: none;
-    }
-  </style>
-</head>
-<body>
-  <div id="game-container"></div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>棱镜塔 - 光谱旅行者</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a0a12;
+        font-family: 'Segoe UI', Arial, sans-serif;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      #canvas-container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      canvas {
+        display: block;
+        background: #000000;
+      }
+      #info {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #ffffff;
+        font-size: 16px;
+        line-height: 1.8;
+        pointer-events: none;
+        text-shadow: 0 0 8px rgba(102, 170, 255, 0.5);
+      }
+      #control-panel {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(26, 26, 42, 0.6);
+        border-radius: 8px;
+        padding: 20px;
+        width: 280px;
+        color: #ffffff;
+        transition: box-shadow 0.3s ease, border 0.3s ease;
+        border: 1px solid transparent;
+      }
+      #control-panel:hover {
+        box-shadow: 0 0 8px rgba(102, 170, 255, 0.6);
+        border-color: #66aaff;
+      }
+      #control-panel h3 {
+        margin-bottom: 15px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 1px;
+        opacity: 0.9;
+      }
+      .control-group {
+        margin-bottom: 14px;
+      }
+      .control-group label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 12px;
+        margin-bottom: 6px;
+        opacity: 0.85;
+      }
+      .control-group label span:last-child {
+        color: #66aaff;
+      }
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(to right, #ff4466, #4466ff);
+        outline: none;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ffffff;
+        cursor: pointer;
+        box-shadow: 0 0 6px rgba(102, 170, 255, 0.8);
+        transition: transform 0.15s ease;
+      }
+      input[type="range"]::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ffffff;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 0 6px rgba(102, 170, 255, 0.8);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="info">
+        <div>入射角: <span id="angle-value">0.0</span>°</div>
+        <div>分光: <span id="beam-count">6</span>束</div>
+      </div>
+      <div id="control-panel">
+        <h3>控制面板</h3>
+        <div class="control-group">
+          <label>入射角 <span id="slider-angle-value">0.0°</span></label>
+          <input type="range" id="slider-angle" min="-30" max="30" step="0.5" value="0">
+        </div>
+        <div class="control-group">
+          <label>塔身旋转 <span id="slider-rotation-value">0°</span></label>
+          <input type="range" id="slider-rotation" min="0" max="360" step="1" value="0">
+        </div>
+        <div class="control-group">
+          <label>棱镜透明度 <span id="slider-opacity-value">0.50</span></label>
+          <input type="range" id="slider-opacity" min="0.2" max="1.0" step="0.05" value="0.5">
+        </div>
+        <div class="control-group">
+          <label>粒子数量 <span id="slider-particles-value">200</span></label>
+          <input type="range" id="slider-particles" min="100" max="500" step="10" value="200">
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>
