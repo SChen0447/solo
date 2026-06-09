@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T18:15:25.923Z",
+  "task_name": "auto66",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于CSS Houdini与自定义Paint API的动态折纸页面装饰项目，想法是模拟一页日式风格的信笺，用户用鼠标在信纸上划过时，纸面会像折纸一样出现折痕，折痕两侧的颜色和明暗会随鼠标移动动态变化，形成类似光影折叠的效果。希望它能做到：第一，页面背景采用浅米色手工纸纹理（#F8F4EC），中央是一个A4比例（宽600px，高848px）的矩形信笺区域，信笺边界用细墨线（#2C2C2C，0.8px）勾勒，内部左上角有淡淡的仿古水印纹理（使用CSS伪元素叠加半透明径向渐变）；第二，信笺上默认有3行手写体英文诗句（字体'Cedarville Cursive'），颜色为深灰色（#3A3A3A），字号18px，行间距1.8em，文字绕排；第三，使用CSS Paint API（worklet）注册一个名为'crease'的自定义paint，当鼠标在信笺上按下并拖拽时，鼠标轨迹会生成一条平滑贝塞尔曲线（由鼠标采样点插值生成，最多保留20个点），曲线两侧各8px范围的像素区域，paint会基于曲线法线方向叠加渐变遮罩：左侧（沿法线方向）颜色变亮+15%亮度（混合模式为screen），右侧变暗-20%亮度（混合模式为multiply），形成类似纸张被折叠后光线偏向的效果，并且折痕的曲线会在鼠标松开后以0.5秒动画渐变到完全透明消失；第四，页面右下角有一个淡灰色（#999）的“重置”文字按钮，点击后清除所有折痕，信笺恢复原状；第五，按钮和信笺本身在视口宽度小于768px时自动缩小80%，保持比例适配移动端，同时触屏设备支持单指拖拽生成折痕。\n\n实现用TypeScript和Vite，利用CSS Houdini Paint API（需要worklet.js文件注册paint），把代码拆成以下文件：\n - package.json（含依赖：vite、typescript、@types/node，启动脚本：npm run dev）\n - index.html（入口页面，内联引用worklet脚本）\n - vite.config.js（构建配置，入口指向index.html）\n - tsconfig.json（严格模式，模块解析为ESNext）\n - src/main.ts（主逻辑：初始化信笺、绑定鼠标事件、收集轨迹点、调用paint重绘）\n - src/crease-worklet.js（单独的CSS Paint Worklet文件，注册'crease' paint，接收鼠标轨迹作为输入属性，基于曲线法线绘制渐变遮罩）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:cccbb00e38ec96e0e6cf049e1bdc75de_6a270635915302f9cb3dd4df.6a2706ae915302f9cb3dd537.6a2706ae8f042d1e855baac1:Trae CN.T(2026/6/9 02:15:10)",
+    "user_id": "3986207660317399",
+    "trace_id": "cccbb00e38ec96e0e6cf049e1bdc75de",
+    "session_id": "6a270635915302f9cb3dd4df",
+    "task_id": "6a2706ae915302f9cb3dd537",
+    "message_id": "6a2706ae8f042d1e855baac1",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 02:15:10",
+    "format": "full"
+  },
+  "trace": "null"
+}
