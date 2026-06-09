@@ -1,0 +1,20 @@
+{
+  "name": "frozen-city-simulator",
+  "version": "1.0.0",
+  "description": "冰封古城末日模拟器 - 基于Three.js的冰河期场景可视化",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "vite": "5.4.0",
+    "@types/three": "0.160.0"
+  }
+}
