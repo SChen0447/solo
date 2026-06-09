@@ -1,0 +1,425 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #2196F3;
+  --primary-dark: #1976D2;
+  --white: #ffffff;
+  --light-gray: #f5f5f5;
+  --border-gray: #e0e0e0;
+  --text-dark: #333333;
+  --text-light: #666666;
+  --success: #4CAF50;
+  --error: #f44336;
+}
+
+.app-container {
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-header {
+  color: var(--white);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 28px;
+  font-weight: 600;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.app-header p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.main-layout {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+.experiment-table-wrapper {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+}
+
+.experiment-table {
+  position: relative;
+  width: 900px;
+  height: 600px;
+  background-color: #e0e0e0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .experiment-table {
+    width: 340px;
+    height: 480px;
+  }
+}
+
+.equipment {
+  position: absolute;
+  cursor: grab;
+  transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  user-select: none;
+  z-index: 10;
+}
+
+.equipment.dragging {
+  cursor: grabbing;
+  transform: scale(1.1);
+  z-index: 100;
+}
+
+.equipment:hover:not(.dragging) {
+  transform: scale(1.05);
+}
+
+.equipment.selected {
+  filter: drop-shadow(0 0 8px var(--primary));
+}
+
+.container-content {
+  position: absolute;
+  pointer-events: none;
+  transition: background-color 0.5s ease;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particle-rise linear forwards;
+}
+
+@keyframes particle-rise {
+  0% {
+    opacity: 0.6;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-80px) scale(0.5);
+  }
+}
+
+.progress-bar-container {
+  position: absolute;
+  bottom: -24px;
+  left: 10%;
+  width: 60%;
+  height: 8px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+  transition: width 0.1s linear;
+  border-radius: 4px;
+}
+
+.temperature-display {
+  position: absolute;
+  bottom: -28px;
+  right: 5%;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dark);
+  background: var(--white);
+  padding: 2px 6px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.reaction-tooltip {
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  background: var(--white);
+  border-radius: 8px;
+  padding: 8px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 50;
+  animation: tooltip-appear 0.3s ease-out forwards;
+}
+
+@keyframes tooltip-appear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+}
+
+.reaction-tooltip .equation {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.reaction-tooltip .description {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.reagent-panel {
+  width: 200px;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .reagent-panel {
+    width: 340px;
+  }
+}
+
+.reagent-panel h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.reagent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 768px) {
+  .reagent-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+.reagent-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--light-gray);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  color: var(--text-dark);
+}
+
+.reagent-btn:hover {
+  filter: brightness(1.1);
+  background: #e8e8e8;
+}
+
+.reagent-btn.selected {
+  border-color: var(--primary);
+  background: rgba(33, 150, 243, 0.1);
+}
+
+.reagent-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+.equipment-palette {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.equipment-palette-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--light-gray);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 12px;
+  color: var(--text-dark);
+  border: 2px solid transparent;
+}
+
+.equipment-palette-item:hover {
+  filter: brightness(1.1);
+  background: #e8e8e8;
+}
+
+.equipment-palette-item.selected {
+  border-color: var(--primary);
+  background: rgba(33, 150, 243, 0.1);
+}
+
+.equipment-palette-label {
+  margin-top: 4px;
+}
+
+.reaction-log-container {
+  width: 100%;
+  max-width: 1120px;
+  margin-top: 20px;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .reaction-log-container {
+    max-width: 340px;
+  }
+}
+
+.reaction-log-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: var(--primary);
+  color: var(--white);
+  cursor: pointer;
+  transition: filter 0.3s ease;
+}
+
+.reaction-log-header:hover {
+  filter: brightness(1.1);
+}
+
+.reaction-log-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.toggle-icon {
+  transition: transform 0.3s ease;
+  font-size: 20px;
+}
+
+.toggle-icon.expanded {
+  transform: rotate(180deg);
+}
+
+.reaction-log-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease;
+}
+
+.reaction-log-body.expanded {
+  max-height: 200px;
+}
+
+.reaction-log-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reaction-log-scroll {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.reaction-log-table thead {
+  position: sticky;
+  top: 0;
+  background: var(--light-gray);
+  z-index: 1;
+}
+
+.reaction-log-table th {
+  padding: 10px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--border-gray);
+}
+
+.reaction-log-table td {
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text-dark);
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.log-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.log-dot.success {
+  background: var(--success);
+}
+
+.log-dot.error {
+  background: var(--error);
+}
+
+@keyframes flame-flicker {
+  0%, 100% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scaleY(1.15) scaleX(0.95);
+    opacity: 1;
+  }
+}
+
+.flame-outer {
+  animation: flame-flicker 0.4s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+.flame-inner {
+  animation: flame-flicker 0.3s ease-in-out infinite reverse;
+  transform-origin: bottom center;
+}
