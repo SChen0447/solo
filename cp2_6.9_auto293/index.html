@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>灵魂共生 - 叙事解谜</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container" class="scene-container">
+      <div id="fake3d-scene" class="fake3d-scene"></div>
+
+      <div id="object-hotspots" class="object-hotspots">
+        <div class="hotspot" data-object-index="0" data-name="座钟">
+          <div class="hotspot-label">老座钟</div>
+        </div>
+        <div class="hotspot" data-object-index="1" data-name="相册">
+          <div class="hotspot-label">旧相册</div>
+        </div>
+        <div class="hotspot" data-object-index="2" data-name="梳子">
+          <div class="hotspot-label">骨瓷梳</div>
+        </div>
+        <div class="hotspot" data-object-index="3" data-name="信纸">
+          <div class="hotspot-label">碎信纸</div>
+        </div>
+      </div>
+
+      <div id="object-view" class="object-view hidden"></div>
+
+      <div id="fade-overlay" class="fade-overlay"></div>
+
+      <div id="fireplace-container" class="fireplace-container">
+        <canvas id="fireplace-canvas"></canvas>
+        <div id="truth-text" class="truth-text"></div>
+      </div>
+    </div>
+
+    <div id="fragment-area" class="fragment-area"></div>
+
+    <div id="timeline-container" class="timeline-container">
+      <div class="timeline-label">记忆时间轴 · 最后24小时</div>
+      <div id="timeline" class="timeline"></div>
+    </div>
+
+    <audio id="sound-effect" hidden></audio>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
