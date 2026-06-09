@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数字植物标本馆</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-title">数字植物标本馆</div>
+    <button id="aboutBtn" class="about-btn" type="button">关于</button>
+  </nav>
+
+  <div class="app-container">
+    <div class="left-section">
+      <aside class="gallery-panel">
+        <div class="search-container">
+          <input
+            type="text"
+            id="searchInput"
+            class="search-input"
+            placeholder="搜索植物名称..."
+          />
+        </div>
+        <div id="galleryGrid" class="gallery-grid"></div>
+        <div id="noResults" class="no-results hidden">没有找到该植物</div>
+      </aside>
+
+      <main class="main-view" id="plantView">
+        <div id="plantViewContent" class="plant-view-content"></div>
+      </main>
+    </div>
+
+    <aside class="greenhouse-panel" id="greenhousePanel">
+      <div class="greenhouse-header">
+        <h2 class="greenhouse-title">虚拟温室</h2>
+        <button id="toggleGreenhouse" class="toggle-greenhouse hidden" type="button">
+          <span class="toggle-icon">▼</span>
+        </button>
+      </div>
+      <div class="greenhouse-body" id="greenhouseBody">
+        <canvas id="greenhouseCanvas" width="280" height="300"></canvas>
+        <div class="favorites-label">我的收藏</div>
+        <div id="favoritesList" class="favorites-list"></div>
+      </div>
+    </aside>
+  </div>
+
+  <div id="aboutModal" class="modal hidden">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-content">
+      <h3>关于数字植物标本馆</h3>
+      <p>
+        数字植物标本馆是一个交互式的虚拟植物展览馆，
+        让您可以浏览、搜索和收藏来自世界各地的珍贵植物标本。
+      </p>
+      <p>
+        在虚拟温室中，您可以将收藏的植物放置在不同的光照和湿度条件下，
+        观察它们的虚拟生长状态，体验植物养护的乐趣。
+      </p>
+      <button class="modal-close" data-close-modal type="button">关闭</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
