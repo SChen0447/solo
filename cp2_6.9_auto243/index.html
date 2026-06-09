@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <title>魔法水晶球 · 神秘占卜</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      min-width: 1280px;
+      min-height: 720px;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #0D0015;
+    }
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #ui-anchor {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    #divination-text {
+      position: absolute;
+      bottom: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 22px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #FFD700, 0 0 20px rgba(255, 215, 0, 0.5);
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+      pointer-events: none;
+      white-space: nowrap;
+      max-width: 80%;
+      text-align: center;
+    }
+    #divination-text.visible {
+      opacity: 1;
+    }
+    #control-panel {
+      position: absolute;
+      bottom: 32px;
+      right: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      pointer-events: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+    .ctrl-btn {
+      padding: 10px 22px;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      font-size: 15px;
+      letter-spacing: 1px;
+      color: #E8D5B7;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(59, 130, 246, 0.15));
+      border: 1px solid rgba(255, 215, 0, 0.35);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.645, 0.045, 0.355, 1);
+      min-width: 130px;
+    }
+    .ctrl-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(139, 92, 246, 0.3));
+      border-color: #FFD700;
+      color: #FFD700;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4), inset 0 0 12px rgba(255, 215, 0, 0.1);
+      transform: translateY(-1px);
+    }
+    .ctrl-btn:active {
+      transform: translateY(0);
+    }
+    .ctrl-btn.primary {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.35), rgba(255, 107, 107, 0.2));
+      border-color: rgba(255, 215, 0, 0.6);
+      color: #FFE9A8;
+    }
+    .ctrl-btn.primary:hover {
+      box-shadow: 0 0 24px rgba(255, 215, 0, 0.55), inset 0 0 16px rgba(255, 215, 0, 0.15);
+    }
+    #hint {
+      position: absolute;
+      top: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 215, 0, 0.55);
+      font-size: 14px;
+      letter-spacing: 3px;
+      pointer-events: none;
+      text-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="ui-anchor">
+      <div id="hint">✦ 拖拽旋转视角 · 点击水晶球开启占卜 ✦</div>
+      <div id="divination-text"></div>
+      <div id="control-panel">
+        <button class="ctrl-btn primary" id="btn-divine">占卜召唤</button>
+        <button class="ctrl-btn" id="btn-reset">重置星象</button>
+        <button class="ctrl-btn" id="btn-screenshot">截图保存</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
