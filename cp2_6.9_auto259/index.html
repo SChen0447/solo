@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>数字瓷窑 - 3D窑变釉色模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D0B0A;
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #glaze-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 260px;
+      background: rgba(42, 31, 20, 0.85);
+      border-radius: 10px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      max-height: 80vh;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    #glaze-panel h2 {
+      color: #C9A96E;
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: normal;
+      letter-spacing: 2px;
+    }
+
+    #glaze-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .glaze-card {
+      padding: 10px;
+      border-radius: 6px;
+      cursor: grab;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      background: rgba(26, 20, 16, 0.8);
+      user-select: none;
+    }
+
+    .glaze-card:hover {
+      transform: scale(1.05);
+      border-color: #C9A96E;
+      box-shadow: 0 0 12px rgba(201, 169, 110, 0.3);
+    }
+
+    .glaze-card:active {
+      cursor: grabbing;
+    }
+
+    .glaze-color {
+      width: 100%;
+      height: 32px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .glaze-name {
+      color: #C9A96E;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    #control-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      z-index: 10;
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+
+    #reduction-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(26, 20, 16, 0.9);
+      padding: 14px 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(201, 169, 110, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #reduction-container::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      height: 200%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      filter: blur(40px);
+      opacity: 0.3;
+      transition: background 0.3s ease;
+      z-index: 0;
+      background: #FF8C00;
+    }
+
+    #reduction-label {
+      color: #C9A96E;
+      font-size: 12px;
+      margin-bottom: 8px;
+      z-index: 1;
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+    }
+
+    #reduction-slider {
+      -webkit-appearance: slider-vertical;
+      appearance: slider-vertical;
+      width: 30px;
+      height: 160px;
+      background: transparent;
+      cursor: pointer;
+      z-index: 1;
+    }
+
+    #reduction-slider::-webkit-slider-runnable-track {
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, #1A1410, #3A2A1A);
+      border-radius: 3px;
+    }
+
+    #reduction-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #5D8A8A, #2A3A3A);
+      border: 2px solid #C9A96E;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    #reduction-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    #reduction-value {
+      color: #FFD700;
+      font-size: 14px;
+      margin-top: 8px;
+      z-index: 1;
+      font-weight: bold;
+    }
+
+    #chart-container {
+      background: rgba(26, 20, 16, 0.9);
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(201, 169, 110, 0.3);
+    }
+
+    #chart-title {
+      color: #C9A96E;
+      font-size: 13px;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    #temperature-chart {
+      display: block;
+      cursor: default;
+    }
+
+    #fire-button {
+      width: 120px;
+      height: 40px;
+      background: #8B0000;
+      color: #FFD700;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      letter-spacing: 4px;
+      cursor: pointer;
+      font-family: 'Georgia', serif;
+      transition: all 0.2s ease;
+      margin-top: 12px;
+      display: block;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    #fire-button:hover {
+      background: #A52A2A;
+      transform: scale(1.05);
+    }
+
+    #fire-button:active {
+      background: #5B0000;
+      transform: scale(0.98);
+    }
+
+    #fire-button:disabled {
+      background: #3A2A1A;
+      color: #5C4033;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #C9A96E;
+      font-size: 14px;
+      background: rgba(26, 20, 16, 0.7);
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(201, 169, 110, 0.2);
+      line-height: 1.8;
+      z-index: 10;
+    }
+
+    #info-panel h1 {
+      font-size: 20px;
+      margin-bottom: 6px;
+      color: #FFD700;
+      letter-spacing: 3px;
+    }
+
+    #info-panel p {
+      font-size: 12px;
+      color: #8B7355;
+    }
+
+    .glaze-label {
+      position: absolute;
+      color: #FFD700;
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      z-index: 5;
+      white-space: nowrap;
+    }
+
+    .glaze-label.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="info-panel">
+      <h1>数字瓷窑</h1>
+      <p>拖拽釉料试片至窑内支钉 · 调整升温曲线与还原气氛 · 点击开窑</p>
+    </div>
+
+    <div id="glaze-panel">
+      <h2>釉料配方</h2>
+      <div id="glaze-list"></div>
+    </div>
+
+    <div id="control-panel">
+      <div id="reduction-container">
+        <span id="reduction-label">还原气氛</span>
+        <input type="range" id="reduction-slider" min="0" max="100" value="30" orient="vertical" />
+        <span id="reduction-value">30%</span>
+      </div>
+      <div>
+        <div id="chart-container">
+          <div id="chart-title">升温曲线 (°C / 小时)</div>
+          <canvas id="temperature-chart" width="360" height="180"></canvas>
+        </div>
+        <button id="fire-button">开 窑</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
