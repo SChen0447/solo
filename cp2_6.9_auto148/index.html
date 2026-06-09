@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时间回溯物理解谜</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #1E1E2E;
+      font-family: monospace;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+    }
+
+    #game-canvas {
+      width: 800px;
+      height: 600px;
+      border: 2px solid #ffffff;
+      box-sizing: border-box;
+      background-color: #1E1E2E;
+      display: block;
+    }
+
+    #hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 8px;
+      background: rgba(30, 30, 46, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.6;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #hud .level {
+      color: #ffffff;
+    }
+
+    #hud .deaths {
+      color: #FF5555;
+    }
+
+    #hud .rewinds {
+      color: #5555FF;
+    }
+
+    #controls-hint {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      color: #888888;
+      font-size: 12px;
+      line-height: 1.5;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #level-complete {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00FF88;
+      font-size: 48px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+    }
+
+    #level-complete.visible {
+      opacity: 1;
+    }
+
+    #game-complete {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFD700;
+      font-size: 36px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.5s ease-in;
+      pointer-events: none;
+      user-select: none;
+      text-align: center;
+      line-height: 1.6;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    #game-complete.visible {
+      opacity: 1;
+    }
+
+    #rewind-hint {
+      position: absolute;
+      top: 80px;
+      left: 12px;
+      color: #00BFFF;
+      font-size: 14px;
+      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #rewind-hint.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+    <div id="hud">
+      <div class="level">关卡: <span id="hud-level">1</span> / 3</div>
+      <div class="deaths">死亡: <span id="hud-deaths">0</span></div>
+      <div class="rewinds">回溯剩余: <span id="hud-rewinds">3</span></div>
+    </div>
+    <div id="rewind-hint">按 R 键时间回溯</div>
+    <div id="controls-hint">
+      WASD 移动 | Space 跳跃 | R 时间回溯
+    </div>
+    <div id="level-complete">关卡完成!</div>
+    <div id="game-complete"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
