@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>折纸凤凰 - 3D拼接游戏</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-width: 800px;
+      min-height: 600px;
+      overflow: hidden;
+      background-color: #2a2a3a;
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .ui-button {
+      position: absolute;
+      height: 40px;
+      width: 120px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      z-index: 10;
+    }
+
+    #tutorial-btn {
+      top: 20px;
+      left: 20px;
+      background-color: #4a8aba;
+    }
+
+    #tutorial-btn:hover {
+      background-color: #3a6a8a;
+    }
+
+    #reset-btn {
+      top: 20px;
+      right: 20px;
+      background-color: #ba4a4a;
+    }
+
+    #reset-btn:hover {
+      background-color: #8a3a3a;
+    }
+
+    #progress-container {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      width: 80px;
+      height: 80px;
+      z-index: 10;
+    }
+
+    #progress-svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    .progress-circle-bg {
+      fill: none;
+      stroke: #d4c4a0;
+      stroke-width: 6;
+    }
+
+    .progress-circle-fg {
+      fill: none;
+      stroke: #4a7a4a;
+      stroke-width: 6;
+      stroke-linecap: round;
+      stroke-dasharray: 207.35;
+      stroke-dashoffset: 207.35;
+      transition: stroke-dashoffset 0.3s ease;
+    }
+
+    #progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      pointer-events: none;
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    #tutorial-modal {
+      width: 400px;
+      height: 250px;
+      background-color: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      padding: 30px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #tutorial-modal h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    #tutorial-animation {
+      width: 150px;
+      height: 100px;
+      position: relative;
+      margin: 10px 0;
+    }
+
+    .demo-paper {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 3px;
+      opacity: 0.9;
+    }
+
+    .demo-paper-1 {
+      background-color: #e8c4a0;
+      left: 10px;
+      top: 30px;
+      animation: demoMove1 3s ease-in-out infinite;
+    }
+
+    .demo-paper-2 {
+      background-color: #c4a882;
+      right: 10px;
+      top: 30px;
+    }
+
+    @keyframes demoMove1 {
+      0%, 100% { left: 10px; transform: scale(1); }
+      30% { left: 10px; transform: scale(1.1); }
+      60% { left: 65px; transform: scale(1.1); }
+      80% { left: 55px; transform: scale(1); }
+    }
+
+    #tutorial-modal p {
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .close-btn {
+      padding: 8px 24px;
+      background-color: #4a8aba;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .close-btn:hover {
+      background-color: #3a6a8a;
+    }
+
+    #reset-modal {
+      width: 300px;
+      height: 150px;
+      background-color: #f5f0e0;
+      border-radius: 20px;
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #reset-modal h3 {
+      color: #333;
+      font-size: 18px;
+    }
+
+    .reset-buttons {
+      display: flex;
+      gap: 15px;
+    }
+
+    .reset-confirm-btn {
+      padding: 8px 20px;
+      background-color: #ba4a4a;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .reset-confirm-btn:hover {
+      background-color: #8a3a3a;
+    }
+
+    .reset-cancel-btn {
+      padding: 8px 20px;
+      background-color: #888;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .reset-cancel-btn:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <button id="tutorial-btn" class="ui-button">教程</button>
+  <button id="reset-btn" class="ui-button">重置</button>
+
+  <div id="progress-container">
+    <svg id="progress-svg" viewBox="0 0 80 80">
+      <circle class="progress-circle-bg" cx="40" cy="40" r="33" />
+      <circle id="progress-circle-fg" class="progress-circle-fg" cx="40" cy="40" r="33" />
+    </svg>
+    <div id="progress-text">0/10</div>
+  </div>
+
+  <div id="tutorial-overlay" class="modal-overlay">
+    <div id="tutorial-modal">
+      <h2>游戏教程</h2>
+      <div id="tutorial-animation">
+        <div class="demo-paper demo-paper-1"></div>
+        <div class="demo-paper demo-paper-2"></div>
+      </div>
+      <p>点击一张纸片将其拿起<br/>再点击另一张纸片完成拼接<br/>按照正确顺序拼成折纸凤凰</p>
+      <button id="tutorial-close" class="close-btn">开始游戏</button>
+    </div>
+  </div>
+
+  <div id="reset-overlay" class="modal-overlay">
+    <div id="reset-modal">
+      <h3>确定要重置游戏吗？</h3>
+      <div class="reset-buttons">
+        <button id="reset-confirm" class="reset-confirm-btn">确认重置</button>
+        <button id="reset-cancel" class="reset-cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
