@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人群疏散策略可视化工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1B1B2F;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #FFFFFF;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: #1B1B2F;
+    }
+
+    #main-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #fps-warning {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      color: #FF4444;
+      font-size: 14px;
+      font-weight: bold;
+      display: none;
+      z-index: 10;
+      text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 280px;
+      background: rgba(30, 30, 46, 0.85);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      padding: 20px;
+      backdrop-filter: blur(10px);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    #panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    #panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    #fps-display {
+      font-size: 14px;
+      color: #FFFFFF;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+    }
+
+    .control-value {
+      color: #4ECDC4;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #3A3A5C;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4ECDC4;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.19);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #6EEDE4;
+      transform: scale(1.1);
+      box-shadow: 0px 2px 12px rgba(78, 205, 196, 0.4);
+    }
+
+    input[type="range"]:hover {
+      background: #4A4A6C;
+    }
+
+    .strategy-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .strategy-btn {
+      flex: 1;
+      min-width: 60px;
+      padding: 6px 8px;
+      font-size: 11px;
+      background: #3A3A5C;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .strategy-btn:hover {
+      background: #5A5A7C;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.19);
+      transform: translateY(-1px);
+    }
+
+    .strategy-btn.active {
+      background: #4ECDC4;
+      color: #1A1A2E;
+      font-weight: 600;
+    }
+
+    .mode-toggle {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 8px;
+      font-size: 12px;
+      background: #3A3A5C;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #FFFFFF;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn:hover {
+      background: #5A5A7C;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.19);
+      transform: translateY(-1px);
+    }
+
+    .mode-btn.active {
+      background: #00FF88;
+      color: #1A1A2E;
+      font-weight: 600;
+    }
+
+    #status-bar {
+      height: 40px;
+      background: rgba(26, 26, 46, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      font-size: 14px;
+      color: #FFFFFF;
+      backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .status-left, .status-right {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .status-value {
+      font-weight: 600;
+      color: #4ECDC4;
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      width: 80px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .btn-play {
+      background: #3A3A5C;
+      color: #FFFFFF;
+    }
+
+    .btn-play:hover {
+      background: #5A5A7C;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.19);
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      background: #5C3A3A;
+      color: #FFFFFF;
+    }
+
+    .btn-reset:hover {
+      background: #7C5A5A;
+      box-shadow: 0px 2px 8px rgba(255, 255, 255, 0.19);
+      transform: translateY(-1px);
+    }
+
+    #panel-toggle {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      background: rgba(30, 30, 46, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.125);
+      border-radius: 12px;
+      color: #FFFFFF;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 10;
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      #control-panel {
+        display: none;
+        width: 260px;
+      }
+
+      #control-panel.expanded {
+        display: block;
+      }
+
+      #panel-toggle {
+        display: block;
+      }
+    }
+
+    .export-count-label {
+      position: absolute;
+      color: #FFFFFF;
+      font-size: 10px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+      <div id="fps-warning">⚠ FPS LOW FPS</div>
+      <button id="panel-toggle">⚙</button>
+      <div id="control-panel">
+        <div id="panel-header">
+          <span id="panel-title">控制面板</span>
+          <span id="fps-display">FPS: --</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>疏散策略</span>
+            <span class="control-value" id="strategy-value">自由疏散</span>
+          </div>
+          <div class="strategy-buttons">
+            <button class="strategy-btn active" data-strategy="0">自由</button>
+            <button class="strategy-btn" data-strategy="1">单行</button>
+            <button class="strategy-btn" data-strategy="2">多出口</button>
+            <button class="strategy-btn" data-strategy="3">障碍</button>
+          </div>
+          <input type="range" id="strategy-slider" min="0" max="3" step="1" value="0" style="margin-top: 8px;">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>引导模式</span>
+          </div>
+          <div class="mode-toggle">
+            <button class="mode-btn active" data-mode="0">自由疏散</button>
+            <button class="mode-btn" data-mode="1">跟随引导员</button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>行人速度倍率</span>
+            <span class="control-value" id="speed-value">1.0</span>
+          </div>
+          <input type="range" id="speed-slider" min="0.5" max="3.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>出口宽度 (px)</span>
+            <span class="control-value" id="exit-width-value">40</span>
+          </div>
+          <input type="range" id="exit-width-slider" min="20" max="80" step="5" value="40">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">
+            <span>障碍物密度</span>
+            <span class="control-value" id="obstacle-value">0</span>
+          </div>
+          <input type="range" id="obstacle-slider" min="0" max="5" step="1" value="0">
+        </div>
+      </div>
+    </div>
+
+    <div id="status-bar">
+      <div class="status-left">
+        <div class="status-item">
+          <span class="status-label">总人数</span>
+          <span class="status-value" id="total-count">500</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">已疏散</span>
+          <span class="status-value" id="evacuated-count">0</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">疏散效率</span>
+          <span class="status-value" id="evacuation-rate">0 人/秒</span>
+        </div>
+        <div class="status-item" id="avg-time-item" style="display:none;">
+          <span class="status-label">平均疏散时间</span>
+          <span class="status-value" id="avg-time">--</span>
+        </div>
+      </div>
+      <div class="control-buttons">
+        <button class="btn btn-play" id="play-btn">▶ 播放</button>
+        <button class="btn btn-reset" id="reset-btn">重置</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
