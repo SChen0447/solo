@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T19:34:32.088Z",
+  "task_name": "auto105",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够根据用户上传的图片（JPEG/PNG格式，单张不超过5MB），自动将其转换为半调网格风格（Halftone）的艺术海报生成器应用，主要解决设计师或创意工作者难以快速将普通照片处理成具有网点渐变、复古印刷质感的半调风格海报，并需要搭配自定义文字排版、边框和调色板输出的痛点。\n\n它应当具备以下能力：\n1) 用户通过拖拽或点击区域上传图片后，系统在Canvas中实时预览原图（保持宽高比，最大宽800px高600px，背景#1E1E1E），并在右侧以网格布局展示半调转换后的效果，默认使用圆形网点（直径2px-8px随机分布），网点颜色从图片像素色相自动提取并转换为CMYK近似值，且密度（网点覆盖比例）可通过下方滑块（范围30%-100%，步长5%）实时调整，调整时预览画面以0.3秒平滑重绘过渡（requestAnimationFrame控制帧率不低于30fps）。\n2) 提供至少四种半调样式切换：圆形网点、菱形网点（旋转45度）、线条交叉（60度角）、波浪状（正弦波振幅8px），每种样式切换时长不超过0.5秒，通过渐变淡化过渡，且选中的样式在样式选择器上高亮（边框2px solid #FF6B35，背景#2A2A2A）。\n3) 用户可在半调图上叠加自定义文字（最大20个汉字或40个英文字符），支持三种字体（衬线Serif、无衬线Sans-serif、手写风格）和三种对齐方式（左对齐、居中、右对齐），文字位置可通过拖拽调整（拖拽时半调图保持完整，文字框带半透明浅色阴影，阴影偏移2px，透明度0.3），文字颜色从图片主色调中智能提取一个高对比色（色差至少120度），也可手动从颜色选取器（吸色环设计，直径40px）中选色。\n4) 最终生成的海报可以导出为PNG格式（分辨率为1200x1600像素，72dpi），并自动添加一个15px宽的彩色边框（颜色默认从图片主色中取，也可手动选择），边框内边缘有轻微的圆角（8px）和投影（偏移4px，模糊8px，颜色rgba(0,0,0,0.3)），导出按钮在操作完成后高亮（从灰色渐变到橙色，背景#FF6B35）。\n\n界面方面要求：页面采用深色主题（背景#121212，控件区域背景#1E1E1E，字体色#E0E0E0），布局为左右分栏（左侧画布占60%，右侧控制面板占40%，面板顶部距离窗口顶部20px，带圆角12px和1px实线边框#333333），控制面板内部分组用浅灰色分隔线（高度1px，颜色#444444，上下间距12px）。字体选用系统无衬线（如Inter或Segoe UI），字号默认14px，标题区字号16px并加粗（font-weight:600）。按钮采用圆角6px，内边距10px 20px，主按钮背景#FF6B35，悬停时亮度提升20%并添加0.2秒的过渡（所有交互过渡统一0.2s ease），次要按钮背景#333，悬停变为#444。页面整体响应式：面板在屏幕宽度小于768px时折叠到底部（高度自适应，画布宽度100%），折叠动画使用CSS的max-height过渡（0.4s cubic-bezier(0.25, 0.8, 0.25, 1)）。\n\n性能上需要：从图片上传到半调预览首次显示，全流程耗时不超过2秒（对于1920x1200像素内的图片）；所有滑块拖拽和样式切换导致的Canvas重绘帧率不低于30fps。\n\n实现采用TypeScript、Vite和原生HTML/CSS（无前端框架），文件结构如下：\n - package.json（含依赖：vite、typescript，启动脚本：npm run dev）\n - index.html（入口页面，含核心DOM结构和CSS样式，深色主题布局）\n - vite.config.js（构建配置，入口指向index.html，开启严格模式，开发端口3000）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - src/halftone.ts（核心半调算法：负责图片像素读取、网点生成（四种样式）、密度计算和Canvas绘制，导出函数transformImage(inputImage: HTMLImageElement, params: {style: string, density: number, colorPalette?: string[]}): Promise<HTMLCanvasElement>，内部使用Web Workers以异步方式处理大图以免阻塞主线程）\n - src/ui.ts（UI交互逻辑：管理文件上传拖拽、样式选择器切换、滑块事件绑定、文字叠加拖拽、导出事件，依赖src/halftone.ts的transformImage函数，并负责更新DOM和Canvas展示）\n - src/main.ts（应用入口：初始化UI组件、绑定事件监听器、在页面加载完成后调用ui.ts的init函数，并设置Canvas尺寸自适应）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:997b95a06963b7de5920954ed2030069_6a2718f9bb0cb589c97ffa07.6a271939bb0cb589c97ffa17.6a2719388f70da470a12eb19:Trae CN.T(2026/6/9 03:34:17)",
+    "user_id": "3986207660317399",
+    "trace_id": "997b95a06963b7de5920954ed2030069",
+    "session_id": "6a2718f9bb0cb589c97ffa07",
+    "task_id": "6a271939bb0cb589c97ffa17",
+    "message_id": "6a2719388f70da470a12eb19",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 03:34:17",
+    "format": "full"
+  },
+  "trace": "null"
+}

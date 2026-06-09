@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>半调海报生成器 | Halftone Poster Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #121212;
+      --bg-secondary: #1E1E1E;
+      --bg-tertiary: #2A2A2A;
+      --text-primary: #E0E0E0;
+      --text-secondary: #A0A0A0;
+      --border-color: #333333;
+      --divider-color: #444444;
+      --accent-color: #FF6B35;
+      --accent-hover: #FF8A5C;
+      --btn-secondary: #333333;
+      --btn-secondary-hover: #444444;
+      --transition: 0.2s ease;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--bg-primary);
+      overflow: hidden;
+    }
+
+    .app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      padding: 0;
+      gap: 0;
+    }
+
+    .canvas-area {
+      flex: 0 0 60%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-primary);
+      padding: 20px;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      max-width: 100%;
+    }
+
+    .canvas-pair {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    #originalCanvas, #halftoneCanvas {
+      background: #1E1E1E;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      max-width: 100%;
+      display: block;
+    }
+
+    .upload-zone {
+      width: 800px;
+      max-width: 100%;
+      height: 600px;
+      max-height: 70vh;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: var(--bg-secondary);
+      transition: all var(--transition);
+    }
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
+      border-color: var(--accent-color);
+      background: rgba(255, 107, 53, 0.05);
+    }
+
+    .upload-zone-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.6;
+    }
+
+    .upload-zone-text {
+      font-size: 16px;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .upload-zone-hint {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .control-panel {
+      flex: 0 0 40%;
+      background: var(--bg-secondary);
+      margin: 20px;
+      margin-left: 0;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      overflow-y: auto;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    .panel-header {
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .panel-section {
+      margin-bottom: 12px;
+    }
+
+    .panel-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--divider-color);
+      margin: 12px 0;
+    }
+
+    .style-selector {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .style-btn {
+      padding: 12px 8px;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: all var(--transition);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .style-btn:hover {
+      background: #3A3A3A;
+    }
+
+    .style-btn.active {
+      border-color: var(--accent-color);
+      background: var(--bg-tertiary);
+    }
+
+    .style-icon {
+      font-size: 20px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .slider-value {
+      font-size: 13px;
+      color: var(--accent-color);
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-tertiary);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-color);
+      cursor: pointer;
+      border: none;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: all var(--transition);
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--accent-color);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+      font-weight: 500;
+      transition: all var(--transition);
+    }
+
+    .btn-secondary {
+      background: var(--btn-secondary);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--btn-secondary-hover);
+    }
+
+    .btn-secondary.active {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary {
+      background: var(--accent-color);
+      color: white;
+      width: 100%;
+      padding: 14px 20px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      filter: brightness(1.2);
+    }
+
+    .btn-primary:disabled {
+      background: #555;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn-primary.highlight {
+      animation: highlightPulse 0.6s ease;
+    }
+
+    @keyframes highlightPulse {
+      0% { background: #555; }
+      100% { background: var(--accent-color); }
+    }
+
+    .color-picker-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .color-wheel {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      background: conic-gradient(
+        hsl(0, 100%, 50%),
+        hsl(60, 100%, 50%),
+        hsl(120, 100%, 50%),
+        hsl(180, 100%, 50%),
+        hsl(240, 100%, 50%),
+        hsl(300, 100%, 50%),
+        hsl(360, 100%, 50%)
+      );
+    }
+
+    .color-wheel input[type="color"] {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+    }
+
+    .color-preview {
+      width: 40px;
+      height: 40px;
+      border-radius: 6px;
+      border: 2px solid var(--border-color);
+    }
+
+    .color-info {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'Courier New', monospace;
+    }
+
+    .panel-toggle {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 20px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      z-index: 100;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .canvas-fade {
+      animation: fadeTransition 0.3s ease;
+    }
+
+    @keyframes fadeTransition {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .app {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .canvas-area {
+        flex: none;
+        width: 100%;
+        height: auto;
+        padding: 16px;
+        padding-bottom: 60px;
+      }
+
+      .canvas-pair {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .upload-zone {
+        width: 100%;
+        height: 300px;
+      }
+
+      .control-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        margin: 0;
+        border-radius: 12px 12px 0 0;
+        max-height: 60vh;
+        z-index: 99;
+        transform: translateY(100%);
+      }
+
+      .control-panel.open {
+        transform: translateY(0);
+      }
+
+      .panel-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="canvas-area">
+      <div class="canvas-wrapper">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-zone-icon">🖼️</div>
+          <div class="upload-zone-text">拖拽图片到此处或点击上传</div>
+          <div class="upload-zone-hint">支持 JPEG / PNG 格式，单张不超过 5MB</div>
+          <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display: none;" />
+        </div>
+
+        <div class="canvas-pair hidden" id="canvasPair">
+          <div class="canvas-container">
+            <div class="canvas-label">原图</div>
+            <canvas id="originalCanvas" width="400" height="300"></canvas>
+          </div>
+          <div class="canvas-container">
+            <div class="canvas-label">半调效果</div>
+            <canvas id="halftoneCanvas" width="400" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-toggle" id="panelToggle">⚙️ 控制面板</div>
+
+    <div class="control-panel" id="controlPanel">
+      <div class="panel-header">
+        <div class="panel-title">半调海报生成器</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">半调样式</div>
+        <div class="style-selector" id="styleSelector">
+          <button class="style-btn active" data-style="circle">
+            <span class="style-icon">⚪</span>
+            <span>圆形网点</span>
+          </button>
+          <button class="style-btn" data-style="diamond">
+            <span class="style-icon">◆</span>
+            <span>菱形网点</span>
+          </button>
+          <button class="style-btn" data-style="lines">
+            <span class="style-icon">///</span>
+            <span>线条交叉</span>
+          </button>
+          <button class="style-btn" data-style="wave">
+            <span class="style-icon">〰️</span>
+            <span>波浪状</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">密度调节</div>
+        <div class="slider-group">
+          <div class="slider-header">
+            <span class="slider-label">网点密度</span>
+            <span class="slider-value" id="densityValue">70%</span>
+          </div>
+          <input type="range" id="densitySlider" min="30" max="100" step="5" value="70" />
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">文字叠加</div>
+        <div class="form-group">
+          <label class="form-label">文字内容（最多20汉字/40字符）</label>
+          <input type="text" id="textInput" placeholder="输入海报文字..." maxlength="40" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">字体样式</label>
+          <div class="btn-group" id="fontSelector">
+            <button class="btn btn-secondary active" data-font="serif">衬线</button>
+            <button class="btn btn-secondary" data-font="sans">无衬线</button>
+            <button class="btn btn-secondary" data-font="handwriting">手写</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">对齐方式</label>
+          <div class="btn-group" id="alignSelector">
+            <button class="btn btn-secondary" data-align="left">左对齐</button>
+            <button class="btn btn-secondary active" data-align="center">居中</button>
+            <button class="btn btn-secondary" data-align="right">右对齐</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">文字颜色</label>
+          <div class="color-picker-wrap">
+            <div class="color-wheel">
+              <input type="color" id="textColorPicker" value="#FFFFFF" />
+            </div>
+            <div class="color-preview" id="textColorPreview" style="background: #FFFFFF;"></div>
+            <div class="color-info" id="textColorInfo">#FFFFFF</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <div class="panel-section-title">边框设置</div>
+        <div class="form-group">
+          <label class="form-label">边框颜色</label>
+          <div class="color-picker-wrap">
+            <div class="color-wheel">
+              <input type="color" id="borderColorPicker" value="#FF6B35" />
+            </div>
+            <div class="color-preview" id="borderColorPreview" style="background: #FF6B35;"></div>
+            <div class="color-info" id="borderColorInfo">#FF6B35</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="panel-section">
+        <button class="btn btn-primary" id="exportBtn" disabled>导出海报 (1200×1600 PNG)</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
