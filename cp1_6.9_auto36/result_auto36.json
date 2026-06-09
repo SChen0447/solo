@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:14:52.265Z",
+  "task_name": "auto36",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线协作的音频标注工具，想法是让语音研究人员或数据标注员可以一起上传音频片段、在波形图上精确标记语音片段的起止时间并添加标签（比如说话人A、噪音、沉默等），方便后续训练语音模型。希望它能做到：第一，用户上传MP3或WAV文件后，页面立即渲染出完整的音频波形图（用Canvas绘制，采用深色背景配蓝色渐变波形），波形支持鼠标滚轮水平缩放和平移，顶部显示时间轴（格式MM:SS.ms），播放时有一个竖直的红色播放头跟随音频进度平滑移动；第二，用户可以在波形图上通过鼠标拖拽选择一个时间范围（选中区域用半透明黄色高亮），松手后弹出一个标签输入框（支持预置标签列表：说话人A、说话人B、噪音、沉默、其他），保存后该片段在波形下方以彩色条带显示（不同标签颜色不同，说话人A淡蓝、说话人B淡粉、噪音橙红、沉默灰白、其他淡紫），并且彩色条带末端显示时长（精确到0.1秒）；第三，所有标注数据自动保存到IndexedDB，页面头部有一个标注统计面板，显示当前文件的总时长、已标注片段数量、各标签占比（用圆环图展示），旁边还有一个导出按钮，点击后生成JSON格式的标注文件供下载（包含文件名、采样率、每个片段的开始时间、结束时间和标签）。界面上希望整体采用黑灰蓝配色方案，布局为左大右小两列结构，左侧是波形图占据70%宽度（高度可自适应屏幕，但最小高度400px），右侧是标注条目面板，以卡片列表形式展示当前文件的所有标注片段（卡片可点击并在波形图上高亮对应区域，带平滑滚动动画），所有卡片支持拖拽排序（使用HTML5拖放API）。性能上要求波形渲染在音频加载后3秒内完成，播放头移动时FPS不低于30，标注数据存储和导出响应在500ms以内。实现采用TypeScript和React（用Vite构建），前端单页应用，后端仅需一个简单的Node.js + Express静态文件服务器提供文件上传API。把代码拆成以下文件：package.json（前端依赖：react、react-dom、typescript、@types/react、@vitejs/plugin-react、vite、crypto-js，后端依赖：express、multer、uuid、cors，启动脚本前端npm run dev，后端node server.mjs）；index.html（入口，包含主应用容器和加载提示）；tsconfig.json（严格模式）；vite.config.js（Vite配置，代理后端API）；src/main.tsx（React主入口）；src/components/Waveform.tsx（波形渲染组件，负责Canvas绘制、缩放平移、播放头和选区交互，使用Web Audio API解析音频数据）；src/components/AnnotationPanel.tsx（右侧标注列表组件，显示标签卡片，支持点击跳转和拖拽排序）；src/stores/annotationStore.ts（标注数据管理模块，封装IndexedDB的增删改查和导出JSON功能，使用Context + useReducer模式）；server.mjs（后端服务器，提供文件上传POST /upload和静态文件访问）。跑npm install && npm run dev启动前端，另开终端node server.mjs启动后端就能用。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:8e87cc9c0833c9efba2ac1bf19ff1a59_6a26f7cc9bcd79013de03996.6a26f87c9bcd79013de03a0e.6a26f87ce514c991f144787f:Trae CN.T(2026/6/9 01:14:36)",
+    "user_id": "3986207660317399",
+    "trace_id": "8e87cc9c0833c9efba2ac1bf19ff1a59",
+    "session_id": "6a26f7cc9bcd79013de03996",
+    "task_id": "6a26f87c9bcd79013de03a0e",
+    "message_id": "6a26f87ce514c991f144787f",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:14:36",
+    "format": "full"
+  },
+  "trace": "null"
+}
