@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T04:09:54.153Z",
+  "task_name": "auto212",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个为咖啡爱好者设计的全栈Web应用，名为“风味品鉴日志”，让用户可以记录每次品鉴咖啡的感官体验，给咖啡豆打分，并生成个人风味雷达图。使用TypeScript、React前端和Express后端实现。文件结构如下：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react，启动脚本：npm run dev）\n - vite.config.ts（前端构建配置，代理/api到Express后端）\n - tsconfig.json（严格模式，esnext模块，dom和node类型）\n - index.html（入口页面，包含根div和容器）\n - server/index.ts（Express服务器，定义/api/tastings路由，提供CRUD接口，使用内存存储数据，运行在端口3001）\n - src/App.tsx（主组件，管理品鉴列表状态，调用后端API获取/添加/删除记录）\n - src/components/TastingForm.tsx（品鉴表单，包括咖啡名称、烘焙度、酸度/苦度/甜度/醇厚度/干净度的滑动条，各值范围0-10，整数步长）\n - src/components/RadarChart.tsx（基于Canvas绘制五维风味雷达图，接收酸度、苦度等数据，画出五彩斑斓的闭合区域，颜色按角度渐变，中心标注总分）\n\n具体需求：\n1. 首页展示已保存的品鉴记录列表，每条显示咖啡名称、评分（基于五项维度计算的加权总分，酸*0.2+苦*0.15+甜*0.25+醇厚度*0.2+干净度*0.2）、品鉴日期，每项右侧有一个删除按钮。\n2. 点击“添加新记录”按钮展开品鉴表单，表单默认折叠，填写完成后点击保存，数据通过POST请求发送到后端/api/tastings，成功后新记录插入列表，表单重置并折叠。\n3. 品鉴列表中的任意一项点击后，下方展开对应的风味雷达图，用于对比不同咖啡的风味轮廓；支持同时展开多项（各雷达图独立显示）以便对比。\n4. 提供一个整体统计面板，展示所有记录的维度平均分，并用不同颜色的小条形图直观比较各维度均值。\n\n界面方面：整体采用暖棕色系（背景#F5ECD7，主色#8B5E3C，强调色#C68E4A），页面左右两栏布局，左侧列表占40%，右侧统计面板占60%，当视口宽度小于768px时切换为上下堆叠。品鉴表单使用卡片式设计，带轻微的箱体阴影和hover时提升效果（box-shadow过渡0.3s），滑动条使用自定义样式（轨道高6px，thumb为圆形渐变）并显示当前值标签，雷达图在画布上呈现后一个淡入动画（opacity从0到1，持续0.5s）。所有交互（添加、删除、展开）都带平滑过渡（transition 0.2s ease）。\n\n性能要求：雷达图Canvas重绘频率不超过20ms/次，响应时间在100ms以内。通过npm install && npm run dev即可启动前后端，数据库为空但可正常添加和查询。",
+  "session_id": null,
+  "trace": "null"
+}

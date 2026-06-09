@@ -1,0 +1,66 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column !important;
+  }
+
+  .left-panel,
+  .right-panel {
+    flex: 1 1 100% !important;
+  }
+}
+
+.list-item:hover {
+  box-shadow: 0 4px 16px rgba(139, 94, 60, 0.18) !important;
+  transform: translateY(-1px);
+  transition: all 0.2s ease !important;
+}
+
+.list-item-main:hover {
+  background-color: #FFFBF0;
+}
+
+.add-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.4) !important;
+}
+
+.submit-button:hover {
+  background-color: #A06B4A !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+}
+
+.cancel-button:hover {
+  background-color: #8B5E3C15 !important;
+}
+
+.delete-button:hover {
+  background-color: #E74C3C20 !important;
+  color: #E74C3C !important;
+}
+
+input:focus,
+select:focus {
+  border-color: #C68E4A !important;
+}
+
+.form-card:hover {
+  box-shadow: 0 8px 24px rgba(139, 94, 60, 0.18) !important;
+}
