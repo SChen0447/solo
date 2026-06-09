@@ -1,0 +1,19 @@
+{
+  "name": "stardust-page-book",
+  "version": "1.0.0",
+  "description": "星尘翻页书 - 交互式魔法书",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "^1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0",
+    "@types/p5": "^1.7.0"
+  }
+}
