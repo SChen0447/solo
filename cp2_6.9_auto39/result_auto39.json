@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T17:19:27.215Z",
+  "task_name": "auto39",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线投票与实时结果可视化看板应用，让用户创建投票主题、添加选项，并实时查看投票结果的动态变化。使用TypeScript、React、Vite和Express实现。文件结构如下：\n - package.json（含依赖：react、react-dom、recharts、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、express、uuid、cors、socket.io、socket.io-client，启动脚本：npm run dev 和 node server.js）\n - vite.config.js（基础构建配置，代理转发/socket.io到后端端口3001）\n - tsconfig.json（严格模式，module为ESNext）\n - index.html（入口页面，包含根挂载点）\n - server.js（后端服务，提供投票创建、选项添加、投票提交的REST API，并通过WebSocket向所有客户端广播投票结果变化）\n - src/App.tsx（主应用组件，包含路由：首页展示投票列表和创建按钮，投票页展示选项和图表）\n - src/components/VoteDashboard.tsx（投票仪表盘组件，负责展示投票主题、选项列表和实时更新的柱状图，使用recharts，数据通过WebSocket实时刷新）\n - src/api.ts（API请求封装，使用fetch调用后端REST接口）\n\n具体需求：\n1. 用户进入首页能浏览当前所有活跃投票主题列表，每个列表项显示标题、选项数量、总投票数和创建时间（相对时间，如“2分钟前”）。点击任一投票项或“创建投票”按钮，分别进入投票详情页或创建页面。\n2. 创建投票页面包含一个主题输入框（最多50字符）和动态添加选项的列表（至少2个选项，最多8个，每个选项最多30字符），每个选项旁有删除按钮。提交后生成唯一UUID标识的投票，数据通过API保存到后端内存中，并自动跳转到该投票详情页。\n3. 投票详情页显示投票主题、所有选项及其当前票数和占比（百分比），用户点击任一选项按钮进行投票，投票后该选项票数+1，所有数值和柱状图即时更新（无需页面刷新），并显示一条成功动画提示（绿色渐隐文字）。每个IP或session只能对一个投票投一次，后端使用session ID做防重复限制。\n4. 投票详情页中，投票结果以柱状图展示（使用recharts BarChart），每个选项一根柱，柱体颜色使用柔和渐变色系（依次为 #6366F1, #8B5CF6, #EC4899, #F43F5E, #F97316, #EAB308, #22C55E, #06B6D4），柱顶显示具体票数。当有新的投票提交时，柱状图自动过渡动画（持续500ms）从旧数值平滑增长到新数值。\n5. 后端支持用户删除自己创建的投票（通过创建时返回的编辑令牌实现），删除后所有客户端实时移除该投票。创建投票时后端返回一个编辑令牌（32位随机字符串），存储在本地storage中，删除投票时需要提供该令牌。\n\n界面方面：整体采用深色主题（背景 #0F172A），卡片使用半透明玻璃效果（背景 rgba(255,255,255,0.08)，模糊10px，边框1px solid rgba(255,255,255,0.15)），按钮使用渐变背景（从 #6366F1 到 #8B5CF6），鼠标悬停时亮度提升10%并轻微上移3px，点击时有弹性收缩动画（scale 0.95）。页面采用栅格布局，移动端自适应为单列，桌面端为两列或三列。投票列表项之间有微妙的交错出现动画（依次从下方滑入，stagger 100ms）。创建投票页面的选项输入框获得焦点时显示底部发光线动画。\n\n性能要求：页面首次加载时间不超过2秒，实时投票数据更新延迟不超过200ms，图表动画帧率不低于30fps。运行方式：npm install && npm run dev 和 node server.js。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:811fbcfcda9e7f02ffbdeab57bf42dc4_6a26f898064f5005dce04d01.6a26f98f064f5005dce04dd5.6a26f98fa3be1a108d23448b:Trae CN.T(2026/6/9 01:19:11)",
+    "user_id": "3986207660317399",
+    "trace_id": "811fbcfcda9e7f02ffbdeab57bf42dc4",
+    "session_id": "6a26f898064f5005dce04d01",
+    "task_id": "6a26f98f064f5005dce04dd5",
+    "message_id": "6a26f98fa3be1a108d23448b",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 01:19:11",
+    "format": "full"
+  },
+  "trace": "null"
+}
