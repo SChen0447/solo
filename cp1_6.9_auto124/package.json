@@ -1,19 +1,37 @@
 {
-  "name": "firefly-forest",
+  "name": "time-post-office",
+  "private": true,
   "version": "1.0.0",
-  "description": "萤火虫森林模拟器 - 3D萤火虫夜间飞行与社交信号模拟",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "vite",
+    "dev:server": "npx tsx server/src/index.ts",
+    "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.160.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "6.20.0",
+    "express": "4.18.2",
+    "cors": "2.8.5",
+    "@prisma/client": "5.7.0",
+    "prisma": "5.7.0",
+    "bcryptjs": "2.4.3",
+    "node-cron": "3.0.3"
   },
   "devDependencies": {
-    "typescript": "5.4.5",
-    "vite": "5.4.0",
-    "@types/three": "0.160.0"
+    "typescript": "5.3.2",
+    "@types/react": "18.2.42",
+    "@types/express": "4.17.21",
+    "@types/cors": "2.8.17",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node-cron": "3.0.11",
+    "vite": "5.0.6",
+    "@vitejs/plugin-react": "4.2.1",
+    "concurrently": "8.2.2",
+    "tsx": "4.7.0",
+    "@types/node": "20.10.4"
   }
 }

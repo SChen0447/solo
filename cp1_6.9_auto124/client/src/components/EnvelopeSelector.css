@@ -1,0 +1,54 @@
+.envelope-selector {
+  margin-bottom: 20px;
+}
+
+.envelope-item {
+  width: 120px;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 8px rgba(74, 59, 44, 0.1);
+}
+
+.envelope-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(74, 59, 44, 0.15);
+}
+
+.envelope-item.selected {
+  border-color: #8b7355;
+  transform: scale(1.05);
+}
+
+.envelope-preview {
+  width: 80px;
+  height: 56px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-left: 40px solid transparent;
+  border-right: 40px solid transparent;
+  border-bottom: 32px solid rgba(255, 255, 255, 0.4);
+  filter: brightness(0.95);
+}
+
+.envelope-name {
+  font-size: 13px;
+  color: #4a3b2c;
+  font-weight: 500;
+}
