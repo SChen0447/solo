@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PBR Material Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Consolas:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Consolas', monospace;
+      background: #16213E;
+      color: #B0C4DE;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+    }
+
+    #scene-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #fps-counter {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 12px;
+      color: #AAFFAA;
+      opacity: 0.7;
+      z-index: 10;
+      pointer-events: none;
+      font-family: 'Consolas', monospace;
+      letter-spacing: 1px;
+    }
+
+    #hamburger-btn {
+      display: none;
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      width: 40px;
+      height: 40px;
+      background: rgba(34, 34, 68, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      z-index: 25;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    #hamburger-btn:hover {
+      background: rgba(74, 111, 172, 0.9);
+    }
+
+    #hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #B0C4DE;
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    #hamburger-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+    #hamburger-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+    #hamburger-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 280px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
+      background: rgba(34, 34, 68, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 20;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+    }
+
+    #control-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+    #control-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    #control-panel::-webkit-scrollbar-thumb {
+      background: #3A3A5C;
+      border-radius: 3px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(106, 141, 206, 0.3);
+      padding-bottom: 10px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: #6A8DCE;
+      margin: 16px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+    }
+    .section-label:first-of-type {
+      margin-top: 0;
+    }
+
+    .preset-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+
+    .preset-btn {
+      flex: 1 1 auto;
+      min-width: 70px;
+      padding: 8px 16px;
+      background: #2D2D44;
+      color: #8899AA;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Consolas', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: #3A3A5C;
+      color: #B0C4DE;
+    }
+
+    .preset-btn:active {
+      transform: scale(0.95);
+      transition: transform 0.1s ease;
+    }
+
+    .preset-btn.active {
+      background: #4A6FAC;
+      color: #FFFFFF;
+      box-shadow: 0 2px 12px rgba(74, 111, 172, 0.4);
+    }
+
+    .slider-group {
+      margin-bottom: 14px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .slider-label {
+      font-size: 14px;
+      color: #B0C4DE;
+      font-family: 'Consolas', monospace;
+    }
+
+    .slider-value {
+      font-size: 14px;
+      color: #6A8DCE;
+      font-family: 'Consolas', monospace;
+      font-weight: 700;
+      min-width: 42px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #3A3A5C;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #6A8DCE;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      box-shadow: 0 0 0 3px rgba(106, 141, 206, 0.15);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #8AADEE;
+      box-shadow: 0 0 0 4px rgba(138, 173, 238, 0.2);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #6A8DCE;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      background: #8AADEE;
+    }
+
+    input[type="range"]:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    input[type="range"]:disabled::-webkit-slider-thumb {
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      #hamburger-btn {
+        display: flex;
+      }
+
+      #control-panel {
+        top: 0;
+        left: 0;
+        width: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+        padding: 70px 24px 24px 24px;
+        transform: translateY(-100%);
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #control-panel.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      #fps-counter {
+        top: 20px;
+        right: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container"></div>
+    <div id="fps-counter">FPS: --</div>
+    <button id="hamburger-btn" aria-label="Toggle panel">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div id="control-panel">
+      <div class="panel-title">Material Studio</div>
+      <div id="panel-content"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
