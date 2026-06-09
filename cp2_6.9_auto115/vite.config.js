@@ -1,0 +1,14 @@
+import { defineConfig } from 'vite';
+
+export default defineConfig({
+  root: '.',
+  base: './',
+  server: {
+    port: 3000,
+    strictPort: true,
+  },
+  build: {
+    target: 'esnext',
+    minify: 'esbuild',
+  },
+});
