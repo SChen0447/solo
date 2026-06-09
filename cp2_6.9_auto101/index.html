@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>五子棋</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Georgia', serif;
+      background: linear-gradient(180deg, #F5E6CA 0%, #E8D5B7 100%);
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px 40px;
+    }
+
+    .game-title {
+      font-family: 'Georgia', serif;
+      font-size: 32px;
+      color: #3E2723;
+      text-align: center;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      letter-spacing: 4px;
+    }
+
+    .canvas-container {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    #game-canvas {
+      border-radius: 8px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+    }
+
+    .controls {
+      display: flex;
+      gap: 30px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      width: 80px;
+      height: 36px;
+      border: none;
+      border-radius: 6px;
+      background-color: #6D4C41;
+      color: #FFFFFF;
+      font-family: 'Georgia', serif;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn:hover {
+      background-color: #8D6E63;
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn:disabled {
+      background-color: #A1887F;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .btn:disabled:hover {
+      background-color: #A1887F;
+    }
+
+    .undo-info {
+      width: 100%;
+      text-align: center;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #5D4037;
+      font-family: 'Georgia', serif;
+    }
+
+    #result-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: linear-gradient(180deg, #F5E6CA 0%, #E8D5B7 100%);
+      border-radius: 12px;
+      padding: 40px 50px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      min-width: 280px;
+    }
+
+    #result-text {
+      font-family: 'Georgia', serif;
+      font-size: 36px;
+      color: #3E2723;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .modal-buttons .btn {
+      width: auto;
+      padding: 0 20px;
+    }
+
+    @media (max-width: 680px) {
+      .game-title {
+        font-size: 26px;
+      }
+      .btn {
+        width: 72px;
+        height: 34px;
+        font-size: 14px;
+      }
+      #result-text {
+        font-size: 28px;
+      }
+      .modal-content {
+        padding: 30px 36px;
+        min-width: 240px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      .game-title {
+        font-size: 22px;
+      }
+      .btn {
+        width: 64px;
+        height: 32px;
+        font-size: 13px;
+      }
+      .controls {
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="game-title">五子棋</h1>
+
+  <div class="canvas-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <div class="controls">
+    <button id="restart-btn" class="btn">重新开始</button>
+    <button id="undo-btn" class="btn">悔棋</button>
+  </div>
+  <div class="undo-info">
+    <span id="undo-count">剩余悔棋次数：3</span>
+  </div>
+
+  <div id="result-modal">
+    <div class="modal-content">
+      <div id="result-text"></div>
+      <div class="modal-buttons">
+        <button id="restart-btn-modal" class="btn">再来一局</button>
+        <button id="replay-btn" class="btn">查看棋步回放</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
