@@ -2,295 +2,56 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>音乐粒子雕塑 - Music Particle Sculpture</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>星尘沙漏 - Stardust Hourglass</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-
     html, body {
       width: 100%;
       height: 100%;
-      background: #000000;
       overflow: hidden;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      color: #ffffff;
-      min-width: 800px;
+      background-color: #000000;
     }
-
-    #app {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-    }
-
-    #three-canvas {
+    canvas {
       display: block;
       width: 100%;
       height: 100%;
     }
-
-    .start-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.85);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      backdrop-filter: blur(8px);
-    }
-
-    .start-overlay h1 {
-      font-size: 42px;
-      font-weight: 300;
-      letter-spacing: 8px;
-      margin-bottom: 12px;
-      background: linear-gradient(90deg, #FF4444, #44FF44, #4444FF);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .start-overlay p {
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 40px;
-      letter-spacing: 2px;
-    }
-
-    .start-btn {
-      padding: 16px 48px;
-      font-size: 16px;
-      letter-spacing: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-radius: 2px;
-    }
-
-    .start-btn:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .top-bar {
-      position: absolute;
+    #ui-canvas {
+      position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      height: 50px;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 24px;
-      z-index: 50;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      pointer-events: none;
+      z-index: 10;
     }
-
-    .ctrl-btn {
-      padding: 8px 20px;
-      font-size: 13px;
-      letter-spacing: 1px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      border-radius: 2px;
-      font-family: inherit;
-    }
-
-    .ctrl-btn:hover {
-      transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.4);
-    }
-
-    .ctrl-btn.active {
-      background: rgba(68, 136, 255, 0.25);
-      border-color: rgba(68, 136, 255, 0.6);
-    }
-
-    .volume-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .volume-wrap label {
-      font-size: 12px;
-      color: rgba(255, 255, 255, 0.6);
-      letter-spacing: 1px;
-    }
-
-    .volume-slider {
-      width: 100px;
-      height: 4px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 12px;
-      height: 12px;
-      background: #fff;
+    #reset-btn {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 60px;
+      height: 60px;
       border-radius: 50%;
+      border: none;
+      background-color: #333333;
+      color: #ffffff;
+      font-size: 12px;
       cursor: pointer;
-      transition: transform 0.2s;
+      z-index: 20;
+      transition: background-color 0.2s;
+      pointer-events: auto;
     }
-
-    .volume-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
-    .cam-preview-wrap {
-      position: absolute;
-      top: 60px;
-      right: 16px;
-      width: 200px;
-      height: 150px;
-      z-index: 40;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 3px;
-      overflow: hidden;
-      background: #000;
-    }
-
-    .cam-preview-wrap::before,
-    .cam-preview-wrap::after,
-    .cam-preview-wrap .corner-bl,
-    .cam-preview-wrap .corner-br {
-      content: '';
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, rgba(100, 180, 255, 0.2) 0%, transparent 70%);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.5s;
-      z-index: 2;
-    }
-
-    .cam-preview-wrap.ready::before,
-    .cam-preview-wrap.ready::after,
-    .cam-preview-wrap.ready .corner-bl,
-    .cam-preview-wrap.ready .corner-br {
-      opacity: 1;
-    }
-
-    .cam-preview-wrap::before {
-      top: -50px;
-      left: -50px;
-    }
-
-    .cam-preview-wrap::after {
-      top: -50px;
-      right: -50px;
-    }
-
-    .cam-preview-wrap .corner-bl {
-      bottom: -50px;
-      left: -50px;
-    }
-
-    .cam-preview-wrap .corner-br {
-      bottom: -50px;
-      right: -50px;
-    }
-
-    #cam-preview {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transform: scaleX(-1);
-    }
-
-    .fps-counter {
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      font-size: 14px;
-      color: rgba(255, 255, 255, 0.55);
-      font-family: "SF Mono", "Consolas", monospace;
-      letter-spacing: 1px;
-      z-index: 30;
-      pointer-events: none;
-    }
-
-    .spectrum-bar {
-      position: absolute;
-      bottom: 16px;
-      right: 16px;
-      width: calc(64 * 4px - 1px);
-      height: 80px;
-      display: flex;
-      align-items: flex-end;
-      gap: 1px;
-      z-index: 30;
-      pointer-events: none;
-    }
-
-    .spectrum-bar div {
-      width: 3px;
-      background: linear-gradient(to top, #FF4444, #4444FF);
-      opacity: 0.6;
-      transition: height 0.05s linear;
-      border-radius: 1px 1px 0 0;
-    }
-
-    #music-input {
-      display: none;
+    #reset-btn:hover {
+      background-color: #555555;
     }
   </style>
 </head>
 <body>
-  <div id="app">
-    <canvas id="three-canvas"></canvas>
-
-    <div class="start-overlay" id="start-overlay">
-      <h1>音乐粒子雕塑</h1>
-      <p>MUSIC PARTICLE SCULPTURE</p>
-      <button class="start-btn" id="start-btn">启 动 体 验</button>
-    </div>
-
-    <div class="top-bar" style="display:none" id="top-bar">
-      <button class="ctrl-btn" id="music-btn">选择音乐</button>
-      <button class="ctrl-btn" id="random-btn">随机模式</button>
-      <div class="volume-wrap">
-        <label>音量</label>
-        <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" step="1" value="70" />
-      </div>
-    </div>
-
-    <div class="cam-preview-wrap" id="cam-wrap" style="display:none">
-      <video id="cam-preview" autoplay playsinline muted></video>
-      <span class="corner-bl"></span>
-      <span class="corner-br"></span>
-    </div>
-
-    <div class="fps-counter" id="fps-counter" style="display:none">FPS: 60</div>
-
-    <div class="spectrum-bar" id="spectrum-bar" style="display:none"></div>
-
-    <input type="file" id="music-input" accept=".mp3,.wav,audio/mpeg,audio/wav" />
-  </div>
-
-  <script type="module" src="/src/main.ts"></script>
+  <button id="reset-btn">重置颜色</button>
+  <canvas id="ui-canvas"></canvas>
+  <script type="module" src="/src/app.ts"></script>
 </body>
 </html>
