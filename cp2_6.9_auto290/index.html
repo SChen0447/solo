@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分子热舞 - 3D分子运动模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #050510 0%, #0A0A20 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #gui-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 16px 20px;
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #00FFFF;
+      font-size: 14px;
+      line-height: 1.8;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      max-width: 280px;
+    }
+
+    #info-panel h1 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #FFFFFF;
+      letter-spacing: 2px;
+    }
+
+    #info-panel .subtitle {
+      font-size: 12px;
+      color: rgba(0, 255, 255, 0.7);
+      margin-bottom: 12px;
+    }
+
+    #info-panel .stat {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    #info-panel .stat-label {
+      color: rgba(0, 255, 255, 0.6);
+    }
+
+    #info-panel .stat-value {
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+
+    #fps-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 6px;
+      color: #00FF88;
+      font-size: 13px;
+      font-family: monospace;
+      z-index: 50;
+    }
+
+    .dg.ac {
+      z-index: 100 !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="gui-panel"></div>
+    <div id="info-panel">
+      <h1>分子热舞</h1>
+      <div class="subtitle">Molecular Thermal Motion Simulator</div>
+      <div class="stat">
+        <span class="stat-label">当前温度：</span>
+        <span class="stat-value" id="temp-display">300 K</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">分子数量：</span>
+        <span class="stat-value" id="count-display">120</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">平均动能：</span>
+        <span class="stat-value" id="energy-display">0.00</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">操作提示：</span>
+        <span class="stat-value" style="font-size: 11px; color: rgba(255,255,255,0.6);">拖拽旋转 / 滚轮缩放 / 双击重置</span>
+      </div>
+    </div>
+    <div id="fps-counter">FPS: --</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
