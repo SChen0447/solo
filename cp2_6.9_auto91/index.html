@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海底古文明遗迹探索</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0A1A3A;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #fps-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-family: monospace;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #controls-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      letter-spacing: 4px;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 220px;
+      background: rgba(10, 15, 30, 0.7);
+      border-radius: 12px;
+      padding: 20px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 20;
+      color: white;
+    }
+
+    #control-panel h3 {
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #D4AF37;
+      font-weight: 600;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #2A3A5A;
+      border-radius: 3px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #4A9BDB;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      background: #6BB5F0;
+      transform: scale(1.1);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #4A9BDB;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb:hover {
+      background: #6BB5F0;
+      transform: scale(1.1);
+    }
+
+    #reset-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: #D4AF37;
+      color: #0A1A3A;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #reset-btn:hover {
+      background: #FFD700;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    }
+
+    #reset-btn:active {
+      transform: translateY(0);
+    }
+
+    .slider-value {
+      float: right;
+      color: #4A9BDB;
+      font-size: 12px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="fps-counter">FPS: 60</div>
+    <div id="controls-hint">拖拽旋转 滚轮缩放 点击交互</div>
+    <div id="control-panel">
+      <h3>控制面板</h3>
+      <div class="control-group">
+        <label>
+          气泡密度
+          <span class="slider-value" id="bubble-value">50</span>
+        </label>
+        <input type="range" id="bubble-density" min="20" max="200" value="50" step="10" />
+      </div>
+      <div class="control-group">
+        <label>
+          波浪速度
+          <span class="slider-value" id="wave-value">2.0 Hz</span>
+        </label>
+        <input type="range" id="wave-speed" min="0.5" max="4" value="2" step="0.1" />
+      </div>
+      <button id="reset-btn">重置视角</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
