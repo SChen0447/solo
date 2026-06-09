@@ -1,0 +1,19 @@
+{
+  "name": "memory-stardust-tree",
+  "version": "1.0.0",
+  "description": "记忆星尘树 - 一个交互式星空花园",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "vite": "5.4.0",
+    "@types/p5": "1.7.6"
+  }
+}
