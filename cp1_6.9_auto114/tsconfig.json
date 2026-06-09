@@ -1,36 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "ES2020",
+    "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noEmit": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"],
-      "~/*": ["src/*"],
-      "$components/*": ["src/components/*"]
-    },
-    "outDir": "./dist",
-    "declaration": false,
-    "sourceMap": true
+    "types": ["p5"]
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*"]
 }
