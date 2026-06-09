@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>乐器频谱分析可视化</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #1A1A2E;
+      --bg-spectrum: #0D0D2B;
+      --bg-panel: rgba(30, 30, 60, 0.8);
+      --text-primary: #E0E0E0;
+      --text-secondary: #8888AA;
+      --grid-line: #2A2A4A;
+      --accent: #00D2FF;
+      --accent-glow: rgba(0, 210, 255, 0.6);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: rgba(13, 13, 43, 0.6);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      min-height: 64px;
+    }
+
+    .melody-display {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .melody-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+    }
+
+    .melody-notes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .note-chip {
+      padding: 4px 10px;
+      background: rgba(0, 210, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    .note-chip.active {
+      background: rgba(0, 210, 255, 0.3);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .start-btn {
+      padding: 10px 28px;
+      background: linear-gradient(135deg, #00D2FF 0%, #0066FF 100%);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 0 rgba(0, 210, 255, 0.4);
+    }
+
+    .start-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(0, 210, 255, 0.5);
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    .start-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .progress-bar {
+      width: 140px;
+      height: 6px;
+      background: var(--grid-line);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent) 0%, #00FF88 100%);
+      transition: width 0.1s linear;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    .instrument-panel {
+      width: 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      background: rgba(13, 13, 43, 0.4);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      padding: 20px 10px;
+    }
+
+    .instrument-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid var(--grid-line);
+      background: rgba(30, 30, 60, 0.6);
+      color: var(--text-primary);
+      font-size: 24px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .instrument-btn:hover {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+
+    .instrument-btn:active {
+      transform: scale(0.95);
+      transition: transform 0.2s ease-out;
+    }
+
+    .instrument-btn.active {
+      opacity: 1.0;
+      border-color: var(--accent);
+      color: var(--accent);
+      animation: glow-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 8px var(--accent-glow); }
+      50% { box-shadow: 0 0 24px var(--accent-glow), 0 0 32px rgba(0, 210, 255, 0.3); }
+    }
+
+    .instrument-label {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .spectrum-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .spectrum-container {
+      flex: 1;
+      background: var(--bg-spectrum);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    #spectrumCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .spectrum-axis {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .freq-axis {
+      left: 8px;
+      top: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px 0;
+    }
+
+    .freq-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-shadow: 0 0 4px var(--bg-spectrum);
+    }
+
+    .time-indicator {
+      position: absolute;
+      bottom: 4px;
+      right: 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .compare-section {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      background: rgba(13, 13, 43, 0.4);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+
+    .compare-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .compare-title {
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+    }
+
+    .compare-canvas-wrap {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      border: 1px solid var(--grid-line);
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+
+    .compare-canvas-wrap.zooming {
+      animation: zoom-pulse 0.2s ease-out;
+    }
+
+    @keyframes zoom-pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.5); }
+      100% { transform: scale(1); }
+    }
+
+    .compare-canvas {
+      display: block;
+      width: 300px;
+      height: 200px;
+      background: var(--bg-spectrum);
+    }
+
+    .compare-hint {
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+
+    .filter-panel {
+      width: 220px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--grid-line);
+      border-radius: 8px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-align: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--grid-line);
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .slider-value {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .filter-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: var(--grid-line);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .filter-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px var(--accent-glow);
+      transition: transform 0.15s ease;
+    }
+
+    .filter-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .filter-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    .status-info {
+      margin-top: auto;
+      padding-top: 12px;
+      border-top: 1px solid var(--grid-line);
+      font-size: 10px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status-val {
+      color: var(--text-primary);
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        flex-direction: column;
+      }
+      .instrument-panel {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+        justify-content: space-around;
+      }
+      .filter-panel {
+        width: 100%;
+      }
+      .compare-section {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="top-bar">
+      <div class="melody-display">
+        <span class="melody-label">预设旋律:</span>
+        <div class="melody-notes" id="melodyNotes"></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <button class="start-btn" id="startBtn">
+          <i class="fa-solid fa-play"></i>&nbsp; 开始分析
+        </button>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="instrument-panel">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <button class="instrument-btn" id="btnPiano" data-instrument="piano">
+            <i class="fa-solid fa-keyboard"></i>
+          </button>
+          <span class="instrument-label">钢琴</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <button class="instrument-btn" id="btnGuitar" data-instrument="guitar">
+            <i class="fa-solid fa-guitar"></i>
+          </button>
+          <span class="instrument-label">吉他</span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+          <button class="instrument-btn" id="btnElectone" data-instrument="electone">
+            <i class="fa-solid fa-music"></i>
+          </button>
+          <span class="instrument-label">电子琴</span>
+        </div>
+      </div>
+
+      <div class="spectrum-area">
+        <div class="spectrum-container">
+          <canvas id="spectrumCanvas"></canvas>
+          <div class="freq-axis" id="freqAxis"></div>
+          <div class="time-indicator" id="timeIndicator">0.0s</div>
+        </div>
+        <div class="compare-section" id="compareSection">
+          <div style="display:flex;align-items:center;justify-content:center;width:100%;color:var(--text-secondary);font-size:12px;padding:40px 0;">
+            <i class="fa-solid fa-wave-square" style="margin-right:8px;"></i>
+            演奏完成后，三种乐器的完整瀑布图将在此展示，点击任意位置可播放该时刻采样
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-panel">
+        <div class="panel-title">
+          <i class="fa-solid fa-sliders"></i>&nbsp; 滤镜控制
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span><i class="fa-solid fa-arrow-down-long"></i> 低通截止</span>
+            <span class="slider-value" id="lpVal">2000 Hz</span>
+          </div>
+          <input type="range" class="filter-slider" id="lowPassSlider" min="100" max="5000" value="2000" step="10">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span><i class="fa-solid fa-arrow-up-long"></i> 高通截止</span>
+            <span class="slider-value" id="hpVal">50 Hz</span>
+          </div>
+          <input type="range" class="filter-slider" id="highPassSlider" min="20" max="1000" value="50" step="5">
+        </div>
+        <div class="slider-group">
+          <div class="slider-label">
+            <span><i class="fa-solid fa-water"></i> 混响大小</span>
+            <span class="slider-value" id="rvVal">0.30</span>
+          </div>
+          <input type="range" class="filter-slider" id="reverbSlider" min="0" max="1" value="0.3" step="0.01">
+        </div>
+        <div class="status-info">
+          <div class="status-row"><span>FFT 大小:</span><span class="status-val">2048</span></div>
+          <div class="status-row"><span>缓冲区:</span><span class="status-val">128</span></div>
+          <div class="status-row"><span>帧率:</span><span class="status-val" id="fpsVal">-- fps</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
