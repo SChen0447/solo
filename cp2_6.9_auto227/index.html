@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D地下岩层与矿脉分布可视化工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D0D1A;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #three-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #gui-container {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 10;
+    }
+
+    #info-popup {
+      position: fixed;
+      display: none;
+      padding: 16px 20px;
+      min-width: 220px;
+      background: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1.8;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    #info-popup.visible {
+      display: block;
+      opacity: 1;
+    }
+
+    #info-popup .popup-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #info-popup .popup-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    #info-popup .popup-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    #info-popup .popup-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    #info-popup .popup-value {
+      font-weight: 500;
+    }
+
+    #title-bar {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      z-index: 5;
+      text-align: right;
+    }
+
+    #title-bar h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 1px;
+    }
+
+    #title-bar p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="three-container"></canvas>
+    <div id="gui-container"></div>
+    <div id="title-bar">
+      <h1>地质勘探三维可视化</h1>
+      <p>3D Underground Rock & Ore Veins Visualizer</p>
+    </div>
+    <div id="info-popup">
+      <div class="popup-title">
+        <span class="popup-dot"></span>
+        <span class="popup-type">—</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">所在岩层</span>
+        <span class="popup-value" id="popup-layer">—</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">深度</span>
+        <span class="popup-value" id="popup-depth">—</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">估算储量</span>
+        <span class="popup-value" id="popup-reserve">—</span>
+      </div>
+      <div class="popup-row">
+        <span class="popup-label">矿脉长度</span>
+        <span class="popup-value" id="popup-length">—</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
