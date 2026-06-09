@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dream Garden Automaton - 梦境花园生成器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0A0A0F;
+      font-family: 'Fira Code', monospace;
+      overflow: hidden;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .main-container {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 24px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    #gardenCanvas {
+      width: 800px;
+      height: 800px;
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(184, 134, 11, 0.3);
+      border: 1px solid rgba(184, 134, 11, 0.4);
+      background: #0A0A0F;
+      display: block;
+      cursor: crosshair;
+    }
+
+    .stats-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 140px;
+      height: 60px;
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 10px 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .stats-panel .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stats-panel .stat-label {
+      opacity: 0.6;
+    }
+
+    .stats-panel .stat-value {
+      font-weight: 500;
+    }
+
+    .control-panel {
+      width: 260px;
+      flex-shrink: 0;
+      background: rgba(20, 20, 30, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 24px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-align: center;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      opacity: 0.75;
+      text-transform: uppercase;
+    }
+
+    select {
+      width: 100%;
+      height: 38px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      padding: 0 12px;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: #ffffff;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.25s ease-out;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 12px;
+    }
+
+    select:hover {
+      border-color: rgba(212, 175, 55, 0.6);
+      background-color: rgba(255, 255, 255, 0.07);
+      filter: brightness(1.2);
+    }
+
+    select:focus {
+      border-color: rgba(212, 175, 55, 0.9);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.15);
+    }
+
+    select option {
+      background: #1a1a24;
+      color: #ffffff;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      padding: 8px;
+    }
+
+    .gradient-text-option {
+      background: linear-gradient(90deg, #00FF88, #FF00AA, #00BFFF, #7B68EE, #00FF88);
+      background-size: 300% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientScroll 3s linear infinite;
+    }
+
+    @keyframes gradientScroll {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 300% 50%; }
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #D4AF37;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #8B7326, #D4AF37, #8B7326);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.25s ease-out;
+    }
+
+    input[type="range"]:hover {
+      filter: brightness(1.2);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #F0D878;
+      border: 2px solid #D4AF37;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+      transition: all 0.25s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.7);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #F0D878;
+      border: 2px solid #D4AF37;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+      transition: all 0.25s ease-out;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.7);
+    }
+
+    .custom-color-inputs {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .custom-color-inputs input[type="color"] {
+      flex: 1;
+      height: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      padding: 2px;
+      transition: all 0.25s ease-out;
+    }
+
+    .custom-color-inputs input[type="color"]:hover {
+      border-color: rgba(212, 175, 55, 0.6);
+      filter: brightness(1.2);
+    }
+
+    .custom-color-inputs input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    .custom-color-inputs input[type="color"]::-webkit-color-swatch {
+      border: none;
+      border-radius: 4px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .custom-rules-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .rules-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .rules-row label {
+      font-size: 10px;
+      opacity: 0.7;
+      width: 60px;
+      flex-shrink: 0;
+    }
+
+    .rules-row input {
+      flex: 1;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 6px;
+      padding: 0 8px;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: #ffffff;
+      outline: none;
+      transition: all 0.25s ease-out;
+    }
+
+    .rules-row input:hover {
+      border-color: rgba(212, 175, 55, 0.6);
+    }
+
+    .rules-row input:focus {
+      border-color: rgba(212, 175, 55, 0.9);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      flex: 1;
+      height: 36px;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      border-radius: 8px;
+      color: #F0D878;
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease-out;
+      letter-spacing: 0.3px;
+    }
+
+    .btn:hover {
+      background: rgba(212, 175, 55, 0.28);
+      border-color: rgba(212, 175, 55, 0.7);
+      filter: brightness(1.2);
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn.primary {
+      background: rgba(212, 175, 55, 0.25);
+    }
+
+    .hint-text {
+      font-size: 10px;
+      opacity: 0.5;
+      text-align: center;
+      line-height: 1.6;
+      padding-top: 4px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    @media (max-width: 1024px) {
+      html, body {
+        overflow-y: auto;
+      }
+
+      #app {
+        align-items: flex-start;
+        padding: 16px 0;
+      }
+
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 16px;
+        gap: 20px;
+      }
+
+      .canvas-wrapper {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      #gardenCanvas {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1;
+      }
+
+      .control-panel {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .stats-panel {
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="main-container">
+      <div class="canvas-wrapper">
+        <canvas id="gardenCanvas" width="800" height="800"></canvas>
+        <div class="stats-panel" id="statsPanel">
+          <div class="stat-row">
+            <span class="stat-label">CELLS</span>
+            <span class="stat-value" id="statCells">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">GEN</span>
+            <span class="stat-value" id="statGen">0</span>
+          </div>
+          <div class="stat-row">
+            <span class="stat-label">FPS</span>
+            <span class="stat-value" id="statFps">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="control-panel" id="controlPanel">
+        <div class="panel-title">🌿 DREAM GARDEN</div>
+
+        <div class="control-group">
+          <label class="control-label" for="ruleSelect">Cellular Rules</label>
+          <select id="ruleSelect">
+            <option value="conway" class="gradient-text-option">Conway's Game of Life</option>
+            <option value="highlife" class="gradient-text-option">HighLife</option>
+            <option value="daynight" class="gradient-text-option">Day &amp; Night</option>
+            <option value="seeds" class="gradient-text-option">Seeds</option>
+            <option value="life34" class="gradient-text-option">Life 3/4</option>
+            <option value="custom" class="gradient-text-option">Custom Rules</option>
+          </select>
+          <div class="custom-rules-container hidden" id="customRulesContainer">
+            <div class="rules-row">
+              <label>Survive:</label>
+              <input type="text" id="surviveRules" value="2,3" placeholder="e.g. 2,3" />
+            </div>
+            <div class="rules-row">
+              <label>Birth:</label>
+              <input type="text" id="birthRules" value="3" placeholder="e.g. 3,6" />
+            </div>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label" for="themeSelect">Color Theme</label>
+          <select id="themeSelect">
+            <option value="eden" class="gradient-text-option">🌱 伊甸园 Eden</option>
+            <option value="dusk" class="gradient-text-option">🌹 黄昏玫瑰 Dusk Rose</option>
+            <option value="ocean" class="gradient-text-option">🌊 深海幻光 Deep Ocean</option>
+            <option value="lava" class="gradient-text-option">🔥 熔岩 Lava</option>
+            <option value="custom" class="gradient-text-option">🎨 Custom Gradient</option>
+          </select>
+          <div class="custom-color-inputs hidden" id="customColorInputs">
+            <input type="color" id="customColor1" value="#00FF88" />
+            <input type="color" id="customColor2" value="#FF00AA" />
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="slider-header">
+            <label class="control-label">Growth Speed</label>
+            <span class="slider-value" id="speedValue">1.0x</span>
+          </div>
+          <input type="range" id="speedSlider" min="0.5" max="4" step="0.5" value="1" />
+        </div>
+
+        <div class="action-buttons">
+          <button class="btn primary" id="resetBtn">RESET</button>
+          <button class="btn" id="pauseBtn">PAUSE</button>
+        </div>
+
+        <div class="hint-text">
+          Click anywhere on canvas<br/>to place a singularity seed
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
