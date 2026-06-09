@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>海洋洋流与温度分布可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-text {
+      font-size: 18px;
+      color: #4a7cff;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .progress-bar-container {
+      width: 300px;
+      height: 4px;
+      background: rgba(74, 124, 255, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4a7cff, #ff6b35);
+      transition: width 0.3s ease-out;
+      border-radius: 2px;
+    }
+
+    .progress-text {
+      margin-top: 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    #control-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 60px;
+      background: rgba(10, 10, 46, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 30px;
+      border: 1px solid rgba(74, 124, 255, 0.3);
+      display: flex;
+      align-items: center;
+      padding: 0 30px;
+      gap: 20px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .slider-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      width: 40vw;
+      min-width: 300px;
+    }
+
+    .time-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #4a7cff, #ff6b35);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .time-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #ff6b35;
+      cursor: pointer;
+      transition: transform 0.3s ease-out;
+      box-shadow: 0 2px 10px rgba(255, 107, 53, 0.5);
+    }
+
+    .time-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .time-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #ff6b35;
+      cursor: pointer;
+      transition: transform 0.3s ease-out;
+      box-shadow: 0 2px 10px rgba(255, 107, 53, 0.5);
+    }
+
+    .month-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      min-width: 50px;
+      text-align: center;
+      transition: transform 0.2s ease-out;
+    }
+
+    .month-label.bounce {
+      animation: bounce 0.3s ease-out;
+    }
+
+    .temp-label {
+      font-size: 14px;
+      color: #ff6b35;
+      font-weight: 500;
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .temp-label.bounce {
+      animation: bounce 0.3s ease-out;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .toggle-btn {
+      background: rgba(74, 124, 255, 0.2);
+      border: 1px solid rgba(74, 124, 255, 0.5);
+      color: #ffffff;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(74, 124, 255, 0.4);
+      transform: scale(1.05);
+    }
+
+    .toggle-btn:active {
+      transform: scale(1.02);
+    }
+
+    .toggle-btn.active {
+      background: rgba(255, 107, 53, 0.3);
+      border-color: #ff6b35;
+    }
+
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 46, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 16px;
+      border: 1px solid rgba(74, 124, 255, 0.3);
+      padding: 16px;
+      z-index: 100;
+      min-width: 200px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #info-panel.collapsed {
+      padding: 10px 16px;
+    }
+
+    #info-panel.collapsed .panel-content {
+      display: none;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4a7cff;
+      letter-spacing: 1px;
+    }
+
+    .collapse-icon {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      transition: transform 0.3s ease;
+    }
+
+    #info-panel.collapsed .collapse-icon {
+      transform: rotate(-90deg);
+    }
+
+    .panel-content {
+      margin-top: 16px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .temp-gradient {
+      width: 100%;
+      height: 12px;
+      border-radius: 6px;
+      background: linear-gradient(90deg, #6b5bff, #4a7cff, #00d4ff, #00ff88, #ffdd00, #ff6b35, #ff3366);
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .temp-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 4px;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    @media (max-width: 1024px) {
+      .slider-wrapper {
+        width: 60vw;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .slider-wrapper {
+        width: 80vw;
+      }
+      #info-panel {
+        display: none;
+      }
+      #control-panel {
+        padding: 0 16px;
+        gap: 12px;
+      }
+      .toggle-btn {
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="loading-overlay">
+      <div class="loading-text">加载海洋数据中...</div>
+      <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+      <div class="progress-text"><span id="progress-value">0</span>%</div>
+    </div>
+
+    <div id="info-panel" class="collapsed">
+      <div class="panel-header" id="panel-header">
+        <span class="panel-title">参数面板</span>
+        <span class="collapse-icon">▼</span>
+      </div>
+      <div class="panel-content">
+        <div class="stat-row">
+          <span class="stat-label">粒子总数</span>
+          <span class="stat-value" id="particle-count">800</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">温度范围</span>
+          <span class="stat-value">-2°C ~ 30°C</span>
+        </div>
+        <div class="temp-gradient"></div>
+        <div class="temp-labels">
+          <span>寒冷</span>
+          <span>温暖</span>
+          <span>炎热</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="control-panel">
+      <div class="slider-wrapper">
+        <span class="month-label" id="month-label">Jan</span>
+        <input type="range" class="time-slider" id="time-slider" min="1" max="12" step="1" value="1" />
+        <span class="temp-label" id="temp-label">15.2°C</span>
+      </div>
+      <button class="toggle-btn active" id="toggle-contour">显示等温线</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
