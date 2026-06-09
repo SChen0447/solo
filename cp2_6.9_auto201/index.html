@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蒸汽朋克齿轮谜题</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="toolbar">
+      <button id="reset-btn" class="tool-btn">重置</button>
+      <button id="hint-btn" class="tool-btn">提示</button>
+      <div class="toolbar-title">蒸汽齿轮谜题</div>
+    </div>
+
+    <div id="game-layout">
+      <div id="status-panel">
+        <div class="status-row">
+          <span class="status-label">传动比:</span>
+          <span id="gear-ratio" class="status-value">--</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">目标达成:</span>
+          <span id="target-status" class="status-value">✗</span>
+        </div>
+        <div class="status-hint">
+          连接至少3个齿轮驱动机关轮
+        </div>
+      </div>
+
+      <canvas id="game-canvas" width="800" height="600"></canvas>
+
+      <div id="gear-library">
+        <div class="library-title">齿轮库</div>
+        <div class="library-hint">拖拽齿轮到画布</div>
+        <div id="gear-tray">
+          <div class="gear-slot" data-type="small">
+            <canvas class="gear-preview" data-type="small" width="60" height="60"></canvas>
+            <div class="gear-label">小齿轮</div>
+            <div class="gear-desc">8齿 · 快速</div>
+          </div>
+          <div class="gear-slot" data-type="medium">
+            <canvas class="gear-preview" data-type="medium" width="80" height="80"></canvas>
+            <div class="gear-label">中齿轮</div>
+            <div class="gear-desc">12齿 · 标准</div>
+          </div>
+          <div class="gear-slot" data-type="large">
+            <canvas class="gear-preview" data-type="large" width="100" height="100"></canvas>
+            <div class="gear-label">大齿轮</div>
+            <div class="gear-desc">16齿 · 强力</div>
+          </div>
+        </div>
+        <div class="library-count">
+          已使用: <span id="gear-count">0</span> / 6
+        </div>
+      </div>
+    </div>
+
+    <div id="door-container">
+      <div class="door left-door" id="door-left"></div>
+      <div class="door right-door" id="door-right"></div>
+      <div class="door-message" id="door-message">蒸汽核心已解锁！</div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
