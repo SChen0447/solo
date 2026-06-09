@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音痕涂鸦</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #121212;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #drawing-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    #control-bar {
+      width: 100%;
+      height: 60px;
+      background: #1E1E2E;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .ctrl-btn {
+      height: 40px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 6px;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, filter 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ctrl-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.95);
+    }
+
+    #btn-clear {
+      background: #FF4444;
+    }
+
+    #btn-play {
+      background: #44FF44;
+      color: #121212;
+    }
+
+    #btn-scale {
+      background: #4488FF;
+    }
+
+    #scale-label {
+      color: #FFFFFF;
+      font-size: 16px;
+      font-family: monospace;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="drawing-canvas"></canvas>
+    </div>
+    <div id="control-bar">
+      <button id="btn-clear" class="ctrl-btn">清空画布</button>
+      <button id="btn-play" class="ctrl-btn">播放录制</button>
+      <button id="btn-scale" class="ctrl-btn">切换音阶</button>
+      <span id="scale-label">钢琴音阶</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
