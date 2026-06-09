@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代炼金术工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      background: #2A1A0E;
+    }
+
+    #app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      background: #2A1A0E;
+    }
+
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      background: #2A1A0E;
+    }
+
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 2px solid #3E2723;
+      background: #2A1A0E;
+    }
+
+    #panel {
+      width: 200px;
+      height: 100%;
+      background: #D2B48C;
+      border-left: 2px solid #8B4513;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .panel-section {
+      padding: 10px;
+      border-bottom: 1px solid #3E2723;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: #3E2723;
+      margin-bottom: 8px;
+      text-shadow: 1px 1px 0 #B87333;
+    }
+
+    .status-bar {
+      margin-bottom: 8px;
+    }
+
+    .status-label {
+      font-size: 12px;
+      color: #5D4037;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 3px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #5D4037;
+      border: 1px solid #3E2723;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #8B0000, #FF4500);
+      transition: width 0.2s ease;
+    }
+
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .material-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #C4A882;
+      border: 1px solid #8B4513;
+      cursor: grab;
+      position: relative;
+      transition: transform 0.1s;
+    }
+
+    .material-icon:hover {
+      background: #E8D4B0;
+      transform: scale(1.05);
+    }
+
+    .material-icon:active {
+      cursor: grabbing;
+    }
+
+    .material-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 8px 4px;
+      background: #B87333;
+      color: #2A1A0E;
+      border: 1px solid #3E2723;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.1s;
+      box-shadow: 0 2px 0 #3E2723;
+    }
+
+    .action-btn:hover {
+      background: #D4A574;
+    }
+
+    .action-btn:active {
+      transform: translateY(2px);
+      box-shadow: 0 0 0 #3E2723;
+    }
+
+    .notes-section {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .notes-table {
+      width: 100%;
+      font-size: 11px;
+      border-collapse: collapse;
+    }
+
+    .notes-table th,
+    .notes-table td {
+      padding: 4px;
+      text-align: left;
+      border-bottom: 1px solid #3E2723;
+      color: #3E2723;
+      vertical-align: top;
+    }
+
+    .notes-table th {
+      background: #C4A882;
+      position: sticky;
+      top: 0;
+    }
+
+    .rarity-common { color: #5D4037; }
+    .rarity-uncommon { color: #228B22; }
+    .rarity-rare { color: #4169E1; }
+    .rarity-legendary { color: #FFD700; font-weight: bold; }
+
+    .locked-recipe {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #3E2723;
+      cursor: pointer;
+    }
+
+    .locked-recipe:hover {
+      background: #C4A882;
+    }
+
+    .lock-icon {
+      width: 16px;
+      height: 16px;
+      color: #808080;
+      flex-shrink: 0;
+    }
+
+    .locked-text {
+      font-size: 11px;
+      color: #5D4037;
+    }
+
+    #mobile-toggle {
+      display: none;
+      position: absolute;
+      top: 10px;
+      left: -40px;
+      width: 36px;
+      height: 36px;
+      background: #B87333;
+      border: 1px solid #3E2723;
+      color: #2A1A0E;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    #drag-ghost {
+      position: fixed;
+      width: 32px;
+      height: 32px;
+      pointer-events: none;
+      opacity: 0.7;
+      z-index: 1000;
+      display: none;
+    }
+
+    #drag-ghost svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      #canvas-container {
+        height: calc(100% - 60px);
+      }
+
+      #panel {
+        width: 100%;
+        height: 60px;
+        border-left: none;
+        border-top: 2px solid #8B4513;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        transition: height 0.3s ease;
+      }
+
+      #panel.expanded {
+        height: 100%;
+      }
+
+      .panel-section {
+        display: none;
+      }
+
+      #panel.expanded .panel-section {
+        display: block;
+      }
+
+      #mobile-toggle {
+        display: block;
+        position: absolute;
+        top: -36px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="game-canvas" width="640" height="480"></canvas>
+    </div>
+    <div id="panel">
+      <button id="mobile-toggle">+</button>
+      <div class="panel-section" id="status-section">
+        <div class="panel-title">炼金状态</div>
+        <div class="status-bar">
+          <div class="status-label"><span>加热度</span><span id="heat-value">0/100</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="heat-bar" style="width: 0%"></div></div>
+        </div>
+        <div class="status-bar">
+          <div class="status-label"><span>搅拌次数</span><span id="stir-value">0/20</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="stir-bar" style="width: 0%"></div></div>
+        </div>
+        <div class="action-buttons">
+          <button class="action-btn" id="heat-btn">加热</button>
+          <button class="action-btn" id="stir-btn">搅拌</button>
+        </div>
+      </div>
+      <div class="panel-section" id="materials-section">
+        <div class="panel-title">原料 (拖入坩埚)</div>
+        <div class="materials-grid" id="materials-grid"></div>
+      </div>
+      <div class="panel-section notes-section" id="notes-section">
+        <div class="panel-title">炼金笔记</div>
+        <table class="notes-table" id="notes-table">
+          <thead>
+            <tr>
+              <th>产物</th>
+              <th>稀有度</th>
+              <th>配方</th>
+            </tr>
+          </thead>
+          <tbody id="notes-body"></tbody>
+        </table>
+        <div id="locked-recipes"></div>
+      </div>
+    </div>
+  </div>
+  <div id="drag-ghost"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
