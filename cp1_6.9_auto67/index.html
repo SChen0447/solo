@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>碑帖拓印模拟器</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟熔岩灯 - Lava Lamp Art</title>
   <style>
     * {
       margin: 0;
@@ -14,257 +11,232 @@
       box-sizing: border-box;
     }
 
-    body {
-      min-height: 100vh;
-      background-color: #f5e6c8;
-      font-family: 'Noto Serif SC', 'KaiTi', '楷体', serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      overflow-x: hidden;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a0a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     }
 
-    .app-container {
-      display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      justify-content: center;
-      gap: 30px;
-      max-width: 100%;
-      position: relative;
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
     }
 
-    .canvas-wrapper {
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    #stoneCanvas {
-      display: block;
-      border: 2px solid #3e2723;
-      border-radius: 4px;
-      box-shadow:
-        0 4px 20px rgba(0, 0, 0, 0.3),
-        inset 0 2px 4px rgba(255, 255, 255, 0.05),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
-      cursor: crosshair;
-      touch-action: none;
-    }
-
-    #stoneCanvas.resetting {
-      animation: fadeInOut 0.5s ease-in-out;
-    }
-
-    @keyframes fadeInOut {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
-
-    .canvas-hint {
-      position: absolute;
-      top: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 13px;
-      color: #5d4037;
-      opacity: 0.7;
-      pointer-events: none;
-      white-space: nowrap;
-      font-style: italic;
-    }
-
-    .control-panel {
-      position: absolute;
-      right: 16px;
-      bottom: 16px;
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 0.3px solid rgba(255, 255, 255, 0.5);
-      border-radius: 8px;
-      padding: 16px;
-      min-width: 220px;
+    .temp-panel {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      padding: 18px 22px;
+      color: #ffffff;
       z-index: 10;
+      transition: all 0.3s ease;
+      min-width: 220px;
     }
 
-    .control-panel h3 {
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 12px;
-      font-weight: 400;
-      letter-spacing: 2px;
-      text-align: center;
-      opacity: 0.9;
+    .temp-panel:hover {
+      background: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 30px rgba(0, 204, 255, 0.15);
     }
 
-    .control-group {
-      margin-bottom: 14px;
-    }
-
-    .control-group label {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .temp-label {
       font-size: 12px;
-      color: #fff;
-      margin-bottom: 6px;
-      opacity: 0.85;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 10px;
     }
 
-    .control-group label span.value {
-      font-variant-numeric: tabular-nums;
-      background: rgba(0, 0, 0, 0.2);
-      padding: 1px 6px;
-      border-radius: 3px;
-      font-size: 11px;
+    .temp-value {
+      font-size: 36px;
+      font-weight: 200;
+      color: #00ccff;
+      text-shadow: 0 0 20px rgba(0, 204, 255, 0.5);
+      margin-bottom: 12px;
+      transition: all 0.3s ease;
     }
 
-    .control-group input[type="range"] {
+    .temp-value span {
+      font-size: 18px;
+      opacity: 0.6;
+      margin-left: 2px;
+    }
+
+    input[type="range"] {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.3);
-      border-radius: 2px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #550000, #ff4400, #00ccff);
       outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
 
-    .control-group input[type="range"]::-webkit-slider-thumb {
+    input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #fff;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
+      background: #00ccff;
       cursor: pointer;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-      transition: transform 0.1s;
+      box-shadow: 0 0 15px rgba(0, 204, 255, 0.8), 0 0 30px rgba(0, 204, 255, 0.4);
+      border: 2px solid #ffffff;
+      transition: all 0.3s ease;
     }
 
-    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+    input[type="range"]::-webkit-slider-thumb:hover {
       transform: scale(1.15);
+      box-shadow: 0 0 25px rgba(0, 204, 255, 1), 0 0 50px rgba(0, 204, 255, 0.6);
     }
 
-    .control-group input[type="range"]::-moz-range-thumb {
-      width: 14px;
-      height: 14px;
-      background: #fff;
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
+      background: #00ccff;
       cursor: pointer;
-      border: none;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 15px rgba(0, 204, 255, 0.8);
+      border: 2px solid #ffffff;
+    }
+
+    .control-bar {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.13);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    .control-bar:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .control-info {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .control-info strong {
+      color: #00ccff;
+      font-weight: 500;
     }
 
     .reset-btn {
-      width: 100%;
-      padding: 8px 0;
-      font-family: inherit;
+      background: linear-gradient(135deg, rgba(0, 204, 255, 0.2), rgba(0, 204, 255, 0.05));
+      border: 1px solid rgba(0, 204, 255, 0.5);
+      color: #00ccff;
+      padding: 10px 22px;
+      border-radius: 10px;
       font-size: 13px;
-      color: #fff;
-      background: rgba(255, 255, 255, 0.1);
-      border: 0.3px solid rgba(255, 255, 255, 0.4);
-      border-radius: 4px;
+      font-weight: 500;
+      letter-spacing: 1px;
       cursor: pointer;
-      letter-spacing: 3px;
-      transition: background 0.2s;
-      opacity: 0.9;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      font-family: inherit;
     }
 
     .reset-btn:hover {
-      background: rgba(255, 255, 255, 0.25);
+      background: linear-gradient(135deg, rgba(0, 204, 255, 0.4), rgba(0, 204, 255, 0.15));
+      box-shadow: 0 0 25px rgba(0, 204, 255, 0.5), 0 0 50px rgba(0, 204, 255, 0.2);
+      border-color: #00ccff;
+      transform: translateY(-1px);
     }
 
     .reset-btn:active {
-      transform: scale(0.98);
+      transform: translateY(0);
     }
 
-    @media (max-width: 768px) {
-      body {
-        padding: 12px;
-        align-items: flex-start;
-      }
+    .divider {
+      width: 1px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.15);
+    }
 
-      .app-container {
-        flex-direction: column;
-        align-items: center;
-        gap: 16px;
-      }
+    .hint {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      line-height: 1.8;
+      z-index: 10;
+      max-width: 200px;
+      transition: all 0.3s ease;
+    }
 
-      .canvas-wrapper {
-        width: 100%;
-        max-width: 360px;
-      }
+    .hint:hover {
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.12);
+    }
 
-      #stoneCanvas {
-        width: 100%;
-        height: auto;
-      }
-
-      .control-panel {
-        position: static;
-        margin: 0 auto;
-        width: 100%;
-        max-width: 360px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: none;
-        -webkit-backdrop-filter: none;
-        border: 1px solid #d7ccc8;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-
-      .control-panel h3 {
-        color: #3e2723;
-      }
-
-      .control-group label {
-        color: #5d4037;
-      }
-
-      .control-group label span.value {
-        background: #efebe9;
-        color: #3e2723;
-      }
-
-      .control-group input[type="range"] {
-        background: #d7ccc8;
-      }
-
-      .control-group input[type="range"]::-webkit-slider-thumb {
-        background: #5d4037;
-      }
-
-      .control-group input[type="range"]::-moz-range-thumb {
-        background: #5d4037;
-      }
-
-      .reset-btn {
-        color: #3e2723;
-        background: #efebe9;
-        border: 1px solid #d7ccc8;
-      }
-
-      .reset-btn:hover {
-        background: #d7ccc8;
-      }
-
-      .canvas-hint {
-        font-size: 11px;
-      }
+    .hint-title {
+      color: #00ccff;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="app-container">
-    <div class="canvas-wrapper">
-      <canvas id="stoneCanvas"></canvas>
-      <div class="canvas-hint">轻握鼠标，如拓包轻拍，慢慢让碑文显现</div>
-      <div class="control-panel" id="controlPanel">
-        <h3>拓印工具</h3>
-      </div>
-    </div>
+  <div id="canvas-container"></div>
+  
+  <div class="temp-panel">
+    <div class="temp-label">温度控制</div>
+    <div class="temp-value" id="tempValue">50<span>°C</span></div>
+    <input type="range" id="tempSlider" min="0" max="100" value="50" />
   </div>
+
+  <div class="hint">
+    <div class="hint-title">操作提示</div>
+    拖拽瓶身可倾斜角度<br/>
+    调节滑块改变温度<br/>
+    观察蜡泡浮升与融合
+  </div>
+
+  <div class="control-bar">
+    <div class="control-info">
+      蜡泡数量: <strong id="blobCount">0</strong>
+    </div>
+    <div class="divider"></div>
+    <div class="control-info">
+      FPS: <strong id="fpsCounter">60</strong>
+    </div>
+    <div class="divider"></div>
+    <button class="reset-btn" id="resetBtn">复位倾斜</button>
+  </div>
+
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
