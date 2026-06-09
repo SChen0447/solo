@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D城市交通流量可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0D1117;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: rgba(26, 30, 36, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #ffffff;
+      min-width: 180px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    .info-panel h3 {
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0.7;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .info-item .label {
+      opacity: 0.75;
+    }
+
+    .info-item .value {
+      font-weight: 600;
+      font-size: 16px;
+      color: #4ECDC4;
+    }
+
+    .control-panel {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      background-color: rgba(26, 30, 36, 0.85);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px 24px;
+      min-width: 340px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      z-index: 10;
+    }
+
+    .control-panel h3 {
+      font-size: 13px;
+      font-weight: 500;
+      opacity: 0.7;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .time-display {
+      font-size: 32px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 8px;
+      margin-bottom: 12px;
+    }
+
+    .time-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(to right, #1A5276 0%, #E67E22 100%);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .time-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #E67E22;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .time-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(230, 126, 34, 0.4);
+    }
+
+    .time-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #E67E22;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .time-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      opacity: 0.5;
+      margin-top: 4px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    .color-red { background-color: #FF4343; }
+    .color-yellow { background-color: #FFC857; }
+    .color-green { background-color: #4ECDC4; }
+
+    @media (max-width: 768px) {
+      .info-panel {
+        top: 12px;
+        left: 12px;
+        padding: 12px 14px;
+        min-width: 140px;
+      }
+
+      .info-panel h3 {
+        font-size: 11px;
+        margin-bottom: 8px;
+      }
+
+      .info-item {
+        font-size: 12px;
+        padding: 4px 0;
+      }
+
+      .info-item .value {
+        font-size: 13px;
+      }
+
+      .control-panel {
+        bottom: 12px;
+        left: 12px;
+        right: 12px;
+        min-width: auto;
+        padding: 14px 16px;
+      }
+
+      .control-panel h3 {
+        font-size: 11px;
+        margin-bottom: 10px;
+      }
+
+      .time-display {
+        font-size: 24px;
+        margin-bottom: 10px;
+      }
+
+      .legend {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 10px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div class="info-panel">
+      <h3>交通数据</h3>
+      <div class="info-item">
+        <span class="label">模拟时间</span>
+        <span class="value" id="sim-time">--:--</span>
+      </div>
+      <div class="info-item">
+        <span class="label">总车辆数</span>
+        <span class="value" id="vehicle-count">0</span>
+      </div>
+      <div class="info-item">
+        <span class="label">平均车速</span>
+        <span class="value" id="avg-speed">0 km/h</span>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <h3>时间控制</h3>
+      <div class="time-display" id="time-display">08:00</div>
+      <div class="slider-container">
+        <input type="range" class="time-slider" id="time-slider" min="360" max="1440" step="15" value="480" />
+      </div>
+      <div class="time-labels">
+        <span>06:00</span>
+        <span>12:00</span>
+        <span>18:00</span>
+        <span>24:00</span>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color color-red"></div>
+          <span>低速 (&lt;20km/h)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-yellow"></div>
+          <span>中速 (20-40km/h)</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color color-green"></div>
+          <span>高速 (&gt;40km/h)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
