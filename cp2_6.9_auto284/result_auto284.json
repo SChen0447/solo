@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T06:34:15.483Z",
+  "task_name": "auto284",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一个社区植物爱好者小组希望创建一个平台，让成员可以上传自家植物的照片，并让其他人通过模拟“浇水”和“施肥”来“养护”它，当累积养护次数达到阈值时植物会“开花”并展示新品种，形成一种社交种植游戏。\n\n构建一个名为“云植乐园”的全栈Web应用，让用户上传植物、养护他人植物、见证开花过程，并查看植物成长排行榜。使用TypeScript、React前端和Express后端实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、uuid、dayjs，后端启动脚本：node server/index.js，前端启动脚本：npm run dev）\n - server/index.js（Express后端，提供REST API，数据临时存储在内存中，接口包括：/api/plants（GET/POST）、/api/plants/:id/care（POST，参数type为water或fertilize）、/api/plants/:id/bloom（GET），数据流向：前端调用API→处理后端响应→更新视图）\n - vite.config.js（构建配置，设置代理将/api请求转发到后端端口3001）\n - tsconfig.json（严格模式，esnext模块，dom类型包含，jsx: react-jsx）\n - index.html（入口页面，包含根挂载点#root，并引入字体和基础样式）\n - src/App.tsx（主组件，使用useState管理植物列表和当前选中植物状态，useEffect在挂载时获取所有植物，渲染植物卡片网格、养护按钮和开花动画）\n - src/components/PlantCard.tsx（单个植物卡片组件，显示植物图片、名称、养护次数和进度条，接收careCount、imageUrl等props，点击触发养护弹窗）\n - src/components/CareModal.tsx（养护弹窗组件，显示植物特写和“浇水”/“施肥”按钮，调用API后关闭弹窗并触发父组件刷新）\n\n功能需求：\n1) 植物上传：用户输入植物名称（最多10字）并上传一张图片（支持jpg/png，大小不超过2MB），上传后在首页以卡片形式展示，每张卡片背景为浅米色（#FFF8E7），圆角12px，阴影0_2px_8px_rgba(0,0,0,0.1)。\n2) 养护机制：每张卡片下方显示当前养护次数和一条渐变进度条（底色#E0E0E0，填充色从#76B852到#8DC26F），点击卡片弹出养护弹窗，弹窗内有两个按钮——“浇水”（蓝色#4FC3F7，hover变#29B6F6）和“施肥”（橙色#FFB74D，hover变#FFA726），点击任一按钮调用后端API将养护次数+1，弹窗关闭并更新进度条。\n3) 开花事件：当某棵植物的养护次数达到10的倍数时（如10、20、30...），触发开花动画——卡片上出现一朵随机样式的花朵（旋转缩放0.3s、透明度从0到1，使用CSS关键帧），并且植物名称旁出现一个新的品种标签（如“光芒菊”、“星云兰”等，从预设列表中随机选取）。\n4) 成长排行榜：页面右上角有一个排行榜入口（图标为奖杯，金色#FFD700），点击后以侧边栏形式滑出（动画0.3s ease-out），按养护次数从高到低列出前10名植物，每项显示植物名、次数和排名徽章（1-3名为金/银/铜色圆角方形，其余为灰色圆形）。\n5) 响应式适配：布局在移动设备（<768px）下调整为单列网格，卡片宽度100%，弹窗全屏显示；桌面端（>=768px）网格3列，卡片固定宽280px，弹窗居中且宽度400px。\n\n界面要求：整体采用暖色自然风格，主色调为橄榄绿（#556B2F）和米色（#F5F5DC），字体用系统无衬线体。首页标题“云植乐园”使用手写风格字体（Dancing_Script）居中，字号36px，颜色#3E4A2F。植物卡片网格间距24px，卡片进入视口时有从下方淡入动画（0.5s ease-out），悬停时卡片上浮4px并加深阴影（0_6px_20px_rgba(0,0,0,0.2)）。养护弹窗关闭时触发缩小淡出动画（0.3s ease-in）。动画帧率需保持60fps。\n\n性能约束：所有动画使用CSS transform和opacity，避免触发重排（reflow）；前端列表渲染使用React key优化，单次渲染不超过100个卡片；后端API响应时间小于200ms（本地环境）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:a85e54b12c0af2f0a32395c6ea9efeb4_6a27b350a74688f9f078e10c.6a27b3d8a74688f9f078e18d.6a27b3d7c3b20d881b923fc7:Trae CN.T(2026/6/9 14:34:00)",
+    "user_id": "3986207660317399",
+    "trace_id": "a85e54b12c0af2f0a32395c6ea9efeb4",
+    "session_id": "6a27b350a74688f9f078e10c",
+    "task_id": "6a27b3d8a74688f9f078e18d",
+    "message_id": "6a27b3d7c3b20d881b923fc7",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 14:34:00",
+    "format": "full"
+  },
+  "trace": "null"
+}

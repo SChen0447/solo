@@ -1,0 +1,205 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes modalClose {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  position: relative;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.app-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: 36px;
+  color: #3E4A2F;
+  margin-bottom: 16px;
+}
+
+.upload-section {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.name-input {
+  padding: 10px 16px;
+  border: 2px solid #556B2F;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  color: #3E4A2F;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.2s;
+}
+
+.name-input:focus {
+  border-color: #76B852;
+}
+
+.file-input-wrapper {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.file-input {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #556B2F;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.file-label:hover {
+  background: #6B8E3A;
+}
+
+.upload-btn {
+  padding: 10px 24px;
+  background: #76B852;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover {
+  background: #8DC26F;
+}
+
+.upload-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.rank-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 28px;
+  color: #FFD700;
+  transition: transform 0.2s;
+  padding: 8px;
+}
+
+.rank-btn:hover {
+  transform: scale(1.1);
+}
+
+.plants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 280px);
+  gap: 24px;
+  justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #888;
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .plants-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-container {
+    padding: 16px;
+  }
+
+  .upload-section {
+    flex-direction: column;
+  }
+
+  .name-input {
+    width: 100%;
+  }
+
+  .rank-btn {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
