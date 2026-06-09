@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音乐可视化壁画</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0B0F19;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .canvas-container {
+      width: 85vw;
+      height: 85vh;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #visualizer {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 12px;
+      box-shadow: 0 0 60px rgba(108, 99, 255, 0.15);
+    }
+
+    .control-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 0 32px;
+      z-index: 100;
+      transition: background 0.3s ease;
+    }
+
+    .control-bar:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      user-select: none;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .btn-file {
+      background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+    }
+
+    .btn-play {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: 50%;
+      font-size: 18px;
+    }
+
+    .btn-play.playing {
+      background: linear-gradient(135deg, #00E5FF 0%, #6C63FF 100%);
+    }
+
+    .effect-select {
+      padding: 10px 16px;
+      border-radius: 8px;
+      background: rgba(11, 15, 25, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .effect-select:hover {
+      border-color: rgba(108, 99, 255, 0.5);
+      transform: scale(1.05);
+    }
+
+    .effect-select option {
+      background: #0B0F19;
+      color: #fff;
+    }
+
+    .volume-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 44px;
+    }
+
+    .volume-icon {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .volume-slider:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+    }
+
+    .volume-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(108, 99, 255, 0.5);
+    }
+
+    .volume-tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(11, 15, 25, 0.95);
+      border: 1px solid rgba(108, 99, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      margin-bottom: 8px;
+      white-space: nowrap;
+    }
+
+    .volume-container:hover .volume-tooltip {
+      opacity: 1;
+    }
+
+    .file-name {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6C63FF 0%, #9B59B6 100%);
+      border: none;
+      cursor: pointer;
+      z-index: 101;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(108, 99, 255, 0.4);
+    }
+
+    .menu-toggle:hover {
+      transform: scale(1.05);
+    }
+
+    .menu-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .menu-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle.open span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    .menu-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .menu-toggle.open span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      bottom: 140px;
+      right: 20px;
+      background: rgba(11, 15, 25, 0.95);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 101;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 220px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .mobile-menu.open {
+      display: flex;
+    }
+
+    .mobile-menu .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .mobile-menu .effect-select {
+      width: 100%;
+    }
+
+    .mobile-menu .volume-container {
+      justify-content: center;
+    }
+
+    .mobile-menu .volume-slider {
+      width: 100%;
+    }
+
+    .mobile-menu .file-name {
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .blur-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      pointer-events: none;
+      z-index: 50;
+      transition: backdrop-filter 0.5s ease, -webkit-backdrop-filter 0.5s ease;
+    }
+
+    .blur-overlay.active {
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .control-bar {
+        display: none;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      .canvas-container {
+        width: 95vw;
+        height: 80vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="canvas-container">
+      <canvas id="visualizer"></canvas>
+    </div>
+
+    <div class="blur-overlay" id="blurOverlay"></div>
+
+    <div class="control-bar" id="controlBar">
+      <div class="control-group">
+        <button class="btn btn-file" id="fileBtn">
+          <span>🎵</span>
+          <span>选择音频</span>
+        </button>
+        <input type="file" class="file-input" id="fileInput" accept="audio/mp3,audio/wav,audio/*" />
+        <span class="file-name" id="fileName"></span>
+      </div>
+
+      <div class="control-group">
+        <button class="btn btn-play" id="playBtn" disabled>
+          <span id="playIcon">▶</span>
+        </button>
+      </div>
+
+      <div class="control-group">
+        <select class="effect-select" id="effectSelect">
+          <option value="bars">波形柱</option>
+          <option value="halo">光环粒子</option>
+          <option value="nebula">星云螺旋</option>
+          <option value="mixed">混合模式</option>
+        </select>
+      </div>
+
+      <div class="control-group volume-container">
+        <span class="volume-icon">🔊</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="75" />
+        <span class="volume-tooltip" id="volumeTooltip">75%</span>
+      </div>
+    </div>
+
+    <button class="menu-toggle" id="menuToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div class="mobile-menu" id="mobileMenu">
+      <button class="btn btn-file" id="mobileFileBtn">
+        <span>🎵</span>
+        <span>选择音频</span>
+      </button>
+      <span class="file-name" id="mobileFileName"></span>
+      <button class="btn btn-play" id="mobilePlayBtn" disabled>
+        <span id="mobilePlayIcon">▶</span>
+      </button>
+      <select class="effect-select" id="mobileEffectSelect">
+        <option value="bars">波形柱</option>
+        <option value="halo">光环粒子</option>
+        <option value="nebula">星云螺旋</option>
+        <option value="mixed">混合模式</option>
+      </select>
+      <div class="volume-container">
+        <span class="volume-icon">🔊</span>
+        <input type="range" class="volume-slider" id="mobileVolumeSlider" min="0" max="100" value="75" />
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
