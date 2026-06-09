@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D星座神话星图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'sans-serif';
+      color: #ffffff;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 30% 40%, rgba(10, 10, 46, 0.6) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 60%, rgba(26, 10, 46, 0.6) 0%, transparent 50%),
+        #000000;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      background: rgba(26, 26, 46, 0.85);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 180px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #control-panel .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    #reset-btn {
+      background: rgba(74, 144, 217, 0.2);
+      border: 1px solid rgba(74, 144, 217, 0.4);
+      color: #ffffff;
+      padding: 8px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: 'sans-serif';
+      transition: all 0.25s ease-in-out;
+    }
+
+    #reset-btn:hover {
+      background: rgba(74, 144, 217, 0.35);
+      border-color: rgba(74, 144, 217, 0.6);
+      transform: translateY(-1px);
+    }
+
+    #reset-btn:active {
+      transform: translateY(0);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.3s ease-in-out;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch.active {
+      background: rgba(74, 144, 217, 0.6);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      background: #ffffff;
+      border-radius: 50%;
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(18px);
+    }
+
+    #story-card {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      z-index: 10;
+      width: 320px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transform: translateY(calc(100% + 40px));
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                  opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #story-card.visible {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    #story-card canvas {
+      width: 100%;
+      height: 120px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    #story-card .constellation-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    #story-card .myth-description {
+      font-size: 14px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="control-panel">
+    <div class="panel-title">控制面板</div>
+    <button id="reset-btn">重置视角</button>
+    <div class="toggle-row">
+      <span class="toggle-label">自动漫游</span>
+      <div class="toggle-switch" id="auto-roam-toggle"></div>
+    </div>
+  </div>
+
+  <div id="story-card">
+    <canvas id="story-canvas" width="288" height="120"></canvas>
+    <div class="constellation-name" id="story-name"></div>
+    <div class="myth-description" id="story-myth"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
