@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>电路迷宫解谜</title>
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg-primary: #0D1117;
+      --bg-secondary: #1A1A2E;
+      --bg-panel: rgba(31, 41, 55, 0.75);
+      --grid-line: #1F2937;
+      --accent-yellow: #FFD700;
+      --accent-cyan: #00E5FF;
+      --accent-red-start: #E53E3E;
+      --accent-red-end: #C53030;
+      --text-primary: #FFFFFF;
+      --text-secondary: #9CA3AF;
+      --bulb-off: #555555;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+        'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      color: var(--text-primary);
+      background: radial-gradient(ellipse at center, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      background-repeat: repeat;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #app {
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    #status-panel {
+      width: 220px;
+      min-width: 220px;
+      padding: 20px 16px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .status-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .status-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent-yellow);
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.3s ease;
+    }
+
+    .status-value.bump {
+      transform: scale(1.3);
+    }
+
+    .status-icon {
+      font-size: 22px;
+      display: inline-block;
+      transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    }
+
+    .status-icon.bump {
+      transform: scale(1.4);
+    }
+
+    .status-icon.success {
+      color: #10B981;
+    }
+
+    .status-icon.error {
+      color: #EF4444;
+    }
+
+    #reset-btn {
+      margin-top: auto;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(180deg, var(--accent-red-start) 0%, var(--accent-red-end) 100%);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      box-shadow:
+        0 4px 0 #9B2C2C,
+        0 6px 12px rgba(229, 62, 62, 0.3);
+      transition: all 0.1s ease;
+      letter-spacing: 0.5px;
+    }
+
+    #reset-btn:hover {
+      filter: brightness(1.08);
+      box-shadow:
+        0 4px 0 #9B2C2C,
+        0 8px 16px rgba(229, 62, 62, 0.4);
+    }
+
+    #reset-btn:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 1px 0 #9B2C2C,
+        0 2px 6px rgba(229, 62, 62, 0.3);
+    }
+
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #game-canvas {
+      display: block;
+      border-radius: 4px;
+      cursor: default;
+    }
+
+    #component-panel {
+      width: 140px;
+      min-width: 140px;
+      padding: 20px 12px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      border-left: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .component-item {
+      width: 100%;
+      aspect-ratio: 1;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .component-item:hover {
+      background: rgba(0, 229, 255, 0.08);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 229, 255, 0.15);
+    }
+
+    .component-item:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    .component-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .component-name {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    #dragging-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.85;
+      transform: translate(-50%, -50%);
+    }
+
+    #hint {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 20px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    @media (max-width: 800px) {
+      #app {
+        flex-direction: column;
+      }
+
+      #status-panel {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        padding: 12px 16px;
+        flex-direction: row;
+        gap: 16px;
+        align-items: center;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .status-row {
+        flex: 1;
+        padding: 8px 12px;
+      }
+
+      .panel-title {
+        display: none;
+      }
+
+      #reset-btn {
+        margin-top: 0;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      #canvas-container {
+        flex: 1;
+      }
+
+      #component-panel {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        padding: 12px;
+        flex-direction: row;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
+      }
+
+      .component-item {
+        width: 72px;
+        min-width: 72px;
+        aspect-ratio: 1;
+        transform: scale(0.8);
+        transform-origin: center;
+      }
+
+      .component-item:hover {
+        transform: scale(0.8) translateY(-2px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside id="status-panel">
+      <div>
+        <div class="panel-title">解谜进度</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div class="status-row">
+            <span class="status-label">已连接元件</span>
+            <span class="status-value" id="component-count">0</span>
+          </div>
+          <div class="status-row">
+            <span class="status-label">电流环路</span>
+            <span class="status-icon error" id="loop-status">✗</span>
+          </div>
+        </div>
+      </div>
+      <button id="reset-btn">重 置 迷 宫</button>
+    </aside>
+
+    <main id="canvas-container">
+      <canvas id="game-canvas"></canvas>
+      <div id="hint">拖拽右侧元件到画布 · 右键旋转 · 连接 +5V → 电阻 → 开关 → 灯泡</div>
+    </main>
+
+    <aside id="component-panel">
+      <div class="component-item" draggable="true" data-type="wire">
+        <div class="component-icon" id="icon-wire"></div>
+        <div class="component-name">导线</div>
+      </div>
+      <div class="component-item" draggable="true" data-type="resistor">
+        <div class="component-icon" id="icon-resistor"></div>
+        <div class="component-name">电阻</div>
+      </div>
+      <div class="component-item" draggable="true" data-type="capacitor">
+        <div class="component-icon" id="icon-capacitor"></div>
+        <div class="component-name">电容</div>
+      </div>
+      <div class="component-item" draggable="true" data-type="switch">
+        <div class="component-icon" id="icon-switch"></div>
+        <div class="component-name">开关</div>
+      </div>
+      <div class="component-item" draggable="true" data-type="led">
+        <div class="component-icon" id="icon-led"></div>
+        <div class="component-name">LED灯</div>
+      </div>
+    </aside>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
