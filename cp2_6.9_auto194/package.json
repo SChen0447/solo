@@ -1,0 +1,15 @@
+{
+  "name": "music-rhythm-generator",
+  "version": "1.0.0",
+  "description": "基于浏览器的可视化音乐节奏生成器",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
