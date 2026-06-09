@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素魔法符文 - Pixel Magic Runes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #2B2B2B;
+      color: #E0E0E0;
+      font-family: 'Courier New', monospace;
+      image-rendering: pixelated;
+      -webkit-font-smoothing: none;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      width: 100vw;
+      height: 100vh;
+      background: #2B2B2B;
+    }
+
+    #top-bar {
+      height: 50px;
+      background: #1a1a1a;
+      border-bottom: 2px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      font-size: 14px;
+      letter-spacing: 1px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    #top-bar .stats {
+      display: flex;
+      gap: 24px;
+    }
+
+    #top-bar .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #top-bar .label {
+      color: #888;
+    }
+
+    #top-bar .value {
+      color: #E0E0E0;
+      font-weight: bold;
+    }
+
+    #wins-display {
+      color: #FFD700;
+    }
+
+    #main-container {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+    }
+
+    #canvas-panel {
+      width: 60%;
+      min-width: 640px;
+      display: flex;
+      flex-direction: column;
+      background: #2B2B2B;
+      border-right: 2px solid #444;
+    }
+
+    #canvas-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #game-canvas {
+      background: #1f1f1f;
+      border: 2px solid #555;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    #bottom-buttons {
+      height: 70px;
+      background: #1a1a1a;
+      border-top: 2px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 0 20px;
+    }
+
+    .pixel-btn {
+      position: relative;
+      padding: 12px 28px;
+      border: 3px solid #000;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+      transition: transform 0.1s ease, filter 0.1s ease;
+      background-image:
+        linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.05) 75%),
+        linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%, transparent 75%, rgba(255,255,255,0.05) 75%);
+      background-size: 8px 8px;
+      background-position: 0 0, 4px 4px;
+    }
+
+    .pixel-btn:hover {
+      transform: scale(1.2);
+      filter: brightness(1.15);
+    }
+
+    .pixel-btn:active {
+      transform: scale(1.1);
+    }
+
+    .btn-clear {
+      background-color: #FF6B6B;
+      color: #fff;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2);
+    }
+
+    .btn-cast {
+      background-color: #2ECC71;
+      color: #fff;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2);
+    }
+
+    .btn-help {
+      background-color: #95A5A6;
+      color: #fff;
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2);
+    }
+
+    #three-panel {
+      width: 40%;
+      min-width: 480px;
+      position: relative;
+      background: linear-gradient(180deg, #0B0C10 0%, #1A1A2E 100%);
+    }
+
+    #three-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 100;
+    }
+
+    #overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .overlay-content {
+      text-align: center;
+      padding: 40px 60px;
+    }
+
+    .overlay-title {
+      font-size: 44px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-shadow: 4px 4px 0 #000, 0 0 20px currentColor;
+      margin-bottom: 30px;
+      animation: titlePulse 1s ease infinite alternate;
+    }
+
+    @keyframes titlePulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.05); }
+    }
+
+    .overlay-title.win {
+      color: #FFD700;
+    }
+
+    .overlay-title.lose {
+      color: #FF6B6B;
+    }
+
+    .overlay-btn {
+      padding: 16px 40px;
+      background: #4A90D9;
+      color: #fff;
+      border: 3px solid #000;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+      box-shadow: inset -3px -3px 0 rgba(0,0,0,0.3), inset 3px 3px 0 rgba(255,255,255,0.2);
+      transition: transform 0.1s ease, filter 0.1s ease;
+    }
+
+    .overlay-btn:hover {
+      filter: brightness(1.3);
+      transform: scale(1.1);
+    }
+
+    .toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(255, 0, 0, 0.9);
+      color: #fff;
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 0 #000;
+      pointer-events: none;
+      z-index: 50;
+      animation: toastAnim 1.5s ease forwards;
+    }
+
+    @keyframes toastAnim {
+      0% { opacity: 0; transform: translate(-50%, -30%); }
+      20% { opacity: 1; transform: translate(-50%, -50%); }
+      80% { opacity: 1; transform: translate(-50%, -50%); }
+      100% { opacity: 0; transform: translate(-50%, -70%); }
+    }
+
+    #help-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      max-width: 500px;
+      background: #1a1a1a;
+      border: 3px solid #444;
+      padding: 24px;
+      display: none;
+      z-index: 80;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+    }
+
+    #help-modal.show {
+      display: block;
+      animation: fadeIn 0.2s ease;
+    }
+
+    #help-modal h3 {
+      color: #FFD700;
+      margin-bottom: 16px;
+      font-size: 18px;
+      text-shadow: 2px 2px 0 #000;
+    }
+
+    #help-modal p {
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #ccc;
+    }
+
+    #help-modal .rune-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    #help-modal .rune-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    #help-modal .rune-color {
+      width: 16px;
+      height: 16px;
+      border: 1px solid #000;
+      image-rendering: pixelated;
+    }
+
+    #help-close {
+      margin-top: 16px;
+      padding: 8px 24px;
+      background: #95A5A6;
+      color: #fff;
+      border: 2px solid #000;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+
+    #help-close:hover {
+      filter: brightness(1.2);
+    }
+
+    @media (max-width: 1024px) {
+      #main-container {
+        flex-direction: column;
+      }
+      #canvas-panel {
+        width: 100%;
+        min-width: 0;
+        height: 50%;
+        border-right: none;
+        border-bottom: 2px solid #444;
+      }
+      #three-panel {
+        width: 100%;
+        min-width: 0;
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="top-bar">
+      <div class="stats">
+        <div class="stat">
+          <span class="label">回合</span>
+          <span class="value" id="round-num">1</span>
+        </div>
+        <div class="stat">
+          <span class="label">玩家HP</span>
+          <span class="value" id="player-hp">10</span>
+        </div>
+        <div class="stat">
+          <span class="label">AI HP</span>
+          <span class="value" id="ai-hp">10</span>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span id="wins-display">胜利：0场</span>
+        </div>
+        <div class="stat">
+          <span class="label">最高连胜</span>
+          <span class="value" id="win-streak">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="main-container">
+      <div id="canvas-panel">
+        <div id="canvas-wrapper">
+          <canvas id="game-canvas" width="640" height="560"></canvas>
+          <div id="help-modal">
+            <h3>游戏帮助</h3>
+            <p>拖拽符文石到中央施法阵眼，最多放置3个符文组合法术。</p>
+            <div class="rune-list">
+              <div class="rune-item"><div class="rune-color" style="background:#FF4500"></div>火 - 攻击</div>
+              <div class="rune-item"><div class="rune-color" style="background:#FFD700"></div>雷 - 攻击</div>
+              <div class="rune-item"><div class="rune-color" style="background:#00BFFF"></div>冰 - 攻击</div>
+              <div class="rune-item"><div class="rune-color" style="background:#888888"></div>盾 - 防御</div>
+              <div class="rune-item"><div class="rune-color" style="background:#FFFFFF"></div>光 - 防御</div>
+              <div class="rune-item"><div class="rune-color" style="background:#2ECC71"></div>风 - 治疗</div>
+              <div class="rune-item"><div class="rune-color" style="background:#9B59B6"></div>水 - 治疗</div>
+            </div>
+            <p>同属性组合增强效果，不同属性组合产生复合法术。</p>
+            <button id="help-close">关闭</button>
+          </div>
+        </div>
+        <div id="bottom-buttons">
+          <button class="pixel-btn btn-clear" id="btn-clear">清空阵眼</button>
+          <button class="pixel-btn btn-cast" id="btn-cast">施法</button>
+          <button class="pixel-btn btn-help" id="btn-help">帮助</button>
+        </div>
+      </div>
+
+      <div id="three-panel">
+        <div id="three-container"></div>
+        <div id="overlay">
+          <div class="overlay-content">
+            <div class="overlay-title" id="overlay-title">胜利！</div>
+            <button class="overlay-btn" id="overlay-btn">再来一局</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
