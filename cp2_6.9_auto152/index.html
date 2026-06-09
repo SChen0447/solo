@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素画板 & 动画生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1A1A2E 0%, #16213E 100%);
+      min-height: 100vh;
+      color: #E0E0E0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app-header {
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .app-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .export-btn {
+      background: #2EA043;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .export-btn:hover {
+      background: #3FB950;
+      transform: scale(1.05);
+    }
+
+    .export-btn:active {
+      transform: scale(0.95);
+    }
+
+    .app-main {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    .canvas-wrapper {
+      flex-shrink: 0;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.05);
+      position: relative;
+    }
+
+    #pixelCanvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      cursor: crosshair;
+    }
+
+    .canvas-overlay {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      pointer-events: none;
+      image-rendering: pixelated;
+    }
+
+    .tools-panel {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 16px;
+      min-width: 180px;
+    }
+
+    .panel-section {
+      margin-bottom: 24px;
+    }
+
+    .panel-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #B0B0B0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .color-palette {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .color-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.15);
+    }
+
+    .color-swatch.selected {
+      border-color: white;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+    }
+
+    .current-color {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tool-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tool-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #E0E0E0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    .tool-btn:active {
+      transform: scale(0.95);
+    }
+
+    .tool-btn.active {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-color: transparent;
+    }
+
+    .animation-controls {
+      width: 100%;
+      max-width: 900px;
+      margin-top: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 16px 24px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .frame-nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #E0E0E0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    .nav-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .frame-indicator {
+      font-size: 16px;
+      font-weight: 600;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .play-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .play-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 10px 28px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+
+    .frame-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .frame-btn {
+      background: rgba(255, 255, 255, 0.08);
+      color: #E0E0E0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .frame-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    .frame-btn:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .frame-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .frame-btn.add {
+      background: rgba(46, 160, 67, 0.3);
+      border-color: rgba(46, 160, 67, 0.5);
+    }
+
+    .frame-btn.add:hover:not(:disabled) {
+      background: rgba(46, 160, 67, 0.5);
+    }
+
+    .frame-btn.delete {
+      background: rgba(248, 81, 73, 0.3);
+      border-color: rgba(248, 81, 73, 0.5);
+    }
+
+    .frame-btn.delete:hover:not(:disabled) {
+      background: rgba(248, 81, 73, 0.5);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #B0B0B0;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 4px;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #E0E0E0;
+      transform: scale(1.1);
+    }
+
+    .gif-preview {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 16px;
+      min-height: 200px;
+    }
+
+    .gif-preview img {
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      max-width: 100%;
+      max-height: 300px;
+    }
+
+    .gif-loading {
+      color: #B0B0B0;
+      font-size: 14px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .download-btn {
+      background: #2EA043;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .download-btn:hover {
+      background: #3FB950;
+      transform: scale(1.05);
+    }
+
+    .download-btn:active {
+      transform: scale(0.95);
+    }
+
+    .download-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 12px;
+      }
+
+      .app-header {
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .app-main {
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .tools-panel {
+        order: -1;
+        width: 100%;
+        min-width: unset;
+      }
+
+      .panel-section {
+        margin-bottom: 16px;
+      }
+
+      .color-palette {
+        grid-template-columns: repeat(8, 1fr);
+      }
+
+      .tool-buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+
+      .tool-btn {
+        flex: 1;
+        justify-content: center;
+        min-width: 100px;
+      }
+
+      .animation-controls {
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+      }
+
+      .frame-nav,
+      .play-controls,
+      .frame-actions {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-header">
+    <h1 class="app-title">🎨 像素画板 & 动画生成器</h1>
+    <button class="export-btn" id="exportBtn">导出 GIF</button>
+  </div>
+
+  <div class="app-main">
+    <div class="canvas-wrapper">
+      <canvas id="pixelCanvas" width="640" height="640"></canvas>
+      <canvas id="overlayCanvas" class="canvas-overlay" width="640" height="640"></canvas>
+    </div>
+
+    <aside class="tools-panel">
+      <div class="panel-section">
+        <div class="panel-title">当前颜色</div>
+        <div class="current-color" id="currentColor"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">调色板</div>
+        <div class="color-palette" id="colorPalette"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">工具</div>
+        <div class="tool-buttons">
+          <button class="tool-btn active" data-tool="brush">🖌️ 画笔</button>
+          <button class="tool-btn" data-tool="eraser">🧹 橡皮擦</button>
+          <button class="tool-btn" data-tool="picker">💉 取色器</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="animation-controls">
+    <div class="frame-nav">
+      <button class="nav-btn" id="prevFrame">◀ 上一帧</button>
+      <span class="frame-indicator" id="frameIndicator">1/1</span>
+      <button class="nav-btn" id="nextFrame">下一帧 ▶</button>
+    </div>
+
+    <div class="play-controls">
+      <button class="play-btn" id="playBtn">▶ 播放</button>
+    </div>
+
+    <div class="frame-actions">
+      <button class="frame-btn add" id="addFrame">+ 添加帧</button>
+      <button class="frame-btn delete" id="deleteFrame">🗑 删除帧</button>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">GIF 预览</span>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="gif-preview" id="gifPreview">
+        <span class="gif-loading">正在生成 GIF...</span>
+      </div>
+      <div class="modal-actions">
+        <button class="download-btn" id="downloadBtn" disabled>⬇ 下载 animation.gif</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
