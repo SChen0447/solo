@@ -1,0 +1,19 @@
+{
+  "name": "rune-potion-game",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/p5": "^1.7.7",
+    "typescript": "5.6.3",
+    "vite": "5.4.0"
+  },
+  "dependencies": {
+    "p5": "1.9.0"
+  }
+}
