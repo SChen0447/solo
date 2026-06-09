@@ -1,11 +1,13 @@
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vite';
 
 export default defineConfig({
+  root: '.',
   server: {
-    host: true,
     port: 5173,
+    open: false
   },
   build: {
-    target: 'es2020',
-  },
-})
+    target: 'es2022',
+    outDir: 'dist'
+  }
+});
