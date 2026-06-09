@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T05:43:43.452Z",
+  "task_name": "auto257",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为“气味地图”的全栈Web应用，让用户在地图上标记位置并记录该地点的气味记忆（如雨后泥土、烤面包香），其他用户可以浏览、点赞和评论，形成一张独特的城市嗅觉记忆图谱。使用TypeScript、React前端和Express后端实现。文件结构如下：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、uuid、leaflet、@types/leaflet，启动脚本：npm run dev）\n - vite.config.ts（前端构建配置，入口index.html，代理/api到Express后端）\n - tsconfig.json（严格模式，baseUrl设为src）\n - index.html（入口页面，包含地图容器）\n - src/App.tsx（根组件，管理路由和全局状态）\n - src/MapView.tsx（使用Leaflet渲染地图，处理点击标记和popup显示，从MarkerService获取数据）\n - src/MarkerService.ts（封装API调用：获取标记列表、创建标记、点赞、添加评论，返回Promise类型）\n - server/index.ts（Express应用：提供RESTful API，包括GET /api/markers、POST /api/markers、POST /api/markers/:id/like、POST /api/markers/:id/comment，使用内存存储）\n\n具体需求：\n1. 地图主页面：打开应用后，默认以用户当前位置为中心（或纽约曼哈顿），显示一个全屏缩放交互地图（使用Leaflet，瓦片源为OpenStreetMap），地图上已有的气味标记以彩色气泡图标展示，点击气泡弹出信息卡（含气味名称、描述、用户名、日期、点赞数和评论数，以及详细描述按钮）。\n2. 创建标记：用户在地图上长按（或右键点击）弹出创建表单弹窗，包含气味名称（最多20字，必填）、气味描述（最多100字，可选）、用户名（随机生成或自定义，最多15字，必填）和气味类别（选择：花香、食物、自然、城市、其他），点击提交后新标记以动画（气泡从无到有弹出0.3秒）添加到地图。\n3. 详情弹窗：点击气泡弹出详情弹窗（半透明遮罩背景#00000070），左侧显示完整信息（名称字体24px加粗#FFD700，描述字体16px#DDD，类别徽章，用户名，创建日期），右侧显示评论列表（按时间倒序，每条评论显示用户头像首字母+用户名+内容，带淡入动画0.2s），底部有评论输入框和点赞按钮（点赞后数字+1，按钮颜色从#666变为#FF6B6B）。\n4. 实时交互反馈：页面加载时地图和标记从无到有淡入（1秒），点击气泡时弹窗从底部滑入（0.3秒 ease-out），关闭弹窗时滑出（0.2秒 ease-in），创建标记成功后短暂显示绿色成功提示（2秒后消失），点赞和评论后立即更新计数无刷新。\n\n界面方面：整体采用深色主题（背景#0F1923），地图控件（缩放按钮、图层切换）保持默认浅色但增加半透明背景（#FFFFFF15），弹窗和表单使用圆角卡片设计（底色#1A2332，圆角12px，边框1px #FFFFFF15），所有交互元素（按钮、输入框）在hover时有亮度微升（0.2秒过渡）和轻微上浮（translateY(-2px)），字体使用系统无衬线字体（Segoe UI、Roboto），标题深金色（#FFD700），正文浅灰色（#CCC），辅助文字更浅（#666）。\n\n性能要求：页面首屏加载控制在2秒内（通过代码拆分和懒加载Leaflet），地图气泡超过200个时利用聚类（MarkerCluster）减少渲染开销，所有API响应时间不超过500ms。",
+  "session_id": null,
+  "trace": "null"
+}
