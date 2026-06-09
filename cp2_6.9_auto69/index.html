@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光学透镜折射模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D0D1A;
+      font-family: 'Courier New', monospace;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+    }
+
+    #scene-container {
+      width: 70%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #title-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 12px 20px;
+      background: rgba(26, 26, 46, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(108, 99, 255, 0.4);
+      color: #E0E0E0;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      line-height: 1.6;
+      z-index: 10;
+    }
+
+    #title-bar .lens-type {
+      color: #6C63FF;
+    }
+
+    #title-bar .flux-value {
+      color: #00FFAA;
+    }
+
+    #control-panel {
+      width: 30%;
+      height: 100%;
+      padding: 30px 25px;
+      background: rgba(26, 26, 46, 0.85);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-left: 1px solid rgba(108, 99, 255, 0.3);
+      overflow-y: auto;
+    }
+
+    .panel-title {
+      color: #E0E0E0;
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(108, 99, 255, 0.3);
+      letter-spacing: 1px;
+    }
+
+    .control-group {
+      margin-bottom: 28px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #B0B0C0;
+      font-size: 14px;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .control-value {
+      color: #6C63FF;
+      font-weight: bold;
+      font-size: 15px;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, #6C63FF, #6C63FF) no-repeat, #333344;
+      background-size: 50% 100%;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #6C63FF;
+      border: 2px solid #8B82FF;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 0 rgba(108, 99, 255, 0);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 6px #6C63FF;
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #6C63FF;
+      border: 2px solid #8B82FF;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      box-shadow: 0 0 6px #6C63FF;
+      transform: scale(1.15);
+    }
+
+    input[type="range"]:hover {
+      box-shadow: 0 0 6px rgba(108, 99, 255, 0.5);
+    }
+
+    .lens-type-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .lens-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 8px 6px;
+      background: transparent;
+      border: 1px solid #6C63FF;
+      color: #B0B0C0;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .lens-btn:hover {
+      box-shadow: 0 0 6px #6C63FF;
+      color: #E0E0E0;
+    }
+
+    .lens-btn.active {
+      background: rgba(108, 99, 255, 0.25);
+      color: #FFFFFF;
+      box-shadow: 0 0 8px rgba(108, 99, 255, 0.6);
+    }
+
+    .info-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(108, 99, 255, 0.3);
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      color: #B0B0C0;
+      font-size: 13px;
+    }
+
+    .info-item span:last-child {
+      color: #00FFAA;
+      font-weight: bold;
+    }
+
+    .hint-text {
+      margin-top: 20px;
+      padding: 12px;
+      background: rgba(108, 99, 255, 0.1);
+      border-radius: 6px;
+      border: 1px solid rgba(108, 99, 255, 0.2);
+      color: #9090A0;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container">
+      <div id="canvas-container"></div>
+      <div id="title-bar">
+        <div>透镜类型: <span class="lens-type" id="lens-type-display">双凸透镜</span></div>
+        <div>总光通量: <span class="flux-value" id="flux-display">100.0%</span></div>
+      </div>
+    </div>
+    <div id="control-panel">
+      <div class="panel-title">⚙ 光学参数控制</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>透镜类型</span>
+        </div>
+        <div class="lens-type-selector">
+          <button class="lens-btn active" data-type="biconvex">双凸</button>
+          <button class="lens-btn" data-type="biconcave">双凹</button>
+          <button class="lens-btn" data-type="plano-convex">平凸</button>
+          <button class="lens-btn" data-type="plano-concave">平凹</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>曲率半径 (R)</span>
+          <span class="control-value" id="radius-value">1.50</span>
+        </div>
+        <div class="slider-wrapper">
+          <input type="range" id="radius-slider" min="0.5" max="3.0" step="0.1" value="1.5" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>折射率 (n)</span>
+          <span class="control-value" id="ior-value">1.50</span>
+        </div>
+        <div class="slider-wrapper">
+          <input type="range" id="ior-slider" min="1.2" max="2.0" step="0.01" value="1.5" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>透镜厚度 (d)</span>
+          <span class="control-value" id="thickness-value">0.30</span>
+        </div>
+        <div class="slider-wrapper">
+          <input type="range" id="thickness-slider" min="0.1" max="0.8" step="0.05" value="0.3" />
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-item">
+          <span>焦距 (f)</span>
+          <span id="focal-length">-</span>
+        </div>
+        <div class="info-item">
+          <span>焦点位置</span>
+          <span id="focal-position">-</span>
+        </div>
+        <div class="info-item">
+          <span>帧率 (FPS)</span>
+          <span id="fps-display">-</span>
+        </div>
+      </div>
+
+      <div class="hint-text">
+        💡 提示：鼠标拖拽旋转视角，滚轮缩放（5-20单位）。调整参数观察光线折射、焦点偏移与色散效果。
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
