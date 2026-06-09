@@ -1,0 +1,20 @@
+{
+  "name": "phototropism-simulation",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.169.0",
+    "postprocessing": "^6.39.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
