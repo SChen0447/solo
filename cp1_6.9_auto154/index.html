@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星尘瀑布 · Stardust Waterfall</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #06050f;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas {
+      display: block;
+    }
+    #aspect-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+    }
+    #ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #intensity-indicator {
+      position: absolute;
+      top: 24px;
+      left: 104px;
+      width: 80px;
+      height: 80px;
+      pointer-events: none;
+    }
+    #intensity-ring {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #intensity-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #d0e0ff;
+      font-size: 18px;
+      font-weight: 600;
+      text-shadow: 0 0 8px rgba(136, 204, 255, 0.6);
+      opacity: 0.9;
+      transition: opacity 0.3s ease;
+    }
+    #control-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 80px;
+      height: 100%;
+      background: rgba(10, 5, 21, 0.67);
+      backdrop-filter: blur(8px);
+      pointer-events: auto;
+      padding: 20px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-right: 1px solid rgba(136, 221, 255, 0.2);
+    }
+    .panel-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .panel-label {
+      color: #d0e0ff;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .panel-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, rgba(136, 204, 255, 0.2), rgba(204, 136, 255, 0.4));
+      outline: none;
+      cursor: pointer;
+    }
+    .panel-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #88ddff;
+      border: 1px solid rgba(136, 221, 255, 0.8);
+      box-shadow: 0 0 8px rgba(136, 221, 255, 0.6);
+      cursor: pointer;
+    }
+    .panel-slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #88ddff;
+      border: 1px solid rgba(136, 221, 255, 0.8);
+      box-shadow: 0 0 8px rgba(136, 221, 255, 0.6);
+      cursor: pointer;
+    }
+    .panel-button {
+      padding: 8px 6px;
+      font-size: 10px;
+      color: #d0e0ff;
+      background: rgba(136, 221, 255, 0.08);
+      border: 1px solid rgba(136, 221, 255, 0.4);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .panel-button:hover {
+      background: rgba(136, 221, 255, 0.15);
+      box-shadow: 0 0 12px rgba(136, 221, 255, 0.4);
+    }
+    @media (max-width: 768px) {
+      #control-panel {
+        display: none;
+      }
+      #intensity-indicator {
+        left: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="aspect-container"></div>
+    <div id="ui-layer">
+      <div id="intensity-indicator">
+        <svg id="intensity-ring" viewBox="0 0 80 80">
+          <circle
+            cx="40" cy="40" r="32" fill="none"
+            stroke="rgba(255,255,255,0.27)" stroke-width="8"
+            stroke-dasharray="150.8 201.1"
+            transform="rotate(-90 40 40)"
+            stroke-linecap="round"
+            id="intensity-circle"
+          />
+        </svg>
+        <div id="intensity-text">0</div>
+      </div>
+      <div id="control-panel">
+        <div class="panel-item">
+          <span class="panel-label">宽度</span>
+          <input type="range" class="panel-slider" id="slider-width" min="0.5" max="3" step="0.1" value="1.5">
+        </div>
+        <div class="panel-item">
+          <span class="panel-label">速度</span>
+          <input type="range" class="panel-slider" id="slider-speed" min="0.5" max="4" step="0.1" value="2">
+        </div>
+        <div class="panel-item">
+          <span class="panel-label">风力</span>
+          <input type="range" class="panel-slider" id="slider-wind" min="0" max="2" step="0.1" value="0.3">
+        </div>
+        <button class="panel-button" id="btn-reset">重置</button>
+        <button class="panel-button" id="btn-theme">换色</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
