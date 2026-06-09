@@ -1,0 +1,139 @@
+.feed-sidebar {
+  background: var(--beige);
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 120px);
+}
+
+.feed-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--wood-dark);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--gold);
+}
+
+.feed-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.feed-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.feed-list::-webkit-scrollbar-thumb {
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+.feed-empty {
+  color: var(--gray-dark);
+  text-align: center;
+  padding: 40px 0;
+  font-size: 14px;
+}
+
+.feed-item {
+  background: var(--white);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--gray-light);
+  transition: all 0.3s ease;
+}
+
+.feed-item:hover {
+  border-color: var(--gold);
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.2);
+}
+
+.feed-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.feed-avatar {
+  font-size: 28px;
+}
+
+.feed-user {
+  flex: 1;
+}
+
+.feed-username {
+  font-weight: 600;
+  color: var(--wood-dark);
+  font-size: 14px;
+}
+
+.feed-time {
+  font-size: 12px;
+  color: var(--gray-dark);
+}
+
+.feed-card {
+  background: var(--beige);
+  border-radius: 4px;
+  padding: 8px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.feed-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.feed-thumb-placeholder {
+  width: 100%;
+  height: 120px;
+  background: linear-gradient(135deg, var(--wood-medium), var(--wood-light));
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  margin-bottom: 6px;
+}
+
+.feed-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--wood-dark);
+}
+
+.feed-like {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--gray-dark);
+  transition: all 0.3s ease;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.feed-like:hover {
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.feed-like.liked {
+  color: #e74c3c;
+}
+
+@media (max-width: 1024px) {
+  .feed-sidebar {
+    max-height: 400px;
+  }
+}
