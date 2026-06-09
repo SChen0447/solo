@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T06:01:39.021Z",
+  "task_name": "auto266",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个叫“情绪光谱”的全栈Web项目，想法是让用户像天气播报员一样，每天用一个渐变色调记录自己的情绪状态（从愤怒红到平静蓝），同时附上一句日记和一张照片，形成一条随时间流动的彩色情绪河流，并且其他人可以点赞和留言。希望它能做到：第一，首页是一个横向滚动的长卷轴布局，默认进入当天日期位置，每条情绪记录显示为一个200x180px的卡片，卡片背景是用户设定的渐变（如从#FF6B6B到#FFD93D，代表“焦躁”），左上角有圆形缩略图（48px直径，带2px白色边框#FFFFFF，阴影#00000040），右下角显示日期和点赞数，卡片在进入视口时从透明向上滑入（动画0.4s cubic-bezier）；第二，点击卡片或右下角的“记录”按钮（圆形，直径50px，背景#6C5CE7渐变到#A29BFE，带悬浮阴影）会弹出一个半屏模态框（从左向右滑入，背景#1E1E2E，圆角20px 0 0 20px），左侧是一个取色器（色相条和饱和度/明度面板，支持点击取色），中间是文本输入（占位文字灰色#636E72，字体16px，多行自动扩展），右侧是照片上传区（支持拖放，预览图最大300x300px）；第三，每条记录保存后会在首页对应位置实时插入新卡片，同时当月情绪统计会以12个圆点（每月一个，直径12px，颜色取当月平均色）排列在页面底部的导航条（高60px，底色#2D3436，固定在底部）上，鼠标悬停圆点会显示该月摘要文字（气泡提示，白色文字#FFFFFF，背景#2D3436，圆角6px）。界面上希望整体采用深色主题（主背景#0D1117，次要#161B22，卡片#21262D），所有文字使用浅色（#C9D1D9），强调色为#58A6FF，按钮、选项卡和交互元素统一用#58A6FF到#1F6FEB渐变，所有过渡和动画统一0.3s ease，并且适配手机和平板（宽度小于768px时卡片变为全宽，高度自适应，底部导航变为两行）。性能上希望首页懒加载，每次只渲染当前视口前后各5条记录，滚动时动态加载/卸载DOM，保证60FPS流畅滚动。实现用TypeScript、React前端、Express后端和PostgreSQL数据库（通过json文件模拟数据存储即可），把代码拆成以下文件：\n - package.json（含依赖：express、cors、react、react-dom、typescript、@types/react、@types/react-dom、vite、@vitejs/plugin-react、uuid、date-fns，启动脚本：npm run dev）\n - index.html（入口页面，含根容器div#root和字体预加载）\n - vite.config.js（构建配置，入口index.html，代理/api到localhost:3001，开发服务器端口8080）\n - tsconfig.json（严格模式，esnext模块，jsx react-jsx，dom类型包含）\n - server.js（Express后端，模拟数据存储和用户记录增删改查API，监听3001端口，使用内存数组，支持CORS，GET /api/records?month=... POST /api/records DELETE /api/records/:id）\n - src/App.tsx（主应用组件，负责初始化路由（只模拟单页面）、调用后端API获取情绪记录列表、管理全局状态、组合各子组件）\n - src/EmotionCard.tsx（卡片组件，接收记录对象和渐变色，渲染卡片布局、缩略图、交互事件，支持进入视口动画）\n - src/RecorderModal.tsx（记录模态框组件，包含取色器（仅前端色盘逻辑）、文本输入、照片上传/预览、确认按钮，使用props回调向App发送新记录数据）\n - src/TimelineNav.tsx（底部导航组件，接收所有记录列表，按月份聚合计算平均色，渲染12个交互圆点和摘要气泡）\n - src/styles.css（全局样式，包含深色主题变量、排版、按钮、模态框、响应式媒体查询、所有过渡动画）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}
