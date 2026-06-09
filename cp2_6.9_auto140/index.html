@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 分形树 - L-System 可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D1117;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #E6E6E6;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 220px;
+      padding: 16px;
+      background: rgba(26, 31, 46, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 0 6px rgba(0, 212, 170, 0.3), 0 4px 20px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+
+    #control-panel h3 {
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #00D4AA;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(0, 212, 170, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #E6E6E6;
+    }
+
+    .control-value {
+      color: #00D4AA;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #1A1F2E;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00D4AA;
+      cursor: pointer;
+      box-shadow: 0 0 0 rgba(0, 212, 170, 0);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover,
+    .slider::-webkit-slider-thumb:active {
+      box-shadow: 0 0 12px rgba(0, 212, 170, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00D4AA;
+      cursor: pointer;
+      border: none;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider::-moz-range-thumb:hover,
+    .slider::-moz-range-thumb:active {
+      box-shadow: 0 0 12px rgba(0, 212, 170, 0.8);
+    }
+
+    #warning-text {
+      font-size: 11px;
+      color: #FF6B6B;
+      margin-top: 8px;
+      display: none;
+    }
+
+    #panel-toggle {
+      position: absolute;
+      bottom: 60px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(0, 212, 170, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      cursor: pointer;
+      z-index: 11;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      color: #0D1117;
+      font-size: 20px;
+      font-weight: bold;
+      box-shadow: 0 0 6px rgba(0, 212, 170, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    #panel-toggle:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 16px rgba(0, 212, 170, 0.7);
+    }
+
+    #status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 32px;
+      font-size: 12px;
+      color: #FFFFFF;
+      z-index: 10;
+      transition: background-color 0.3s ease;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-label {
+      color: #888;
+    }
+
+    .status-value {
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    #fps-value.normal {
+      color: #44FF44;
+    }
+
+    #fps-value.low {
+      color: #FF4444;
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        display: none;
+        right: 20px;
+        left: auto;
+        top: auto;
+        bottom: 120px;
+      }
+
+      #control-panel.expanded {
+        display: block;
+      }
+
+      #panel-toggle {
+        display: flex;
+      }
+    }
+
+    #hint {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 11px;
+      color: rgba(230, 230, 230, 0.5);
+      text-align: right;
+      z-index: 5;
+      line-height: 1.8;
+    }
+
+    #hint span {
+      color: #00D4AA;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="hint">
+    <div><span>空格</span> 重新生成</div>
+    <div><span>R</span> 重置视角</div>
+    <div><span>左键拖拽</span> 旋转</div>
+    <div><span>滚轮</span> 缩放</div>
+    <div><span>右键拖拽</span> 平移</div>
+    <div><span>点击分支</span> 修剪</div>
+  </div>
+
+  <div id="control-panel">
+    <h3>分形树参数</h3>
+    
+    <div class="control-group">
+      <div class="control-label">
+        <span>递归深度</span>
+        <span class="control-value" id="depth-value">6</span>
+      </div>
+      <input type="range" class="slider" id="depth-slider" min="3" max="8" step="1" value="6" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>分支角度 (°)</span>
+        <span class="control-value" id="angle-value">30</span>
+      </div>
+      <input type="range" class="slider" id="angle-slider" min="10" max="50" step="1" value="30" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>生长速度</span>
+        <span class="control-value" id="speed-value">1.0x</span>
+      </div>
+      <input type="range" class="slider" id="speed-slider" min="0.5" max="2.0" step="0.1" value="1.0" />
+    </div>
+
+    <div id="warning-text">递归深度过大</div>
+  </div>
+
+  <button id="panel-toggle">⚙</button>
+
+  <div id="status-bar">
+    <div class="status-item">
+      <span class="status-label">递归深度:</span>
+      <span class="status-value" id="depth-status">6</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">分支总数:</span>
+      <span class="status-value" id="branch-count">0</span>
+    </div>
+    <div class="status-item">
+      <span class="status-label">FPS:</span>
+      <span class="status-value normal" id="fps-value">60</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
