@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>影音沙盘 - AV Sandbox</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="mobile-header" class="mobile-header hidden">
+      <button id="toggle-library" class="mobile-toggle">素材库</button>
+      <div class="mobile-title">影音沙盘</div>
+      <button id="toggle-properties" class="mobile-toggle">属性</button>
+    </header>
+
+    <div id="mobile-sliders" class="mobile-sliders hidden">
+      <div id="mobile-library-panel" class="mobile-panel">
+        <div class="mobile-panel-header">
+          <span>素材库</span>
+          <button class="close-panel">&times;</button>
+        </div>
+        <div id="mobile-library-content"></div>
+      </div>
+      <div id="mobile-properties-panel" class="mobile-panel">
+        <div class="mobile-panel-header">
+          <span>属性面板</span>
+          <button class="close-panel">&times;</button>
+        </div>
+        <div id="mobile-properties-content"></div>
+      </div>
+    </div>
+
+    <aside id="library" class="library-panel">
+      <div class="panel-title">素材库</div>
+      <div class="material-list" id="material-list">
+        <div class="material-item" draggable="true" data-type="flame">
+          <div class="material-preview" id="preview-flame"></div>
+          <div class="material-name">火焰粒子</div>
+        </div>
+        <div class="material-item" draggable="true" data-type="pulseRing">
+          <div class="material-preview" id="preview-pulseRing"></div>
+          <div class="material-name">脉冲圆环</div>
+        </div>
+        <div class="material-item" draggable="true" data-type="noiseWave">
+          <div class="material-preview" id="preview-noiseWave"></div>
+          <div class="material-name">噪点波浪</div>
+        </div>
+      </div>
+    </aside>
+
+    <main id="canvas-container" class="canvas-container">
+      <div class="canvas-toolbar">
+        <div class="toolbar-title">影音沙盘</div>
+        <div class="toolbar-actions">
+          <button id="btn-clear" class="action-btn">清空画布</button>
+        </div>
+      </div>
+      <div class="canvas-wrapper" id="canvas-wrapper">
+        <canvas id="sandbox-canvas"></canvas>
+        <canvas id="drag-preview-canvas" class="drag-preview-canvas"></canvas>
+      </div>
+    </main>
+
+    <aside id="properties" class="properties-panel">
+      <div class="panel-title">属性面板</div>
+      <div id="properties-content" class="properties-content">
+        <div class="empty-hint">
+          <p>请选择或双击沙盘上的元素</p>
+          <p>以编辑其属性</p>
+        </div>
+      </div>
+    </aside>
+
+    <footer id="timeline" class="timeline-panel">
+      <div class="timeline-controls">
+        <button id="btn-play" class="control-btn play-btn">▶</button>
+        <button id="btn-stop" class="control-btn">⏹</button>
+        <div class="time-display">
+          <span id="current-time">0.0</span>s / <span id="total-time">30.0</span>s
+        </div>
+      </div>
+      <div class="timeline-wrapper" id="timeline-wrapper">
+        <canvas id="timeline-canvas" class="timeline-canvas"></canvas>
+        <div id="timeline-tracks" class="timeline-tracks"></div>
+      </div>
+    </footer>
+
+    <div id="property-panel" class="floating-panel hidden">
+      <div class="panel-header">
+        <span id="panel-element-name">元素属性</span>
+        <button id="panel-close" class="panel-close">&times;</button>
+      </div>
+      <div class="panel-body">
+        <div class="property-row">
+          <label>位置 X:</label>
+          <input type="number" id="prop-x" step="1" min="0" />
+        </div>
+        <div class="property-row">
+          <label>位置 Y:</label>
+          <input type="number" id="prop-y" step="1" min="0" />
+        </div>
+        <div class="property-row">
+          <label>旋转角度:</label>
+          <div class="slider-wrapper">
+            <input type="range" id="prop-rotation" min="0" max="360" step="1" value="0" />
+            <span id="prop-rotation-val">0°</span>
+          </div>
+        </div>
+        <div class="property-row">
+          <label>缩放大小:</label>
+          <div class="slider-wrapper">
+            <input type="range" id="prop-scale" min="0.5" max="3" step="0.1" value="1" />
+            <span id="prop-scale-val">1.0x</span>
+          </div>
+        </div>
+        <div class="property-row">
+          <label>透明度:</label>
+          <div class="slider-wrapper">
+            <input type="range" id="prop-opacity" min="0" max="100" step="5" value="100" />
+            <span id="prop-opacity-val">100%</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <button id="panel-keyframe" class="action-btn keyframe-btn">添加关键帧</button>
+        <button id="panel-apply" class="action-btn primary">应用</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
