@@ -1,0 +1,28 @@
+{
+  "name": "virtual-stardust-auction",
+  "version": "1.0.0",
+  "description": "虚拟星尘拍卖行 - 一个独特的星尘样本竞拍平台",
+  "scripts": {
+    "client": "vite",
+    "server": "node server/server.js",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "concurrently": "^8.2.0"
+  }
+}
