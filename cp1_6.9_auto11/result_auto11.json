@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-08T16:45:33.589Z",
+  "task_name": "auto11",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线协同白板应用，实现多用户实时绘制、图形元素拖拽和文字批注功能。使用TypeScript、React（前端）和Node.js + Socket.IO（后端）实现，前端用Vite构建。文件结构如下：\n - package.json（前端依赖：react、react-dom、socket.io-client、typescript、@types/react、vite、@vitejs/plugin-react；后端依赖：express、socket.io、uuid、cors；启动脚本：前端npm run dev，后端npm start）\n - index.html（挂载React根节点）\n - tsconfig.json（严格模式）\n - vite.config.js（Vite配置，代理/api到后端）\n - src/App.tsx（主组件，管理画布状态和Socket连接）\n - src/Canvas.tsx（画布组件，处理鼠标事件的绘制和拖拽逻辑）\n - src/Toolbar.tsx（工具条组件，选择画笔、形状、文字和颜色）\n - server/index.js（Socket.IO服务器，管理房间和广播事件）\n\n具体需求：\n1. 实时协作绘制：用户进入同一房间后，任何人的绘制操作（画线、矩形、圆形）都能实时同步到其他用户画布上，延迟低于100ms。\n2. 图形元素管理：每个绘制元素（线、矩形、圆形、文字）可被任意用户选中、拖拽移动、调整大小（拖拽锚点），删除操作需二次确认。\n3. 文字工具：在画布点击位置可输入文字，支持字体大小（12-48px）和颜色调整，文字内容可二次编辑。\n4. 撤销/重做：每个用户独立拥有20步的撤销/重做历史，仅影响本地操作。\n5. 房间管理：用户输入房间号加入对应房间，同一房间最多8人，房间列表显示在线人数。\n\n界面方面：采用明亮极简风格，主色调为#F0F4F8（浅灰蓝）搭配#2D3748（深灰）文字。左侧是工具条，包含画笔、形状、文字、颜色选择器和撤销/重做按钮，按钮采用图标+文字标签形式，悬停时背景变为#E2E8F0并增加0.2秒过渡。画布占主体区域，网格背景辅助对齐，点击元素时显示8个蓝色锚点（边框2px虚线），拖拽时有0.1秒缓动动画。右上角显示房间号和在线人数，底部状态栏显示当前工具。响应式适配：当窗口小于768px时，工具条变为顶部横向布局，画布高度自适应。所有交互元素（按钮悬停、选中锚点、拖拽反馈）都有平滑过渡动画（持续0.2-0.3秒）。\n\n性能要求：绘制响应时间低于50ms，元素拖拽帧率稳定在60fps，同一房间8人同时操作时网络延迟不超过200ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:1e987bafb54b95b497b94c180d3f9591_6a26f1202ee1ea933136f206.6a26f19e2ee1ea933136f252.6a26f19e8eb4120885786226:Trae CN.T(2026/6/9 00:45:18)",
+    "user_id": "3986207660317399",
+    "trace_id": "1e987bafb54b95b497b94c180d3f9591",
+    "session_id": "6a26f1202ee1ea933136f206",
+    "task_id": "6a26f19e2ee1ea933136f252",
+    "message_id": "6a26f19e8eb4120885786226",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 00:45:18",
+    "format": "full"
+  },
+  "trace": "null"
+}
