@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D城市光污染可视化</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="three-canvas"></canvas>
+
+    <div id="info-panel" class="glass-panel hidden">
+      <h3 class="panel-title">建筑信息</h3>
+      <div class="info-row">
+        <span class="info-label">建筑高度：</span>
+        <span id="building-height" class="info-value">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">区域类型：</span>
+        <span id="building-zone" class="info-value">--</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">光污染强度：</span>
+        <span id="light-pollution" class="info-value">--</span>
+      </div>
+    </div>
+
+    <div id="control-panel" class="glass-panel">
+      <h3 class="panel-title">控制面板</h3>
+      <div class="control-group">
+        <label class="control-label">
+          光污染强度倍率
+          <span id="multiplier-value" class="control-value">1.0</span>
+        </label>
+        <input
+          type="range"
+          id="light-multiplier"
+          min="0"
+          max="3"
+          step="0.1"
+          value="1.0"
+          class="custom-slider slider-pollution"
+        />
+      </div>
+      <div class="control-group">
+        <label class="control-label">
+          星空可见度阈值
+          <span id="threshold-value" class="control-value">0.5</span>
+        </label>
+        <input
+          type="range"
+          id="visibility-threshold"
+          min="0"
+          max="1"
+          step="0.05"
+          value="0.5"
+          class="custom-slider slider-stars"
+        />
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
