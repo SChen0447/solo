@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>时间碎片 · Time Fragments</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      touch-action: none;
+    }
+    #game-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #000000;
+    }
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #hud-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(30, 30, 46, 0.7);
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
+      z-index: 10;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      min-width: 140px;
+    }
+    #chain-count {
+      font-size: 20px;
+      color: #FFD700;
+      font-weight: bold;
+      margin-bottom: 6px;
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }
+    #chain-count.pulse {
+      transform: scale(1.25);
+    }
+    #chain-label {
+      font-size: 12px;
+      color: #aaaaaa;
+      margin-bottom: 10px;
+    }
+    #remaining-count {
+      font-size: 14px;
+      color: #ffffff;
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }
+    #remaining-count.pulse {
+      transform: scale(1.2);
+    }
+    #reset-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #4A4A5A;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s ease, transform 0.15s ease;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #reset-btn:hover {
+      background: #6A6A7A;
+    }
+    #reset-btn:active {
+      transform: scale(0.9);
+    }
+    #reset-btn:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <div id="hud-panel">
+    <div id="chain-label">连锁爆发</div>
+    <span id="chain-count">0</span>
+    <div style="font-size:12px;color:#aaa;margin-top:10px;">剩余碎片</div>
+    <span id="remaining-count">30</span>
+  </div>
+  <button id="reset-btn" title="重置">↺</button>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
