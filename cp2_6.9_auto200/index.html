@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素太空舰队指挥官</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0B0C10;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      color: #E0E0E0;
+    }
+
+    #game-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      margin: 20px auto;
+      border: 2px solid #45A29E;
+      box-shadow: 0 0 20px rgba(69, 162, 158, 0.3);
+    }
+
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: crosshair;
+    }
+
+    #status-panel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 180px;
+      padding: 12px;
+      background: rgba(31, 40, 51, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid #45A29E;
+      border-radius: 6px;
+      font-size: 12px;
+      z-index: 10;
+    }
+
+    #status-panel h3 {
+      color: #66FCF1;
+      font-size: 14px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #45A29E;
+      padding-bottom: 4px;
+    }
+
+    .status-row {
+      margin: 6px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status-label {
+      color: #9BA4B4;
+    }
+
+    .status-value {
+      color: #E0E0E0;
+    }
+
+    #score-panel {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 10px 14px;
+      background: rgba(31, 40, 51, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid #6F2232;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 10;
+      text-align: right;
+    }
+
+    .score-row {
+      margin: 4px 0;
+    }
+
+    .player-score {
+      color: #66FCF1;
+    }
+
+    .enemy-score {
+      color: #C3073F;
+    }
+
+    #command-panel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      background: rgba(31, 40, 51, 0.75);
+      backdrop-filter: blur(6px);
+      border-top: 1px solid #45A29E;
+      z-index: 10;
+    }
+
+    .cmd-btn {
+      width: 80px;
+      height: 30px;
+      border: 1px solid #45A29E;
+      border-radius: 8px;
+      background: rgba(31, 40, 51, 0.9);
+      color: #E0E0E0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .cmd-btn:hover {
+      background: #34495E;
+      border-color: #66FCF1;
+      box-shadow: 0 0 10px rgba(102, 252, 241, 0.5);
+      transform: scale(1.05);
+    }
+
+    .cmd-btn.active {
+      background: #45A29E;
+      color: #0B0C10;
+      border-color: #66FCF1;
+    }
+
+    .cmd-btn.retreat {
+      border-color: #C3073F;
+    }
+
+    .cmd-btn.retreat:hover {
+      border-color: #FF4F6B;
+      box-shadow: 0 0 10px rgba(195, 7, 63, 0.5);
+    }
+
+    #game-over-overlay {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-over-overlay.show {
+      display: flex;
+    }
+
+    #game-over-text {
+      font-size: 28px;
+      font-weight: bold;
+      margin-bottom: 24px;
+      text-shadow: 0 0 10px currentColor;
+    }
+
+    #restart-btn {
+      width: 120px;
+      height: 40px;
+      border: none;
+      border-radius: 6px;
+      background: #2C3E50;
+      color: #FFFFFF;
+      font-family: 'Courier New', monospace;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    #restart-btn:hover {
+      background: #34495E;
+      transform: scale(1.05);
+    }
+
+    .hp-bar-container {
+      width: 100%;
+      height: 6px;
+      background: #333;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 4px 0;
+    }
+
+    .hp-bar-fill {
+      height: 100%;
+      transition: width 0.2s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+
+    <div id="status-panel">
+      <h3>选中飞船</h3>
+      <div id="ship-info">
+        <div class="status-row">
+          <span class="status-label">未选中</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="score-panel">
+      <div class="score-row player-score" id="player-score">玩家: 0 艘 (战力 0)</div>
+      <div class="score-row enemy-score" id="enemy-score">敌方: 0 艘 (战力 0)</div>
+    </div>
+
+    <div id="command-panel">
+      <button class="cmd-btn active" id="btn-move" data-mode="move">移动</button>
+      <button class="cmd-btn" id="btn-attack" data-mode="attack">攻击</button>
+      <button class="cmd-btn retreat" id="btn-retreat" data-mode="retreat">撤退</button>
+    </div>
+
+    <div id="game-over-overlay">
+      <div id="game-over-text"></div>
+      <button id="restart-btn">重新开始</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
