@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>炼金实验台</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+
+      <div id="element-bar">
+        <div class="element-slot" data-element="fire">
+          <div class="element-circle fire"></div>
+          <span class="element-label">火</span>
+        </div>
+        <div class="element-slot" data-element="water">
+          <div class="element-circle water"></div>
+          <span class="element-label">水</span>
+        </div>
+        <div class="element-slot" data-element="earth">
+          <div class="element-circle earth"></div>
+          <span class="element-label">土</span>
+        </div>
+        <div class="element-slot" data-element="wind">
+          <div class="element-circle wind"></div>
+          <span class="element-label">风</span>
+        </div>
+      </div>
+
+      <div id="alchemy-log">
+        <div class="log-header">
+          <span class="log-title">📜 炼金日志</span>
+          <button id="toggle-log-btn" class="toggle-btn">▼</button>
+        </div>
+        <div class="log-content">
+          <ul id="log-list"></ul>
+        </div>
+      </div>
+
+      <div id="controls">
+        <button id="clear-btn" class="control-btn clear-btn" title="清空容器">
+          ✕
+        </button>
+        <button id="explode-btn" class="control-btn explode-btn" title="炸裂特效">
+          💥
+        </button>
+      </div>
+
+      <div id="status-indicator">
+        <div class="dots">
+          <div class="status-dot" data-index="0"></div>
+          <div class="status-dot" data-index="1"></div>
+          <div class="status-dot" data-index="2"></div>
+        </div>
+        <div class="fusion-count">
+          融合次数: <span id="fusion-count-value">0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
