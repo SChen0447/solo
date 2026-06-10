@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>粒子星系探索</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #050510 0%, #0a0a20 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .app-title {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      z-index: 10;
+      user-select: none;
+      text-shadow: 0 0 20px rgba(100, 150, 255, 0.3);
+    }
+
+    .fps-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 24px;
+      color: #00ff88;
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      z-index: 10;
+      user-select: none;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #1a1a2e;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .performance-toast {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.95);
+      color: #ffaa00;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      z-index: 50;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      border: 1px solid rgba(255, 170, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .performance-toast.visible {
+      opacity: 1;
+    }
+
+    .mobile-toggle {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: none;
+      z-index: 20;
+      transition: all 0.2s ease;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mobile-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .mobile-toggle {
+        display: flex;
+      }
+
+      .ui-panel {
+        transform: translateX(120%) !important;
+        transition: transform 0.3s ease !important;
+      }
+
+      .ui-panel.mobile-open {
+        transform: translateX(0) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-title">粒子星系探索</div>
+    <div class="fps-counter" id="fpsCounter">FPS: --</div>
+    <div class="tooltip" id="tooltip"></div>
+    <div class="performance-toast" id="perfToast">性能优化中</div>
+    <button class="mobile-toggle" id="mobileToggle">⚙</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
