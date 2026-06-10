@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>风味雷达 - Flavor Radar</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+          'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+        background-color: #f5f0eb;
+        color: #2b2d42;
+        min-height: 100vh;
+      }
+
+      #app {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .header {
+        height: 60px;
+        background-color: #1d3557;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 24px;
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .header-title {
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+      }
+
+      .export-btn {
+        background-color: #e63946;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .export-btn:hover {
+        background-color: #c1121f;
+      }
+
+      .main-container {
+        display: flex;
+        gap: 24px;
+        padding: 24px;
+        flex: 1;
+      }
+
+      .sidebar {
+        width: 260px;
+        background-color: #2b2d42;
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        color: #ffffff;
+      }
+
+      .filter-section {
+        margin-bottom: 16px;
+      }
+
+      .origin-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+
+      .origin-tag {
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 12px;
+        cursor: pointer;
+        border: none;
+        color: #ffffff;
+        transition: all 0.2s ease;
+        font-weight: 400;
+      }
+
+      .origin-tag.active {
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        font-weight: 700;
+      }
+
+      .origin-tag:hover {
+        opacity: 0.85;
+      }
+
+      .sort-select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #4a4e69;
+        background-color: #1d1f33;
+        color: #ffffff;
+        font-size: 13px;
+        cursor: pointer;
+      }
+
+      .sort-select:focus {
+        outline: none;
+        border-color: #457b9d;
+      }
+
+      .record-list {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .record-list.fade-in {
+        animation: fadeIn 0.2s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .record-item {
+        padding: 12px;
+        background-color: #3a3d5c;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.15s ease;
+        border-left: 3px solid transparent;
+      }
+
+      .record-item:hover {
+        background-color: #4a4e7a;
+      }
+
+      .record-item.active {
+        background-color: #457b9d;
+        border-left-color: #e9c46a;
+      }
+
+      .record-name {
+        font-size: 14px;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .record-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        color: #b8b8c8;
+      }
+
+      .record-score {
+        font-weight: 700;
+        font-size: 14px;
+      }
+
+      .right-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .radar-section {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        position: relative;
+      }
+
+      .add-btn-wrapper {
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+
+      .add-btn {
+        background-color: #457b9d;
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .add-btn:hover {
+        background-color: #3a6a8a;
+      }
+
+      .radar-canvas-wrapper {
+        background-color: #fdf6f0;
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      }
+
+      .brew-card {
+        background-color: #ffffff;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+      }
+
+      .brew-card-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #2b2d42;
+      }
+
+      .brew-info {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+
+      .brew-info-item {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .brew-label {
+        font-size: 12px;
+        color: #8d99ae;
+      }
+
+      .brew-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #2b2d42;
+      }
+
+      .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .brew-tip {
+        background-color: #fdf6f0;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 13px;
+        color: #5a5a6a;
+        line-height: 1.6;
+      }
+
+      .brew-tip strong {
+        color: #c1121f;
+      }
+
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+      }
+
+      .modal-overlay.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .modal {
+        width: 520px;
+        background-color: #ffffff;
+        border-radius: 16px;
+        padding: 24px;
+        max-height: 90vh;
+        overflow-y: auto;
+        transform: translateY(20px) scale(0.95);
+        transition: transform 0.25s ease;
+      }
+
+      .modal-overlay.visible .modal {
+        transform: translateY(0) scale(1);
+      }
+
+      .modal-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: #2b2d42;
+      }
+
+      .form-group {
+        margin-bottom: 16px;
+      }
+
+      .form-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: #2b2d42;
+        margin-bottom: 6px;
+      }
+
+      .form-input,
+      .form-select,
+      .form-textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 14px;
+        font-family: inherit;
+        transition: border-color 0.2s ease;
+      }
+
+      .form-input:focus,
+      .form-select:focus,
+      .form-textarea:focus {
+        outline: none;
+        border-color: #457b9d;
+      }
+
+      .form-textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .slider-value {
+        min-width: 48px;
+        text-align: right;
+        font-size: 14px;
+        font-weight: 600;
+        color: #457b9d;
+      }
+
+      .slider {
+        flex: 1;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: #e8e8e8;
+        outline: none;
+      }
+
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #457b9d;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+      }
+
+      .slider::-webkit-slider-thumb:hover {
+        transform: scale(1.15);
+      }
+
+      .slider::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #457b9d;
+        cursor: pointer;
+        border: none;
+      }
+
+      .flavor-sliders {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px 20px;
+      }
+
+      .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 24px;
+      }
+
+      .btn-cancel {
+        padding: 8px 20px;
+        border: 1px solid #d0d0d0;
+        background-color: #ffffff;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        color: #5a5a6a;
+        transition: all 0.2s ease;
+      }
+
+      .btn-cancel:hover {
+        background-color: #f5f5f5;
+      }
+
+      .btn-save {
+        padding: 8px 20px;
+        background-color: #457b9d;
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .btn-save:hover {
+        background-color: #3a6a8a;
+      }
+
+      .empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #8d99ae;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
