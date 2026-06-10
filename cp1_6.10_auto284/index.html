@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>潮汐弈局</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #0a1635 0%, #1a0a2e 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #e0e6ff;
+      user-select: none;
+      touch-action: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      background: linear-gradient(180deg, rgba(10, 22, 53, 0.95) 0%, rgba(10, 22, 53, 0.7) 100%);
+      border-bottom: 1px solid rgba(74, 144, 217, 0.3);
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    .player-panel {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .player-panel.right {
+      justify-content: flex-end;
+    }
+
+    .avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid;
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .avatar.p1 {
+      border-color: #00e5ff;
+      color: #00e5ff;
+      background: rgba(0, 229, 255, 0.1);
+    }
+
+    .avatar.p2 {
+      border-color: #ff5252;
+      color: #ff5252;
+      background: rgba(255, 82, 82, 0.1);
+    }
+
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .player-name {
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .energy-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .energy-label {
+      font-size: 11px;
+      opacity: 0.7;
+      white-space: nowrap;
+    }
+
+    .energy-bar {
+      width: 120px;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 5px;
+      overflow: hidden;
+      border: 1px solid rgba(74, 144, 217, 0.3);
+    }
+
+    .energy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ffd700, #ffb300);
+      border-radius: 5px;
+      transition: width 0.3s ease-out;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+    }
+
+    .energy-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffd700;
+      min-width: 24px;
+    }
+
+    #turn-indicator {
+      text-align: center;
+      flex: 1;
+    }
+
+    #turn-label {
+      font-size: 12px;
+      opacity: 0.7;
+      letter-spacing: 2px;
+    }
+
+    #turn-player {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 2px;
+    }
+
+    #turn-timer {
+      width: 44px;
+      height: 44px;
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    #turn-timer svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: rotate(-90deg);
+    }
+
+    #turn-timer .time-text {
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 1;
+    }
+
+    #canvas-wrap {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(74, 144, 217, 0.2), inset 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    #bottom-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 90px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 0 24px;
+      background: linear-gradient(0deg, rgba(26, 10, 46, 0.95) 0%, rgba(26, 10, 46, 0.7) 100%);
+      border-top: 1px solid rgba(74, 144, 217, 0.3);
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    .action-btn {
+      background: linear-gradient(180deg, rgba(74, 144, 217, 0.25) 0%, rgba(74, 144, 217, 0.1) 100%);
+      border: 1px solid rgba(74, 144, 217, 0.5);
+      color: #c5d9ff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      letter-spacing: 1px;
+    }
+
+    .action-btn:hover:not(:disabled) {
+      background: linear-gradient(180deg, rgba(74, 144, 217, 0.45) 0%, rgba(74, 144, 217, 0.2) 100%);
+      box-shadow: 0 0 16px rgba(74, 144, 217, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(180deg, #ffd700 0%, #ffb300 100%);
+      border-color: #ffd700;
+      color: #1a0a2e;
+    }
+
+    .action-btn.primary:hover:not(:disabled) {
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    .action-btn.danger {
+      background: linear-gradient(180deg, rgba(255, 82, 82, 0.3) 0%, rgba(255, 82, 82, 0.1) 100%);
+      border-color: rgba(255, 82, 82, 0.5);
+      color: #ff9a9a;
+    }
+
+    .skill-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .skill-btn {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(180deg, rgba(74, 144, 217, 0.2) 0%, rgba(74, 144, 217, 0.05) 100%);
+      border: 1px solid rgba(74, 144, 217, 0.4);
+      border-radius: 10px;
+      color: #c5d9ff;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .skill-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(74, 144, 217, 0.3);
+    }
+
+    .skill-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .skill-btn .icon {
+      font-size: 20px;
+    }
+
+    .skill-btn .cost {
+      font-size: 10px;
+      color: #ffd700;
+      font-weight: 600;
+    }
+
+    .skill-btn .cooldown-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 0 0 9px 9px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+      padding: 2px 0;
+    }
+
+    #hint-text {
+      font-size: 12px;
+      opacity: 0.6;
+      text-align: center;
+      max-width: 200px;
+    }
+
+    #tide-warning {
+      position: absolute;
+      top: 70px;
+      left: 0;
+      right: 0;
+      bottom: 90px;
+      pointer-events: none;
+      z-index: 5;
+      box-shadow: inset 0 0 80px rgba(0, 180, 255, 0);
+      transition: box-shadow 0.5s ease;
+    }
+
+    #tide-warning.active {
+      animation: tideGlow 1s ease-in-out infinite;
+    }
+
+    @keyframes tideGlow {
+      0%, 100% { box-shadow: inset 0 0 80px rgba(0, 180, 255, 0.3); }
+      50% { box-shadow: inset 0 0 120px rgba(0, 180, 255, 0.7); }
+    }
+
+    #game-over {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    #game-over.show {
+      display: flex;
+    }
+
+    #game-over h1 {
+      font-size: 48px;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #ffd700, #00e5ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    #game-over p {
+      font-size: 18px;
+      opacity: 0.8;
+      margin-bottom: 32px;
+    }
+
+    @media (max-width: 768px) {
+      #game-container {
+        flex-direction: row;
+      }
+
+      #top-bar, #bottom-bar {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 70px;
+        height: auto;
+        flex-direction: column;
+        padding: 12px 6px;
+        overflow-y: auto;
+        justify-content: flex-start;
+        gap: 12px;
+      }
+
+      #top-bar {
+        left: 0;
+        right: auto;
+        border-right: 1px solid rgba(74, 144, 217, 0.3);
+        border-bottom: none;
+      }
+
+      #bottom-bar {
+        left: auto;
+        right: 0;
+        border-left: 1px solid rgba(74, 144, 217, 0.3);
+        border-top: none;
+      }
+
+      #canvas-wrap {
+        top: 0;
+        left: 70px;
+        right: 70px;
+        bottom: 0;
+      }
+
+      #tide-warning {
+        top: 0;
+        left: 70px;
+        right: 70px;
+        bottom: 0;
+      }
+
+      .player-panel, .player-panel.right {
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .player-info {
+        align-items: center;
+      }
+
+      .energy-bar {
+        width: 44px;
+        height: 60px;
+      }
+
+      .energy-fill {
+        width: 100%;
+        height: auto;
+        transition: height 0.3s ease-out;
+      }
+
+      .skill-buttons {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        padding: 8px 10px;
+        font-size: 11px;
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+      }
+
+      #turn-indicator {
+        order: -1;
+      }
+
+      #hint-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="top-bar">
+      <div class="player-panel">
+        <div class="avatar p1">P1</div>
+        <div class="player-info">
+          <div class="player-name" style="color:#00e5ff">玩家一</div>
+          <div class="energy-bar-wrap">
+            <span class="energy-label">能量</span>
+            <div class="energy-bar">
+              <div class="energy-fill" id="p1-energy-fill" style="width:0%"></div>
+            </div>
+            <span class="energy-value" id="p1-energy">0</span>
+          </div>
+        </div>
+      </div>
+      <div id="turn-indicator">
+        <div id="turn-label">当前回合</div>
+        <div id="turn-player" style="color:#00e5ff">玩家一</div>
+        <div id="turn-timer">
+          <svg width="44" height="44">
+            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"/>
+            <circle id="timer-ring" cx="22" cy="22" r="18" fill="none" stroke="#ffd700" stroke-width="3" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="0"/>
+          </svg>
+          <span class="time-text" id="timer-text">15</span>
+        </div>
+      </div>
+      <div class="player-panel right">
+        <div class="player-info">
+          <div class="player-name" style="color:#ff5252">玩家二</div>
+          <div class="energy-bar-wrap">
+            <span class="energy-value" id="p2-energy">0</span>
+            <div class="energy-bar">
+              <div class="energy-fill" id="p2-energy-fill" style="width:0%"></div>
+            </div>
+            <span class="energy-label">能量</span>
+          </div>
+        </div>
+        <div class="avatar p2">P2</div>
+      </div>
+    </div>
+
+    <div id="canvas-wrap">
+      <canvas id="game-canvas"></canvas>
+    </div>
+
+    <div id="tide-warning"></div>
+
+    <div id="bottom-bar">
+      <div class="skill-buttons" id="skill-buttons">
+        <button class="skill-btn" data-skill="flash" disabled>
+          <span class="icon">⚡</span>
+          <span class="cost">2</span>
+        </button>
+        <button class="skill-btn" data-skill="repair" disabled>
+          <span class="icon">🔧</span>
+          <span class="cost">1</span>
+        </button>
+        <button class="skill-btn" data-skill="deter" disabled>
+          <span class="icon">👑</span>
+          <span class="cost">3</span>
+        </button>
+        <button class="skill-btn" data-skill="fortify" disabled>
+          <span class="icon">🏰</span>
+          <span class="cost">1</span>
+        </button>
+      </div>
+      <div id="hint-text">点击己方棋子选中，再点击目标格移动或攻击</div>
+      <button class="action-btn danger" id="cancel-btn" disabled>取消</button>
+      <button class="action-btn primary" id="end-turn-btn">结束回合</button>
+    </div>
+
+    <div id="game-over">
+      <h1 id="winner-text">玩家一胜利！</h1>
+      <p id="winner-reason">占领能源核心</p>
+      <button class="action-btn primary" id="restart-btn">再来一局</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
