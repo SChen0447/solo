@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>三维交通十字路口模拟</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #0a0e27;
+        font-family: 'Segoe UI', sans-serif;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      #canvas-container {
+        width: 100%;
+        height: 100%;
+      }
+      #ui-panel {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        padding: 12px;
+        color: #e0e0e0;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 14px;
+        min-width: 220px;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+      }
+      #ui-panel .title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #4fc3f7;
+        border-bottom: 1px solid rgba(79, 195, 247, 0.3);
+        padding-bottom: 6px;
+      }
+      #ui-panel .row {
+        margin: 4px 0;
+        line-height: 1.6;
+      }
+      #ui-panel .light-status {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      #reset-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-color: #4fc3f7;
+        border: none;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        z-index: 10;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 8px rgba(79, 195, 247, 0.4);
+      }
+      #reset-btn:hover {
+        background-color: #29b6f6;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="ui-panel">
+        <div class="title">交通路口监控面板</div>
+        <div id="light-info"></div>
+        <div class="row" id="vehicle-count"></div>
+        <div id="vehicle-speeds"></div>
+      </div>
+      <button id="reset-btn" title="重置视角">⟲</button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
