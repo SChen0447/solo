@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地壳板块运动模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #1a1a3a 0%, #0a0a1a 70%, #000000 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: #0a0a1a;
+    }
+
+    #hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 16px 20px;
+      background: rgba(10, 10, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-family: 'Courier New', monospace;
+      color: #00FF88;
+      text-shadow: 0 0 10px #00FF88;
+      z-index: 10;
+      min-width: 200px;
+    }
+
+    #hud .hud-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+      padding-bottom: 8px;
+    }
+
+    #hud .hud-item {
+      font-size: 14px;
+      margin: 6px 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #hud .hud-label {
+      opacity: 0.8;
+    }
+
+    #hud .hud-value {
+      font-weight: bold;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      z-index: 10;
+      align-items: center;
+    }
+
+    .mode-btn {
+      width: 120px;
+      height: 40px;
+      border-radius: 20px;
+      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .mode-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .mode-btn[data-mode="collision"]:hover {
+      background: #FF4500;
+    }
+
+    .mode-btn[data-mode="separation"]:hover {
+      background: #00BFFF;
+    }
+
+    .mode-btn[data-mode="subduction"]:hover {
+      background: #8A2BE2;
+    }
+
+    .mode-btn.active {
+      transform: scale(1.05);
+    }
+
+    .mode-btn[data-mode="collision"].active {
+      background: #FF4500;
+      box-shadow: 0 0 20px rgba(255, 69, 0, 0.6);
+    }
+
+    .mode-btn[data-mode="separation"].active {
+      background: #00BFFF;
+      box-shadow: 0 0 20px rgba(0, 191, 255, 0.6);
+    }
+
+    .mode-btn[data-mode="subduction"].active {
+      background: #8A2BE2;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.6);
+    }
+
+    #reset-btn {
+      width: 100px;
+      height: 36px;
+      border-radius: 18px;
+      border: none;
+      background: #FFD700;
+      color: #0a0a1a;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 10px;
+    }
+
+    #reset-btn:hover {
+      background: #FFE44D;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+    }
+
+    #plate-info {
+      position: absolute;
+      display: none;
+      padding: 16px 20px;
+      background: rgba(10, 10, 30, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      color: #ffffff;
+      z-index: 20;
+      min-width: 220px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #plate-info.visible {
+      display: block;
+    }
+
+    #plate-info .info-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      color: #FFD700;
+    }
+
+    #plate-info .info-row {
+      margin: 8px 0;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    #plate-info .info-label {
+      opacity: 0.7;
+    }
+
+    #plate-info .info-value {
+      font-weight: 600;
+    }
+
+    #plate-info .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 18px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    #plate-info .close-btn:hover {
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      #controls {
+        flex-direction: column;
+        gap: 10px;
+        bottom: 20px;
+      }
+      #reset-btn {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #hud {
+        top: 10px;
+        left: 10px;
+        padding: 10px 14px;
+        min-width: 160px;
+      }
+      #hud .hud-title {
+        font-size: 13px;
+      }
+      #hud .hud-item {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div id="hud">
+      <div class="hud-title">🌍 板块模拟状态</div>
+      <div class="hud-item">
+        <span class="hud-label">当前模式:</span>
+        <span class="hud-value" id="hud-mode">自由模式</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">地质时间:</span>
+        <span class="hud-value" id="hud-time">0.000 Ma</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">碰撞次数:</span>
+        <span class="hud-value" id="hud-collisions">0</span>
+      </div>
+    </div>
+
+    <div id="controls">
+      <button class="mode-btn" data-mode="collision">💥 碰撞模式</button>
+      <button class="mode-btn" data-mode="separation">🔀 分离模式</button>
+      <button class="mode-btn" data-mode="subduction">⛰️ 俯冲模式</button>
+      <button id="reset-btn">🔄 重置</button>
+    </div>
+
+    <div id="plate-info">
+      <button class="close-btn" id="close-info">&times;</button>
+      <div class="info-title" id="info-name">板块名称</div>
+      <div class="info-row">
+        <span class="info-label">运动速度:</span>
+        <span class="info-value" id="info-speed">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">边界类型:</span>
+        <span class="info-value" id="info-boundary">-</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
