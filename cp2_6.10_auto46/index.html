@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>街舞节拍可视化训练器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="control-panel" class="control-panel">
+      <h2 class="panel-title">节奏模式</h2>
+      <div class="mode-list">
+        <button class="mode-btn active" data-mode="simple">
+          <span class="mode-name">简单 4/4 拍</span>
+          <span class="mode-bpm">BPM 90</span>
+        </button>
+        <button class="mode-btn" data-mode="syncopated">
+          <span class="mode-name">切分节奏</span>
+          <span class="mode-bpm">BPM 120</span>
+        </button>
+        <button class="mode-btn" data-mode="sixteenth">
+          <span class="mode-name">16分加速</span>
+          <span class="mode-bpm">BPM 150</span>
+        </button>
+      </div>
+      <div class="panel-hint">
+        <p>💡 点击轨道任意位置可手动触发</p>
+      </div>
+    </aside>
+
+    <main id="stage" class="stage">
+      <canvas id="canvas"></canvas>
+    </main>
+
+    <aside id="info-panel" class="info-panel">
+      <div class="info-card">
+        <div class="info-label">当前节拍</div>
+        <div id="beat-number" class="beat-number">1</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">下一拍倒计时</div>
+        <div id="countdown" class="countdown">000 ms</div>
+      </div>
+      <div class="info-card">
+        <div class="info-label">当前模式</div>
+        <div id="current-mode" class="current-mode">简单 4/4 拍</div>
+      </div>
+    </aside>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
