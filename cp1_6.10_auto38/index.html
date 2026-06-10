@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>面部表情驱动3D头像</title>
+  <script crossorigin src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tracking-frame {
+      position: absolute;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 10;
+    }
+
+    .tracking-frame.visible {
+      opacity: 1;
+    }
+
+    .tracking-frame .corner {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border: 3px solid #00ff88;
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.4);
+    }
+
+    .tracking-frame .corner.tl {
+      top: 24px;
+      left: 24px;
+      border-right: none;
+      border-bottom: none;
+    }
+
+    .tracking-frame .corner.tr {
+      top: 24px;
+      right: 24px;
+      border-left: none;
+      border-bottom: none;
+    }
+
+    .tracking-frame .corner.bl {
+      bottom: 120px;
+      left: 24px;
+      border-right: none;
+      border-top: none;
+    }
+
+    .tracking-frame .corner.br {
+      bottom: 120px;
+      right: 24px;
+      border-left: none;
+      border-top: none;
+    }
+
+    .idle-prompt {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 4px;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 5;
+      text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+    }
+
+    .idle-prompt.visible {
+      animation: promptPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes promptPulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.7; }
+    }
+
+    .fps-counter {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      z-index: 20;
+      line-height: 1.6;
+      letter-spacing: 0.5px;
+    }
+
+    .action-labels {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      z-index: 20;
+      line-height: 1.8;
+      text-align: right;
+      letter-spacing: 0.5px;
+    }
+
+    .action-labels .label-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .action-labels .label-name {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .action-labels .label-value {
+      color: #00ff88;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 30;
+    }
+
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 48px;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .control-btn:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-btn:active {
+      transform: scale(0.98);
+    }
+
+    .control-btn.active {
+      background: rgba(0, 255, 136, 0.15);
+      border-color: rgba(0, 255, 136, 0.5);
+      color: #00ff88;
+    }
+
+    .control-btn .btn-icon {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .permission-prompt {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 50;
+      max-width: 400px;
+      padding: 40px;
+    }
+
+    .permission-prompt h2 {
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+
+    .permission-prompt p {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.6;
+    }
+
+    .permission-prompt .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #00ff88;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) and (orientation: portrait) {
+      .controls {
+        bottom: 20px;
+        left: 0;
+        right: 0;
+        transform: none;
+        justify-content: flex-start;
+        overflow-x: auto;
+        padding: 0 16px 16px;
+        gap: 12px;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .controls::-webkit-scrollbar {
+        display: none;
+      }
+
+      .control-btn {
+        flex-shrink: 0;
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+
+      .tracking-frame .corner.bl,
+      .tracking-frame .corner.br {
+        bottom: 140px;
+      }
+
+      .tracking-frame .corner {
+        width: 28px;
+        height: 28px;
+        border-width: 2px;
+      }
+
+      .idle-prompt {
+        font-size: 20px;
+        letter-spacing: 2px;
+      }
+
+      .fps-counter {
+        bottom: 100px;
+        left: 16px;
+        font-size: 11px;
+      }
+
+      .action-labels {
+        bottom: 100px;
+        right: 16px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="three-canvas"></canvas>
+
+    <div class="tracking-frame" id="tracking-frame">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+    </div>
+
+    <div class="idle-prompt" id="idle-prompt">请面对摄像头</div>
+
+    <div class="fps-counter" id="fps-counter">
+      FPS: --<br/>
+      Latency: -- ms
+    </div>
+
+    <div class="action-labels" id="action-labels">
+      <div class="label-row"><span class="label-name">Blink:</span><span class="label-value" id="lbl-blink">--</span></div>
+      <div class="label-row"><span class="label-name">MouthOpen:</span><span class="label-value" id="lbl-mouth">--</span></div>
+      <div class="label-row"><span class="label-name">BrowFrown:</span><span class="label-value" id="lbl-brow">--</span></div>
+      <div class="label-row"><span class="label-name">HeadYaw:</span><span class="label-value" id="lbl-yaw">--</span></div>
+      <div class="label-row"><span class="label-name">HeadPitch:</span><span class="label-value" id="lbl-pitch">--</span></div>
+    </div>
+
+    <div class="controls" id="controls">
+      <button class="control-btn" id="btn-reset">
+        <span class="btn-icon">↺</span>
+        <span>重置姿态</span>
+      </button>
+      <button class="control-btn" id="btn-freeze">
+        <span class="btn-icon">❄</span>
+        <span>表情冻结</span>
+      </button>
+      <button class="control-btn" id="btn-mirror">
+        <span class="btn-icon">⇄</span>
+        <span>镜像模式</span>
+      </button>
+    </div>
+
+    <div class="permission-prompt" id="permission-prompt">
+      <div class="spinner"></div>
+      <h2>正在请求摄像头权限</h2>
+      <p>请在浏览器弹窗中允许访问摄像头，以启用面部表情追踪功能</p>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
