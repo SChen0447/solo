@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:27:12.497Z",
+  "task_name": "auto52",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中模拟小型在线二手书店后台管理面板的应用，主要解决图书库存可视化、订单处理和销售趋势分析的问题。\n\n它应当具备以下能力：\n1) 图书管理面板：左侧显示所有图书列表（书名、作者、ISBN、售价、库存量），支持模糊搜索和按分类（文学/科技/艺术）筛选，点击任意图书右侧弹出详情卡片（包含封面占位符、简介、累计销量、评分），详情卡片可编辑简介并保存。\n2) 订单处理队列：页面右侧显示一个实时更新的订单列表（模拟订单数据，每15秒自动新增一条），订单状态有“待处理”、“发货中”、“已完成”三种，点击订单可切换状态并伴有平滑的颜色过渡动画（待处理-红色高亮，发货中-黄色渐变，已完成-绿色变灰），已完成订单自动下沉到列表底部。\n3) 销售趋势图表：页面顶部区域用Canvas绘制一个近30天的销售额折线图，X轴显示日期，Y轴显示金额（单位元），鼠标悬停时在折线节点上弹出tooltip显示当日具体销售额和订单数，图表下方展示总销售额和总订单量的统计数字，数字从0滚动动画递增到当前值。\n\n界面方面要求：采用半透明毛玻璃效果（backdrop-filter: blur(10px)）作为面板背景，并配合浅灰蓝（#E8F0FE）和深蓝灰（#1A2B3C）的主色调，所有卡片在悬停时上浮4px并带0.3秒ease-out阴影过渡，订单状态切换动画持续时间0.4秒，整个页面在1024px以内时左侧列表和右侧订单队列自动上下堆叠显示，响应式适配无卡顿。性能上需要所有动画帧率不低于30fps，搜索筛选响应时间不超过200ms。\n\n实现采用TypeScript、React（18.x）和Vite，按以下文件组织代码：\n - package.json（含依赖：react@18、react-dom、typescript、vite、@vitejs/plugin-react、uuid、lodash，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target为ES2020，包含DOM类型）\n - index.html（入口页面，title为“二手书店管理面板”，加载src/main.tsx）\n - src/main.tsx（React应用入口，渲染App组件，并初始化模拟数据生成器）\n - src/App.tsx（主布局组件，包含图书列表面板、订单队列面板、销售图表区域，管理图书筛选和订单状态）\n - src/components/BookCard.tsx（单个图书卡片组件，渲染图书信息、接收编辑回调，带悬停动画）\n - src/components/OrderItem.tsx（单个订单项组件，显示订单标题和状态，点击触发状态切换和颜色动画）\n - src/components/SalesChart.tsx（Canvas绘制折线图组件，接收数据数组，实现悬停tooltip和数字滚动动画）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:f85ce17f27dd71004e6b1a2830bb1520_6a284c6f98ff864760fd92da.6a284ce498ff864760fd9331.6a284ce40955e40c7b5f5c79:Trae CN.T(2026/6/10 01:27:00)",
+    "user_id": "3986207660317399",
+    "trace_id": "f85ce17f27dd71004e6b1a2830bb1520",
+    "session_id": "6a284c6f98ff864760fd92da",
+    "task_id": "6a284ce498ff864760fd9331",
+    "message_id": "6a284ce40955e40c7b5f5c79",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:27:00",
+    "format": "full"
+  },
+  "trace": "null"
+}
