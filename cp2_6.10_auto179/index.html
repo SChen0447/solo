@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>频谱工坊 - Spectrum Workshop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0f172a;
+      --bg-panel: #1e293b;
+      --bg-spectrum: #fafafa;
+      --bg-waveform: #1e1b4b;
+      --accent-purple: #7c3aed;
+      --accent-purple-2: #6366f1;
+      --accent-purple-3: #8b5cf6;
+      --accent-purple-4: #a78bfa;
+      --accent-orange: #f59e0b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --slider-track: #334155;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 4px solid var(--slider-track);
+      border-top-color: var(--accent-purple-3);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .app-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 32px;
+    }
+
+    .app-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .app-title {
+      font-size: 32px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-purple-4), var(--accent-orange));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .app-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+
+    .main-layout {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .content-area {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .upload-section {
+      margin-bottom: 20px;
+    }
+
+    .upload-btn {
+      background-color: var(--accent-purple);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .upload-btn:hover {
+      background-color: #6d28d9;
+      transform: translateY(-1px);
+    }
+
+    .file-name {
+      display: inline-block;
+      margin-left: 16px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .spectrum-panel {
+      background-color: var(--bg-spectrum);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 16px;
+    }
+
+    .spectrum-canvas {
+      width: 100%;
+      height: 280px;
+      display: block;
+      border-radius: 8px;
+    }
+
+    .progress-wrapper {
+      margin-top: 16px;
+      position: relative;
+    }
+
+    .progress-track {
+      height: 6px;
+      background: #e5e7eb;
+      border-radius: 3px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--accent-purple-3);
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.05s linear;
+    }
+
+    .progress-handle {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 16px;
+      height: 16px;
+      background: var(--accent-purple-3);
+      border-radius: 50%;
+      left: 0%;
+      cursor: grab;
+      box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .progress-handle:hover {
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    .progress-handle:active {
+      cursor: grabbing;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .waveform-panel {
+      background-color: var(--bg-waveform);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 16px;
+    }
+
+    .waveform-canvas {
+      width: 100%;
+      height: 80px;
+      display: block;
+    }
+
+    .controls-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      padding: 8px 0;
+    }
+
+    .control-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background-color: var(--bg-panel);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .control-btn:hover {
+      background-color: #334155;
+    }
+
+    .control-btn.active {
+      background-color: var(--accent-orange);
+      color: #fff;
+    }
+
+    .control-btn.active:hover {
+      background-color: #d97706;
+    }
+
+    .control-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .effects-panel {
+      width: 30%;
+      min-width: 280px;
+      background-color: var(--bg-panel);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #334155;
+    }
+
+    .effect-module {
+      margin-bottom: 28px;
+    }
+
+    .effect-module:last-child {
+      margin-bottom: 0;
+    }
+
+    .effect-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .effect-value {
+      color: var(--accent-orange);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      margin-bottom: 8px;
+    }
+
+    .slider-wrapper + .slider-wrapper {
+      margin-top: 16px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--slider-track);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-orange);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-orange);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+    }
+
+    .reset-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      flex: 1;
+    }
+
+    .reset-btn:hover {
+      background: rgba(148, 163, 184, 0.1);
+      color: var(--text-secondary);
+    }
+
+    .chain-status {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #334155;
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 900px) {
+      .main-layout {
+        flex-direction: column;
+      }
+
+      .effects-panel {
+        width: 100%;
+        min-width: unset;
+      }
+
+      .controls-row {
+        gap: 12px;
+      }
+
+      .app-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loader"></div>
+  </div>
+
+  <div class="app-container">
+    <header class="app-header">
+      <h1 class="app-title">频谱工坊</h1>
+      <p class="app-subtitle">SPECTRUM WORKSHOP — 音频可视化与效果处理工作台</p>
+    </header>
+
+    <div class="main-layout">
+      <div class="content-area">
+        <div class="upload-section">
+          <button class="upload-btn" id="uploadBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            上传音频
+          </button>
+          <input type="file" id="fileInput" accept=".wav,.mp3,audio/wav,audio/mpeg" style="display:none;" />
+          <span class="file-name" id="fileName">未选择文件</span>
+        </div>
+
+        <div class="spectrum-panel">
+          <canvas class="spectrum-canvas" id="spectrumCanvas"></canvas>
+          <div class="progress-wrapper" id="progressWrapper">
+            <div class="progress-track" id="progressTrack">
+              <div class="progress-fill" id="progressFill"></div>
+              <div class="progress-handle" id="progressHandle"></div>
+            </div>
+            <div class="time-display">
+              <span id="currentTime">0:00</span>
+              <span id="totalTime">0:00</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="waveform-panel">
+          <canvas class="waveform-canvas" id="waveformCanvas"></canvas>
+        </div>
+
+        <div class="controls-row">
+          <button class="control-btn" id="playBtn" title="播放/暂停">
+            <svg id="playIcon" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </button>
+          <button class="control-btn" id="stopBtn" title="停止">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <rect x="6" y="6" width="12" height="12"></rect>
+            </svg>
+          </button>
+          <button class="control-btn" id="loopBtn" title="循环播放">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="17 1 21 5 17 9"></polyline>
+              <path d="M3 11V9a4 4 0 0 1 4-4h14"></path>
+              <polyline points="7 23 3 19 7 15"></polyline>
+              <path d="M21 13v2a4 4 0 0 1-4 4H3"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <aside class="effects-panel">
+        <div class="panel-title">效果控制</div>
+
+        <div class="effect-module">
+          <div class="effect-label">
+            <span>混响强度</span>
+            <span class="effect-value" id="reverbValue">20%</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" id="reverbSlider" min="0" max="100" value="20" />
+          </div>
+        </div>
+
+        <div class="effect-module">
+          <div class="effect-label">
+            <span>低通截止频率</span>
+            <span class="effect-value" id="freqValue">20000 Hz</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" id="freqSlider" min="0" max="100" value="100" />
+          </div>
+          <div class="effect-label" style="margin-top:16px;">
+            <span>共振峰 (Q)</span>
+            <span class="effect-value" id="qValue">0 dB</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" id="qSlider" min="0" max="100" value="0" />
+          </div>
+          <div class="reset-row">
+            <button class="reset-btn" id="resetFreq">重置频率</button>
+            <button class="reset-btn" id="resetQ">重置共振</button>
+          </div>
+        </div>
+
+        <div class="effect-module">
+          <div class="effect-label">
+            <span>音量</span>
+            <span class="effect-value" id="volumeValue">100%</span>
+          </div>
+          <div class="slider-wrapper">
+            <input type="range" id="volumeSlider" min="0" max="200" value="100" />
+          </div>
+        </div>
+
+        <div class="chain-status" id="chainStatus">
+          混响: 20% | 低通: 20000Hz / Q: 0dB | 音量: 100%
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
