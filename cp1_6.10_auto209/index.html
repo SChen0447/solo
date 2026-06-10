@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素动画工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+      font-size: 14px;
+      color: #e0e0e0;
+      background: #1e1e2e;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      height: 56px;
+      background: #1e1e2e;
+      border-bottom: 1px solid #2b2b3b;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .toolbar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: #2b2b3b;
+      border: none;
+      color: #e0e0e0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .toolbar-btn:hover {
+      background: #3b3b4b;
+    }
+
+    .toolbar-btn:active {
+      transform: scale(0.9);
+    }
+
+    .toolbar-btn.export-btn {
+      background: #ff6b6b;
+    }
+
+    .toolbar-btn.export-btn:hover {
+      background: #ff5252;
+    }
+
+    .toolbar-btn.export-btn:active {
+      transform: scale(0.95);
+    }
+
+    .speed-controls {
+      display: flex;
+      gap: 4px;
+      margin-left: 8px;
+    }
+
+    .speed-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: #e0e0e0;
+      border: none;
+      color: #1e1e2e;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: background 0.15s;
+    }
+
+    .speed-btn.active {
+      background: #4fc3f7;
+      color: #fff;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #1e1e2e;
+      padding: 20px;
+      position: relative;
+    }
+
+    #mainCanvas {
+      background: #f5f0e8;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: crosshair;
+    }
+
+    .palette-panel {
+      width: 200px;
+      background: #2b2b3b;
+      border-radius: 12px;
+      padding: 12px;
+      margin: 20px 20px 20px 0;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .palette-color {
+      aspect-ratio: 1;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      border: 2px solid transparent;
+    }
+
+    .palette-color:hover {
+      transform: scale(1.1);
+    }
+
+    .palette-color.active {
+      box-shadow: 0 0 0 3px #ffaa00;
+      transform: scale(1.05);
+      animation: bounce 0.15s ease;
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1.05); }
+    }
+
+    .bottom-panel {
+      background: #1e1e2e;
+      padding: 12px 20px 20px;
+      flex-shrink: 0;
+      display: flex;
+      gap: 12px;
+    }
+
+    .timeline-panel {
+      flex: 1;
+      background: #2b2b3b;
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow-x: auto;
+      min-height: 110px;
+    }
+
+    .timeline-panel::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .timeline-panel::-webkit-scrollbar-track {
+      background: #1e1e2e;
+      border-radius: 3px;
+    }
+
+    .timeline-panel::-webkit-scrollbar-thumb {
+      background: #555;
+      border-radius: 3px;
+    }
+
+    .frame-thumbnail-wrapper {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .frame-thumbnail {
+      width: 80px;
+      height: 80px;
+      background: #f5f0e8;
+      border-radius: 8px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      transition: border-color 0.15s;
+    }
+
+    .frame-thumbnail.active {
+      border-color: #ff6b6b;
+    }
+
+    .frame-number {
+      font-size: 11px;
+      color: #a0a0a0;
+    }
+
+    .add-frame-btn, .remove-frame-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #3b3b4b;
+      border: none;
+      color: #e0e0e0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .add-frame-btn:hover, .remove-frame-btn:hover {
+      background: #4b4b5b;
+    }
+
+    .add-frame-btn:active, .remove-frame-btn:active {
+      transform: scale(0.9);
+    }
+
+    .mobile-palette {
+      display: none;
+      background: #2b2b3b;
+      border-radius: 12px;
+      padding: 8px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .mobile-palette-grid {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mobile-palette-color {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: box-shadow 0.15s, transform 0.15s;
+      border: 2px solid transparent;
+    }
+
+    .mobile-palette-color.active {
+      box-shadow: 0 0 0 3px #ffaa00;
+    }
+
+    .preview-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .preview-overlay.active {
+      display: flex;
+    }
+
+    .preview-bg {
+      position: absolute;
+      inset: 0;
+      filter: blur(8px);
+      opacity: 0.4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .preview-bg canvas {
+      width: 120%;
+      height: 120%;
+      image-rendering: pixelated;
+    }
+
+    .preview-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .preview-canvas {
+      width: 480px;
+      height: 480px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border-radius: 8px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .preview-frame-number {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      font-size: 24px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.8);
+      -webkit-text-stroke: 1px black;
+      paint-order: stroke fill;
+      pointer-events: none;
+    }
+
+    .preview-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .preview-close:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      width: 600px;
+      max-width: calc(100% - 40px);
+      background: #fff;
+      border-radius: 12px;
+      padding: 24px;
+      color: #1e1e2e;
+      animation: modalIn 0.3s ease;
+    }
+
+    .modal-card.closing {
+      animation: modalOut 0.3s ease forwards;
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes modalOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(100px); }
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #1e1e2e;
+    }
+
+    .modal-textarea {
+      width: 100%;
+      height: 300px;
+      font-family: monospace;
+      font-size: 12px;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      resize: none;
+      outline: none;
+      color: #1e1e2e;
+    }
+
+    .modal-textarea.error {
+      border-color: #ff1744;
+    }
+
+    .modal-textarea:focus {
+      border-color: #4fc3f7;
+    }
+
+    .modal-error-text {
+      color: #ff1744;
+      font-size: 12px;
+      margin-top: 6px;
+      height: 16px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .modal-btn:active {
+      transform: scale(0.95);
+    }
+
+    .modal-btn-primary {
+      background: #4fc3f7;
+      color: #fff;
+    }
+
+    .modal-btn-primary:hover {
+      background: #29b6f6;
+    }
+
+    .modal-btn-secondary {
+      background: #e0e0e0;
+      color: #1e1e2e;
+    }
+
+    .modal-btn-secondary:hover {
+      background: #d0d0d0;
+    }
+
+    .modal-btn-danger {
+      background: #ff6b6b;
+      color: #fff;
+    }
+
+    .modal-btn-danger:hover {
+      background: #ff5252;
+    }
+
+    @media (max-width: 768px) {
+      .toolbar-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+      }
+
+      .palette-panel {
+        display: none;
+      }
+
+      .mobile-palette {
+        display: block;
+        flex: 0 0 auto;
+        max-width: 200px;
+      }
+
+      .bottom-panel {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="toolbar">
+      <button class="toolbar-btn" id="playBtn" title="播放/预览">▶</button>
+      <button class="toolbar-btn" id="stopBtn" title="停止">■</button>
+      <div class="speed-controls">
+        <button class="speed-btn" data-speed="0.5">慢</button>
+        <button class="speed-btn active" data-speed="0.3">中</button>
+        <button class="speed-btn" data-speed="0.15">快</button>
+      </div>
+      <button class="toolbar-btn" id="importBtn" title="导入">⬆</button>
+      <button class="toolbar-btn export-btn" id="exportBtn" title="导出">⬇</button>
+    </div>
+
+    <div class="main-content">
+      <div class="canvas-area">
+        <canvas id="mainCanvas" width="480" height="480"></canvas>
+      </div>
+      <div class="palette-panel">
+        <div class="panel-title">调色板</div>
+        <div class="palette-grid" id="paletteGrid"></div>
+      </div>
+    </div>
+
+    <div class="bottom-panel">
+      <div class="timeline-panel" id="timelinePanel"></div>
+      <div class="mobile-palette">
+        <div class="mobile-palette-grid" id="mobilePaletteGrid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview-overlay" id="previewOverlay">
+    <div class="preview-bg" id="previewBg">
+      <canvas id="previewBgCanvas"></canvas>
+    </div>
+    <div class="preview-container">
+      <div class="preview-frame-number" id="previewFrameNumber">1</div>
+      <canvas class="preview-canvas" id="previewCanvas" width="480" height="480"></canvas>
+    </div>
+    <button class="preview-close" id="previewClose">✕</button>
+  </div>
+
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal-card" id="exportModalCard">
+      <div class="modal-title">导出动画数据</div>
+      <textarea class="modal-textarea" id="exportTextarea" readonly></textarea>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-primary" id="copyBtn">复制到剪贴板</button>
+        <button class="modal-btn modal-btn-secondary" id="exportCloseBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="importModal">
+    <div class="modal-card" id="importModalCard">
+      <div class="modal-title">导入动画数据</div>
+      <textarea class="modal-textarea" id="importTextarea" placeholder="粘贴JSON格式的动画数据..."></textarea>
+      <div class="modal-error-text" id="importErrorText"></div>
+      <div class="modal-buttons">
+        <button class="modal-btn modal-btn-primary" id="loadBtn">加载</button>
+        <button class="modal-btn modal-btn-secondary" id="importCloseBtn">关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
