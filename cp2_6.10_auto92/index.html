@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clip vs Mask Playground</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: #1a1a2e;
+      color: #ffffff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(26, 26, 46, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .navbar-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #ffffff;
+    }
+
+    .navbar-status {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #22c55e;
+      transition: all 0.3s ease;
+    }
+
+    .status-dot.error {
+      background-color: #ef4444;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .status-text {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .history-count {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .history-count:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .main-container {
+      padding: 80px 24px 100px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .canvases-wrapper {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      align-items: flex-start;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+    }
+
+    .canvases-wrapper.compare-mode {
+      gap: 0;
+    }
+
+    .canvas-section {
+      flex: 1;
+      max-width: 560px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .canvases-wrapper.compare-mode .canvas-section {
+      max-width: none;
+      transform: scale(0.6);
+      transform-origin: center top;
+    }
+
+    .divider-bar {
+      display: none;
+      width: 4px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: ew-resize;
+      position: absolute;
+      left: 50%;
+      top: 0;
+      transform: translateX(-50%);
+      z-index: 10;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    .divider-bar:hover {
+      background: rgba(135, 206, 250, 0.8);
+    }
+
+    .canvases-wrapper.compare-mode .divider-bar {
+      display: block;
+    }
+
+    .canvas-header {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .canvas-header-tag {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+    }
+
+    .canvas-header-tag.mask {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+
+    .preview-canvas-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      background:
+        linear-gradient(45deg, #2a2a4e 25%, transparent 25%),
+        linear-gradient(-45deg, #2a2a4e 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a2a4e 75%),
+        linear-gradient(-45deg, transparent 75%, #2a2a4e 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      background-color: #232343;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .preview-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .explanation-text {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.7);
+      min-height: 60px;
+    }
+
+    .preset-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .preset-btn {
+      padding: 6px 14px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .preset-btn.active {
+      background: #4ecdc4;
+      border-color: #4ecdc4;
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+
+    .preset-btn.mask.active {
+      background: #ff6b6b;
+      border-color: #ff6b6b;
+    }
+
+    .controls-panel {
+      margin-top: 20px;
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    .slider-input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4ecdc4;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(78, 205, 196, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider-input.mask::-webkit-slider-thumb {
+      background: #ff6b6b;
+      box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+    }
+
+    .slider-value-tooltip {
+      position: absolute;
+      top: -8px;
+      transform: translateX(-50%) translateY(-100%);
+      padding: 4px 10px;
+      background: rgba(135, 206, 250, 0.95);
+      color: #1a1a2e;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .slider-value-tooltip.visible {
+      opacity: 1;
+    }
+
+    .slider-value-tooltip::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px 4px 0;
+      border-style: solid;
+      border-color: rgba(135, 206, 250, 0.95) transparent transparent;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .switch.checked {
+      background: #ff6b6b;
+    }
+
+    .switch-dot {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .switch.checked .switch-dot {
+      transform: translateX(20px);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.08);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn-reset {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    .btn-reset svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .btn-reset.animating {
+      animation: resetPulse 0.3s ease;
+    }
+
+    @keyframes resetPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(0.85); }
+      100% { transform: scale(1); }
+    }
+
+    .compare-toggle {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .compare-option {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.6);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+
+    .compare-option.active {
+      color: #1a1a2e;
+    }
+
+    .compare-slider {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      height: calc(100% - 8px);
+      background: linear-gradient(135deg, #4ecdc4, #ff6b6b);
+      border-radius: 20px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 0;
+    }
+
+    .history-drawer {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      max-height: 60vh;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px 20px 0 0;
+      transform: translateY(100%);
+      transition: transform 0.4s ease-in;
+      z-index: 200;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .history-drawer.open {
+      transform: translateY(0);
+      transition: transform 0.4s ease-out;
+    }
+
+    .history-drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .history-drawer-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .history-close-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .history-close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+
+    .history-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .history-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .history-thumbnail {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #232343;
+      margin-bottom: 10px;
+    }
+
+    .history-thumbnail img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .history-labels {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .history-label {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(78, 205, 196, 0.2);
+      color: #4ecdc4;
+    }
+
+    .history-label.mask {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+    }
+
+    .history-empty {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s ease;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      color: #1a1a2e;
+      border-radius: 16px;
+      padding: 28px;
+      width: 90%;
+      max-width: 360px;
+      transform: scale(0.9);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.visible .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .modal-text {
+      font-size: 14px;
+      color: rgba(26, 26, 46, 0.7);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .modal-btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .modal-btn.cancel {
+      background: rgba(26, 26, 46, 0.1);
+      color: rgba(26, 26, 46, 0.7);
+    }
+
+    .modal-btn.cancel:hover {
+      background: rgba(26, 26, 46, 0.15);
+    }
+
+    .modal-btn.confirm {
+      background: linear-gradient(135deg, #4ecdc4, #ff6b6b);
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .modal-btn.confirm:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-title">Clip vs Mask Playground</div>
+    <div class="navbar-status">
+      <div class="status-indicator">
+        <div class="status-dot" id="fpsDot"></div>
+        <span class="status-text" id="fpsText">FPS 稳定</span>
+      </div>
+      <div class="history-count" id="historyBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3v5h5M3.05 13A9 9 0 1 0 6 5.3L3 8"/>
+          <polyline points="12 7 12 12 15 14"/>
+        </svg>
+        <span id="historyCount">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-container">
+    <div class="canvases-wrapper" id="canvasesWrapper">
+      <div class="canvas-section">
+        <div class="canvas-header">
+          <span>Clip-Path 裁剪</span>
+          <span class="canvas-header-tag">CSS clip-path</span>
+        </div>
+        <div class="preview-canvas-container" id="clipContainer">
+          <canvas class="preview-canvas" id="clipCanvas"></canvas>
+        </div>
+        <div class="explanation-text" id="clipExplanation">
+          clip-path 将元素裁剪为不可见的边界框，超出部分不参与事件响应。
+        </div>
+        <div class="preset-list" id="clipPresets"></div>
+        <div class="controls-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>形状调整</span>
+              <span id="clipAdjustValue">50%</span>
+            </div>
+            <div id="clipAdjustSlider"></div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-reset" id="clipResetBtn" title="重置">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+              </svg>
+            </button>
+            <button class="btn" id="clipExportBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              导出PNG
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider-bar" id="dividerBar"></div>
+
+      <div class="canvas-section">
+        <div class="canvas-header">
+          <span>Mask-Image 遮罩</span>
+          <span class="canvas-header-tag mask">CSS mask-image</span>
+        </div>
+        <div class="preview-canvas-container" id="maskContainer">
+          <canvas class="preview-canvas" id="maskCanvas"></canvas>
+        </div>
+        <div class="explanation-text" id="maskExplanation">
+          mask-image 仅控制像素透明度，元素布局不变但点击区域可能缩小。
+        </div>
+        <div class="preset-list" id="maskPresets"></div>
+        <div class="controls-panel">
+          <div class="control-group">
+            <div class="control-label">
+              <span>亮度阈值</span>
+              <span id="maskThresholdValue">128</span>
+            </div>
+            <div id="maskThresholdSlider"></div>
+          </div>
+          <div class="control-group">
+            <div class="checkbox-wrapper">
+              <span class="control-label" style="margin-bottom: 0;">反转遮罩</span>
+              <div id="maskInvertCheckbox"></div>
+            </div>
+          </div>
+          <div class="action-buttons">
+            <button class="btn btn-reset" id="maskResetBtn" title="重置">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="1 4 1 10 7 10"/>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+              </svg>
+            </button>
+            <button class="btn" id="maskExportBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              导出PNG
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-toggle" id="compareToggle">
+    <div class="compare-slider" id="compareSlider"></div>
+    <div class="compare-option active" data-mode="independent">独立</div>
+    <div class="compare-option" data-mode="overlay">叠加</div>
+  </div>
+
+  <div class="history-drawer" id="historyDrawer">
+    <div class="history-drawer-header">
+      <div class="history-drawer-title">历史预设 (最近10个)</div>
+      <button class="history-close-btn" id="historyCloseBtn">&times;</button>
+    </div>
+    <div class="history-grid" id="historyGrid"></div>
+  </div>
+
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal-card">
+      <div class="modal-title">确认导出</div>
+      <div class="modal-text">即将将当前画布内容导出为 PNG 图片文件。是否继续？</div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="modalCancelBtn">取消</button>
+        <button class="modal-btn confirm" id="modalConfirmBtn">确认导出</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
