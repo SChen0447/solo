@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星云粒子系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #canvas {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+
+    #paused-watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      display: none;
+      letter-spacing: 8px;
+      user-select: none;
+      text-shadow: 0 0 30px rgba(74, 74, 255, 0.5);
+    }
+
+    #controls-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      min-width: 340px;
+      padding: 24px;
+      background: rgba(20, 20, 40, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background-image: linear-gradient(rgba(20, 20, 40, 0.7), rgba(20, 20, 40, 0.7)),
+        linear-gradient(135deg, #4a4aff, #aa00ff);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      box-shadow: 0 0 40px rgba(74, 74, 255, 0.3),
+                  inset 0 0 60px rgba(170, 0, 255, 0.05);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 100;
+      color: #e0e0ff;
+    }
+
+    #controls-panel.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #controls-panel h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #4a4aff, #aa00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #b0b0d0;
+      margin-bottom: 8px;
+    }
+
+    .control-group .value {
+      color: #aa88ff;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(90deg, #4a4aff, #aa00ff);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #aa00ff;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(170, 0, 255, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #aa00ff;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(170, 0, 255, 0.6);
+    }
+
+    .color-schemes {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .color-btn {
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      background-image: linear-gradient(rgba(40, 40, 80, 0.8), rgba(40, 40, 80, 0.8)),
+        linear-gradient(135deg, #4a4aff, #aa00ff);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+      border-radius: 10px;
+      color: #e0e0ff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-btn:hover {
+      filter: brightness(1.2);
+      box-shadow: 0 0 20px rgba(74, 74, 255, 0.4);
+    }
+
+    .color-btn:active {
+      transform: scale(0.95);
+    }
+
+    .color-btn.active {
+      background-image: linear-gradient(rgba(60, 40, 120, 0.9), rgba(60, 40, 120, 0.9)),
+        linear-gradient(135deg, #4a4aff, #aa00ff);
+      box-shadow: 0 0 25px rgba(170, 0, 255, 0.5);
+    }
+
+    .color-preview {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      color: #b0b0d0;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      filter: brightness(1.2);
+    }
+
+    .close-btn:active {
+      transform: scale(0.95);
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(176, 176, 208, 0.5);
+      font-size: 12px;
+      letter-spacing: 1px;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="paused-watermark">PAUSED</div>
+
+  <div id="controls-panel">
+    <button class="close-btn" id="close-controls">×</button>
+    <h2>星云控制面板</h2>
+
+    <div class="control-group">
+      <label>
+        <span>粒子数量</span>
+        <span class="value" id="count-value">10000</span>
+      </label>
+      <input type="range" id="count-slider" min="5000" max="50000" step="500" value="10000" />
+    </div>
+
+    <div class="control-group">
+      <label>
+        <span>湍流强度</span>
+        <span class="value" id="turbulence-value">0.8</span>
+      </label>
+      <input type="range" id="turbulence-slider" min="0" max="2" step="0.01" value="0.8" />
+    </div>
+
+    <div class="control-group">
+      <label>
+        <span>颜色方案</span>
+      </label>
+      <div class="color-schemes" id="color-schemes">
+        <button class="color-btn active" data-scheme="bluePurple">
+          <span class="color-preview" style="background: linear-gradient(135deg, #4a4aff, #aa00ff);"></span>
+          蓝紫色调
+        </button>
+        <button class="color-btn" data-scheme="redOrange">
+          <span class="color-preview" style="background: linear-gradient(135deg, #ff4a4a, #ffaa00);"></span>
+          红橙色调
+        </button>
+        <button class="color-btn" data-scheme="greenCyan">
+          <span class="color-preview" style="background: linear-gradient(135deg, #00ff88, #00aaff);"></span>
+          绿青色调
+        </button>
+        <button class="color-btn" data-scheme="rainbow">
+          <span class="color-preview" style="background: linear-gradient(135deg, #ff0000, #ff8800, #ffff00, #00ff88, #00aaff, #aa00ff);"></span>
+          彩虹渐变
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hint">左键拖拽旋转 · 滚轮缩放 · 右键打开面板 · 点击粒子爆炸 · R重置 · Space暂停</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
