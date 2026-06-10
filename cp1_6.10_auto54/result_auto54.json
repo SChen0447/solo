@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:06:52.765Z",
+  "task_name": "auto54",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个基于浏览器摄像头的手势控制全景地图浏览应用，用户通过举手、握拳、滑动等手势即可实现地图的旋转、缩放和平移。使用TypeScript、React 18、Three.js（用于3D全景渲染）和MediaPipe Hands（通过CDN加载）实现。文件结构如下：\n - package.json（依赖：react, react-dom, three, @types/three, @mediapipe/hands, @mediapipe/camera_utils, vite, @vitejs/plugin-react, typescript；启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，加载MediaPipe Hands的WASM文件路径）\n - src/App.tsx（主组件，负责整合手势识别模块和3D场景模块，初始化摄像头和MediaPipe，并将手势指令转发至全景控制器）\n - src/hooks/useHandGesture.ts（自定义Hook，封装MediaPipe Hands的初始化、帧处理、手势识别逻辑，输出当前手势类型（如open_palm、fist、swipe_left）及手部关键点坐标数据）\n - src/components/PanoramaViewer.tsx（3D全景渲染组件，使用Three.js创建一个球体纹理场景，接收手势指令更新相机视角：open_palm暂停旋转、fist并移动控制平移、swipe控制旋转方向和速度，所有动画以60fps平滑插值）\n\n具体需求：\n1. 页面加载后自动请求摄像头权限，成功后在画面右下角显示一个小窗口（150x100像素）展示摄像头实时画面，同时左上角显示当前识别到的手势名称（如“张开手掌”），名称标签带毛玻璃背景和淡入淡出动画。\n2. 全景场景默认使用一张360度城市夜景纹理图片（由应用内置base64数据提供），用户握拳并向右/向左移动拳头时，场景水平旋转速度与拳头移动速度成正比（最大旋转速度每秒60度），移动停止时旋转惯性持续1秒并逐渐衰减。\n3. 用户张开手掌保持3秒后，场景自动进入“浏览模式”，缓慢自动旋转（每秒10度），旋转时画面四周出现渐变的暗角效果（降低边缘亮度20%），再次握拳退出自动旋转模式。\n4. 用户双手食指与拇指捏合（距离小于30像素）并向外拉开时，场景平滑缩放（缩放系数从0.5到2.0，使用指数插值，过渡时间0.3秒），缩放时画面中心有一个半透明的圆点表示焦点，缩放完成后圆点淡出消失。\n5. 用户握拳并向左/向右快速滑动（水平速度大于150像素/秒）时，触发场景快照旋转90度，旋转动画持续0.4秒并伴随轻微的镜头模糊和恢复效果（模糊半径从0到3像素再归零）。\n\n界面方面：整体界面采用全暗色主题（背景#0a0a12），仅保留摄像头小窗、手势名称标签和底部一条半透明的控制提示栏（显示支持的三种手势图标和文字说明）。手势名称标签使用白色字体加浅蓝色（#4fc3f7）描边，标签背景为rgba(10,10,18,0.6)并带8px模糊的毛玻璃效果。提示栏中的图标采用线性图标风格（白色，1.5px描边），点击图标可播放一个简短的演示动画（手势模拟动效）。所有界面元素支持响应式布局，在手机竖屏模式下，摄像头小窗移至屏幕左上角且尺寸缩小为120x90像素。\n\n性能要求：3D场景渲染帧率稳定在55-60FPS，手势识别延迟不超过50ms，摄像头画面展示小窗更新帧率不低于20FPS。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:b782d58d51715eb0f5892b1cf82c780f_6a28558e52ebf02b02778f36.6a28563052ebf02b02778fb8.6a285630f8297d2686d4ccd5:Trae CN.T(2026/6/10 02:06:40)",
+    "user_id": "3986207660317399",
+    "trace_id": "b782d58d51715eb0f5892b1cf82c780f",
+    "session_id": "6a28558e52ebf02b02778f36",
+    "task_id": "6a28563052ebf02b02778fb8",
+    "message_id": "6a285630f8297d2686d4ccd5",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:06:40",
+    "format": "full"
+  },
+  "trace": "null"
+}
