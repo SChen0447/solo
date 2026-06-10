@@ -1,0 +1,19 @@
+{
+  "name": "2d-character-animation-editor",
+  "version": "1.0.0",
+  "description": "2D角色动作关键帧编辑与插值预览应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}

@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2D角色动作关键帧编辑器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1e1e2e;
+      color: #dfe6e9;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+    }
+
+    .editor-panel {
+      width: 35%;
+      height: 100%;
+      background: #2d2d44;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #6c5ce7;
+      min-width: 0;
+    }
+
+    .divider {
+      width: 0;
+      height: 100%;
+      flex-shrink: 0;
+    }
+
+    .preview-panel {
+      width: 65%;
+      height: 100%;
+      position: relative;
+      min-width: 0;
+    }
+
+    .preview-panel canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #4a4a6a;
+      background: #252540;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #00cec9;
+    }
+
+    .btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-primary {
+      background: #0984e3;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #74b9ff;
+    }
+
+    .btn-secondary {
+      background: #636e72;
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: #b2bec3;
+    }
+
+    @media (max-width: 800px) {
+      #app {
+        flex-direction: column;
+      }
+
+      .editor-panel {
+        width: 100%;
+        height: 80px;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid #6c5ce7;
+      }
+
+      .preview-panel {
+        width: 100%;
+        height: calc(100% - 80px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
