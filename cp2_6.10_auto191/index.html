@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分子结构查看器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #app-title {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      z-index: 100;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    #molecule-selector-container {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+    }
+
+    #molecule-selector {
+      background: #2a2b38;
+      color: #ffffff;
+      border: 1px solid #3a3b48;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+      min-width: 200px;
+    }
+
+    #molecule-selector:hover {
+      border-color: #7c3aed;
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+    }
+
+    #molecule-selector option {
+      background: #2a2b38;
+      color: #ffffff;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      width: 200px;
+      background: #1e1e2e;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 100;
+      border: 1px solid #2a2b38;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #control-panel h3 {
+      font-size: 14px;
+      color: #00ffff;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #2a2b38;
+    }
+
+    .element-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 4px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .element-item:hover {
+      background: #2a2b38;
+      transform: scale(1.05);
+    }
+
+    .element-item input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #7c3aed;
+      cursor: pointer;
+    }
+
+    .element-item label {
+      font-size: 13px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .element-color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .annotation-label {
+      background: rgba(51, 51, 51, 0.9);
+      color: #ffffff;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      white-space: nowrap;
+      pointer-events: none;
+      border: 1px solid #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    .annotation-label:hover {
+      transform: scale(1.05);
+    }
+
+    #hamburger-menu {
+      display: none;
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 200;
+      background: #2a2b38;
+      border: 1px solid #3a3b48;
+      border-radius: 8px;
+      padding: 10px 14px;
+      cursor: pointer;
+      color: #ffffff;
+      font-size: 18px;
+      transition: all 0.2s ease;
+    }
+
+    #hamburger-menu:hover {
+      border-color: #7c3aed;
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+      #app-title {
+        font-size: 18px;
+        top: 12px;
+        left: 12px;
+      }
+
+      #molecule-selector-container {
+        top: 60px;
+        left: 12px;
+        transform: none;
+        right: 12px;
+      }
+
+      #molecule-selector {
+        width: 100%;
+      }
+
+      #hamburger-menu {
+        display: block;
+      }
+
+      #control-panel {
+        display: none;
+        top: 120px;
+        right: 12px;
+        left: 12px;
+        width: auto;
+      }
+
+      #control-panel.open {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="app-title">分子结构查看器</div>
+    
+    <button id="hamburger-menu" title="菜单">☰</button>
+
+    <div id="molecule-selector-container">
+      <select id="molecule-selector">
+        <option value="H2O">水 (H₂O)</option>
+        <option value="CO2">二氧化碳 (CO₂)</option>
+        <option value="C6H6">苯 (C₆H₆)</option>
+      </select>
+    </div>
+
+    <div id="control-panel">
+      <h3>元素高亮筛选</h3>
+      <div id="element-list"></div>
+    </div>
+
+    <div id="canvas-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
