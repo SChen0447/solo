@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地下秘境 - 植物根系生长可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+      background: linear-gradient(180deg, #2a1a0a 0%, #4a3a2a 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      flex-shrink: 0;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: #a5d6a7;
+      text-shadow: 0 0 12px rgba(165, 214, 167, 0.6),
+                   0 0 24px rgba(165, 214, 167, 0.3);
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      position: relative;
+      min-height: 0;
+    }
+
+    #scene-container {
+      flex: 1;
+      position: relative;
+      width: 70%;
+    }
+
+    #ui-panel {
+      width: 320px;
+      margin: 16px;
+      padding: 20px;
+      background: rgba(62, 39, 35, 0.7);
+      border-radius: 12px;
+      color: #e8d5c4;
+      backdrop-filter: blur(8px);
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .hamburger-btn {
+      display: none;
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      background: rgba(62, 39, 35, 0.8);
+      border: 1px solid #5d4037;
+      color: #a5d6a7;
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #c8e6c9;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #5d4037;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 14px;
+    }
+
+    .info-label {
+      color: #bcaaa4;
+    }
+
+    .info-value {
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+      color: #a5d6a7;
+    }
+
+    .control-group {
+      margin: 16px 0;
+    }
+
+    .control-label {
+      display: block;
+      font-size: 13px;
+      color: #bcaaa4;
+      margin-bottom: 6px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: #5d4037;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #81c784;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #a5d6a7;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #81c784;
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-value {
+      min-width: 40px;
+      text-align: right;
+      font-family: 'Courier New', monospace;
+      color: #a5d6a7;
+      font-size: 13px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      margin: 6px 0;
+      border: none;
+      border-radius: 6px;
+      background: #a5d6a7;
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #66bb6a;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid #81c784;
+      color: #a5d6a7;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(129, 199, 132, 0.15);
+    }
+
+    .tooltip {
+      position: absolute;
+      pointer-events: none;
+      background: rgba(62, 39, 35, 0.95);
+      color: #e8d5c4;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border: 1px solid #5d4037;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 50;
+      white-space: nowrap;
+    }
+
+    .completion-banner {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px 32px;
+      background: rgba(46, 125, 50, 0.85);
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 600;
+      border-radius: 8px;
+      letter-spacing: 4px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      z-index: 60;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #8d6e63;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 800px) {
+      #scene-container {
+        width: 100%;
+      }
+
+      #ui-panel {
+        display: none;
+        position: absolute;
+        top: 60px;
+        right: 16px;
+        width: 280px;
+        max-height: calc(100vh - 90px);
+        margin: 0;
+        z-index: 90;
+      }
+
+      #ui-panel.open {
+        display: block;
+      }
+
+      .hamburger-btn {
+        display: flex;
+      }
+
+      .title {
+        font-size: 20px;
+        letter-spacing: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <header class="header">
+      <h1 class="title">地 下 秘 境</h1>
+    </header>
+
+    <div class="main-container">
+      <button class="hamburger-btn" id="hamburger-btn">☰</button>
+      <div id="scene-container"></div>
+
+      <aside id="ui-panel">
+        <h2 class="section-title">植物信息</h2>
+        <div id="plant-info">
+          <div class="info-row">
+            <span class="info-label">名称</span>
+            <span class="info-value" id="plant-name">未选择</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">根系深度</span>
+            <span class="info-value" id="root-depth">0.00</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">总长度</span>
+            <span class="info-value" id="root-length">0.00</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">侧根数量</span>
+            <span class="info-value" id="lateral-count">0</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">生长耗时</span>
+            <span class="info-value" id="growth-time">0.00s</span>
+          </div>
+        </div>
+
+        <h2 class="section-title" style="margin-top: 20px;">场景控制</h2>
+        <button class="btn" id="btn-grow">开始生长</button>
+        <button class="btn btn-secondary" id="btn-reset">重置生长</button>
+
+        <div class="control-group">
+          <label class="control-label">土壤透明度</label>
+          <div class="slider-container">
+            <input type="range" id="soil-opacity" min="0" max="1" step="0.01" value="0.6" />
+            <span class="slider-value" id="soil-opacity-value">0.60</span>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label class="control-label">生长速度</label>
+          <div class="slider-container">
+            <input type="range" id="growth-speed" min="0.1" max="3.0" step="0.1" value="1.0" />
+            <span class="slider-value" id="growth-speed-value">1.0x</span>
+          </div>
+        </div>
+
+        <p class="hint">
+          操作提示：<br/>
+          • 拖拽：旋转视角<br/>
+          • 滚轮：缩放<br/>
+          • 点击：选中植物<br/>
+          • Tab：切换显示其他植物<br/>
+          • R：重置视角
+        </p>
+      </aside>
+    </div>
+
+    <div class="tooltip" id="tooltip"></div>
+    <div class="completion-banner" id="completion-banner">生 长 完 成</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
