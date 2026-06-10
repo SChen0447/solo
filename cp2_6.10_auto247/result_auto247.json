@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T22:55:02.320Z",
+  "task_name": "auto247",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个面向小型独立乐队的在线排练安排、歌曲集管理及演出计划看板应用，让乐队成员能创建排练或演出日程、管理歌曲库（含歌词和和弦谱），查看成员的空闲状态，并在一个看板上直观管理待办事项。使用TypeScript、React 18和Vite实现，文件结构如下：\n - package.json（依赖：react@18、react-dom@18、typescript、vite@5、@vitejs/plugin-react、uuid、date-fns，启动脚本：npm run dev）\n - index.html（入口页面，暗色渐变背景#1a1a2e→#16213e）\n - tsconfig.json（严格模式）\n - vite.config.js（构建配置）\n - src/App.tsx（主应用组件，路由管理）\n - src/pages/Dashboard.tsx（看板页面，展示日程、歌曲、待办）\n - src/components/ScheduleList.tsx（日程列表组件）\n - src/components/SongLibrary.tsx（歌曲库组件）\n - src/components/MemberStatus.tsx（成员状态组件）\n\n具体需求：\n1. 日程管理：支持创建排练或演出日程（标题、日期时间、地点、备注），以卡片列表形式展示，卡片按日期分组并自动高亮当天和明天的日程，每个卡片带有“完成排练”和“取消”按钮，点击完成排练时卡片变淡并打上绿色对勾标记。\n2. 歌曲库管理：支持添加歌曲条目（歌曲名、调号、BPM、歌词或和弦简谱文本），展现在一个可滚动列表中，每条记录带“编辑”和“删除”按钮，编辑时弹出模态框修改内容。\n3. 成员状态看板：页面顶部显示所有成员（预设名：Alex、Blake、Casey、Dylan），每个成员以圆形头像占位符展示，颜色不同（紫#7c4dff、蓝#448aff、绿#69f0ae、橙#ff6d00），下方显示当前状态文字（空闲、排练中、休息中），点击可切换状态，状态切换时有颜色过渡动画0.3s。\n4. 待办事项看板：在仪表盘页面右侧展示待办事项列表，每条事项包含勾选框和描述文本，可新增和删除，完成后文字变灰并加删除线，带滑入动画。\n\n界面方面：整体暗色调搭配霓虹彩色点缀（按钮主色#7c4dff，悬停#651fff，焦点环#bb86fc），卡片背景#2a2a40，圆角12px，带微弱阴影。日程卡左边缘用紫色竖条（4px宽）装饰，歌曲库条目左边缘用绿色竖条。所有列表项悬停时轻微上移3px并加深阴影。日程详情页有淡入淡出过渡，模态框打开时有缩放和透明度动画。响应式适配：在宽度小于768px时卡片网格变成单列，按钮堆叠显示。\n\n性能要求：歌曲库列表渲染超过50条时滚动流畅无卡顿，帧率稳定在50fps以上；状态切换动画不引起布局抖动。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:228a98909823f3a1b3d9f584357537a2_6a2898c6a315fd49e4a5518b.6a2899b9a315fd49e4a5527c.6a2899b9ffdef40a27197435:Trae CN.T(2026/6/10 06:54:49)",
+    "user_id": "3986207660317399",
+    "trace_id": "228a98909823f3a1b3d9f584357537a2",
+    "session_id": "6a2898c6a315fd49e4a5518b",
+    "task_id": "6a2899b9a315fd49e4a5527c",
+    "message_id": "6a2899b9ffdef40a27197435",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 06:54:49",
+    "format": "full"
+  },
+  "trace": "null"
+}
