@@ -1,0 +1,19 @@
+{
+  "name": "poetry-imagery-visualization",
+  "version": "1.0.0",
+  "description": "唐宋诗词意象可视化展示应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "d3": "7.8.5"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>诗词意象图谱 - 唐宋诗词意象可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Songti SC', 'STSong', 'SimSun', serif;
+      background-color: #f5f0e8;
+      color: #333;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .header {
+      padding: 16px 24px;
+      background: rgba(245, 240, 232, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 10;
+    }
+
+    .app-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #2c3e50;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    .app-subtitle {
+      font-size: 13px;
+      color: #7f8c8d;
+      margin-left: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .search-box,
+    .filter-box {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 8px 14px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .search-box:hover,
+    .filter-box:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transform: scale(1.02);
+    }
+
+    .search-box:focus-within,
+    .filter-box:focus-within {
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.06);
+      transform: scale(1);
+    }
+
+    .search-box input,
+    .filter-box select {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 14px;
+      font-family: inherit;
+      color: #333;
+      min-width: 120px;
+    }
+
+    .search-box input::placeholder {
+      color: #999;
+    }
+
+    .search-icon {
+      color: #7f8c8d;
+      font-size: 14px;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .graph-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #graph {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      z-index: 5;
+    }
+
+    .legend-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2c3e50;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0;
+      font-size: 12px;
+      color: #555;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .sidebar {
+      width: 0;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-left: 1px solid rgba(0, 0, 0, 0.08);
+      transition: width 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar.open {
+      width: 340px;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #2c3e50;
+    }
+
+    .sidebar-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      color: #7f8c8d;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-close:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #333;
+      transform: scale(1.05);
+    }
+
+    .sidebar-close:active {
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      transform: scale(1);
+    }
+
+    .sidebar-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .poem-card {
+      background: rgba(245, 240, 232, 0.6);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border-left: 3px solid #d4a574;
+      transition: all 0.2s ease;
+    }
+
+    .poem-card:hover {
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .poem-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 6px;
+    }
+
+    .poem-author {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-bottom: 10px;
+    }
+
+    .poem-content {
+      font-size: 14px;
+      line-height: 1.8;
+      color: #444;
+      white-space: pre-line;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(44, 62, 80, 0.95);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-info {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .empty-sidebar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: #999;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .empty-sidebar-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.4;
+    }
+
+    .empty-sidebar-text {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar.open {
+        width: 300px;
+      }
+      .app-title {
+        font-size: 18px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 12px 16px;
+        gap: 10px;
+      }
+      .app-title {
+        font-size: 16px;
+      }
+      .app-subtitle {
+        display: none;
+      }
+      .controls {
+        width: 100%;
+        justify-content: flex-start;
+      }
+      .search-box,
+      .filter-box {
+        flex: 1;
+      }
+      .main-content {
+        flex-direction: column;
+      }
+      .sidebar.open {
+        width: 100%;
+        max-height: 45vh;
+        border-left: none;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+      }
+      .legend {
+        bottom: 10px;
+        left: 10px;
+        padding: 8px 12px;
+      }
+      .legend-title {
+        font-size: 12px;
+      }
+      .legend-item {
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div>
+        <span class="app-title">诗词意象图谱</span>
+        <span class="app-subtitle">探索唐宋诗词中的情感世界</span>
+      </div>
+      <div class="controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜索意象（如：月、酒、柳）" />
+        </div>
+        <div class="filter-box">
+          <select id="emotionFilter">
+            <option value="all">全部情感</option>
+            <option value="positive">积极意象</option>
+            <option value="negative">消极意象</option>
+            <option value="neutral">中性意象</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="graph-container">
+        <svg id="graph"></svg>
+        <div class="legend">
+          <div class="legend-title">情感分类</div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: linear-gradient(135deg, #f39c12, #e74c3c);"></span>
+            <span>积极意象</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: linear-gradient(135deg, #2980b9, #8e44ad);"></span>
+            <span>消极意象</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-color" style="background: #bdc3c7;"></span>
+            <span>中性意象</span>
+          </div>
+        </div>
+        <div class="tooltip" id="tooltip"></div>
+      </div>
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title" id="sidebarTitle">意象详情</span>
+          <button class="sidebar-close" id="sidebarClose">×</button>
+        </div>
+        <div class="sidebar-content" id="sidebarContent">
+          <div class="empty-sidebar">
+            <div class="empty-sidebar-icon">📜</div>
+            <div class="empty-sidebar-text">
+              点击左侧图谱中的意象节点<br/>
+              查看相关诗词作品
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
