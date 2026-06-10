@@ -1,0 +1,21 @@
+{
+  "name": "electron-cloud-visualizer",
+  "version": "1.0.0",
+  "description": "Interactive 3D electron cloud probability density visualization",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "lodash": "^4.17.21",
+    "dat.gui": "^0.7.9"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "@types/three": "^0.160.0",
+    "@types/lodash": "^4.14.202",
+    "@types/dat.gui": "^0.7.12"
+  }
+}

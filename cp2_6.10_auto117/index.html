@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>氢原子电子云概率密度可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a1a3e 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #quantum-label {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      background: rgba(30, 30, 60, 0.6);
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid #3a3a6e;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    #quantum-label .label-title {
+      font-size: 12px;
+      color: #9b9bcc;
+      margin-bottom: 4px;
+    }
+
+    #quantum-label .label-value {
+      font-size: 20px;
+      color: #ffffff;
+      letter-spacing: 1px;
+    }
+
+    #fps-counter {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      font-family: monospace;
+      color: #ffffff;
+      background: rgba(30, 30, 60, 0.6);
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid #3a3a6e;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    #gui-container {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+
+    .dg.main {
+      background: rgba(30, 30, 60, 0.8) !important;
+      border: 1px solid #3a3a6e !important;
+      border-radius: 12px !important;
+      padding: 16px !important;
+      backdrop-filter: blur(12px) !important;
+      font-family: 'Segoe UI', sans-serif !important;
+    }
+
+    .dg.main .close-button {
+      border-radius: 8px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .dg .c .slider {
+      background: #2a2a5e !important;
+      border-radius: 4px !important;
+    }
+
+    .dg .c .slider-fg {
+      background: #1e90ff !important;
+      border-radius: 4px !important;
+    }
+
+    .dg .c input[type=text] {
+      background: #2a2a5e !important;
+      border: 1px solid #3a3a6e !important;
+      color: #ffffff !important;
+      border-radius: 4px !important;
+    }
+
+    .dg .c select {
+      background: #2a2a5e !important;
+      border: 1px solid #3a3a6e !important;
+      color: #ffffff !important;
+      border-radius: 4px !important;
+    }
+
+    .dg .property-name {
+      color: #ffffff !important;
+    }
+
+    .dg .c {
+      color: #ffffff !important;
+    }
+
+    .dg li.title {
+      background: rgba(30, 80, 160, 0.3) !important;
+      color: #9b9bff !important;
+      border-radius: 6px !important;
+      margin-bottom: 8px !important;
+    }
+
+    #mobile-toggle {
+      display: none;
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(30, 30, 60, 0.9);
+      border: 1px solid #3a3a6e;
+      color: #ffffff;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 11;
+      backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      #quantum-label {
+        font-size: 14px;
+        padding: 8px 12px;
+        top: 10px;
+        left: 10px;
+      }
+
+      #quantum-label .label-value {
+        font-size: 16px;
+      }
+
+      #fps-counter {
+        top: 10px;
+        right: 10px;
+        font-size: 10px;
+        padding: 4px 8px;
+      }
+
+      #gui-container {
+        display: none;
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+      }
+
+      #gui-container.mobile-open {
+        display: block;
+      }
+
+      #mobile-toggle {
+        display: flex;
+      }
+
+      .dg.main {
+        padding: 10px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="quantum-label">
+      <div class="label-title">当前量子态</div>
+      <div class="label-value">1s (n=1, l=0)</div>
+    </div>
+    <div id="fps-counter">FPS: 60</div>
+    <button id="mobile-toggle">⚙</button>
+    <div id="gui-container"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
