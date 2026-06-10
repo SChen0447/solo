@@ -1,0 +1,277 @@
+.quote-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.quote-modal {
+  background: #fff;
+  width: 520px;
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.quote-content {
+  padding: 24px;
+  overflow-y: auto;
+  flex: 1;
+  background: #fff;
+}
+
+.quote-studio-name {
+  text-align: center;
+  font-size: 20px;
+  color: #264653;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.quote-title {
+  text-align: center;
+  font-size: 28px;
+  color: #d4a373;
+  font-weight: 700;
+  letter-spacing: 8px;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #d9d9d9;
+}
+
+.quote-info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding: 0 8px;
+}
+
+.quote-info-item {
+  font-size: 14px;
+}
+
+.info-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.info-value {
+  color: #333;
+}
+
+.quote-section {
+  margin-bottom: 24px;
+}
+
+.quote-section h3 {
+  font-size: 16px;
+  color: #264653;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.quote-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.quote-table th,
+.quote-table td {
+  border: 1px solid #d9d9d9;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.quote-table th {
+  background: #fefae0;
+  color: #264653;
+  font-weight: 600;
+}
+
+.quote-table td:first-child,
+.quote-table th:first-child {
+  width: 40px;
+}
+
+.empty-cell {
+  padding: 20px !important;
+  color: #aaa;
+}
+
+.total-row {
+  background: #fefae0;
+}
+
+.total-label {
+  text-align: right !important;
+  font-weight: 600;
+  color: #264653;
+}
+
+.total-value {
+  font-weight: 700;
+  color: #d4a373;
+}
+
+.quote-summary {
+  margin-top: 24px;
+  padding: 20px;
+  background: #fefae0;
+  border-radius: 8px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.summary-label {
+  font-size: 15px;
+  color: #333;
+  font-weight: 500;
+}
+
+.summary-value {
+  font-size: 18px;
+  color: #264653;
+  font-weight: 600;
+}
+
+.summary-note {
+  font-size: 12px;
+  color: #888;
+  margin: 12px 0;
+  line-height: 1.6;
+  padding: 10px 0;
+  border-top: 1px dashed #d9d9d9;
+  border-bottom: 1px dashed #d9d9d9;
+}
+
+.summary-row.suggested {
+  margin-top: 12px;
+}
+
+.summary-price {
+  font-size: 26px;
+  color: #7a9f5a;
+  font-weight: 700;
+}
+
+.quote-footer {
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.quote-date {
+  font-size: 13px;
+  color: #666;
+}
+
+.quote-stamp {
+  font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+  font-size: 22px;
+  color: #e76f51;
+  opacity: 0.6;
+  transform: rotate(-8deg);
+  padding: 12px 20px;
+  border: 3px solid #e76f51;
+  border-radius: 4px;
+  opacity: 0.5;
+  letter-spacing: 4px;
+}
+
+.quote-actions {
+  padding: 16px 24px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.quote-btn-close,
+.quote-btn-print {
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s, filter 0.2s;
+}
+
+.quote-btn-close {
+  background: #e9ecef;
+  color: #555;
+}
+
+.quote-btn-close:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.95);
+}
+
+.quote-btn-print {
+  background: #7a9f5a;
+  color: #fff;
+}
+
+.quote-btn-print:hover {
+  transform: translateY(-2px);
+  filter: brightness(0.95);
+}
+
+.quote-btn-print:active {
+  filter: brightness(0.85);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .quote-overlay {
+    background: #fff;
+    padding: 0;
+    position: static;
+  }
+
+  .quote-modal {
+    max-height: none;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  .quote-content {
+    padding: 40px;
+  }
+}
+
+@media (max-width: 768px) {
+  .quote-content {
+    padding: 16px;
+  }
+
+  .quote-title {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
+
+  .quote-info-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
