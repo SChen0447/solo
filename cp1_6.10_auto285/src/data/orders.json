@@ -1,0 +1,29 @@
+[
+  {
+    "id": "order-001",
+    "customerName": "张先生",
+    "items": [
+      { "name": "钱包主体", "width": 20, "height": 10, "quantity": 2 },
+      { "name": "钱包夹层", "width": 18, "height": 8, "quantity": 4 },
+      { "name": "卡袋", "width": 9, "height": 6, "quantity": 8 }
+    ]
+  },
+  {
+    "id": "order-002",
+    "customerName": "李女士",
+    "items": [
+      { "name": "手提包前片", "width": 35, "height": 25, "quantity": 1 },
+      { "name": "手提包后片", "width": 35, "height": 25, "quantity": 1 },
+      { "name": "手提包侧片", "width": 10, "height": 25, "quantity": 2 },
+      { "name": "手提包底", "width": 35, "height": 10, "quantity": 1 }
+    ]
+  },
+  {
+    "id": "order-003",
+    "customerName": "王工坊",
+    "items": [
+      { "name": "皮带条", "width": 120, "height": 4, "quantity": 3 },
+      { "name": "皮带扣垫", "width": 8, "height": 6, "quantity": 3 }
+    ]
+  }
+]
