@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>城市交通流量可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #fff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #traffic-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 320px;
+      background: rgba(26, 26, 46, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      display: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    #traffic-panel.visible {
+      display: block;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #00d4ff;
+    }
+
+    .panel-close {
+      width: 24px;
+      height: 24px;
+      border: none;
+      background: rgba(255, 107, 53, 0.2);
+      color: #ff6b35;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .panel-close:hover {
+      background: rgba(255, 107, 53, 0.4);
+    }
+
+    .intersection-name {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 16px;
+    }
+
+    .signal-group {
+      margin-bottom: 14px;
+    }
+
+    .signal-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+
+    .signal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+      animation: breathe 2s ease-in-out infinite;
+    }
+
+    .signal-dot.green {
+      background: #00ff88;
+      box-shadow: 0 0 8px #00ff88, 0 0 16px rgba(0, 255, 136, 0.4);
+    }
+
+    .signal-dot.red {
+      background: #ff4444;
+      box-shadow: 0 0 8px #ff4444, 0 0 16px rgba(255, 68, 68, 0.4);
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .signal-value {
+      color: #00d4ff;
+      font-weight: 500;
+    }
+
+    .slider-container {
+      width: 100%;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #00d4ff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #00d4ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+    }
+
+    #stats-panel {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 280px;
+      background: rgba(26, 26, 46, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+    }
+
+    .stats-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00d4ff;
+      margin-bottom: 12px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .stat-item:nth-child(2) { animation-delay: 0.05s; }
+    .stat-item:nth-child(3) { animation-delay: 0.1s; }
+    .stat-item:nth-child(4) { animation-delay: 0.15s; }
+    .stat-item:nth-child(5) { animation-delay: 0.2s; }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .stat-value {
+      color: #ff6b35;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .congested-list {
+      margin-top: 8px;
+    }
+
+    .congested-item {
+      font-size: 12px;
+      color: #ff6b35;
+      padding: 2px 0;
+      opacity: 0;
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    #time-control {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(600px, 90vw);
+      background: rgba(26, 26, 46, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 12px 24px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 212, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .time-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      white-space: nowrap;
+    }
+
+    .time-value {
+      color: #00d4ff;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    #time-slider {
+      flex: 1;
+    }
+
+    #mobile-panel-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      background: rgba(0, 212, 255, 0.2);
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      border-radius: 50%;
+      color: #00d4ff;
+      font-size: 20px;
+      cursor: pointer;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    #instruction {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: rgba(26, 26, 46, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      z-index: 100;
+      border: 1px solid rgba(0, 212, 255, 0.1);
+    }
+
+    #ripple-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .ripple {
+      position: absolute;
+      border: 2px solid rgba(0, 212, 255, 0.6);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      animation: rippleAnim 0.4s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      #traffic-panel {
+        top: 10px;
+        left: 10px;
+        width: 280px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #traffic-panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: -100%;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        transition: bottom 0.3s ease;
+        max-height: 70vh;
+        overflow-y: auto;
+      }
+
+      #traffic-panel.mobile-open {
+        bottom: 0;
+        display: block;
+      }
+
+      #stats-panel {
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+      }
+
+      #mobile-panel-toggle {
+        display: flex;
+      }
+
+      #instruction {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="ripple-container"></div>
+
+  <div id="instruction">点击路口可配置信号灯 | 拖动底部滑块调整时间流速</div>
+
+  <div id="traffic-panel">
+    <div class="panel-header">
+      <div class="panel-title">信号灯控制</div>
+      <button class="panel-close" id="panel-close">×</button>
+    </div>
+    <div class="intersection-name" id="intersection-name">路口 A1</div>
+    <div id="signal-controls"></div>
+  </div>
+
+  <div id="stats-panel">
+    <div class="stats-title">交通统计</div>
+    <div class="stat-item">
+      <span class="stat-label">总车辆数</span>
+      <span class="stat-value" id="stat-vehicles">0</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">平均速度</span>
+      <span class="stat-value" id="stat-speed">0 km/h</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">最拥堵路段</span>
+    </div>
+    <div class="congested-list" id="congested-list"></div>
+  </div>
+
+  <div id="time-control">
+    <span class="time-label">时间流速</span>
+    <input type="range" id="time-slider" class="slider" min="1" max="10" step="1" value="1" />
+    <span class="time-value" id="time-value">1x</span>
+  </div>
+
+  <button id="mobile-panel-toggle">⚙</button>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
