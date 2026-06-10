@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D地质断层与沉积层交互剖面查看器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e0e0;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      background: #1a1a2e;
+    }
+    canvas {
+      display: block;
+    }
+    #side-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 240px;
+      background: #0f3460;
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 10;
+      transition: all 0.3s ease;
+    }
+    #side-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #e94560;
+    }
+    .control-group {
+      margin-bottom: 16px;
+    }
+    .control-label {
+      font-size: 12px;
+      margin-bottom: 8px;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .control-value {
+      background: #16213e;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      color: #00d2ff;
+    }
+    #cut-slider-container {
+      position: relative;
+      height: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #cut-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 180px;
+      height: 6px;
+      background: #533483;
+      border-radius: 3px;
+      outline: none;
+      transform: rotate(-90deg);
+      transform-origin: center center;
+    }
+    #cut-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e94560, #ff6b6b);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    #cut-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e94560, #ff6b6b);
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 6px 10px;
+      background: #16213e;
+      border-radius: 6px;
+      transition: background 0.2s;
+    }
+    .radio-label:hover {
+      background: #1a2744;
+    }
+    .radio-label input {
+      margin-right: 8px;
+      accent-color: #e94560;
+    }
+    #legend {
+      margin-top: 16px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .legend-color {
+      width: 20px;
+      height: 16px;
+      border-radius: 3px;
+      margin-right: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    #bottom-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 10;
+    }
+    .btn {
+      padding: 10px 16px;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+    .btn:hover {
+      background: #ff6b6b;
+    }
+    #mobile-toggle {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      width: 44px;
+      height: 44px;
+      background: #0f3460;
+      border: none;
+      border-radius: 8px;
+      color: #e94560;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      #side-panel {
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        border-radius: 0;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+      }
+      #side-panel h3,
+      #legend,
+      .control-label span:first-child {
+        display: none;
+      }
+      .control-group {
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+      }
+      #cut-slider-container {
+        height: auto;
+      }
+      #cut-slider {
+        width: 120px;
+        transform: none;
+      }
+      .radio-group {
+        flex-direction: row;
+        gap: 4px;
+      }
+      .radio-label {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+      #bottom-controls {
+        bottom: 80px;
+        left: 10px;
+      }
+      .btn {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <button id="mobile-toggle">☰</button>
+    <div id="side-panel">
+      <h3>控制面板</h3>
+      <div class="control-group">
+        <div class="control-label">
+          <span>切割位置</span>
+          <span class="control-value" id="cut-value">0.0</span>
+        </div>
+        <div id="cut-slider-container">
+          <input type="range" id="cut-slider" min="-5" max="5" step="0.1" value="0" />
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>切割模式</span>
+        </div>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="cut-mode" value="view" checked />
+            跟随视角
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="cut-mode" value="fixed" />
+            固定Y轴
+          </label>
+        </div>
+      </div>
+      <div id="legend">
+        <div class="control-label"><span>地层图例</span></div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#8B4513"></div>
+          <span>表土层</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#D2B48C"></div>
+          <span>砂岩层</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#708090"></div>
+          <span>页岩层</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background:#4a4a4a"></div>
+          <span>基岩层</span>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-controls">
+      <button class="btn" id="reset-btn">重置视角</button>
+      <button class="btn" id="export-btn">导出图像</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
