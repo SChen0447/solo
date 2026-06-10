@@ -1,0 +1,19 @@
+{
+  "name": "coriolis-drift",
+  "version": "1.0.0",
+  "description": "科氏漂流 - 三维粒子系统模拟科里奥利力对洋流的影响",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
