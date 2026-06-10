@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>生态演化沙盒 | Ecosystem Sandbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #gameCanvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #gameCanvas:active {
+      cursor: grabbing;
+    }
+
+    #statsPanel {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      z-index: 10;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      min-width: 120px;
+    }
+
+    .stat-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      position: relative;
+      min-width: 40px;
+    }
+
+    .stat-value.bounce {
+      animation: bounceIn 0.3s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      60% {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .energy-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 180px;
+    }
+
+    .energy-bar {
+      height: 10px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .energy-bar-fill {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 0.5s ease-out, background 0.3s ease;
+    }
+
+    #controlPanel {
+      position: absolute;
+      bottom: 140px;
+      right: 20px;
+      width: 260px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      z-index: 10;
+    }
+
+    #controlPanel h3 {
+      font-size: 14px;
+      margin-bottom: 16px;
+      color: #00e5ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .control-value {
+      color: #00e5ff;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+    }
+
+    .slider-pulse {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 229, 255, 0.6);
+      pointer-events: none;
+      animation: pulseRing 0.4s ease-out forwards;
+    }
+
+    @keyframes pulseRing {
+      0% {
+        width: 16px;
+        height: 16px;
+        opacity: 1;
+      }
+      100% {
+        width: 50px;
+        height: 50px;
+        opacity: 0;
+        margin-left: -17px;
+        margin-top: -17px;
+      }
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #00e5ff 0%, #7c4dff 100%);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 25px rgba(0, 229, 255, 0.5);
+    }
+
+    .btn + .btn {
+      margin-top: 8px;
+    }
+
+    #zoomIndicator {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      z-index: 10;
+    }
+
+    #hint {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      z-index: 10;
+    }
+
+    #mobileTabs {
+      display: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 20;
+    }
+
+    .tab-buttons {
+      display: flex;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #00e5ff;
+      border-bottom-color: #00e5ff;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 16px;
+      overflow-x: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      #statsPanel {
+        display: none;
+      }
+
+      #controlPanel {
+        display: none;
+      }
+
+      #mobileTabs {
+        display: block;
+      }
+
+      #hint {
+        font-size: 10px;
+        padding: 6px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="zoomIndicator">缩放: 1.0x</div>
+    <div id="hint">空格键: 暂停/恢复 | 滚轮: 缩放 | 拖拽: 平移</div>
+
+    <div id="statsPanel">
+      <div class="stat-item">
+        <span class="stat-dot" style="color: #00e5ff; background: #00e5ff;"></span>
+        <div>
+          <div class="stat-label">种群 A</div>
+          <div class="stat-value" id="popA">0</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="color: #ff4081; background: #ff4081;"></span>
+        <div>
+          <div class="stat-label">种群 B</div>
+          <div class="stat-value" id="popB">0</div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="color: #69f0ae; background: #69f0ae;"></span>
+        <div>
+          <div class="stat-label">植物</div>
+          <div class="stat-value" id="plantCount">0</div>
+        </div>
+      </div>
+      <div class="energy-bar-container">
+        <div class="stat-label">平均能量</div>
+        <div class="energy-bar">
+          <div class="energy-bar-fill" id="energyBar" style="width: 50%; background: linear-gradient(90deg, #ff5252, #69f0ae);"></div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-dot" style="color: #7c4dff; background: #7c4dff;"></span>
+        <div>
+          <div class="stat-label">世代</div>
+          <div class="stat-value" id="generation">0</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="controlPanel">
+      <h3>环境参数</h3>
+      <div class="control-group">
+        <div class="control-label">
+          <span>植物生长速度</span>
+          <span class="control-value" id="growthRateValue">1.0</span>
+        </div>
+        <input type="range" id="growthRate" min="0.1" max="5.0" step="0.1" value="1.0" />
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>动物移动速度</span>
+          <span class="control-value" id="moveSpeedValue">1.0</span>
+        </div>
+        <input type="range" id="moveSpeed" min="0.5" max="3.0" step="0.1" value="1.0" />
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>繁殖阈值</span>
+          <span class="control-value" id="reproThresholdValue">80</span>
+        </div>
+        <input type="range" id="reproThreshold" min="60" max="100" step="1" value="80" />
+      </div>
+      <div class="control-group">
+        <div class="control-label">
+          <span>战斗能量损失</span>
+          <span class="control-value" id="fightLossValue">30</span>
+        </div>
+        <input type="range" id="fightLoss" min="10" max="50" step="1" value="30" />
+      </div>
+      <button class="btn" id="resetBtn">重置世界</button>
+      <button class="btn" id="pauseBtn">暂停</button>
+    </div>
+
+    <div id="mobileTabs">
+      <div class="tab-buttons">
+        <button class="tab-btn active" data-tab="stats">统计</button>
+        <button class="tab-btn" data-tab="controls">控制</button>
+      </div>
+      <div class="tab-content active" id="tab-stats"></div>
+      <div class="tab-content" id="tab-controls"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
