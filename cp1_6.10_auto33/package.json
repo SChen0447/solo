@@ -1,0 +1,19 @@
+{
+  "name": "radio-wave-visualizer",
+  "version": "1.0.0",
+  "description": "3D particle system visualization of radio wave propagation",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
