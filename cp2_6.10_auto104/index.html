@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D分子结构查看与化学键能量谱分析</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="topbar" class="topbar">
+      <div class="topbar-title">
+        <span class="logo-icon">⚛</span>
+        <span>分子结构可视化分析平台</span>
+      </div>
+      <div class="molecule-cards" id="moleculeCards">
+        <div class="molecule-card active" data-molecule="methane">
+          <div class="card-svg">
+            <svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="40" cy="30" r="10" fill="#666666" stroke="#fff" stroke-width="1"/>
+              <line x1="40" y1="30" x2="20" y2="15" stroke="#3498db" stroke-width="2"/>
+              <line x1="40" y1="30" x2="60" y2="15" stroke="#3498db" stroke-width="2"/>
+              <line x1="40" y1="30" x2="20" y2="45" stroke="#3498db" stroke-width="2"/>
+              <line x1="40" y1="30" x2="60" y2="45" stroke="#3498db" stroke-width="2"/>
+              <circle cx="20" cy="15" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+              <circle cx="60" cy="15" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+              <circle cx="20" cy="45" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+              <circle cx="60" cy="45" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+            </svg>
+          </div>
+          <div class="card-name">甲烷 (CH₄)</div>
+        </div>
+        <div class="molecule-card" data-molecule="benzene">
+          <div class="card-svg">
+            <svg viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="40,8 67,24 67,52 40,68 13,52 13,24" fill="none" stroke="#3498db" stroke-width="2"/>
+              <circle cx="40" cy="8" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="67" cy="24" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="67" cy="52" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="40" cy="68" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="13" cy="52" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="13" cy="24" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="40" cy="38" r="12" fill="none" stroke="#9b59b6" stroke-width="1" stroke-dasharray="3,2"/>
+            </svg>
+          </div>
+          <div class="card-name">苯环 (C₆H₆)</div>
+        </div>
+        <div class="molecule-card" data-molecule="glucose">
+          <div class="card-svg">
+            <svg viewBox="0 0 90 70" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="15" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="45" cy="15" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="70" cy="15" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="30" cy="40" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="55" cy="40" r="6" fill="#666666" stroke="#fff" stroke-width="0.5"/>
+              <circle cx="80" cy="40" r="6" fill="#FF0000" stroke="#fff" stroke-width="0.5"/>
+              <line x1="20" y1="15" x2="45" y2="15" stroke="#3498db" stroke-width="2"/>
+              <line x1="45" y1="15" x2="70" y2="15" stroke="#3498db" stroke-width="2"/>
+              <line x1="20" y1="15" x2="30" y2="40" stroke="#3498db" stroke-width="2"/>
+              <line x1="45" y1="15" x2="55" y2="40" stroke="#3498db" stroke-width="2"/>
+              <line x1="70" y1="15" x2="80" y2="40" stroke="#3498db" stroke-width="2"/>
+              <line x1="30" y1="40" x2="55" y2="40" stroke="#3498db" stroke-width="2"/>
+              <line x1="55" y1="40" x2="80" y2="40" stroke="#3498db" stroke-width="2"/>
+              <circle cx="10" cy="55" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+              <circle cx="30" cy="60" r="5" fill="#FFFFFF" stroke="#999" stroke-width="0.5"/>
+            </svg>
+          </div>
+          <div class="card-name">葡萄糖 (C₆H₁₂O₆)</div>
+        </div>
+      </div>
+      <button id="resetViewBtn" class="reset-btn" title="重置视图">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        <span>重置视图</span>
+      </button>
+    </header>
+
+    <main id="mainContent" class="main-content">
+      <div id="sceneContainer" class="scene-container">
+        <canvas id="sceneCanvas"></canvas>
+        <div id="bondTooltip" class="bond-tooltip hidden">
+          <div class="tooltip-title" id="tooltipType">键类型</div>
+          <div class="tooltip-detail" id="tooltipLength">键长: -- Å</div>
+        </div>
+        <div id="infoCard" class="info-card">
+          <div class="info-card-title" id="molName">甲烷 (CH₄)</div>
+          <div class="info-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="atomCount">5</span>
+              <span class="stat-label">原子</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-value" id="bondCount">4</span>
+              <span class="stat-label">化学键</span>
+            </div>
+          </div>
+          <div class="bond-chart-wrap">
+            <div class="chart-title">键类型统计</div>
+            <canvas id="bondChartCanvas" width="220" height="90"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <aside id="spectrumPanel" class="spectrum-panel">
+        <div class="panel-header">
+          <span>化学键能量谱</span>
+          <button id="closePanelBtn" class="close-panel-btn" title="关闭">✕</button>
+        </div>
+        <div id="panelEmpty" class="panel-empty">
+          <div class="empty-icon">🔬</div>
+          <div class="empty-text">点击分子中的化学键<br/>查看能量分布曲线</div>
+        </div>
+        <div id="panelContent" class="panel-content hidden">
+          <div class="bond-info-bar">
+            <div class="bond-info-item">
+              <span class="bond-info-label">键类型</span>
+              <span class="bond-info-value" id="infoBondType">C-H</span>
+            </div>
+            <div class="bond-info-item">
+              <span class="bond-info-label">键长</span>
+              <span class="bond-info-value" id="infoBondLength">1.09 Å</span>
+            </div>
+            <div class="bond-info-item">
+              <span class="bond-info-label">键能</span>
+              <span class="bond-info-value" id="infoBondEnergy">413 kJ/mol</span>
+            </div>
+          </div>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot" style="background:#3498db"></span>C-C 单键</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#e74c3c"></span>C=C 双键</span>
+            <span class="legend-item"><span class="legend-dot" style="background:#2ecc71"></span>C-H 键</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="spectrumChart"></canvas>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "molecule-viewer",
+  "version": "1.0.0",
+  "description": "3D分子结构旋转查看与化学键能量谱图交互式分析应用",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "chart.js": "4.4.1",
+    "lodash": "4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "5.3.3",
+    "vite": "5.0.12",
+    "@types/three": "0.160.0",
+    "@types/chart.js": "2.9.41",
+    "@types/lodash": "4.14.202"
+  }
+}
