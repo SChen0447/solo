@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:54:52.027Z",
+  "task_name": "auto113",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于浏览器摄像头实时捕捉手势，然后用3D粒子特效实时渲染出手势轮廓轨迹的交互艺术装置项目，想法是让用户站在摄像头前挥动手臂，屏幕上就会绽放出由数千个彩色粒子构成的光影轨迹，像用光在夜空中画画一样，适合数字艺术展览、活动现场互动或者创意编程学习。希望它能做到：第一，通过摄像头实时捕捉用户手势，使用MediaPipe Hands模型（从CDN加载）检测21个手部关键点坐标，每帧更新手势轨迹数据，并在画布上用粒子系统重构手势轮廓——每个关键点对应一个粒子簇（每簇约20个粒子），粒子初始位置在关键点周围随机偏移5-15像素，颜色从关键点位置映射到HSL色环（沿Y轴从#ff3366渐变到#00ccff），粒子大小在2-6像素之间随机变化，当手部移动时粒子沿轨迹方向产生拖尾效果（拖尾长度30帧，透明度从0.8线性衰减到0）。第二，粒子渲染使用Canvas 2D API并开启硬件加速（willReadFrequently: false, alpha: false），每帧粒子数量不超过5000个，在普通笔记本上维持至少30fps的渲染帧率（使用requestAnimationFrame驱动），粒子运动叠加两种效果——沿原轨迹方向的高速运动（速度2-5px/帧，方向与上一帧位置向量一致）和随机布朗运动扰动（偏移量1-2px/帧，每帧更新随机方向），整体形成光流般的动态效果。第三，界面提供三种粒子模式切换按钮（光流模式、爆炸模式、螺旋模式，每种模式改变粒子的运动规则和颜色映射逻辑），按钮采用磨砂玻璃质感（背景rgba(255,255,255,0.15)，边框1px solid rgba(255,255,255,0.3)，backdrop-filter: blur(10px)），悬停时背景变为rgba(255,255,255,0.25)并轻微上浮2px。第四，界面整体为深空主题——背景从顶部#0b0e1a渐变到底部#1a1f35，摄像头画面以小窗口（240x180px，圆角12px）叠加在右下角，主画布占据剩余全屏区域，左上角显示当前FPS计数器（白色半透明字体，字号14px，字体monospace）和粒子总数。第五，粒子系统支持点击屏幕产生局部爆炸效果——点击位置周围100px半径内的粒子全部以点击点为中心向外飞散，速度增加3倍，颜色变为随机鲜艳色（饱和度100%，亮度70%-90%），持续1秒后恢复正常运动。第六，提供一键截图功能（将当前画布内容保存为PNG图片，文件名格式hand-art-YYYYMMDD-HHmmss.png），截图按钮样式与其他按钮一致，点击时触发闪光动画（全屏白色覆盖层从透明度0.8到0，持续0.3秒）。性能上，粒子总数上限5000，30fps保证，使用对象池管理粒子避免GC抖动，手势检测频率降低到每3帧检测一次以减少计算开销。实现用TypeScript、Vite和原生Canvas API，不依赖任何外部粒子库或游戏引擎，把代码拆成以下文件：\n - package.json（含依赖：typescript, vite；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，输出目录dist，端口5173，开启hmr，配置resolve.alias将@指向src目录）\n - tsconfig.json（严格模式，target ES2020，module ESNext，包含dom和esnext的lib，sourceMap开启）\n - index.html（入口页面，meta viewport适配移动端，背景色#0b0e1a，全屏无滚动，包含摄像头视频元素和主Canvas元素）\n - src/types.ts（定义粒子接口、手势关键点类型、模式枚举，导出供其他模块使用）\n - src/particleSystem.ts（粒子系统核心类，包含粒子池管理、粒子属性更新、绘制方法，负责创建、更新、销毁粒子，与手势轨迹模块通过接口交互）\n - src/gestureTracker.ts（手势追踪模块，封装MediaPipe Hands加载与推理，通过回调函数将关键点数据传给粒子系统，每3帧触发一次检测）\n - src/renderer.ts（渲染控制器，管理Camera小窗、FPS显示、全屏粒子画布，协调粒子系统与手势追踪，处理鼠标点击事件和模式切换）\n - src/main.ts（应用入口，初始化渲染器、手势追踪和粒子系统，连接所有模块，启动requestAnimationFrame循环）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:fb96a95a0a334cbee5976c860d080b33_6a286f3c64dc08e504a2b635.6a286f6b64dc08e504a2b645.6a286f6b3ce63f1ced315edf:Trae CN.T(2026/6/10 03:54:19)",
+    "user_id": "3986207660317399",
+    "trace_id": "fb96a95a0a334cbee5976c860d080b33",
+    "session_id": "6a286f3c64dc08e504a2b635",
+    "task_id": "6a286f6b64dc08e504a2b645",
+    "message_id": "6a286f6b3ce63f1ced315edf",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:54:19",
+    "format": "full"
+  },
+  "trace": "null"
+}

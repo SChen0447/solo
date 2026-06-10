@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Hand Particle Art</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0b0e1a;
+      }
+      #app {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        background: linear-gradient(180deg, #0b0e1a 0%, #1a1f35 100%);
+      }
+      #mainCanvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      #videoElement {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        width: 240px;
+        height: 180px;
+        border-radius: 12px;
+        object-fit: cover;
+        transform: scaleX(-1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        z-index: 10;
+      }
+      #controls {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        z-index: 20;
+      }
+      .glass-btn {
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 14px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        user-select: none;
+      }
+      .glass-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      }
+      .glass-btn.active {
+        background: rgba(255, 255, 255, 0.35);
+        border-color: rgba(255, 255, 255, 0.5);
+      }
+      #hud {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        z-index: 20;
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+      }
+      #flashOverlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: white;
+        opacity: 0;
+        pointer-events: none;
+        z-index: 100;
+        transition: opacity 0.3s ease;
+      }
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: white;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        font-size: 18px;
+        z-index: 50;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading">正在加载手势追踪模型...</div>
+      <canvas id="mainCanvas"></canvas>
+      <video id="videoElement" autoplay playsinline muted></video>
+      <div id="hud">
+        <div id="fpsCounter">FPS: --</div>
+        <div id="particleCount">粒子: 0</div>
+      </div>
+      <div id="controls">
+        <button class="glass-btn active" data-mode="flow">光流模式</button>
+        <button class="glass-btn" data-mode="explode">爆炸模式</button>
+        <button class="glass-btn" data-mode="spiral">螺旋模式</button>
+        <button class="glass-btn" id="screenshotBtn">截图</button>
+      </div>
+      <div id="flashOverlay"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
