@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>创意情绪板生成器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>灵感情绪板</h1>
+    <p class="subtitle">收集灵感素材，随机生成视觉情绪板</p>
+  </header>
+
+  <main class="app-main">
+    <section class="boards-section">
+      <div class="board" id="text-board">
+        <div class="board-header">
+          <h2>文字灵感</h2>
+        </div>
+        <div class="board-input-row">
+          <input type="text" id="text-input" placeholder="输入关键词或短句..." maxlength="50" />
+          <button class="add-btn" id="add-text-btn">添加</button>
+        </div>
+        <div class="board-content text-grid" id="text-grid"></div>
+      </div>
+
+      <div class="board" id="image-board">
+        <div class="board-header">
+          <h2>图片灵感</h2>
+        </div>
+        <div class="board-input-row">
+          <input type="url" id="image-input" placeholder="输入图片URL..." />
+          <button class="add-btn" id="add-image-btn">添加</button>
+        </div>
+        <div class="board-content image-grid" id="image-grid"></div>
+      </div>
+
+      <div class="board" id="color-board">
+        <div class="board-header">
+          <h2>颜色色值</h2>
+        </div>
+        <div class="board-input-row">
+          <input type="color" id="color-picker" value="#667eea" />
+          <input type="text" id="color-input" placeholder="#667eea" maxlength="7" />
+          <button class="add-btn" id="add-color-btn">添加</button>
+        </div>
+        <div class="board-content color-grid" id="color-grid"></div>
+      </div>
+    </section>
+
+    <section class="moodboard-section">
+      <button class="generate-btn" id="generate-btn">
+        <span class="generate-btn-text">生成情绪板</span>
+      </button>
+
+      <div class="moodboard-wrapper">
+        <div class="moodboard-grid" id="moodboard-grid"></div>
+      </div>
+
+      <div class="action-row">
+        <button class="secondary-btn" id="export-btn">导出为 SVG</button>
+        <button class="secondary-btn danger" id="clear-btn">清空情绪板</button>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="export-modal" aria-hidden="true">
+    <div class="modal-overlay" data-close-modal></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>导出 SVG</h3>
+        <button class="modal-close" data-close-modal aria-label="关闭">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-hint">复制下方 SVG 代码：</p>
+        <textarea id="svg-output" readonly></textarea>
+        <button class="copy-btn" id="copy-btn">复制到剪贴板</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
