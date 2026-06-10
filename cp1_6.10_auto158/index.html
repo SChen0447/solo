@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>量子雪花</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0b1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      font-weight: 300;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #control-panel {
+      position: fixed;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 240px;
+      padding: 24px 20px;
+      background: rgba(10, 10, 30, 0.7);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(109, 140, 255, 0.15);
+      z-index: 100;
+    }
+
+    .panel-title {
+      color: #b0b8d0;
+      font-size: 14px;
+      font-weight: 400;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    .slider-group {
+      margin-bottom: 20px;
+    }
+
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #b0b8d0;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .slider-value {
+      color: #8aa9ff;
+      font-size: 12px;
+      font-weight: 400;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: #2a2d4a;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      position: relative;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #8aa9ff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 0 rgba(138, 169, 255, 0);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(138, 169, 255, 0.6);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      background: #8aa9ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 0 rgba(138, 169, 255, 0);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(138, 169, 255, 0.6);
+    }
+
+    input[type="range"] {
+      background: linear-gradient(to right, #6d8cff 0%, #6d8cff var(--progress, 50%), #2a2d4a var(--progress, 50%), #2a2d4a 100%);
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #ffffff;
+      font-size: 11px;
+      border-radius: 4px;
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(-50%);
+      transition: opacity 0.15s ease;
+      z-index: 1000;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="control-panel">
+      <div class="panel-title">量子雪花</div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>分形复杂度</span>
+          <span class="slider-value" id="complexity-value">3</span>
+        </div>
+        <input type="range" id="complexity-slider" min="1" max="5" step="1" value="3" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>粒子颜色</span>
+          <span class="slider-value" id="color-value">0.0</span>
+        </div>
+        <input type="range" id="color-slider" min="0" max="1" step="0.01" value="0" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>旋转速度</span>
+          <span class="slider-value" id="speed-value">1.0x</span>
+        </div>
+        <input type="range" id="speed-slider" min="0.1" max="3" step="0.1" value="1" />
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
