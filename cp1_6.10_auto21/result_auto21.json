@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:15:22.788Z",
+  "task_name": "auto21",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个团队任务协作的即时贴墙项目，想法是一个虚拟白板，团队成员可以在上面自由发布任务便签，每张便签可以拖动、编辑和标记完成状态，所有操作实时同步到其他客户端，非常适合远程团队进行快速任务同步或每日站会使用。希望它能做到：第一，便签以彩色卡片形式贴在墙面上，每张便签有标题、内容、创建时间和负责人标签，卡片支持自由拖拽定位，拖拽时卡片带有实时阴影和轻微弹性形变动画，松手后平滑回正并固定在网格吸附位置上；第二，双击便签可进入编辑模式，内容支持部分Markdown语法（粗体、列表和链接），编辑时卡片顶部出现一个操作栏（包含删除按钮、标记完成切换和颜色选择器），颜色选择器预置六种柔和配色（从#FFE0B2到#B2DFDB），切换时卡片以渐变动画过渡；第三，右上角有一个'新增便签'按钮，点击后在画布中心创建一个空白便签并自动进入编辑模式，新便签以缩放弹入动画出现；另外，左侧有一个侧边栏，按创建时间倒序排列所有便签列表，点击列表项可让画布自动平移并高亮对应便签（带脉动放大动画）。界面上希望整体采用明亮清新的风格，背景为浅灰色（#F5F5F5），便签卡片带有轻微毛玻璃效果和圆角8px，页面宽度自适应（最小宽度1024px），窄屏时侧边栏自动收起为汉堡菜单。性能上，拖拽时帧率不低于55fps，便签数量最多支持200张不卡顿。实现使用TypeScript、React 18、Vite和CSS-in-JS（用emotion或styled-components），把代码拆成以下文件： - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, emotion/react, emotion/styled；启动脚本：npm run dev） - vite.config.js（React插件配置，别名@指向src） - tsconfig.json（严格模式，jsx react-jsx，target ES2020） - index.html（入口，加载根组件） - src/App.tsx（根组件，管理全局状态、便签数组和选中逻辑，以及拖拽和新增调度） - src/components/StickyNote.tsx（单个便签组件，处理编辑、拖拽、颜色切换和标记完成状态） - src/components/Sidebar.tsx（侧边栏组件，显示便签列表，支持点击跳转和高亮） - src/styles/global.ts（全局样式和主题变量）跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:3a75ba4f3f5790d274f3078fcdfb6d88_6a284993b6c3e0c5ba306b5c.6a284a1eb6c3e0c5ba306bcd.6a284a1e7568004397f992f0:Trae CN.T(2026/6/10 01:15:10)",
+    "user_id": "3986207660317399",
+    "trace_id": "3a75ba4f3f5790d274f3078fcdfb6d88",
+    "session_id": "6a284993b6c3e0c5ba306b5c",
+    "task_id": "6a284a1eb6c3e0c5ba306bcd",
+    "message_id": "6a284a1e7568004397f992f0",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:15:10",
+    "format": "full"
+  },
+  "trace": "null"
+}
