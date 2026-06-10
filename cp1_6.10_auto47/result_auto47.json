@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:54:31.327Z",
+  "task_name": "auto47",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于浏览器手势识别来控制音乐播放器的交互项目，想法是让用户在不触碰键盘鼠标的情况下，通过摄像头捕捉手部动作来切换歌曲、调节音量和暂停播放，特别适合做饭或健身时使用。希望它能做到：第一，使用MediaPipe Hands（通过CDN加载）实时检测手部21个关键点，识别三种基础手势——张开手掌（暂停/播放）、食指朝上（音量+）、食指朝下（音量-），以及握拳后向右挥动（下一首）、握拳后向左挥动（上一首），所有手势识别后画面左上角显示当前手势名称的浮动标签（带淡入淡出动画，背景半透明毛玻璃效果），手势触发成功时播放短促的确认音效（Web Audio API生成，约200ms）；第二，播放器界面采用深色玻璃拟态风格（深灰蓝背景#1a1a2e，半透明毛玻璃卡片，圆角16px，带微弱的白色内阴影和高斯模糊backdrop-filter: blur(12px)），顶部显示专辑封面（使用内置的渐变几何图案模拟，每首歌不同配色），中部显示歌曲名称和歌手（字体白色，字号渐变），下方是一个自定义进度条（圆角滑块，拖拽时放大并改变颜色从靛蓝到紫红渐变），底部排布四个控制按钮（上一首/暂停/下一首/音量按钮），按钮悬停时缩放1.1倍并改变背景色，点击时有轻微的弹性回弹动画（transform: scale(0.95)后再恢复）。\n\n界面要求：页面整体采用桌面端布局，但需要支持最小宽度900px，避免元素重叠。颜色主题以深蓝紫色为主色调（#1a1a2e背景，#16213e卡片，#0f3460强调色，#e94560活跃色），全局过渡动画统一设置0.3s ease-in-out，所有交互都有视觉反馈。底部控制栏固定在视口底部，高度80px，左右边缘带20px内边距。性能上，手势识别帧率不低于25FPS，播放器UI响应延迟低于100ms。\n\n实现使用TypeScript、React 18和Vite，把代码拆成以下文件：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx，resolveJsonModule true）\n - index.html（入口，加载MediaPipe Hands的CDN：@mediapipe/hands和@mediapipe/camera_utils，以及核心库@tensorflow/tfjs和@tensorflow-models/hand-pose-detection）\n - src/main.tsx（React入口，渲染App组件）\n - src/App.tsx（主组件，协调手势识别与音乐播放逻辑，包含useState管理播放状态、当前歌曲索引和音量，手势数据通过自定义hook传入，媒体资源使用预置的base64音频片段模拟）\n - src/hooks/useHandGesture.ts（手势识别hook，使用MediaPipe Hands检测手部关键点，返回当前识别的手势名称字符串，以每秒30帧的速率轮询，手势切换时触发回调，内部对连续帧相同手势做防抖处理）\n - src/components/Player.tsx（播放器UI组件，接收播放状态、当前歌曲、音量等props，渲染毛玻璃卡片风格的控制面板，包含进度条拖拽、按钮点击事件和手势标签显示）\n - src/components/ProgressBar.tsx（可拖拽进度条组件，接收当前进度和onSeek回调，渲染自定义滑块，支持鼠标拖拽和手势滑动，拖拽时更新进度并触发平滑动画）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:5d8c6ea7d4a4b52269ebfeb4e1158cdb_6a28529167cc8b34a197a9e7.6a28534b67cc8b34a197aa86.6a28534b7ef1b35d4f3dcf9a:Trae CN.T(2026/6/10 01:54:19)",
+    "user_id": "3986207660317399",
+    "trace_id": "5d8c6ea7d4a4b52269ebfeb4e1158cdb",
+    "session_id": "6a28529167cc8b34a197a9e7",
+    "task_id": "6a28534b67cc8b34a197aa86",
+    "message_id": "6a28534b7ef1b35d4f3dcf9a",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:54:19",
+    "format": "full"
+  },
+  "trace": "null"
+}
