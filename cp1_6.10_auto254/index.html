@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>季光筑影</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #121212;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 280px;
+      padding: 24px;
+      background: rgba(30, 30, 30, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 16px;
+      color: #ffffff;
+      z-index: 100;
+      transition: opacity 0.2s ease;
+      opacity: 0.85;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .control-panel:hover {
+      opacity: 1.0;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      transition: color 0.5s ease;
+    }
+
+    .panel-desc {
+      font-size: 12px;
+      color: #aaaaaa;
+      margin-bottom: 20px;
+      opacity: 0.9;
+      transition: color 0.5s ease;
+    }
+
+    .season-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+
+    .season-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0;
+    }
+
+    .season-btn:hover {
+      opacity: 1.0;
+    }
+
+    .season-btn:active {
+      transform: scale(0.95);
+    }
+
+    .season-btn.spring { background-color: #7cb342; }
+    .season-btn.summer { background-color: #2e7d32; }
+    .season-btn.autumn { background-color: #ff8f00; }
+    .season-btn.winter { background-color: #c8d0e0; }
+
+    .season-btn.active {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3),
+                  0 0 16px 4px currentColor;
+      animation: glow 0.3s ease-out;
+    }
+
+    @keyframes glow {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0),
+                    0 0 0 0 currentColor;
+      }
+      100% {
+        box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3),
+                    0 0 16px 4px currentColor;
+      }
+    }
+
+    .slider-container {
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .season-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #7cb342 0%, #2e7d32 33%, #ff8f00 66%, #c8d0e0 100%);
+      outline: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      opacity: 0.85;
+    }
+
+    .season-slider:hover {
+      opacity: 1.0;
+    }
+
+    .season-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.1s ease;
+    }
+
+    .season-slider::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    .season-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #888888;
+    }
+
+    .app-title {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      color: #ffffff;
+      z-index: 100;
+      opacity: 0.9;
+    }
+
+    .app-title h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+    }
+
+    .app-title p {
+      font-size: 12px;
+      color: #888888;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="app-title">
+      <h1>季光筑影</h1>
+      <p>Seasonal Architecture Light</p>
+    </div>
+
+    <div class="control-panel" id="control-panel">
+      <div class="panel-title" id="season-title">春 — 万物复苏</div>
+      <div class="panel-desc" id="season-desc">嫩绿初绽，暖阳轻抚建筑的轮廓</div>
+
+      <div class="season-buttons">
+        <button class="season-btn spring active" data-season="0" title="春季"></button>
+        <button class="season-btn summer" data-season="1" title="夏季"></button>
+        <button class="season-btn autumn" data-season="2" title="秋季"></button>
+        <button class="season-btn winter" data-season="3" title="冬季"></button>
+      </div>
+
+      <div class="slider-container">
+        <input type="range" class="season-slider" id="season-slider" min="0" max="3" step="0.01" value="0" />
+        <div class="slider-labels">
+          <span>春</span>
+          <span>夏</span>
+          <span>秋</span>
+          <span>冬</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
