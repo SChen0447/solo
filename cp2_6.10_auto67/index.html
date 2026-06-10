@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS 渐变配色沙盒 - 径向与锥形渐变预览</title>
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>CSS 渐变配色沙盒</h1>
+      <p class="subtitle">径向渐变与锥形渐变实时预览调整工具</p>
+    </header>
+
+    <main class="canvas-container">
+      <section class="preview-panel" id="radialPanel">
+        <div class="preview-canvas" id="radialCanvas">
+          <div class="css-code" id="radialCode" title="点击复制 CSS 代码"></div>
+        </div>
+        <div class="controls-wrapper">
+          <div class="control-group">
+            <label>
+              <span class="label-text">色相偏移</span>
+              <span class="value-display" id="radialHueValue">210°</span>
+            </label>
+            <input type="range" id="radialHue" min="0" max="360" value="210" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">饱和度</span>
+              <span class="value-display" id="radialSatValue">70%</span>
+            </label>
+            <input type="range" id="radialSat" min="0" max="100" value="70" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">明度</span>
+              <span class="value-display" id="radialLightValue">50%</span>
+            </label>
+            <input type="range" id="radialLight" min="0" max="100" value="50" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">对比强度</span>
+              <span class="value-display" id="radialContrastValue">50%</span>
+            </label>
+            <input type="range" id="radialContrast" min="0" max="100" value="50" />
+          </div>
+        </div>
+      </section>
+
+      <div class="divider" id="divider">
+        <div class="divider-handle"></div>
+      </div>
+
+      <section class="preview-panel" id="conicPanel">
+        <div class="preview-canvas" id="conicCanvas">
+          <div class="css-code" id="conicCode" title="点击复制 CSS 代码"></div>
+        </div>
+        <div class="controls-wrapper">
+          <div class="control-group">
+            <label>
+              <span class="label-text">色相偏移</span>
+              <span class="value-display" id="conicHueValue">280°</span>
+            </label>
+            <input type="range" id="conicHue" min="0" max="360" value="280" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">饱和度</span>
+              <span class="value-display" id="conicSatValue">70%</span>
+            </label>
+            <input type="range" id="conicSat" min="0" max="100" value="70" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">明度</span>
+              <span class="value-display" id="conicLightValue">50%</span>
+            </label>
+            <input type="range" id="conicLight" min="0" max="100" value="50" />
+          </div>
+          <div class="control-group">
+            <label>
+              <span class="label-text">旋转角度</span>
+              <span class="value-display" id="conicAngleValue">0°</span>
+            </label>
+            <input type="range" id="conicAngle" min="0" max="360" value="0" />
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
