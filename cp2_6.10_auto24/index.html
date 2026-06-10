@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1024px" />
+  <title>虚拟化学实验室</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="info-panel">
+      <div class="info-section">
+        <h3>反应方程式</h3>
+        <div id="reaction-equation" class="mono-font">等待实验开始...</div>
+      </div>
+      <div class="info-section">
+        <h3>温度变化</h3>
+        <canvas id="temp-chart" width="300" height="80"></canvas>
+      </div>
+      <div class="info-section controls">
+        <button id="btn-record" class="btn-record">开始记录</button>
+        <button id="btn-stop" class="btn-stop" disabled>停止记录</button>
+        <button id="btn-playback" class="btn-playback">回放实验</button>
+        <div class="playback-speed">
+          <label>回放速度:</label>
+          <select id="playback-speed">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="2">2x</option>
+          </select>
+        </div>
+        <button id="btn-reset" class="btn-reset">重置实验台</button>
+      </div>
+    </header>
+
+    <div id="main-container">
+      <aside id="toolbar">
+        <div class="toolbar-title">实验器材</div>
+        <div class="tool-group">
+          <div class="tool-item" draggable="true" data-tool="testTube">
+            <div class="tool-icon test-tube-icon"></div>
+            <span class="tool-label">试管</span>
+          </div>
+          <div class="tool-item" draggable="true" data-tool="beaker">
+            <div class="tool-icon beaker-icon"></div>
+            <span class="tool-label">烧杯</span>
+          </div>
+          <div class="tool-item" draggable="true" data-tool="alcoholLamp">
+            <div class="tool-icon lamp-icon"></div>
+            <span class="tool-label">酒精灯</span>
+          </div>
+          <div class="tool-item" draggable="true" data-tool="dropper">
+            <div class="tool-icon dropper-icon"></div>
+            <span class="tool-label">滴管</span>
+          </div>
+        </div>
+
+        <div class="toolbar-title">化学试剂</div>
+        <div class="tool-group">
+          <div class="tool-item" data-chemical="HCl">
+            <div class="tool-icon chemical-icon hcl-color"></div>
+            <span class="tool-label">盐酸 HCl</span>
+          </div>
+          <div class="tool-item" data-chemical="NaOH">
+            <div class="tool-icon chemical-icon naoh-color"></div>
+            <span class="tool-label">氢氧化钠 NaOH</span>
+          </div>
+          <div class="tool-item" data-chemical="H2O">
+            <div class="tool-icon chemical-icon water-color"></div>
+            <span class="tool-label">水 H₂O</span>
+          </div>
+          <div class="tool-item" data-chemical="Zn">
+            <div class="tool-icon chemical-icon zinc-color"></div>
+            <span class="tool-label">锌粒 Zn</span>
+          </div>
+          <div class="tool-item" data-chemical="Na2CO3">
+            <div class="tool-icon chemical-icon carbonate-color"></div>
+            <span class="tool-label">碳酸钠 Na₂CO₃</span>
+          </div>
+          <div class="tool-item" data-chemical="CuSO4">
+            <div class="tool-icon chemical-icon cuso4-color"></div>
+            <span class="tool-label">硫酸铜 CuSO₄</span>
+          </div>
+          <div class="tool-item" data-chemical="FeCl3">
+            <div class="tool-icon chemical-icon fecl3-color"></div>
+            <span class="tool-label">氯化铁 FeCl₃</span>
+          </div>
+          <div class="tool-item" data-chemical="KMnO4">
+            <div class="tool-icon chemical-icon kmno4-color"></div>
+            <span class="tool-label">高锰酸钾 KMnO₄</span>
+          </div>
+        </div>
+
+        <div class="toolbar-title">操作控制</div>
+        <div class="tool-group">
+          <div class="tool-item" data-action="heat">
+            <div class="tool-icon heat-icon"></div>
+            <span class="tool-label">加热</span>
+          </div>
+          <div class="tool-item" data-action="cool">
+            <div class="tool-icon cool-icon"></div>
+            <span class="tool-label">冷却</span>
+          </div>
+        </div>
+      </aside>
+
+      <main id="lab-area">
+        <canvas id="lab-canvas"></canvas>
+        <div id="warning-overlay" class="warning-overlay hidden">
+          <div class="warning-box">
+            <h2>⚠️ 危险警告</h2>
+            <p id="warning-message">检测到危险操作！</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
