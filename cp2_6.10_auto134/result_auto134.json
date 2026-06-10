@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:40:41.821Z",
+  "task_name": "auto134",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线个人财务仪表板应用，让用户能记录日常收支、查看分类统计图表和月度趋势。使用TypeScript、React和Vite实现，文件结构如下：\n - package.json（依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、lodash、recharts@2、uuid，脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，挂载id为root的div）\n - src/types.ts（定义Transaction类型：id、amount、category、date、note、type（income/expense）、currency）\n - src/dataStore.ts（模拟本地数据存储，提供初始化、添加、删除、汇总查询方法）\n - src/components/Dashboard.tsx（主仪表板组件，组合使用各子组件）\n - src/components/TransactionForm.tsx（表单组件，含金额输入、类别下拉选择、日期选择、备注输入、收支类型切换）\n - src/components/TransactionList.tsx（列表组件，渲染所有交易记录卡片）\n - src/components/ChartPanel.tsx（统计图表组件，使用recharts展示月度收支柱状图和分类饼图）\n\n具体需求：\n1. 交易记录管理：用户能在表格中输入一笔交易，包括金额（数字、正数）、类别（下拉选择：餐饮、交通、购物、娱乐、医疗、教育、其他）、日期（日期选择器，默认今天）、备注（可选，最多50字）、类型（收入/支出单选按钮），点击“添加”按钮后记录出现在下方交易列表，并自动更新统计图表。\n2. 交易列表与删除：以列表形式展示所有已添加的交易，每条记录显示为一张卡片（卡宽100%，背景白色#fff，圆角10px，左侧带4px粗竖条颜色标签：收入绿#27ae60，支出红#e74c3c），卡片内右对齐显示金额（带货币符号￥，保留两位小数），下方小字显示类别和日期。卡片右侧有一个×删除按钮，点击后交易移除并更新图表。\n3. 月度收支趋势图：使用recharts在仪表板上方显示一个折线柱状混合图，X轴为当前年份的1-12月，Y轴为金额。用蓝色#3498db柱状图表示每月支出累计，绿色#2ecc71折线图表示每月收入累计，Y轴刻度从0到最大值的1.2倍，图表背景淡灰#f9f9f9，边框1px #ddd，圆角8px。\n4. 分类消费饼图：在仪表板右侧显示一个饼图，展示当前可见月份（可通过下拉选择月份）各支出类别的占比。饼图配色使用柔和色盘：#e74c3c、#f39c12、#2ecc71、#3498db、#9b59b6、#1abc9c、#95a5a6，中心显示总支出金额，鼠标悬停切片时高亮放大并显示类别名称和百分比。\n5. 搜索与筛选：交易列表上方提供一个搜索框（占宽50%，背景#f0f0f0，圆角20px，带搜索图标），输入关键字可实时按备注或类别过滤交易记录。同时提供“全部/收入/支出”三个筛选按钮，默认选中“全部”，高亮使用主色#3498db。\n6. 数据持久化模拟：初始化时使用src/dataStore.ts在localStorage中存储交易记录（JSON格式），每次添加或删除后写入localStorage，页面刷新时从localStorage恢复数据。初始预置10条随机交易记录（日期跨过去3个月）以演示效果。\n\n界面方面：整体布局采用左右两列结构，左侧70%显示交易表单和图表区，右侧30%显示分类饼图和交易列表。顶部导航栏高56px，背景色#2c3e50，白色文字显示“我的财务仪表板”，带一个刷新数据按钮。页面背景浅灰#f5f6fa，表单区域背景白色，圆角12px，阴影1px 2px 6px rgba(0,0,0,0.1)。所有输入框和按钮有过渡动画（hover时亮度变化0.3秒）。图表区域响应式适配：屏幕宽度小于768px时，右侧饼图移至下方。\n\n性能要求：交易记录数量达到500条时，列表渲染流畅（保持60FPS），图表更新响应时间小于200ms。\n\n运行方式：npm install && npm run dev，直接在本机浏览器打开即可使用。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2cd8377a1acc81d351abc870a4850967_6a286b07dfbda9d69c15ffae.6a286c2cdfbda9d69c1600b8.6a286c2c36be076bb28effd8:Trae CN.T(2026/6/10 03:40:28)",
+    "user_id": "3986207660317399",
+    "trace_id": "2cd8377a1acc81d351abc870a4850967",
+    "session_id": "6a286b07dfbda9d69c15ffae",
+    "task_id": "6a286c2cdfbda9d69c1600b8",
+    "message_id": "6a286c2c36be076bb28effd8",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:40:28",
+    "format": "full"
+  },
+  "trace": "null"
+}
