@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素工坊-Pixel Workshop</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="left-panel">
+      <div class="panel-section">
+        <div class="panel-title">画布尺寸</div>
+        <select id="canvas-size">
+          <option value="16">16 x 16</option>
+          <option value="32" selected>32 x 32</option>
+          <option value="48">48 x 48</option>
+          <option value="64">64 x 64</option>
+        </select>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">工具</div>
+        <div class="tool-grid">
+          <button class="tool-btn active" data-tool="pencil1" title="铅笔 1px">✏️</button>
+          <button class="tool-btn" data-tool="pencil3" title="铅笔 3px">🖊️</button>
+          <button class="tool-btn" data-tool="eraser" title="橡皮擦">🧽</button>
+          <button class="tool-btn" data-tool="picker" title="吸色笔">💧</button>
+          <button class="tool-btn" data-tool="fill" title="填充桶">🪣</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">当前颜色</div>
+        <div class="current-color">
+          <div id="color-preview"></div>
+          <div id="color-hex">#000000</div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">调色板 (PICO-8)</div>
+        <div id="palette" class="palette-grid"></div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">操作</div>
+        <div class="action-buttons">
+          <button id="undo-btn">↶ 撤销</button>
+          <button id="redo-btn">↷ 重做</button>
+          <button id="clear-btn">🗑 清空画布</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">项目</div>
+        <div class="action-buttons">
+          <button id="save-btn">💾 保存项目</button>
+          <button id="load-btn">📂 加载项目</button>
+          <input type="file" id="load-file" accept=".pixel" style="display:none" />
+        </div>
+      </div>
+    </div>
+
+    <div id="right-panel">
+      <div id="canvas-area">
+        <div id="canvas-wrapper">
+          <canvas id="pixel-canvas"></canvas>
+        </div>
+        <div id="preview-area">
+          <div class="preview-header">
+            <span>动画预览</span>
+            <label>
+              缩放:
+              <input type="range" id="preview-scale" min="1" max="4" step="1" value="2" />
+              <span id="scale-value">2x</span>
+            </label>
+          </div>
+          <canvas id="preview-canvas"></canvas>
+        </div>
+      </div>
+
+      <div id="timeline-area">
+        <div class="timeline-header">
+          <div class="timeline-controls">
+            <button id="play-btn">▶ 播放</button>
+            <button id="stop-btn">⏹ 停止</button>
+            <select id="loop-mode">
+              <option value="once">单次播放</option>
+              <option value="pingpong">往复播放</option>
+              <option value="loop" selected>循环播放</option>
+            </select>
+          </div>
+          <div class="frame-actions">
+            <button id="add-frame-btn">+ 新建帧</button>
+            <button id="dup-frame-btn">⎘ 复制当前帧</button>
+            <button id="del-frame-btn">✕ 删除帧</button>
+          </div>
+          <div class="export-controls">
+            <label><input type="checkbox" id="opt-transparent" checked /> 透明背景</label>
+            <label><input type="checkbox" id="opt-crop" /> 边缘裁剪</label>
+            <button id="export-spritesheet">导出 Spritesheet</button>
+            <button id="export-gif">导出 GIF</button>
+          </div>
+        </div>
+        <div id="frame-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
