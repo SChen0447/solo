@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>磁场迷宫 - Magnetic Maze</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #1A0F2E; }
+    canvas { display: block; }
+    #game-container { width: 100vw; height: 100vh; position: relative; }
+    #hud {
+      position: absolute;
+      top: 2%;
+      left: 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 1vh;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #lives {
+      display: flex;
+      gap: 0.8vw;
+    }
+    .heart {
+      width: 2.5vw;
+      height: 2.5vw;
+      min-width: 20px;
+      min-height: 20px;
+      background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+      clip-path: polygon(50% 15%, 65% 0%, 85% 0%, 100% 20%, 100% 45%, 50% 100%, 0% 45%, 0% 20%, 15% 0%, 35% 0%);
+      filter: drop-shadow(0 0 0.5vw rgba(255, 0, 0, 0.5));
+    }
+    .heart.lost {
+      background: #3a2030;
+      filter: none;
+    }
+    #timer {
+      font-family: 'Courier New', monospace;
+      font-size: 2vw;
+      color: #a0d8ff;
+      text-shadow: 0 0 1vw rgba(160, 216, 255, 0.6);
+    }
+    #minimap {
+      width: 15vw;
+      height: 4vw;
+      min-width: 120px;
+      min-height: 32px;
+      background: rgba(26, 15, 46, 0.8);
+      border: 0.15vw solid rgba(160, 216, 255, 0.4);
+      border-radius: 0.5vw;
+      position: relative;
+      overflow: hidden;
+    }
+    #controls-hint {
+      position: absolute;
+      bottom: 3%;
+      left: 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4vw;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .key-row { display: flex; gap: 0.4vw; }
+    .key {
+      width: 3vw;
+      height: 3vw;
+      min-width: 28px;
+      min-height: 28px;
+      background: rgba(160, 216, 255, 0.15);
+      border: 0.15vw solid rgba(160, 216, 255, 0.4);
+      border-radius: 0.6vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Courier New', monospace;
+      font-size: 1.2vw;
+      color: #a0d8ff;
+      font-weight: bold;
+    }
+    .key-offset { visibility: hidden; }
+    #level-info {
+      position: absolute;
+      top: 2%;
+      right: 2%;
+      font-family: 'Courier New', monospace;
+      font-size: 1.5vw;
+      color: #ffcc66;
+      text-shadow: 0 0 0.8vw rgba(255, 204, 102, 0.5);
+      z-index: 10;
+    }
+    #overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 15, 46, 0.92);
+      z-index: 20;
+    }
+    #overlay h1 {
+      font-family: 'Courier New', monospace;
+      font-size: 4vw;
+      color: #ffd700;
+      text-shadow: 0 0 2vw rgba(255, 215, 0, 0.7);
+      margin-bottom: 2vh;
+    }
+    #overlay .stats {
+      font-family: 'Courier New', monospace;
+      font-size: 2vw;
+      color: #a0d8ff;
+      margin: 1vh 0;
+    }
+    #overlay button {
+      margin-top: 3vh;
+      padding: 1.2vw 3vw;
+      font-size: 1.5vw;
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 1vw;
+      cursor: pointer;
+      pointer-events: auto;
+      box-shadow: 0 0 1.5vw rgba(102, 126, 234, 0.6);
+      transition: transform 0.2s;
+    }
+    #overlay button:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="hud">
+      <div id="lives"></div>
+      <div id="timer">0.0s</div>
+      <div id="minimap"></div>
+    </div>
+    <div id="level-info">第 1 关</div>
+    <div id="controls-hint">
+      <div class="key-row"><div class="key key-offset"></div><div class="key">W</div><div class="key key-offset"></div></div>
+      <div class="key-row"><div class="key">A</div><div class="key">S</div><div class="key">D</div></div>
+    </div>
+    <div id="overlay">
+      <h1 id="overlay-title">通关！</h1>
+      <div class="stats" id="overlay-time"></div>
+      <div class="stats" id="overlay-grade"></div>
+      <button id="overlay-btn">下一关</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
