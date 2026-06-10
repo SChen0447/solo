@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T16:21:15.813Z",
+  "task_name": "auto14",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线协作的思维导图编辑器应用，支持用户创建、编辑和分享结构化的思维导图。使用TypeScript、React和Vite实现，文件结构如下：\n - package.json（含依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、uuid，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target为ES2020，包含JSX支持）\n - index.html（入口页面，包含根容器div#root）\n - src/main.tsx（应用入口，渲染React根组件并挂载到DOM）\n - src/App.tsx（主应用组件，管理整体状态，调用MindMap组件和数据持久化）\n - src/components/MindMap.tsx（核心思维导图组件，使用Canvas渲染节点和连线）\n - src/utils/storage.ts（工具模块，处理localStorage的读写操作，提供set和get函数）\n - src/types.ts（类型定义文件，定义Node、Edge、MindMapData等接口）\n\n具体需求：\n1. 节点创建与编辑：用户单击空白区域创建新节点（圆形或矩形），双击节点进入文本编辑模式，支持中文、英文和数字输入，节点内容自动保存到localStorage。\n2. 拖拽与连线：节点支持鼠标拖拽自由移动（位置实时更新并存储），从节点边缘拖出一条连线到另一节点，连线自动吸附并生成带箭头的贝塞尔曲线，曲线路径平滑且不重叠。\n3. 分支折叠与展开：每个节点的子分支可一键折叠（隐藏子节点和连线）或展开（显示所有子节点及连线），折叠/展开时带有平滑的缩放动画（transition 300ms ease）。\n4. 撤销与重做：支持最多20步的撤销/重做操作（包括节点创建、移动、删除、文本修改、连线），状态栈保存在内存中，通过工具栏按钮或快捷键Ctrl+Z/Ctrl+Shift+Z触发。\n5. 导出与导入：支持将思维导图导出为JSON文件下载，以及从本地JSON文件导入覆盖当前导图，导出的JSON文件包含所有节点位置、文本和连线信息。\n\n界面方面：整体使用柔和渐变背景（从#f0f4ff到#e8f0fe），节点采用白色卡片样式带浅灰色阴影（box-shadow 0 2px 8px rgba(0,0,0,0.08)），节点激活时阴影加深并出现蓝色边框（#4A90D9）。连线颜色默认为#8899aa，鼠标悬停时变为#4A90D9并加粗。工具栏固定在顶部（半透明毛玻璃效果，backdrop-filter: blur(6px)），包含创建、撤销、重做、导出、导入五个按钮，按钮悬停时放大1.1倍并改变背景色。画布支持滚轮缩放（0.5x-3x范围）和拖拽平移，缩放动画流畅（requestAnimationFrame驱动）。页面响应式适配：在宽度小于768px时工具栏变为垂直侧栏（左侧，宽度60px），节点编辑框适应触屏操作（增大点击区域到44px）。\n\n性能要求：画布渲染帧率不低于30fps（100节点以内），节点拖拽响应延迟不超过50ms。",
+  "session_id": null,
+  "trace": "null"
+}
