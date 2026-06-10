@@ -1,0 +1,166 @@
+{
+  "flowers": [
+    {
+      "id": "f1",
+      "name": "红玫瑰",
+      "color": "红",
+      "season": "春",
+      "price": 12.5,
+      "stock": 150,
+      "emoji": "🌹",
+      "description": "热情浪漫的象征"
+    },
+    {
+      "id": "f2",
+      "name": "粉康乃馨",
+      "color": "粉",
+      "season": "春",
+      "price": 8.0,
+      "stock": 200,
+      "emoji": "🌷",
+      "description": "温馨感恩的花语"
+    },
+    {
+      "id": "f3",
+      "name": "白百合",
+      "color": "白",
+      "season": "夏",
+      "price": 15.0,
+      "stock": 80,
+      "emoji": "🤍",
+      "description": "纯洁高雅的代表"
+    },
+    {
+      "id": "f4",
+      "name": "向日葵",
+      "color": "黄",
+      "season": "夏",
+      "price": 10.0,
+      "stock": 120,
+      "emoji": "🌻",
+      "description": "阳光活力的象征"
+    },
+    {
+      "id": "f5",
+      "name": "薰衣草",
+      "color": "紫",
+      "season": "夏",
+      "price": 18.0,
+      "stock": 60,
+      "emoji": "💜",
+      "description": "等待爱情的浪漫"
+    },
+    {
+      "id": "f6",
+      "name": "红郁金香",
+      "color": "红",
+      "season": "春",
+      "price": 9.5,
+      "stock": 100,
+      "emoji": "🌺",
+      "description": "热烈的爱意表达"
+    },
+    {
+      "id": "f7",
+      "name": "粉牡丹",
+      "color": "粉",
+      "season": "春",
+      "price": 22.0,
+      "stock": 40,
+      "emoji": "🌸",
+      "description": "富贵吉祥的寓意"
+    },
+    {
+      "id": "f8",
+      "name": "白满天星",
+      "color": "白",
+      "season": "秋",
+      "price": 6.0,
+      "stock": 300,
+      "emoji": "✨",
+      "description": "配角的浪漫点缀"
+    },
+    {
+      "id": "f9",
+      "name": "黄菊花",
+      "color": "黄",
+      "season": "秋",
+      "price": 7.5,
+      "stock": 180,
+      "emoji": "🌼",
+      "description": "清净高洁的品格"
+    },
+    {
+      "id": "f10",
+      "name": "紫蝴蝶兰",
+      "color": "紫",
+      "season": "冬",
+      "price": 35.0,
+      "stock": 25,
+      "emoji": "🦋",
+      "description": "幸福向你飞来"
+    },
+    {
+      "id": "f11",
+      "name": "红山茶",
+      "color": "红",
+      "season": "冬",
+      "price": 14.0,
+      "stock": 70,
+      "emoji": "🌶️",
+      "description": "谦让谨慎的美德"
+    },
+    {
+      "id": "f12",
+      "name": "粉绣球",
+      "color": "粉",
+      "season": "夏",
+      "price": 16.0,
+      "stock": 55,
+      "emoji": "🎀",
+      "description": "希望与忠贞的誓言"
+    }
+  ],
+  "orders": [
+    {
+      "id": "o1",
+      "date": "2026-06-01T10:30:00.000Z",
+      "items": [
+        { "flowerId": "f1", "name": "红玫瑰", "quantity": 10, "price": 12.5 },
+        { "flowerId": "f8", "name": "白满天星", "quantity": 5, "price": 6.0 }
+      ],
+      "total": 155.0,
+      "status": "已配送"
+    },
+    {
+      "id": "o2",
+      "date": "2026-06-05T14:20:00.000Z",
+      "items": [
+        { "flowerId": "f4", "name": "向日葵", "quantity": 8, "price": 10.0 },
+        { "flowerId": "f3", "name": "白百合", "quantity": 3, "price": 15.0 }
+      ],
+      "total": 125.0,
+      "status": "待处理"
+    },
+    {
+      "id": "o3",
+      "date": "2026-06-08T09:15:00.000Z",
+      "items": [
+        { "flowerId": "f2", "name": "粉康乃馨", "quantity": 20, "price": 8.0 }
+      ],
+      "total": 160.0,
+      "status": "待处理"
+    }
+  ],
+  "schemes": [
+    {
+      "id": "s1",
+      "name": "春日浪漫",
+      "date": "2026-06-02T08:00:00.000Z",
+      "elements": [
+        { "flowerId": "f1", "name": "红玫瑰", "emoji": "🌹", "x": 100, "y": 80, "scale": 1, "rotation": 0, "label": "热情" },
+        { "flowerId": "f7", "name": "粉牡丹", "emoji": "🌸", "x": 250, "y": 150, "scale": 1.2, "rotation": 15, "label": "浪漫" }
+      ]
+    }
+  ]
+}
