@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>粒子诗境 | Particle Poem</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a1a3e 100%);
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 20px 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .nav-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(138, 180, 248, 0.1);
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(138, 180, 248, 0.4);
+      box-shadow: 0 0 20px rgba(138, 180, 248, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .nav-btn.active {
+      background: rgba(138, 180, 248, 0.2);
+      border-color: rgba(138, 180, 248, 0.5);
+      box-shadow: 0 0 25px rgba(138, 180, 248, 0.4);
+    }
+
+    .title-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .main-title {
+      font-size: 48px;
+      font-weight: 300;
+      color: rgba(255, 255, 255, 0.95);
+      letter-spacing: 15px;
+      margin-bottom: 10px;
+      text-shadow: 0 0 40px rgba(138, 180, 248, 0.5);
+      opacity: 0;
+      animation: fadeIn 2s ease 0.5s forwards;
+    }
+
+    .sub-title {
+      font-size: 16px;
+      font-weight: 300;
+      color: rgba(138, 180, 248, 0.8);
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeIn 2s ease 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 50%;
+      right: 25px;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 240px;
+      padding: 25px 20px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      box-shadow: 
+        0 0 30px rgba(138, 180, 248, 0.15),
+        inset 0 0 20px rgba(138, 180, 248, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .control-panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 12px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(138, 180, 248, 0.3), rgba(183, 148, 244, 0.2), transparent 60%);
+      -webkit-mask: 
+        linear-gradient(#fff 0 0) content-box, 
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.95);
+      margin-bottom: 20px;
+      letter-spacing: 3px;
+      text-align: center;
+      text-shadow: 0 0 15px rgba(138, 180, 248, 0.4);
+    }
+
+    .control-group {
+      margin-bottom: 22px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .control-value {
+      color: rgba(138, 180, 248, 0.95);
+      font-weight: 500;
+    }
+
+    .slider {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #8ab4f8, #b794f4);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(138, 180, 248, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 25px rgba(138, 180, 248, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #8ab4f8, #b794f4);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 15px rgba(138, 180, 248, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    .color-scheme-options {
+      display: flex;
+      gap: 10px;
+      justify-content: space-between;
+    }
+
+    .color-btn {
+      flex: 1;
+      height: 40px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .color-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: inherit;
+      filter: blur(8px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .color-btn:hover::after {
+      opacity: 0.5;
+    }
+
+    .color-btn.active {
+      border-color: rgba(255, 255, 255, 0.8);
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .color-scheme-moon {
+      background: linear-gradient(135deg, #4a5568 0%, #667eea 50%, #9f7aea 100%);
+    }
+
+    .color-scheme-sunset {
+      background: linear-gradient(135deg, #f56565 0%, #ed8936 50%, #f687b3 100%);
+    }
+
+    .color-scheme-aurora {
+      background: linear-gradient(135deg, #48bb78 0%, #38b2ac 50%, #4299e1 100%);
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 2px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .main-title {
+        font-size: 32px;
+        letter-spacing: 8px;
+      }
+
+      .sub-title {
+        font-size: 12px;
+        letter-spacing: 4px;
+      }
+
+      .header {
+        padding: 15px;
+        gap: 8px;
+      }
+
+      .nav-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+
+      .control-panel {
+        right: 15px;
+        left: 15px;
+        top: auto;
+        bottom: 60px;
+        transform: none;
+        width: auto;
+        padding: 18px 15px;
+      }
+
+      .panel-title {
+        margin-bottom: 15px;
+      }
+
+      .control-group {
+        margin-bottom: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="title-container">
+    <h1 class="main-title">粒子诗境</h1>
+    <p class="sub-title">Particle Poem</p>
+  </div>
+
+  <nav class="header">
+    <button class="nav-btn active" data-poem="0">月光在湖面上行走</button>
+    <button class="nav-btn" data-poem="1">繁星落入梦境深处</button>
+    <button class="nav-btn" data-poem="2">风吹动时间的琴弦</button>
+  </nav>
+
+  <aside class="control-panel">
+    <div class="panel-title">控制面板</div>
+    
+    <div class="control-group">
+      <div class="control-label">
+        <span>粒子大小</span>
+        <span class="control-value" id="sizeValue">4.0px</span>
+      </div>
+      <input type="range" class="slider" id="particleSize" min="2" max="8" step="0.5" value="4">
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>散开速度</span>
+        <span class="control-value" id="speedValue">1.0x</span>
+      </div>
+      <input type="range" class="slider" id="scatterSpeed" min="0.5" max="3" step="0.1" value="1">
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>配色方案</span>
+      </div>
+      <div class="color-scheme-options">
+        <button class="color-btn color-scheme-moon active" data-scheme="moon" title="月光蓝紫"></button>
+        <button class="color-btn color-scheme-sunset" data-scheme="sunset" title="黄昏橙粉"></button>
+        <button class="color-btn color-scheme-aurora" data-scheme="aurora" title="极光绿蓝"></button>
+      </div>
+    </div>
+  </aside>
+
+  <div class="hint">鼠标悬停文字 · 点击产生冲击波</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
