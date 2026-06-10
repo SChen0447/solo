@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>水晶棱镜 - 3D光路模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0e27;
+      color: #e0e0ff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 220px;
+      background: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 100;
+      transition: all 0.3s ease-out;
+    }
+
+    #control-panel.collapsed {
+      width: auto;
+      height: 60px;
+      padding: 16px;
+      bottom: 0;
+      top: auto;
+      right: 50%;
+      transform: translateX(50%);
+      left: 0;
+      border-radius: 12px 12px 0 0;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e0e0ff;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #e0e0ff;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-value {
+      color: #00d4ff;
+      font-weight: 500;
+    }
+
+    .slider-container {
+      position: relative;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(100, 150, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #00d4ff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.8);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: #00d4ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+    }
+
+    .tooltip {
+      position: absolute;
+      top: -28px;
+      background: rgba(0, 212, 255, 0.9);
+      color: #0a0e27;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      accent-color: #00d4ff;
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    button {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(0, 212, 255, 0.15);
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      color: #00d4ff;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+    }
+
+    button:hover {
+      background: rgba(0, 212, 255, 0.3);
+      border-color: #00d4ff;
+      box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .prism-type-btns {
+      display: flex;
+      gap: 6px;
+    }
+
+    .prism-type-btns button {
+      font-size: 11px;
+      padding: 6px 8px;
+    }
+
+    .prism-type-btns button.active {
+      background: rgba(0, 212, 255, 0.3);
+      border-color: #00d4ff;
+    }
+
+    .hint-text {
+      font-size: 10px;
+      color: rgba(224, 224, 255, 0.5);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+
+    .expand-btn {
+      display: none;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      color: #00d4ff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    #control-panel.collapsed .expand-btn {
+      display: block;
+    }
+
+    #control-panel.collapsed .panel-content {
+      display: none;
+    }
+
+    #control-panel:not(.collapsed) .expand-btn {
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        width: auto;
+        height: 60px;
+        bottom: 0;
+        top: auto;
+        right: 0;
+        left: 0;
+        transform: none;
+        border-radius: 12px 12px 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="control-panel">
+    <button class="expand-btn">展开控制面板 ▲</button>
+    <div class="panel-content">
+      <div class="panel-title">水晶棱镜 · 参数控制</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>棱镜类型</span>
+        </div>
+        <div class="prism-type-btns">
+          <button id="type-triangle" class="active">三角形</button>
+          <button id="type-pyramid">三棱锥</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>折射率</span>
+          <span class="control-value" id="refraction-value">1.50</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="refraction-slider" min="1.2" max="2.5" step="0.01" value="1.5" />
+          <div class="tooltip" id="refraction-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>旋转角度 (°)</span>
+          <span class="control-value" id="rotation-value">0</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="rotation-slider" min="0" max="360" step="1" value="0" />
+          <div class="tooltip" id="rotation-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>缩放比例</span>
+          <span class="control-value" id="scale-value">1.0</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="scale-slider" min="0.5" max="2.0" step="0.1" value="1.0" />
+          <div class="tooltip" id="scale-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>光源强度</span>
+          <span class="control-value" id="intensity-value">1.0</span>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="intensity-slider" min="0.5" max="2.0" step="0.1" value="1.0" />
+          <div class="tooltip" id="intensity-tooltip"></div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="checkbox-container">
+          <input type="checkbox" id="show-spectrum" checked />
+          <span>显示光谱带</span>
+        </label>
+      </div>
+
+      <div class="btn-row">
+        <button id="reset-btn">重置场景</button>
+        <button id="collapse-btn">收起</button>
+      </div>
+
+      <div class="hint-text">
+        提示：点击网格放置棱镜，拖拽光束末端调整光源方向，选中棱镜后可旋转缩放。
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
