@@ -1,0 +1,65 @@
+[
+  {
+    "readerId": "20240001",
+    "borrowedBooks": [
+      {
+        "id": "b1",
+        "title": "百年孤独",
+        "author": "加西亚·马尔克斯",
+        "coverColor": "#d4a373"
+      },
+      {
+        "id": "b2",
+        "title": "霍乱时期的爱情",
+        "author": "加西亚·马尔克斯",
+        "coverColor": "#c9a959"
+      },
+      {
+        "id": "b3",
+        "title": "红楼梦",
+        "author": "曹雪芹",
+        "coverColor": "#b08968"
+      }
+    ]
+  },
+  {
+    "readerId": "20240002",
+    "borrowedBooks": [
+      {
+        "id": "b4",
+        "title": "活着",
+        "author": "余华",
+        "coverColor": "#a8d5ba"
+      },
+      {
+        "id": "b5",
+        "title": "许三观卖血记",
+        "author": "余华",
+        "coverColor": "#95b899"
+      }
+    ]
+  },
+  {
+    "readerId": "20240003",
+    "borrowedBooks": [
+      {
+        "id": "b6",
+        "title": "茶经",
+        "author": "陆羽",
+        "coverColor": "#b7c9a7"
+      },
+      {
+        "id": "b7",
+        "title": "中国人的生活美学",
+        "author": "刘悦笛",
+        "coverColor": "#a5a58d"
+      },
+      {
+        "id": "b8",
+        "title": "器物滋养",
+        "author": "须永义臣",
+        "coverColor": "#cb997e"
+      }
+    ]
+  }
+]
