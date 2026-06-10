@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>智能表格与图表生成器</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>📊 智能表格与图表生成器</h1>
+        <p class="subtitle">点击单元格编辑 · 输入 = 开始公式 · 拖选数据生成图表</p>
+      </header>
+
+      <div class="toolbar">
+        <button id="btn-add-row" class="tool-btn" title="在末尾添加一行">
+          ➕ 添加行
+        </button>
+        <button id="btn-add-col" class="tool-btn" title="在末尾添加一列">
+          ➕ 添加列
+        </button>
+        <button id="btn-del-row" class="tool-btn" title="删除选中行">
+          🗑️ 删除行
+        </button>
+        <button id="btn-del-col" class="tool-btn" title="删除选中列">
+          🗑️ 删除列
+        </button>
+        <button id="btn-sort-asc" class="tool-btn" title="按选中列升序排序">
+          ⬆️ 升序
+        </button>
+        <button id="btn-sort-desc" class="tool-btn" title="按选中列降序排序">
+          ⬇️ 降序
+        </button>
+        <button id="btn-export" class="tool-btn export-btn" title="导出为CSV">
+          📥 导出 CSV
+        </button>
+      </div>
+
+      <div class="content">
+        <section class="table-section">
+          <div class="table-wrapper">
+            <canvas id="table-canvas"></canvas>
+            <div id="cell-editor" class="cell-editor hidden">
+              <input type="text" id="cell-input" />
+            </div>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="chart-section">
+          <div class="chart-panel">
+            <h3>📈 图表生成</h3>
+            <p class="hint">在表格中拖选数据区域后点击生成</p>
+            <div class="chart-types">
+              <button class="chart-btn active" data-type="bar">柱状图</button>
+              <button class="chart-btn" data-type="line">折线图</button>
+              <button class="chart-btn" data-type="pie">饼图</button>
+            </div>
+            <div class="range-info">
+              <span>数据范围：</span>
+              <span id="range-display">未选择</span>
+            </div>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="chart-canvas"></canvas>
+          </div>
+        </section>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
