@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T20:10:11.029Z",
+  "task_name": "auto148",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助个人或小团队在浏览器中创建和管理轻量级看板（Kanban）任务列表、并支持拖拽排序和任务依赖关系可视化追踪的应用，主要解决传统看板工具要么过于复杂臃肿（如Jira）、要么缺乏任务间依赖关系的直观展示，导致无法看清某任务阻塞哪些后续任务的问题。\n\n它应当具备以下能力：\n1) 多列看板管理：页面以横向滚动方式展示三个默认看板列——待办（背景浅蓝#e3f2fd）、进行中（浅黄#fff9c4）、已完成（浅绿#c8e6c9），每列顶部显示列名和当前任务数量徽章（圆形，字号12px，背景色#1565c0，文字白色），用户可点击“+添加列”按钮新增自定义列（输入列名后生成，背景自动设为随机柔和色）。\n2) 任务卡片拖拽：每张任务卡片宽220px，圆角8px，背景白色，内边距12px，显示任务标题（16px，加粗）、描述摘要（截断50字加省略号，灰色#616161）、优先级标签（高#e53935/中#fdd835/低#43a047，5px圆角小标签）和截止日期（若无则显示“无期限”，灰色#9e9e9e）。卡片支持鼠标拖拽跨列移动（拖拽时卡片半透明、放大1.05倍，原位置保留虚线占位符），松开后卡片自动落入新列并触发平滑过渡动画（300ms ease-out），同时更新该列任务计数。\n3) 任务依赖关系可视化：双击任意任务卡片，弹出一个模态框（背景半透明遮罩#00000066，框体白色圆角16px，宽460px），展示该任务的所有前置任务列表（复选框形式，已完成的打勾变灰），用户可通过搜索框（输入关键字模糊匹配所有任务）添加前置依赖，依赖关系以有向边的形式在任务卡片左下角显示一个小图标（↖箭头，蓝色#1976d2），鼠标悬停该图标时Tooltip显示“被X个任务阻塞”。\n4) 本地持久化存储与导出：所有看板数据（列、任务、依赖关系）在每次拖拽或编辑后自动保存到浏览器的localStorage，页面刷新后自动恢复上次状态。提供“导出JSON”按钮（位于右上角工具栏，背景#1e88e5，白色文字，圆角6px），点击后生成并下载一个格式化的JSON文件（缩进2空格），包含完整的列和任务及依赖ID数组。\n\n界面方面要求：整体采用 Material Design 风格，使用柔和主色调（#1976d2 蓝色作为主色，#ffb300 琥珀色作为强调色），字体使用系统无衬线体。看板容器具有水平滚动条（自定义滚动条样式：细8px，滑块圆角4px，背景#e0e0e0，滑块#90caf9）。所有交互元素（按钮、卡片、标签）在悬停时有轻微上移（translateY(-2px)）和阴影加深（box-shadow从0 1px 3px变为0 4px 12px）的动效，过渡均为200ms ease。页面响应式适配：当屏幕宽度小于768px时，看板改为垂直堆叠（每列占满宽度），任务卡片宽度自动100%，搜索和导出按钮放入底部固定浮动栏（背景白色带顶部浅阴影）。\n\n性能上要求：拖拽交互的帧率稳定在60fps，且同时拖动超过50张任务卡片时无可见卡顿。\n\n实现采用TypeScript、React和Vite，按以下文件组织代码：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、uuid、lodash，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target ES2020，moduleResolution bundler）\n - index.html（入口页面，挂载id为root的div，引入Google Fonts的Roboto字体）\n - src/types.ts（定义看板数据类型：Board、Column、Task、Dependency，所有接口为readonly且使用联合类型约束状态）\n - src/store.ts（管理全局看板状态，提供addColumn、addTask、moveTask、toggleDependency、saveToLocalStorage、loadFromLocalStorage等方法，使用useReducer实现纯函数状态变更）\n - src/components/Board.tsx（看板主组件，渲染三列布局和水平滚动容器，接收store中的dispatch，负责拖拽事件处理——使用原生HTML5 Drag and Drop API，在onDragOver中调用preventDefault以允许放置，onDrop中解析dataTransfer数据并dispatch moveTask）\n - src/components/TaskCard.tsx（任务卡片组件，展示标题、描述、优先级标签和截止日期，渲染依赖图标和Tooltip，支持双击打开依赖编辑模态框）\n - src/components/DependencyModal.tsx（依赖关系编辑模态框组件，展示前置任务列表和搜索添加输入框，关闭时自动保存依赖关系到store）\n - src/App.tsx（根组件，组合Board和工具栏，调用useEffect在初始化时从localStorage加载数据）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0eba8291c56a9b3abafde02c35f419e1_6a28729182cf5c9a7755b915.6a28731682cf5c9a7755b9a0.6a287316e9d00c6eb6956571:Trae CN.T(2026/6/10 04:09:58)",
+    "user_id": "3986207660317399",
+    "trace_id": "0eba8291c56a9b3abafde02c35f419e1",
+    "session_id": "6a28729182cf5c9a7755b915",
+    "task_id": "6a28731682cf5c9a7755b9a0",
+    "message_id": "6a287316e9d00c6eb6956571",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 04:09:58",
+    "format": "full"
+  },
+  "trace": "null"
+}
