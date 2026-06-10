@@ -1,0 +1,21 @@
+{
+  "name": "high-dim-3d-explorer",
+  "version": "1.0.0",
+  "description": "高维数据3D探索器 - 交互式3D散点图投影与降维对比工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.202",
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "three": "^0.160.0"
+  }
+}
