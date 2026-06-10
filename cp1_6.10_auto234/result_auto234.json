@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:31:27.700Z",
+  "task_name": "auto234",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位独立音乐人想在社区中搭建一个在线节拍实验室，让用户可以自由组合预置的鼓点、贝斯和旋律循环来创作一段伴奏，并分享给他人试听和改编。\n\n构建一个名为「律动工坊」的全栈web应用，用户从音色库拖拽音频片段到多轨时间线上，实时混音并生成波形预览，支持速度（BPM）和音量调节，最终导出为WAV格式。使用TypeScript、React 18、Web Audio API和Vite实现，所有音频片段从本地模拟JSON加载，创作记录保存在localStorage中。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react@18, react-dom@18, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，引入main.tsx）\n - src/main.tsx（应用入口，渲染App组件，从localStorage恢复创作状态）\n - src/App.tsx（主布局组件，包含音色库面板和多轨时间线区，管理全局状态，数据流向：接收用户拖拽事件→更新音轨数据数组→传递至子组件渲染）\n - src/components/Track.tsx（单轨组件，展示音频波形缩略图，支持音量滑块和静音按钮，接收音轨数据和回调函数，调用Web Audio API播放）\n - src/components/Timeline.tsx（时间线组件，渲染多轨网格，支持鼠标拖拽移动片段位置，根据BPM计算网格刻度，调用Track组件渲染每一条音轨）\n - src/components/SoundPalette.tsx（音色库面板组件，按类别（鼓点/贝斯/旋律）展示音色卡片，每张卡片含名称和播放按钮，点击时预览播放，拖拽到时间线时触发创建新音轨事件）\n - src/data/samples.json（模拟音色库数据，包含20个音频片段的元数据：id、name、category、duration、color）\n - src/utils/audioEngine.ts（音频引擎工具模块，封装Web Audio API创建音频上下文、解码音频数据、播放缓冲区、生成波形数据、导出音频为WAV文件，跨组件调用）\n - src/hooks/useAudioPlayer.ts（自定义Hook，封装音频播放状态管理，返回播放、暂停、停止、seek函数及当前进度状态）\n\n功能需求：\n1) 音色库面板：按类别展示预设音色卡片，每张卡片显示名称和预览按钮，点击按钮用Web Audio API播放该片段一次，卡片可拖拽到时间线区域。\n2) 多轨时间线：至少支持4条音轨，每条轨道的片段以不同颜色的矩形块显示，上面标注片段名称，片段可水平拖拽调整起始时间，片段之间可重叠。\n3) 播放控制：播放、暂停、停止按钮，播放时播放头（红色竖线）从0位置按当前BPM匀速前进，所有轨道同步播放。\n4) BPM调节：滑块范围60-180，默认120，改变BPM时时间线的网格刻度重新计算并重绘。\n5) 音量与静音：每条轨道有独立的音量滑块（0-100）和静音按钮，静音时轨道路由被切断。\n6) 导出为WAV：点击导出按钮，将所有非静音轨道的音频片段按时间排列合并成一个音频缓冲区，使用Web Audio API的OfflineAudioContext渲染并导出为WAV格式，通过a标签触发下载。\n7) 状态持久化：每次创作状态（轨道列表、片段位置、音量、BPM）自动保存到localStorage，页面刷新后自动恢复。\n\n界面要求：应用采用深色主题（背景#1a1a2e，卡片背景#16213e，文字#e0e0e0，强调色#e94560和#0f3460）。顶部导航栏为固定顶部（高度60px），依次排列Logo、导出按钮和BPM滑块；中间区域分为左右两栏（左侧音色库占30%，右侧时间线占70%），左侧面板内卡片采用两列网格排列，每张卡片圆角8px带悬停缩放效果（1.05倍，过渡0.2s），点击预览按钮时卡片边框闪烁高亮一次（0.5s）；右侧时间线垂直划分四条轨道，每轨高度80px带交替背景色（#1a1a2e和#16213e交替），片段块颜色与其音色类别对应（鼓点#e94560，贝斯#0f3460，旋律#533483），片段块圆角4px，鼠标悬停显示细微阴影（过渡0.3s），播放头为2px宽红色竖线，移动时无卡顿；播放、暂停、停止按钮放在时间线左上角，使用图标符号（▶ ⏸ ⏹）且点击时有按压缩放动画（0.95倍，过渡0.1s）；导出按钮在右上角，点击后显示加载动画（旋转圆环，持续1-3秒）直到下载触发；整个页面响应式，当屏幕宽度小于768px时左右栏改为上下排列，时间线最低高度400px。\n\n性能约束：播放状态下音轨同步延迟不超过50ms，拖动片段时界面响应帧率保持30fps以上。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:5c2387b05f1bd60beab52e8858b9a322_6a28a1fd3dad42da9ad53b5e.6a28a2433dad42da9ad53ba3.6a28a243b8b9b00ae72b9a7b:Trae CN.T(2026/6/10 07:31:15)",
+    "user_id": "3986207660317399",
+    "trace_id": "5c2387b05f1bd60beab52e8858b9a322",
+    "session_id": "6a28a1fd3dad42da9ad53b5e",
+    "task_id": "6a28a2433dad42da9ad53ba3",
+    "message_id": "6a28a243b8b9b00ae72b9a7b",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:31:15",
+    "format": "full"
+  },
+  "trace": "null"
+}

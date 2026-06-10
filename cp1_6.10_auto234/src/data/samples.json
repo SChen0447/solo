@@ -1,0 +1,22 @@
+[
+  { "id": "drum-1", "name": "底鼓重击", "category": "drum", "duration": 0.5, "color": "#e94560" },
+  { "id": "drum-2", "name": "军鼓拍打", "category": "drum", "duration": 0.3, "color": "#e94560" },
+  { "id": "drum-3", "name": "踩镲闭合", "category": "drum", "duration": 0.1, "color": "#e94560" },
+  { "id": "drum-4", "name": "踩镲开放", "category": "drum", "duration": 0.4, "color": "#e94560" },
+  { "id": "drum-5", "name": "高音嗵鼓", "category": "drum", "duration": 0.3, "color": "#e94560" },
+  { "id": "drum-6", "name": "低音嗵鼓", "category": "drum", "duration": 0.4, "color": "#e94560" },
+  { "id": "drum-7", "name": "叮叮镲", "category": "drum", "duration": 1.0, "color": "#e94560" },
+  { "id": "drum-8", "name": "拍手声", "category": "drum", "duration": 0.2, "color": "#e94560" },
+  { "id": "bass-1", "name": "深沉贝斯", "category": "bass", "duration": 1.0, "color": "#0f3460" },
+  { "id": "bass-2", "name": "弹跳贝斯", "category": "bass", "duration": 0.5, "color": "#0f3460" },
+  { "id": "bass-3", "name": "浑厚贝斯", "category": "bass", "duration": 1.5, "color": "#0f3460" },
+  { "id": "bass-4", "name": "锯齿贝斯", "category": "bass", "duration": 0.8, "color": "#0f3460" },
+  { "id": "bass-5", "name": "方波贝斯", "category": "bass", "duration": 0.6, "color": "#0f3460" },
+  { "id": "bass-6", "name": "滑音贝斯", "category": "bass", "duration": 1.2, "color": "#0f3460" },
+  { "id": "melody-1", "name": "明亮钢琴", "category": "melody", "duration": 1.5, "color": "#533483" },
+  { "id": "melody-2", "name": "温暖合成器", "category": "melody", "duration": 2.0, "color": "#533483" },
+  { "id": "melody-3", "name": "梦幻铺底", "category": "melody", "duration": 3.0, "color": "#533483" },
+  { "id": "melody-4", "name": "清脆钟声", "category": "melody", "duration": 1.0, "color": "#533483" },
+  { "id": "melody-5", "name": "弹拨吉他", "category": "melody", "duration": 0.8, "color": "#533483" },
+  { "id": "melody-6", "name": "悠扬笛声", "category": "melody", "duration": 2.5, "color": "#533483" }
+]
