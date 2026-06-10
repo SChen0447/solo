@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光痕触礁</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+    }
+    #ui-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      background: rgba(10, 10, 30, 0.7);
+      border-radius: 8px;
+      padding: 16px 20px;
+      color: #ccc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      min-width: 240px;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+    #ui-panel h3 {
+      margin: 0 0 12px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .control-row {
+      margin-bottom: 12px;
+    }
+    .control-row:last-child {
+      margin-bottom: 0;
+    }
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .control-value {
+      color: #48dbfb;
+      font-family: monospace;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: #1a1a2e;
+      border-radius: 2px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #48dbfb;
+      cursor: pointer;
+      border: 2px solid #fff;
+    }
+    #hint {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      color: #888;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 12px;
+      text-align: right;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hint">
+    空格键：切换背景色<br />
+    R键：重置棱镜角度
+  </div>
+  <div id="ui-panel">
+    <h3>光痕触礁 - 控制面板</h3>
+    <div class="control-row">
+      <div class="control-label">
+        <span>光源强度</span>
+        <span class="control-value" id="intensity-val">1.00</span>
+      </div>
+      <input type="range" id="intensity" min="0.5" max="2.0" step="0.01" value="1.0" />
+    </div>
+    <div class="control-row">
+      <div class="control-label">
+        <span>折射率</span>
+        <span class="control-value" id="refraction-val">1.50</span>
+      </div>
+      <input type="range" id="refraction" min="1.0" max="2.5" step="0.01" value="1.5" />
+    </div>
+    <div class="control-row">
+      <div class="control-label">
+        <span>输出线束</span>
+        <span class="control-value" id="beams-val">4</span>
+      </div>
+      <input type="range" id="beams" min="2" max="8" step="1" value="4" />
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
