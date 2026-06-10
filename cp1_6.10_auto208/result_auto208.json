@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T22:37:41.505Z",
+  "task_name": "auto208",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个叫「拓扑折叠」的交互式三维几何变换可视化项目，想法是让用户在浏览器中用鼠标拖拽和滑块实时操控一个由二十面体、立方体和环面构成的复合几何体群，观察它们在折叠、扭曲和展开三种变换模式下的形态演变，每次变换会触发粒子烟花和光影重组，产生一种数学与艺术交织的优雅视觉体验。希望它能做到：第一，主场景是一个全屏Three.js渲染窗口，背景色从#0d0f1a到#1c1e30的深蓝渐变，场景中心一组三个几何体（二十面体半径2、立方体边长1.8、环面半径1.5管半径0.4）以三角阵排列，每个几何体表面用半透明彩色材质（二十面体#ff6b8a alpha 0.7、立方体#4fc3f7 alpha 0.7、环面#ffd54f alpha 0.7），边缘带0.5px白色发光线条，场景环境光强度0.3并有一个方向光从右上角照射产生立体感。第二，左侧控制面板包含三个滑块——折叠强度（0到1，步长0.01）、扭曲角度（0到360度，步长1）、展开比例（0.5到2.0，步长0.01），一个下拉菜单切换变换模式（折叠/扭曲/展开），一个复位按钮（重置所有滑块到初始值并播放2秒的复位动画），面板底色#1e2030带#2a2d40边框和4px圆角，滑块轨道#3a3d50、滑块手柄#6dd3ff带2px光晕，切换时有0.3秒的平滑过渡。第三，折叠模式下几何体沿Y轴收缩并彼此靠近，最终合并成一个发光的球体（半径2.5，颜色渐变为#ffffff），过程中从合并点向外喷射150个彩色粒子（大小0.05到0.2随机，颜色从#ff6b8a到#6dd3ff渐变，速度0.5到1.5随机，生命周期2秒），粒子运动轨迹为随机螺旋曲线；扭曲模式让几何体绕Y轴扭转，每个几何体的顶点按与中心距离比例旋转（最大扭曲时顶部旋转360度、底部不动），表面产生波纹状色带（从#ff6b8a到#6dd3ff再到#ffd54f循环）；展开模式下几何体沿径向向外扩散并逐渐透明（alpha从0.7降到0.2），最终在远处化作光点消散，同时场景中浮现由线条构成的动态辅助网格（网格线#4a4d60，线宽0.3px，透明度0.3）。第四，界面响应式适配——在768px以下屏幕控制面板折叠为底部抽屉（高度200px，点击按钮展开/收起，按钮为#4fc3f7圆形图标带箭头旋转动画），画布自动填充剩余空间，所有几何体缩放比例相应调整（保持视觉均衡）。性能上要求变换动画帧率稳定在55FPS以上，粒子数量不超过200个，使用BufferGeometry和一次绘制调用。实现用TypeScript、Three.js和Vite，把代码拆成以下文件：\n - package.json（含依赖：three@0.160, @types/three, vite, typescript；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，包含全屏Canvas渲染挂载点）\n - src/main.ts（应用入口，初始化场景、相机、渲染器，管理动画循环，导入并调用控制器、几何体、粒子模块）\n - src/controls.ts（创建左侧控制面板的DOM元素和事件绑定，导出滑块值和复位函数；数据流向：controls.ts接收用户输入 → 输出变换参数到main.ts → main.ts传给geometryTransformer.ts和particleSystem.ts）\n - src/geometryTransformer.ts（根据变换参数更新三个几何体的位置、旋转、缩放及材质属性，导出updateGeometries函数；数据流向：接收变换参数 → 计算变换矩阵 → 几何体属性更新）\n - src/particleSystem.ts（管理粒子池的创建、更新和销毁，导出emitParticles和updateParticles函数；数据流向：接收发射指令和变换进度 → 更新粒子位置和生命周期 → 渲染）\n - src/types.ts（定义TransformParams、Particle、GeometryGroup等接口类型）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0d1d97d2de0737c9eab81976589278b9_6a289467f358b18645c37413.6a2895a9f358b18645c3751c.6a2895a8796ffbbeb017ab1e:Trae CN.T(2026/6/10 06:37:29)",
+    "user_id": "3986207660317399",
+    "trace_id": "0d1d97d2de0737c9eab81976589278b9",
+    "session_id": "6a289467f358b18645c37413",
+    "task_id": "6a2895a9f358b18645c3751c",
+    "message_id": "6a2895a8796ffbbeb017ab1e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 06:37:29",
+    "format": "full"
+  },
+  "trace": "null"
+}
