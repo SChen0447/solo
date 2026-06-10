@@ -1,0 +1,262 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #ffffff;
+  min-height: 100vh;
+  padding: 30px 20px;
+}
+
+#app {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.canvas-wrapper {
+  position: relative;
+  width: 800px;
+  height: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+#mainCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: #e8e4d9;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.info-panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #ffffff;
+  line-height: 1.6;
+  pointer-events: none;
+  user-select: none;
+}
+
+.controls {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 2px solid #d5ccc0;
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.control-label {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.symmetry-select {
+  padding: 10px 14px;
+  border: 1px solid #d5ccc0;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+  outline: none;
+}
+
+.symmetry-select:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.symmetry-select:active {
+  transform: scale(0.95);
+}
+
+.density-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.density-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1;
+  height: 6px;
+  background: #bbb;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.density-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #ff7eb3;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.density-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #ff7eb3;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.density-slider:hover::-webkit-slider-thumb {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.density-slider:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+}
+
+.density-value {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  min-width: 45px;
+  text-align: center;
+}
+
+.color-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.color-group {
+  display: flex;
+  gap: 6px;
+}
+
+.color-group-label {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.color-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: box-shadow 0.2s, transform 0.1s, border-color 0.2s;
+}
+
+.color-swatch:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.color-swatch:active {
+  transform: scale(0.95);
+}
+
+.color-swatch.active {
+  border-color: #333;
+}
+
+.export-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  justify-content: center;
+}
+
+.export-btn {
+  padding: 10px 20px;
+  border: 1px solid #d5ccc0;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.1s;
+}
+
+.export-btn:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.export-btn:active {
+  transform: scale(0.95);
+}
+
+.palette-popup {
+  position: absolute;
+  pointer-events: none;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  transform: translate(-50%, -50%);
+  display: none;
+}
+
+.palette-popup.visible {
+  display: block;
+  pointer-events: auto;
+}
+
+.palette-color {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  border: 1px solid #fff;
+  transition: transform 0.15s;
+}
+
+.palette-color:hover {
+  transform: translate(-50%, -50%) scale(1.3);
+}
+
+@media (max-width: 900px) {
+  .canvas-wrapper {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+  }
+
+  .controls {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .control-group {
+    width: 100%;
+  }
+}
