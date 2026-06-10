@@ -1,0 +1,23 @@
+{
+  "name": "stardust-horizon",
+  "version": "1.0.0",
+  "description": "3D宇宙尘埃与星云粒子系统交互可视化应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "^0.160.0",
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9.0.7"
+  }
+}
