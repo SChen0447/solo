@@ -1,0 +1,16 @@
+{
+  "name": "maze-pathfinder",
+  "version": "1.0.0",
+  "description": "2D top-down maze exploration with A* pathfinding visualization",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/lodash": "^4.14.202"
+  }
+}

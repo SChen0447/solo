@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>迷宫探索与自动寻路路径可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #2c3e50;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+      color: #ecf0f1;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #topToolbar {
+      height: 56px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 24px;
+      background: rgba(44, 62, 80, 0.95);
+      border-bottom: 1px solid #34495e;
+      z-index: 10;
+    }
+
+    #topToolbar h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ecf0f1;
+    }
+
+    #mainContent {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #sidebar {
+      width: 200px;
+      background: rgba(44, 62, 80, 0.85);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-right: 1px solid #34495e;
+      z-index: 5;
+    }
+
+    #sidebar h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #bdc3c7;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .statItem {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .statLabel {
+      font-size: 11px;
+      color: #95a5a6;
+    }
+
+    .statValue {
+      font-size: 20px;
+      font-weight: 700;
+      color: #3498db;
+    }
+
+    #canvasContainer {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #mazeCanvas {
+      border: 1px solid #bdc3c7;
+      background: #ffffff;
+      image-rendering: pixelated;
+    }
+
+    #bottomToolbar {
+      height: 64px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      background: rgba(44, 62, 80, 0.95);
+      border-top: 1px solid #34495e;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: inherit;
+      color: #ffffff;
+      min-width: 120px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: #3498db;
+    }
+
+    .btn-primary:hover {
+      background: #2980b9;
+    }
+
+    .btn-success {
+      background: #27ae60;
+    }
+
+    .btn-success:hover {
+      background: #229954;
+    }
+
+    .btn-success:disabled {
+      background: #7f8c8d;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-danger {
+      background: #e74c3c;
+    }
+
+    .btn-danger:hover {
+      background: #c0392b;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #7f8c8d;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="topToolbar">
+      <h1>迷宫探索与自动寻路路径可视化</h1>
+      <button id="regenBtn" class="btn btn-primary">重新生成</button>
+    </div>
+
+    <div id="mainContent">
+      <div id="sidebar">
+        <div>
+          <h2>性能数据</h2>
+          <div class="statItem">
+            <span class="statLabel">迷宫格子总数</span>
+            <span id="statCells" class="statValue">0</span>
+          </div>
+        </div>
+        <div>
+          <div class="statItem">
+            <span class="statLabel">上次寻路耗时 (ms)</span>
+            <span id="statTime" class="statValue">0.0</span>
+          </div>
+        </div>
+        <div>
+          <div class="statItem">
+            <span class="statLabel">路径长度 (格子数)</span>
+            <span id="statLength" class="statValue">0</span>
+          </div>
+        </div>
+        <div>
+          <div class="statItem">
+            <span class="statLabel">当前角色坐标</span>
+            <span id="statCoords" class="statValue">-, -</span>
+          </div>
+          <div class="hint">点击通道放置角色<br/>选中角色后按D键删除</div>
+        </div>
+      </div>
+
+      <div id="canvasContainer">
+        <canvas id="mazeCanvas"></canvas>
+      </div>
+    </div>
+
+    <div id="bottomToolbar">
+      <button id="startBtn" class="btn btn-success">开始寻路</button>
+      <button id="deleteBtn" class="btn btn-danger">删除角色</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
