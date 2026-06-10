@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>动态光影与粒子足迹</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0a0a14;
+      color: #fff;
+    }
+
+    #app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 70%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    #gameCanvas {
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #reset-btn {
+      position: fixed;
+      top: 20px;
+      right: 290px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e74c3c;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 10;
+    }
+
+    #reset-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(231, 76, 60, 0.6);
+    }
+
+    #reset-btn:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.3), 0 6px 16px rgba(231, 76, 60, 0.6);
+    }
+
+    #reset-btn::before,
+    #reset-btn::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 3px;
+      background: #fff;
+      border-radius: 2px;
+    }
+
+    #reset-btn::before {
+      transform: rotate(45deg);
+    }
+
+    #reset-btn::after {
+      transform: rotate(-45deg);
+    }
+
+    #warning-bar {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 24px;
+      background: rgba(255, 200, 0, 0.3);
+      color: #fff;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      backdrop-filter: blur(8px);
+      z-index: 5;
+    }
+
+    #warning-bar.visible {
+      opacity: 1;
+    }
+
+    #control-panel {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 250px;
+      padding: 24px;
+      background: rgba(30, 30, 47, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .control-group {
+      margin-bottom: 24px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    .control-value {
+      color: #fff;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider:focus {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+    }
+
+    #temp-slider {
+      background: linear-gradient(to right, #ff8c00, #ffdd66, #ffffff, #aaccff, #6688ff);
+    }
+
+    #brightness-slider {
+      background: linear-gradient(to right, #333, #fff);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .light-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .light-preview {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      box-shadow: 0 0 16px currentColor;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .light-info {
+      font-size: 12px;
+      color: #888;
+    }
+
+    .hint {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+      color: #666;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="gameCanvas" width="500" height="500"></canvas>
+      <div id="warning-bar">粒子近满，请调整移动节奏</div>
+    </div>
+
+    <button id="reset-btn" aria-label="重置游戏"></button>
+
+    <div id="control-panel">
+      <div class="panel-title">光源控制</div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>色温</span>
+          <span class="control-value"><span id="temp-value">5500</span>K</span>
+        </div>
+        <input
+          type="range"
+          id="temp-slider"
+          class="slider"
+          min="2000"
+          max="8000"
+          step="100"
+          value="5500"
+        />
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>亮度</span>
+          <span class="control-value" id="brightness-value">1.0</span>
+        </div>
+        <input
+          type="range"
+          id="brightness-slider"
+          class="slider"
+          min="0.1"
+          max="1.5"
+          step="0.1"
+          value="1.0"
+        />
+      </div>
+
+      <div class="light-indicator">
+        <div class="light-preview" id="light-preview"></div>
+        <div class="light-info" id="light-info">自然光</div>
+      </div>
+
+      <div class="hint">
+        ← → 方向键移动<br />
+        空格键跳跃
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
