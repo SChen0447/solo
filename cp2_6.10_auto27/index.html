@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>机械猫咪跑酷 - Cyberpunk Cat Runner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0014;
+      font-family: 'Courier New', monospace;
+      color: #fff;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    canvas {
+      display: block;
+      background: linear-gradient(180deg, #1a0033 0%, #0a0014 100%);
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+    #game-over {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 360px;
+      padding: 32px 24px;
+      background: rgba(10, 0, 20, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 2px solid #ff00ff;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(255, 0, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1);
+      text-align: center;
+      display: none;
+      z-index: 10;
+    }
+    #game-over h2 {
+      font-size: 28px;
+      letter-spacing: 3px;
+      color: #ff00ff;
+      text-shadow: 2px 2px 0 #00ffff, 4px 4px 0 #0a0014;
+      margin-bottom: 20px;
+    }
+    .score-display {
+      margin: 16px 0;
+      font-size: 16px;
+      color: #00ffff;
+      letter-spacing: 2px;
+    }
+    .score-display .value {
+      display: block;
+      font-size: 36px;
+      color: #ffaa00;
+      text-shadow: 0 0 10px rgba(255, 170, 0, 0.8);
+      margin-top: 4px;
+      min-height: 42px;
+    }
+    #restart-btn {
+      margin-top: 20px;
+      padding: 12px 36px;
+      font-family: 'Courier New', monospace;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      color: #00ffff;
+      background: transparent;
+      border: 3px solid #00ffff;
+      cursor: pointer;
+      text-shadow: 2px 2px 0 #ff00ff;
+      box-shadow: 4px 4px 0 #ff00ff, 0 0 20px rgba(0, 255, 255, 0.3);
+      transition: all 0.15s ease;
+    }
+    #restart-btn:hover, #restart-btn:active {
+      color: #ff00ff;
+      border-color: #ff00ff;
+      text-shadow: 2px 2px 0 #00ffff;
+      box-shadow: 4px 4px 0 #00ffff, 0 0 20px rgba(255, 0, 255, 0.5);
+      transform: translate(-2px, -2px);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas" width="800" height="450"></canvas>
+    <div id="game-over">
+      <h2>GAME OVER</h2>
+      <div class="score-display">
+        最终得分
+        <span class="value" id="final-score">0</span>
+      </div>
+      <div class="score-display">
+        最佳记录
+        <span class="value" id="best-score">0</span>
+      </div>
+      <button id="restart-btn">重新开始</button>
+    </div>
+  </div>
+  <script type="module" src="/src/game.ts"></script>
+</body>
+</html>
