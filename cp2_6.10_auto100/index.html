@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Roguelike 视野迷雾与自动地图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1a2e;
+      color: #dfe6e9;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .game-container {
+      display: flex;
+      flex: 1;
+      padding: 16px;
+      gap: 16px;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-self: center;
+    }
+
+    .toggle-btn {
+      background-color: #2d3436;
+      color: #dfe6e9;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      user-select: none;
+    }
+
+    .toggle-btn:hover {
+      background-color: #3d4446;
+    }
+
+    .toggle-btn:active {
+      transform: scale(0.95);
+    }
+
+    .main-map-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 600px;
+      min-height: 450px;
+      flex: 1;
+    }
+
+    #mainCanvas {
+      background-color: #000000;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      image-rendering: pixelated;
+    }
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .automap-container {
+      width: 200px;
+      background-color: #0d0d1a;
+      border: 1px solid #cccccc;
+      border-radius: 4px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .automap-title {
+      font-family: monospace;
+      font-size: 14px;
+      color: #aaaaaa;
+      text-align: left;
+    }
+
+    #autoMapCanvas {
+      width: 100%;
+      height: 150px;
+      background-color: #000000;
+      display: block;
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #888888;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
+
+    .stats-bar {
+      height: 40px;
+      background-color: #2d3436;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      gap: 24px;
+      border-top: 1px solid #3d4446;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    .stat-label {
+      color: #aaaaaa;
+    }
+
+    .stat-value {
+      color: #dfe6e9;
+      font-weight: 500;
+    }
+
+    .progress-container {
+      width: 150px;
+      height: 12px;
+      background-color: #1a1a2e;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: #3498db;
+      border-radius: 6px;
+      transition: width 0.2s ease;
+    }
+
+    .perf-good { color: #27ae60; }
+    .perf-mid { color: #e67e22; }
+    .perf-bad { color: #e74c3c; }
+
+    @media (max-width: 800px) {
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 8px;
+        gap: 8px;
+      }
+
+      .left-panel {
+        flex-direction: row;
+        align-self: center;
+      }
+
+      .main-map-wrapper {
+        min-width: unset;
+        min-height: unset;
+        width: 100%;
+      }
+
+      #mainCanvas {
+        width: 100%;
+        max-width: 600px;
+        height: auto;
+      }
+
+      .right-panel {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .automap-container {
+        width: 200px;
+      }
+
+      .stats-bar {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 8px;
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="left-panel">
+      <button class="toggle-btn" id="toggleFogBtn">切换迷雾显示</button>
+      <div class="hint-text">
+        WASD 移动角色<br/>
+        探索地牢揭示地图
+      </div>
+    </div>
+
+    <div class="main-map-wrapper">
+      <canvas id="mainCanvas" width="768" height="576"></canvas>
+    </div>
+
+    <div class="right-panel">
+      <div class="automap-container">
+        <div class="automap-title">Auto-Map</div>
+        <canvas id="autoMapCanvas" width="192" height="144"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-label">游戏时间:</span>
+      <span class="stat-value" id="gameTime">00:00</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">探索进度:</span>
+      <div class="progress-container">
+        <div class="progress-bar" id="exploreProgress" style="width: 0%"></div>
+      </div>
+      <span class="stat-value" id="explorePercent">0%</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-label">视野计算耗时:</span>
+      <span class="stat-value perf-good" id="perfMetric">0.0ms</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
