@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>无人机模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f23 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .game-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      max-width: 100%;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 800px;
+      height: 600px;
+      border-radius: 16px;
+      border: 2px solid #3f51b5;
+      box-shadow: 0 0 20px rgba(63, 81, 181, 0.5);
+      background: #1b5e20;
+    }
+
+    #speedCanvas {
+      display: block;
+      background: transparent;
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    .control-hint {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0, 0, 0, 0.27);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.8;
+      backdrop-filter: blur(4px);
+    }
+
+    .control-hint.blinking {
+      animation: blink 0.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .control-hint .title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .status-indicator {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .side-panels {
+      display: flex;
+      gap: 12px;
+      flex-direction: row;
+    }
+
+    .panel {
+      width: 180px;
+      background: #252540;
+      border-radius: 12px;
+      padding: 12px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .lap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lap-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      padding: 6px 4px;
+      border-bottom: 1px solid #3a3a50;
+    }
+
+    .lap-item:last-child {
+      border-bottom: none;
+    }
+
+    .lap-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 13px;
+    }
+
+    .total-time {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid #3a3a50;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .speedometer {
+      position: relative;
+      width: 100%;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .speed-value {
+      position: absolute;
+      bottom: 10px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      width: 100%;
+    }
+
+    .speed-label {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    @media (max-width: 900px) {
+      #app {
+        padding: 10px;
+        align-items: flex-start;
+      }
+
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+      }
+
+      canvas {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        aspect-ratio: 4 / 3;
+      }
+
+      .side-panels {
+        flex-direction: column;
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .panel {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="game-container">
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <div class="control-hint" id="controlHint">
+          <div class="title">操作说明</div>
+          <div>W - 加速</div>
+          <div>S - 减速</div>
+          <div>A - 左转</div>
+          <div>D - 右转</div>
+          <div class="status-indicator">
+            状态：<span id="statusText">飞行中</span>
+          </div>
+        </div>
+      </div>
+      <div class="side-panels">
+        <div class="panel" id="leaderboardPanel">
+          <div class="panel-title">排行榜</div>
+          <div class="lap-list" id="lapList"></div>
+          <div class="total-time">
+            最近5圈总用时：<span id="totalTime">0.000s</span>
+          </div>
+        </div>
+        <div class="panel" id="speedometerPanel">
+          <div class="panel-title">速度仪表盘</div>
+          <div class="speedometer">
+            <canvas id="speedCanvas" width="160" height="120"></canvas>
+            <div class="speed-value">
+              <span id="speedValue">0.00</span>
+              <div class="speed-label">单位/秒</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
