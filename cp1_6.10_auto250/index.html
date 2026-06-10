@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>洛希之舞 - 3D吸积盘模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: #aaaaaa;
+      font-size: 13px;
+      line-height: 1.8;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      pointer-events: none;
+      user-select: none;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    #hud .label {
+      display: inline-block;
+      width: 140px;
+      color: #888888;
+    }
+
+    #hud .value {
+      color: #ffaa00;
+    }
+
+    #control-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 760px;
+      height: 80px;
+      padding: 20px;
+      background: rgba(20, 20, 30, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 170, 0, 0.15);
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      padding: 0 10px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      color: #888888;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slider-label .slider-value {
+      color: #ffaa00;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #333333;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffaa00;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 170, 0, 0.6);
+      transition: box-shadow 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 12px rgba(255, 170, 0, 0.9);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ffaa00;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(255, 170, 0, 0.6);
+    }
+
+    @media (max-width: 800px) {
+      #control-panel {
+        width: 100%;
+        left: 0;
+        transform: none;
+        bottom: 0;
+        border-radius: 0;
+        height: auto;
+        padding: 20px 16px;
+        flex-direction: column;
+        gap: 14px;
+      }
+
+      .slider-group {
+        width: 100%;
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="hud">
+      <div><span class="label">粒子总数:</span><span class="value" id="hud-particles">0</span></div>
+      <div><span class="label">盘角速度 (rad/s):</span><span class="value" id="hud-angular">0.000</span></div>
+      <div><span class="label">转移流量 (p/s):</span><span class="value" id="hud-flow">0</span></div>
+      <div><span class="label">轨道周期 (s):</span><span class="value" id="hud-period">0.00</span></div>
+    </div>
+
+    <div id="control-panel">
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>物质转移速率</span>
+          <span class="slider-value" id="val-transfer">0.50</span>
+        </div>
+        <input type="range" id="slider-transfer" min="0.1" max="1.0" step="0.01" value="0.5" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>盘粘度</span>
+          <span class="slider-value" id="val-viscosity">0.050</span>
+        </div>
+        <input type="range" id="slider-viscosity" min="0.01" max="0.1" step="0.001" value="0.05" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>喷流强度</span>
+          <span class="slider-value" id="val-jet">0.70</span>
+        </div>
+        <input type="range" id="slider-jet" min="0" max="1" step="0.01" value="0.7" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>粒子数量</span>
+          <span class="slider-value" id="val-count">1500</span>
+        </div>
+        <input type="range" id="slider-count" min="500" max="3000" step="10" value="1500" />
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
