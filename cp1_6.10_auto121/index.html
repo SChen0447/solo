@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 音乐可视化</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: 'Inter', sans-serif;
+      color: #eaeaea;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+    }
+    #canvas-container {
+      flex: 0 0 70%;
+      position: relative;
+      overflow: hidden;
+    }
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #divider {
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #e94560, #4ecdc4, transparent);
+    }
+    #controls-container {
+      flex: 0 0 calc(30% - 2px);
+      position: relative;
+      background: #1a1a2e;
+      overflow-y: auto;
+    }
+    #title-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 600;
+      color: #eaeaea;
+      z-index: 10;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(10,10,26,0.8), transparent);
+    }
+    #upload-area {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 400px;
+      padding: 30px;
+      border: 2px dashed #e94560;
+      border-radius: 12px;
+      background: #1a1a2e;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 20;
+    }
+    #upload-area.dragover {
+      border-color: #e94560;
+      box-shadow: 0 0 20px rgba(233, 69, 96, 0.6);
+      animation: glow 0.3s ease;
+    }
+    @keyframes glow {
+      0% { box-shadow: 0 0 5px rgba(233, 69, 96, 0.3); }
+      100% { box-shadow: 0 0 20px rgba(233, 69, 96, 0.6); }
+    }
+    #upload-area p {
+      color: #eaeaea;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    #url-input {
+      width: 100%;
+      padding: 10px 14px;
+      background: #0a0a1a;
+      border: 1px solid #4a4a5e;
+      border-radius: 8px;
+      color: #eaeaea;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #url-input::placeholder {
+      color: #6c6c80;
+    }
+    #url-input:focus {
+      border-color: #e94560;
+    }
+    #file-input {
+      display: none;
+    }
+    #stats-panel {
+      position: absolute;
+      top: 60px;
+      right: 20px;
+      background: rgba(30, 30, 46, 0.8);
+      border-radius: 8px;
+      padding: 12px 16px;
+      z-index: 20;
+      min-width: 180px;
+    }
+    .stat-row {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+    .stat-label {
+      color: #6c6c80;
+      margin-right: 8px;
+    }
+    #time-display {
+      font-family: monospace;
+      font-size: 14px;
+      color: #ffffff;
+    }
+    #volume-bar-container {
+      width: 100%;
+      height: 8px;
+      background: #2a2a3e;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    #volume-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #00d4aa, #ff6b6b);
+      transition: width 0.2s ease;
+      border-radius: 4px;
+    }
+    #bpm-display {
+      font-family: monospace;
+      font-size: 14px;
+      color: #e94560;
+      font-weight: 600;
+    }
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 600px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    #play-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #e94560;
+      border: none;
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    #play-btn:hover {
+      background: #ff6b81;
+      transform: scale(1.05);
+    }
+    #play-btn:active {
+      transform: scale(0.95);
+      transition: transform 0.1s;
+    }
+    #progress-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #progress-bar {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: #4a4a5e;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    #progress-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e94560;
+      cursor: pointer;
+    }
+    #progress-bar::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e94560;
+      cursor: pointer;
+      border: none;
+    }
+    #progress-bar:hover::-webkit-slider-runnable-track {
+      background: #6a6a7e;
+    }
+    #time-text {
+      font-family: monospace;
+      font-size: 12px;
+      color: #eaeaea;
+      min-width: 80px;
+      text-align: right;
+    }
+    #volume-slider {
+      width: 80px;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: #4a4a5e;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    #volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e94560;
+      cursor: pointer;
+    }
+    #volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e94560;
+      cursor: pointer;
+      border: none;
+    }
+    #volume-slider:hover::-webkit-slider-runnable-track {
+      background: #6a6a7e;
+    }
+    #gui-container {
+      position: absolute;
+      top: 60px;
+      left: 20px;
+      z-index: 20;
+    }
+    .dg.ac {
+      z-index: 100 !important;
+    }
+    .dg.main {
+      background: rgba(30, 30, 46, 0.8) !important;
+      border-radius: 8px !important;
+    }
+    .dg .c input[type=text] {
+      background: #2a2a3e !important;
+    }
+    .dg .slider {
+      background: #4a4a5e !important;
+    }
+    .dg .slider-fg {
+      background: #e94560 !important;
+    }
+    .dg li.title {
+      background: rgba(233, 69, 96, 0.8) !important;
+    }
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+      #canvas-container {
+        flex: 1 1 auto;
+      }
+      #divider {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, transparent, #e94560, #4ecdc4, transparent);
+      }
+      #controls-container {
+        flex: 0 0 auto;
+        height: auto;
+        max-height: 45%;
+      }
+      #upload-area, #player, #stats-panel {
+        transform: scale(0.8);
+        transform-origin: top left;
+      }
+      #player {
+        transform: scale(0.8) translateX(-50%);
+        left: 50%;
+        transform-origin: center;
+      }
+      button, input[type="range"] {
+        transform: scale(0.8);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <div id="title-bar">3D 音乐可视化</div>
+      <div id="gui-container"></div>
+      <div id="stats-panel">
+        <div class="stat-row">
+          <span class="stat-label">时间:</span>
+          <span id="time-display">00:00/00:00</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">音量:</span>
+          <div id="volume-bar-container">
+            <div id="volume-bar"></div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">BPM:</span>
+          <span id="bpm-display">--</span>
+        </div>
+      </div>
+      <div id="upload-area">
+        <p>拖拽音频文件到此处或 <strong>此处</strong> (支持 MP3 / WAV / OGG</p>
+        <p>或粘贴网络音频链接：</p>
+        <input type="text" id="url-input" placeholder="输入音频URL..." />
+        <input type="file" id="file-input" accept=".mp3,.wav,.ogg,audio/*" />
+      </div>
+      <div id="player">
+        <button id="play-btn">▶</button>
+        <div id="progress-container">
+          <input type="range" id="progress-bar" min="0" max="100" value="0" />
+          <span id="time-text">00:00/00:00</span>
+        </div>
+        <input type="range" id="volume-slider" min="0" max="100" value="80" />
+      </div>
+    </div>
+    <div id="divider"></div>
+    <div id="controls-container"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
