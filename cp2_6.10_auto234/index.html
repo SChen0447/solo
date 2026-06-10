@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>中世纪城堡遗址时序可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1e2e;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #c8d0e0;
+    }
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #title {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      font-size: 22px;
+      font-weight: 600;
+      color: #c8c4b0;
+      letter-spacing: 1px;
+      z-index: 10;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    #timeline-slider-container {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    #year-label {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0dcc0;
+      min-width: 60px;
+    }
+    #slider-wrapper {
+      flex: 1;
+      position: relative;
+      height: 40px;
+      display: flex;
+      align-items: center;
+    }
+    #timeline-slider {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #2a3050;
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+    }
+    #timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #7c8eb0;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 2px solid #1a1e2e;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    #timeline-slider::-webkit-slider-thumb:hover {
+      background: #a0b4d0;
+    }
+    #timeline-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #7c8eb0;
+      cursor: pointer;
+      transition: background 0.2s;
+      border: 2px solid #1a1e2e;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    #slider-marks {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .slider-mark {
+      position: absolute;
+      top: 28px;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #8a94a8;
+    }
+    .slider-mark::before {
+      content: '';
+      position: absolute;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 8px;
+      background: #3a4060;
+    }
+    #phase-label {
+      font-size: 14px;
+      color: #a0b4d0;
+      min-width: 80px;
+      text-align: right;
+    }
+    #event-timeline {
+      position: absolute;
+      top: 80px;
+      right: 20px;
+      width: 200px;
+      max-height: calc(100vh - 200px);
+      background: rgba(42, 48, 80, 0.7);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 10;
+      overflow-y: auto;
+      backdrop-filter: blur(8px);
+    }
+    #event-timeline h3 {
+      font-size: 14px;
+      color: #e0dcc0;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #3a4060;
+    }
+    .event-item {
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      border-left: 3px solid transparent;
+    }
+    .event-item:hover {
+      background: rgba(58, 64, 96, 0.6);
+    }
+    .event-item.active {
+      background: rgba(58, 64, 96, 0.8);
+      border-left-color: #c4a882;
+    }
+    .event-year {
+      font-size: 12px;
+      font-weight: 600;
+      color: #c4a882;
+      margin-bottom: 4px;
+    }
+    .event-text {
+      font-size: 12px;
+      color: #c8d0e0;
+      line-height: 1.4;
+    }
+    .annotation-panel {
+      position: absolute;
+      width: 240px;
+      background: rgba(42, 48, 80, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 16px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      pointer-events: auto;
+    }
+    .annotation-close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 22px;
+      height: 22px;
+      border: none;
+      background: rgba(58, 64, 96, 0.6);
+      color: #c8d0e0;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    .annotation-close:hover {
+      background: rgba(124, 142, 176, 0.6);
+    }
+    .annotation-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e0dcc0;
+      margin-bottom: 12px;
+      padding-right: 24px;
+    }
+    .annotation-row {
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .annotation-label {
+      color: #8a94a8;
+      margin-right: 6px;
+    }
+    .annotation-value {
+      color: #c8d0e0;
+    }
+    .annotation-note {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid #3a4060;
+      font-size: 12px;
+      color: #a0b4d0;
+      line-height: 1.5;
+      font-style: italic;
+    }
+    .building-label {
+      padding: 4px 10px;
+      background: rgba(26, 30, 46, 0.0);
+      border-radius: 6px;
+      color: #e0dcc0;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      pointer-events: auto;
+    }
+    .building-label:hover {
+      background: rgba(58, 64, 96, 0.6);
+    }
+    @media (max-width: 768px) {
+      #timeline-slider-container {
+        width: 95%;
+        bottom: 20px;
+        gap: 10px;
+      }
+      #event-timeline {
+        width: 180px;
+        right: 10px;
+        top: 70px;
+        padding: 12px;
+      }
+      .event-text, .event-year, .annotation-row, .annotation-note {
+        font-size: 12px;
+      }
+      #year-label {
+        font-size: 14px;
+      }
+      #phase-label {
+        font-size: 12px;
+        min-width: 60px;
+      }
+      .annotation-panel {
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container"></div>
+    <div id="title">中世纪城堡遗址时序可视化</div>
+
+    <div id="timeline-slider-container">
+      <div id="year-label">1200</div>
+      <div id="slider-wrapper">
+        <input type="range" id="timeline-slider" min="0" max="3" step="1" value="0" />
+        <div id="slider-marks"></div>
+      </div>
+      <div id="phase-label">奠基</div>
+    </div>
+
+    <div id="event-timeline">
+      <h3>历史时间线</h3>
+      <div id="event-list"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
