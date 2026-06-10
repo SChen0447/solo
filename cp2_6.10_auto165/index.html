@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 魔方解算演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0d1117 0%, #161b22 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #ui-container {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      z-index: 10;
+    }
+    #step-count {
+      font-size: 18px;
+      color: #ffffff;
+      font-weight: 500;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    #button-row {
+      display: flex;
+      gap: 16px;
+    }
+    .cube-btn {
+      width: 60px;
+      height: 36px;
+      border: none;
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 200ms, transform 200ms;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+    .cube-btn:hover {
+      filter: brightness(1.2);
+      transform: translateY(-2px);
+    }
+    .cube-btn:active {
+      transform: scale(0.95);
+      transition: transform 100ms;
+    }
+    .cube-btn:disabled {
+      filter: brightness(0.6);
+      cursor: not-allowed;
+      transform: none;
+    }
+    #shuffle-btn {
+      background-color: #ff5722;
+    }
+    #solve-btn {
+      background-color: #4caf50;
+    }
+    #reset-btn {
+      background-color: #9e9e9e;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="ui-container">
+      <div id="step-count">步数：0</div>
+      <div id="button-row">
+        <button id="shuffle-btn" class="cube-btn">打乱</button>
+        <button id="solve-btn" class="cube-btn">还原</button>
+        <button id="reset-btn" class="cube-btn">重置</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
