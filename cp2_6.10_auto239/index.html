@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>太阳系公转模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #ffffff;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #app-title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #ffffff;
+      z-index: 10;
+      pointer-events: none;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255, 170, 0, 0.5);
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="app-title">太阳系公转模拟器</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
