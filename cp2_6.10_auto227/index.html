@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>庞贝地层探测器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <h1 class="scroll-title">庞贝地层探测器</h1>
+      </div>
+      <div id="tweakpane-container"></div>
+      <button id="hamburger" class="hamburger" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </aside>
+    <main id="scene-container"></main>
+    <div id="minimap-wrapper">
+      <canvas id="minimap" width="150" height="150"></canvas>
+      <div class="minimap-label">地层俯视图</div>
+    </div>
+    <div id="timeline-caption"></div>
+    <div id="artifact-card" class="artifact-card hidden">
+      <div class="artifact-card-name"></div>
+      <div class="artifact-card-era"></div>
+      <div class="artifact-card-layer"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
