@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:57:39.175Z",
+  "task_name": "auto109",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个帮助团队进行在线1分钟创意演讲（Pecha Kucha风格）的计时与幻灯片自动切换的Web应用，想法是解决线下会议或远程演示时，演讲者总需要手动翻页、且20秒的强制换页很难精确控制、导致演讲节奏混乱的痛点。希望它能做到：第一，主页面中央是一个模拟投影仪屏幕的深色区域（背景#1a1a2e），显示当前幻灯片（纯白色底，圆角16px，带轻微阴影），幻灯片内容由用户提前输入——左侧控制区有一个文本编辑器，每行代表一页（最多20页），每页文本不超过50字，用户输入后右侧屏幕实时渲染出对应的幻灯片页面，字体用Fira Code等宽字体、深灰(#2d3436)字号20px居中显示，切换时每页以0.4秒的淡入+上移10px动画过渡；第二，屏幕下方有一个半透明的控制条（背景rgba(0,0,0,0.6)，圆角12px），显示当前页码/总页数（如“3/15”）、一个圆形进度环（外圈用#0984e3，内圈用#dfe6e9，进度通过stroke-dashoffset动画更新）、以及剩余秒数大字显示（红色#d63031当低于5秒时闪烁），点击“开始演讲”按钮后倒计时20秒自动翻到下一页，支持空格键手动提前翻页、以及Esc键暂停计时；第三，演讲结束后展示一张总结页面——背景深绿(#00b894)渐变为深蓝(#0984e3)，中央显示“演讲结束！用时X分Y秒”，同时生成一个简洁的条形图统计每页演讲用时（X轴为页码，Y轴为秒数，使用Canvas 2D绘制，条形颜色渐变从黄#fdcb6e到橙#e17055），底部有一个“重新开始”按钮带动画（点击后屏幕向上卷起消失）；第四，界面需要完全响应式适配：在大屏幕(>1024px)上，幻灯片区域占页面的70%宽度并居中，左侧编辑器占25%且靠左固定；在平板(768-1024px)上，编辑器折叠为一个右上角的浮动图标，点击后弹出抽屉面板（从左侧滑入）；在手机(<768px)上，幻灯片占满全屏，控制条变为底部固定高度80px且缩小的字体和进度环。性能上要求切换动画帧率稳定在55 FPS以上，所有计时操作基于requestAnimationFrame实现、误差不超过50ms。\n\n实现用TypeScript、React、Vite和Canvas 2D，把代码拆成以下文件：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、uuid、lodash，启动脚本：npm run dev）\n - index.html（入口页面，标题为“PechaKucha 演讲计时器”）\n - tsconfig.json（严格模式，target为ES2020，包含DOM类型）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - src/App.tsx（主组件，管理全局状态：演讲稿文本数组、当前页码、20秒倒计时、每页用时记录、是否正在演讲、是否暂停，连接SlideEditor、SlideDisplay、TimerBar、SummaryPage四个子组件，数据流向：用户输入文本→通过状态提升传给SlideDisplay→TimerBar监听计时→演讲结束后传给SummaryPage绘制统计图）\n - src/components/SlideEditor.tsx（左侧文本编辑器组件，textarea输入，每行一页，实时预览字数限制，输入时防抖0.3秒更新父组件状态）\n - src/components/SlideDisplay.tsx（中央幻灯片显示组件，接收文本数组和当前页码，使用CSS animation实现页面切换时的淡入+上移动画）\n - src/components/TimerBar.tsx（底部进度条组件，包含倒计时、进度环、手动翻页按钮，使用useRef和requestAnimationFrame驱动计时循环）\n - src/components/SummaryPage.tsx（总结页面组件，使用Canvas 2D绘制每页用时条形统计图，支持导出为PNG）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0ee45e8efebcbc172ec45dadfeffb101_6a28618a5d1156ddf7a720dc.6a2862175d1156ddf7a72150.6a286216f49cc0788fca03f5:Trae CN.T(2026/6/10 02:57:27)",
+    "user_id": "3986207660317399",
+    "trace_id": "0ee45e8efebcbc172ec45dadfeffb101",
+    "session_id": "6a28618a5d1156ddf7a720dc",
+    "task_id": "6a2862175d1156ddf7a72150",
+    "message_id": "6a286216f49cc0788fca03f5",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:57:27",
+    "format": "full"
+  },
+  "trace": "null"
+}
