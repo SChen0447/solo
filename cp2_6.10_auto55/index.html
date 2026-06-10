@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>太空舰桥指挥面板</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="game-container">
+    <header id="top-bar">
+      <div class="resource-panel">
+        <div class="resource-item" data-resource="energy">
+          <div class="resource-icon" data-icon="energy">⚡</div>
+          <div class="resource-info">
+            <span class="resource-label">能量</span>
+            <span class="resource-value" id="energy-value">100</span>
+          </div>
+        </div>
+        <div class="resource-item" data-resource="alloy">
+          <div class="resource-icon" data-icon="alloy">⚙</div>
+          <div class="resource-info">
+            <span class="resource-label">合金</span>
+            <span class="resource-value" id="alloy-value">100</span>
+          </div>
+        </div>
+        <div class="resource-item" data-resource="food">
+          <div class="resource-icon" data-icon="food">🍎</div>
+          <div class="resource-info">
+            <span class="resource-label">食物</span>
+            <span class="resource-value" id="food-value">100</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main-area">
+      <section id="control-panel">
+        <h2 class="panel-title">控制面板</h2>
+        <button class="control-btn" id="btn-energy" data-resource="energy">
+          <span class="btn-icon">⚡</span>
+          <span class="btn-text">补充能量</span>
+          <span class="btn-amount">+15</span>
+          <div class="cooldown-overlay"></div>
+        </button>
+        <button class="control-btn" id="btn-alloy" data-resource="alloy">
+          <span class="btn-icon">⚙</span>
+          <span class="btn-text">补充合金</span>
+          <span class="btn-amount">+10</span>
+          <div class="cooldown-overlay"></div>
+        </button>
+        <button class="control-btn" id="btn-food" data-resource="food">
+          <span class="btn-icon">🍎</span>
+          <span class="btn-text">补充食物</span>
+          <span class="btn-amount">+8</span>
+          <div class="cooldown-overlay"></div>
+        </button>
+      </section>
+
+      <section id="status-panel">
+        <div id="countdown-container">
+          <h2 class="panel-title">任务倒计时</h2>
+          <div id="countdown-display">10:00</div>
+        </div>
+
+        <div id="progress-container">
+          <h2 class="panel-title">扫描完成度</h2>
+          <div class="progress-bar-wrapper">
+            <div id="progress-bar"></div>
+            <span id="progress-text">0%</span>
+          </div>
+        </div>
+
+        <div id="supplement-stats">
+          <div class="stat-item">
+            <span class="stat-label">能量补充</span>
+            <span class="stat-value" id="stat-energy">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">合金补充</span>
+            <span class="stat-value" id="stat-alloy">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">食物补充</span>
+            <span class="stat-value" id="stat-food">0</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="achievement-panel">
+        <div id="achievement-header">
+          <h2 class="panel-title">成就</h2>
+          <button id="achievement-toggle">▼</button>
+        </div>
+        <div id="achievement-list">
+          <div class="achievement-item" data-achievement="energy-master">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-info">
+              <span class="achievement-name">能源大师</span>
+              <span class="achievement-desc">累计补充能量50次</span>
+            </div>
+          </div>
+          <div class="achievement-item" data-achievement="alloy-forger">
+            <div class="achievement-icon">🛠</div>
+            <div class="achievement-info">
+              <span class="achievement-name">合金锻造者</span>
+              <span class="achievement-desc">累计补充合金30次</span>
+            </div>
+          </div>
+          <div class="achievement-item" data-achievement="logistics-expert">
+            <div class="achievement-icon">📦</div>
+            <div class="achievement-info">
+              <span class="achievement-name">后勤专家</span>
+              <span class="achievement-desc">累计补充食物20次</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="event-overlay" class="hidden">
+      <div id="event-popup">
+        <div id="event-icon">⚠</div>
+        <h3 id="event-title">警报</h3>
+        <p id="event-text"></p>
+      </div>
+    </div>
+
+    <div id="game-over-modal" class="hidden">
+      <div id="game-over-content">
+        <h2 id="game-over-title">游戏结束</h2>
+        <p id="game-over-text"></p>
+        <button id="restart-btn">重新开始</button>
+      </div>
+    </div>
+
+    <canvas id="particle-canvas"></canvas>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
