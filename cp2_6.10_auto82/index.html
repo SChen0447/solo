@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>格斗连招模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: #2a2a2a;
+      color: #fff;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .timer {
+      font-size: 28px;
+      font-weight: bold;
+      color: #fff;
+      min-width: 100px;
+      text-align: center;
+    }
+
+    .damage-stats {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex: 1;
+      max-width: 600px;
+    }
+
+    .damage-bar-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .damage-label {
+      font-size: 14px;
+      font-weight: bold;
+      min-width: 60px;
+    }
+
+    .damage-label.p1 { color: #e74c3c; }
+    .damage-label.p2 { color: #3498db; }
+
+    .damage-bar-wrapper {
+      flex: 1;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .damage-bar {
+      height: 100%;
+      transition: width 0.5s ease;
+    }
+
+    .damage-bar.p1 {
+      background: linear-gradient(90deg, #c0392b, #e74c3c);
+      width: 0%;
+    }
+
+    .damage-bar.p2 {
+      background: linear-gradient(90deg, #2980b9, #3498db);
+      width: 0%;
+      float: right;
+    }
+
+    .damage-value {
+      font-size: 14px;
+      font-weight: bold;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      gap: 16px;
+      padding: 16px;
+    }
+
+    .stage-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .arena-container {
+      position: relative;
+      background: #e0e0e0;
+      border-radius: 12px;
+      overflow: hidden;
+      flex: 1;
+      min-height: 400px;
+    }
+
+    #mainCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .combo-panels {
+      display: flex;
+      gap: 16px;
+    }
+
+    .combo-panel {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 12px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .combo-panel-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .combo-panel-title.p1 { color: #e74c3c; }
+    .combo-panel-title.p2 { color: #3498db; }
+
+    .combo-entry {
+      padding: 4px 8px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      border-radius: 4px;
+    }
+
+    .combo-entry.alt { background: rgba(255, 255, 255, 0.08); }
+    .combo-entry.white { background: rgba(255, 255, 255, 0.04); }
+
+    .combo-terminated {
+      text-align: center;
+      color: #888;
+      font-style: italic;
+      padding: 12px;
+      opacity: 1;
+      transition: opacity 0.5s ease;
+    }
+
+    .combo-terminated.fade {
+      opacity: 0;
+    }
+
+    .frame-preview {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .frame-preview-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    #frameCanvas {
+      width: 100%;
+      height: 80px;
+      display: block;
+      border-radius: 6px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .control-panel {
+      width: 320px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      max-height: calc(100vh - 80px);
+      overflow-y: auto;
+    }
+
+    .control-section {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .control-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #ddd;
+    }
+
+    .control-row {
+      margin-bottom: 10px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+
+    .control-value {
+      color: #fff;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.2);
+      outline: none;
+      -webkit-appearance: none;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="range"]:hover {
+      transform: scaleY(1.1);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #e74c3c;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    input[type="range"].p2::-webkit-slider-thumb {
+      background: #3498db;
+    }
+
+    input[type="range"]:active::-webkit-slider-thumb {
+      transform: scale(1.1);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .damage-curve-container {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    #curveCanvas {
+      width: 100%;
+      height: 150px;
+      display: block;
+    }
+
+    .formula-display {
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 12px;
+      color: #2ecc71;
+      word-break: break-all;
+    }
+
+    .result-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .result-overlay.show {
+      display: flex;
+    }
+
+    .result-panel {
+      padding: 32px 48px;
+      border-radius: 16px;
+      text-align: center;
+      transform: scale(0);
+      animation: scaleIn 0.4s ease forwards;
+    }
+
+    .result-panel.p1-win {
+      background: linear-gradient(135deg, rgba(231, 76, 60, 0.9), rgba(192, 57, 43, 0.95));
+    }
+
+    .result-panel.p2-win {
+      background: linear-gradient(135deg, rgba(52, 152, 219, 0.9), rgba(41, 128, 185, 0.95));
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+
+    .result-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .result-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .result-stat {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .result-stat-label {
+      font-size: 12px;
+      opacity: 0.8;
+      margin-bottom: 4px;
+    }
+
+    .result-stat-value {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 1024px) {
+      .main-content {
+        flex-direction: column;
+      }
+      .control-panel {
+        width: 100%;
+        flex-direction: row;
+        max-height: none;
+        flex-wrap: wrap;
+        overflow-x: auto;
+      }
+      .control-section {
+        min-width: 260px;
+        flex: 1;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+        padding: 8px;
+      }
+      .control-panel {
+        width: 100%;
+        flex-direction: column;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+      .control-section {
+        min-width: auto;
+      }
+      .combo-panels {
+        flex-direction: column;
+      }
+      .top-bar {
+        flex-direction: column;
+        gap: 8px;
+      }
+      .damage-stats {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="top-bar">
+      <div class="damage-stats">
+        <span class="damage-label p1">P1 伤害</span>
+        <div class="damage-bar-wrapper">
+          <div class="damage-bar p1" id="p1DamageBar"></div>
+        </div>
+        <span class="damage-value" id="p1DamageValue">0</span>
+      </div>
+      <div class="timer" id="timer">00:30</div>
+      <div class="damage-stats">
+        <span class="damage-value" id="p2DamageValue">0</span>
+        <div class="damage-bar-wrapper">
+          <div class="damage-bar p2" id="p2DamageBar"></div>
+        </div>
+        <span class="damage-label p2">P2 伤害</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="stage-area">
+        <div class="arena-container">
+          <canvas id="mainCanvas"></canvas>
+        </div>
+
+        <div class="combo-panels">
+          <div class="combo-panel" id="p1ComboPanel">
+            <div class="combo-panel-title p1">玩家1 连招记录</div>
+            <div id="p1ComboList"></div>
+          </div>
+          <div class="combo-panel" id="p2ComboPanel">
+            <div class="combo-panel-title p2">玩家2 连招记录</div>
+            <div id="p2ComboList"></div>
+          </div>
+        </div>
+
+        <div class="frame-preview">
+          <div class="frame-preview-title">攻击帧预览</div>
+          <canvas id="frameCanvas"></canvas>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <div class="control-section">
+          <div class="control-title">对战控制</div>
+          <button class="btn btn-primary" id="startBtn">开始对战</button>
+          <button class="btn btn-secondary" id="resetBtn" style="margin-top: 8px;">重置</button>
+        </div>
+
+        <div class="control-section">
+          <div class="control-title">玩家1 (红方拳手)</div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>攻击帧</span>
+              <span class="control-value" id="p1AttackFramesVal">15</span>
+            </div>
+            <input type="range" id="p1AttackFrames" min="5" max="30" value="15" />
+          </div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>受击硬直帧</span>
+              <span class="control-value" id="p1HitStunVal">25</span>
+            </div>
+            <input type="range" id="p1HitStun" min="10" max="60" value="25" />
+          </div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>基础伤害</span>
+              <span class="control-value" id="p1BaseDamageVal">10</span>
+            </div>
+            <input type="range" id="p1BaseDamage" min="5" max="30" value="10" />
+          </div>
+        </div>
+
+        <div class="control-section">
+          <div class="control-title">玩家2 (蓝方剑士)</div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>攻击帧</span>
+              <span class="control-value" id="p2AttackFramesVal">15</span>
+            </div>
+            <input type="range" id="p2AttackFrames" min="5" max="30" value="15" class="p2" />
+          </div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>受击硬直帧</span>
+              <span class="control-value" id="p2HitStunVal">25</span>
+            </div>
+            <input type="range" id="p2HitStun" min="10" max="60" value="25" class="p2" />
+          </div>
+          <div class="control-row">
+            <div class="control-label">
+              <span>基础伤害</span>
+              <span class="control-value" id="p2BaseDamageVal">10</span>
+            </div>
+            <input type="range" id="p2BaseDamage" min="5" max="30" value="10" class="p2" />
+          </div>
+        </div>
+
+        <div class="control-section">
+          <div class="control-title">伤害衰减曲线</div>
+          <div class="damage-curve-container">
+            <canvas id="curveCanvas"></canvas>
+          </div>
+          <div class="formula-display" id="formulaDisplay">
+            damage = max(0.3, 1.0 - (hitCount-1) * 0.05)
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result-overlay" id="resultOverlay">
+    <div class="result-panel" id="resultPanel">
+      <div class="result-title" id="resultTitle">胜利!</div>
+      <div class="result-stats">
+        <div class="result-stat">
+          <div class="result-stat-label">总连击数</div>
+          <div class="result-stat-value" id="resultTotalCombos">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-label">最高连击</div>
+          <div class="result-stat-value" id="resultMaxCombo">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-label">伤害总量</div>
+          <div class="result-stat-value" id="resultTotalDamage">0</div>
+        </div>
+        <div class="result-stat">
+          <div class="result-stat-label">对战时长</div>
+          <div class="result-stat-value">30s</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="closeResultBtn">再来一局</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/controls.ts"></script>
+</body>
+</html>
