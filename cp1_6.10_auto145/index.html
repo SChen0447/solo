@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>交互式太阳系行星公转模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d0d1a;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 280px;
+      padding: 20px;
+      background: rgba(26, 26, 62, 0.85);
+      border-radius: 12px;
+      color: #c0c0c0;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 170, 0, 0.2);
+      z-index: 10;
+    }
+
+    #info-panel h2 {
+      color: #ffaa00;
+      font-size: 18px;
+      margin-bottom: 12px;
+      font-weight: bold;
+    }
+
+    #info-panel p {
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 8px;
+    }
+
+    #info-panel .hint {
+      color: #888;
+      font-size: 12px;
+      margin-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 10px;
+    }
+
+    #planet-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 240px;
+      padding: 18px;
+      background: rgba(26, 26, 46, 0.85);
+      border-radius: 12px;
+      color: #c0c0c0;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+      display: none;
+      line-height: 1.6;
+    }
+
+    #planet-info.visible {
+      display: block;
+    }
+
+    #planet-info h3 {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    #planet-info .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    #planet-info .info-label {
+      color: #888;
+    }
+
+    #planet-info .info-value {
+      color: #c0c0c0;
+      font-weight: 500;
+    }
+
+    #planet-info .info-value.highlight {
+      color: #ffaa00;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="info-panel">
+      <h2>🌌 交互式太阳系</h2>
+      <p>本展品展示太阳系八大行星的公转与自转运动。</p>
+      <p>行星大小、轨道和速度按真实比例缩放呈现。</p>
+      <p class="hint">
+        🖱️ 拖拽旋转视角<br/>
+        🔍 滚轮缩放场景<br/>
+        ✨ 悬停行星查看高亮<br/>
+        📋 点击行星查看详细参数
+      </p>
+    </div>
+    <div id="planet-info"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
