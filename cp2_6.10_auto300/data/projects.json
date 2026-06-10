@@ -1,0 +1,287 @@
+{
+  "projects": [
+    {
+      "id": "proj-001",
+      "title": "星际追梦人",
+      "cover": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20style%20space%20explorer%20girl%20looking%20at%20stars%20galaxy%20background%20manga%20cover%20art&image_size=square",
+      "progress": 72,
+      "createdAt": "2026-03-15T10:00:00Z",
+      "updatedAt": "2026-06-08T14:30:00Z",
+      "order": 0,
+      "characters": [
+        {
+          "id": "char-001",
+          "name": "星野光",
+          "avatar": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20girl%20portrait%20silver%20hair%20purple%20eyes%20space%20suit%20manga%20style&image_size=square",
+          "traits": ["勇敢", "乐观", "好奇心强"],
+          "dialogueTemplate": "「{{dialogue}}」"
+        },
+        {
+          "id": "char-002",
+          "name": "艾伦博士",
+          "avatar": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=wise%20old%20scientist%20anime%20portrait%20glasses%20white%20coat%20manga%20style&image_size=square",
+          "traits": ["睿智", "冷静", "神秘"],
+          "dialogueTemplate": "「{{dialogue}}」"
+        }
+      ],
+      "chapters": [
+        {
+          "id": "chap-001",
+          "title": "第1话：启程之夜",
+          "scheduledDate": "2026-06-15T00:00:00Z",
+          "status": "scheduled",
+          "platforms": [
+            { "name": "website", "format": "longimage", "resolution": "1080x1920", "enabled": true },
+            { "name": "weibo", "format": "standard", "resolution": "1080x1080", "enabled": true },
+            { "name": "pixiv", "format": "zip", "resolution": "2480x3508", "enabled": false }
+          ]
+        },
+        {
+          "id": "chap-002",
+          "title": "第2话：未知信号",
+          "scheduledDate": "2026-06-22T00:00:00Z",
+          "status": "draft",
+          "platforms": [
+            { "name": "website", "format": "longimage", "resolution": "1080x1920", "enabled": true },
+            { "name": "weibo", "format": "standard", "resolution": "1080x1080", "enabled": true },
+            { "name": "pixiv", "format": "zip", "resolution": "2480x3508", "enabled": true }
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "id": "scene-001",
+          "projectId": "proj-001",
+          "order": 0,
+          "chapterId": "chap-001",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=night%20sky%20stars%20city%20rooftop%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "深夜的都市，繁星点点。星野光站在天台上，仰望星空。",
+          "dialogue": "星野光：「总有一天，我要去看看那些星星。」",
+          "artistId": "artist-001",
+          "status": "finished"
+        },
+        {
+          "id": "scene-002",
+          "projectId": "proj-001",
+          "order": 1,
+          "chapterId": "chap-001",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=sci-fi%20laboratory%20glowing%20machines%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "实验室中，艾伦博士正在调试一台神秘的机器。机器发出微弱的蓝光。",
+          "dialogue": "艾伦博士：「终于...坐标校准完成了。」",
+          "artistId": "artist-001",
+          "status": "finished"
+        },
+        {
+          "id": "scene-003",
+          "projectId": "proj-001",
+          "order": 2,
+          "chapterId": "chap-001",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=girl%20meeting%20old%20scientist%20futuristic%20room%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "星野光被神秘的光芒引导，来到了实验室。她惊讶地看着眼前的一切。",
+          "dialogue": "星野光：「这...这是什么地方？」\n艾伦博士：「欢迎，光。我等你很久了。」",
+          "artistId": "artist-002",
+          "status": "coloring"
+        },
+        {
+          "id": "scene-004",
+          "projectId": "proj-001",
+          "order": 3,
+          "chapterId": "chap-001",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=spaceship%20cockpit%20interior%20futuristic%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "艾伦博士向光展示了他的秘密——一艘能够穿越星际的小型飞船。",
+          "dialogue": "艾伦博士：「这是通往星海的钥匙。」",
+          "artistId": "artist-002",
+          "status": "lineart"
+        },
+        {
+          "id": "scene-005",
+          "projectId": "proj-001",
+          "order": 4,
+          "chapterId": "chap-001",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=girl%20determined%20face%20close%20up%20anime%20manga%20panel&image_size=landscape_4_3",
+          "script": "光的眼神从惊讶变成了坚定。她知道，她的命运将从今夜开始改变。",
+          "dialogue": "星野光：「我要去。不管前方有什么在等着我。」",
+          "artistId": "artist-001",
+          "status": "draft"
+        }
+      ],
+      "logs": [
+        {
+          "id": "log-001",
+          "projectId": "proj-001",
+          "operator": "主编",
+          "action": "scene_status_update",
+          "summary": "分镜「scene-003」状态从lineart变更为coloring",
+          "timestamp": "2026-06-08T14:30:00Z",
+          "snapshot": null
+        },
+        {
+          "id": "log-002",
+          "projectId": "proj-001",
+          "operator": "主编",
+          "action": "script_edit",
+          "summary": "编辑了第1话剧本内容",
+          "timestamp": "2026-06-07T10:15:00Z",
+          "snapshot": null
+        },
+        {
+          "id": "log-003",
+          "projectId": "proj-001",
+          "operator": "主编",
+          "action": "schedule_update",
+          "summary": "第1话发布日期调整为2026-06-15",
+          "timestamp": "2026-06-05T09:00:00Z",
+          "snapshot": null
+        }
+      ]
+    },
+    {
+      "id": "proj-002",
+      "title": "樱花庄的日常",
+      "cover": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cherry%20blossom%20school%20dormitory%20anime%20style%20spring%20sunset%20manga%20cover&image_size=square",
+      "progress": 45,
+      "createdAt": "2026-04-20T08:00:00Z",
+      "updatedAt": "2026-06-09T11:20:00Z",
+      "order": 1,
+      "characters": [
+        {
+          "id": "char-003",
+          "name": "樱井美咲",
+          "avatar": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cute%20anime%20girl%20pink%20hair%20school%20uniform%20smile%20manga%20portrait&image_size=square",
+          "traits": ["活泼", "元气", "有点天然呆"],
+          "dialogueTemplate": "「{{dialogue}}」"
+        },
+        {
+          "id": "char-004",
+          "name": "高崎凉",
+          "avatar": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cool%20anime%20boy%20black%20hair%20glasses%20school%20uniform%20manga%20portrait&image_size=square",
+          "traits": ["冷静", "学霸", "外冷内热"],
+          "dialogueTemplate": "「{{dialogue}}」"
+        }
+      ],
+      "chapters": [
+        {
+          "id": "chap-003",
+          "title": "第1话：樱花飘落的季节",
+          "scheduledDate": "2026-06-12T00:00:00Z",
+          "status": "scheduled",
+          "platforms": [
+            { "name": "website", "format": "longimage", "resolution": "1080x1920", "enabled": true },
+            { "name": "weibo", "format": "standard", "resolution": "1080x1080", "enabled": true }
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "id": "scene-006",
+          "projectId": "proj-002",
+          "order": 0,
+          "chapterId": "chap-003",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=cherry%20blossom%20petals%20falling%20school%20gate%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "春天，樱花盛开的季节。新生们陆续走进校园。",
+          "dialogue": "旁白：「那是一切开始的春天...」",
+          "artistId": "artist-001",
+          "status": "finished"
+        },
+        {
+          "id": "scene-007",
+          "projectId": "proj-002",
+          "order": 1,
+          "chapterId": "chap-003",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20girl%20running%20late%20toast%20in%20mouth%20school%20manga%20panel&image_size=landscape_4_3",
+          "script": "樱井美咲嘴里叼着面包，拼命地跑向学校。",
+          "dialogue": "美咲：「糟糕糟糕！要迟到了！」",
+          "artistId": "artist-001",
+          "status": "finished"
+        },
+        {
+          "id": "scene-008",
+          "projectId": "proj-002",
+          "order": 2,
+          "chapterId": "chap-003",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20boy%20girl%20collision%20school%20hallway%20surprised%20manga%20panel&image_size=landscape_4_3",
+          "script": "在走廊转角处，美咲与高崎凉撞了个满怀。",
+          "dialogue": "美咲：「呀！」\n凉：「...走路小心点。」",
+          "artistId": "artist-002",
+          "status": "coloring"
+        },
+        {
+          "id": "scene-009",
+          "projectId": "proj-002",
+          "order": 3,
+          "chapterId": "chap-003",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=anime%20school%20dormitory%20building%20sunset%20cherry%20blossom%20manga%20panel&image_size=landscape_4_3",
+          "script": "放学后，两人发现竟然要去同一个宿舍——传说中的「樱花庄」。",
+          "dialogue": "美咲：「诶？你也住这里？」\n凉：「...看来是这样。」",
+          "artistId": "artist-002",
+          "status": "draft"
+        }
+      ],
+      "logs": [
+        {
+          "id": "log-004",
+          "projectId": "proj-002",
+          "operator": "主编",
+          "action": "scene_order_update",
+          "summary": "调整了分镜顺序",
+          "timestamp": "2026-06-09T11:20:00Z",
+          "snapshot": null
+        }
+      ]
+    },
+    {
+      "id": "proj-003",
+      "title": "妖怪图鉴录",
+      "cover": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=traditional%20japanese%20yokai%20ghost%20mystical%20forest%20anime%20style%20manga%20cover&image_size=square",
+      "progress": 28,
+      "createdAt": "2026-05-10T14:00:00Z",
+      "updatedAt": "2026-06-06T16:45:00Z",
+      "order": 2,
+      "characters": [
+        {
+          "id": "char-005",
+          "name": "九尾妖狐",
+          "avatar": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=nine%20tailed%20fox%20spirit%20anime%20girl%20golden%20eyes%20traditional%20manga%20portrait&image_size=square",
+          "traits": ["狡黠", "千年智慧", "喜欢恶作剧"],
+          "dialogueTemplate": "「{{dialogue}}」"
+        }
+      ],
+      "chapters": [
+        {
+          "id": "chap-004",
+          "title": "第1话：封印解开之时",
+          "scheduledDate": "2026-07-01T00:00:00Z",
+          "status": "draft",
+          "platforms": [
+            { "name": "website", "format": "longimage", "resolution": "1080x1920", "enabled": true }
+          ]
+        }
+      ],
+      "scenes": [
+        {
+          "id": "scene-010",
+          "projectId": "proj-003",
+          "order": 0,
+          "chapterId": "chap-004",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=ancient%20japanese%20shrine%20mystical%20fog%20anime%20scene%20manga%20panel&image_size=landscape_4_3",
+          "script": "古老的神社深处，有一道被封印了千年的门。",
+          "dialogue": "旁白：「传说中，门的另一边沉睡着最强大的妖怪...」",
+          "artistId": "artist-001",
+          "status": "lineart"
+        },
+        {
+          "id": "scene-011",
+          "projectId": "proj-003",
+          "order": 1,
+          "chapterId": "chap-004",
+          "thumbnail": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=nine%20tailed%20fox%20girl%20appearing%20magical%20seal%20breaking%20anime%20manga%20panel&image_size=landscape_4_3",
+          "script": "封印开始龟裂，金色的光芒从缝隙中溢出。",
+          "dialogue": "九尾：「呵呵...终于，自由了。」",
+          "artistId": "artist-001",
+          "status": "draft"
+        }
+      ],
+      "logs": []
+    }
+  ]
+}

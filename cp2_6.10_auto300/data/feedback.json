@@ -1,0 +1,74 @@
+{
+  "feedback": [
+    {
+      "id": "fb-001",
+      "chapterId": "chap-001",
+      "emotion": "excited",
+      "comment": "太棒了！期待后续发展！",
+      "createdAt": "2026-06-08T20:15:00Z"
+    },
+    {
+      "id": "fb-002",
+      "chapterId": "chap-001",
+      "emotion": "suspense",
+      "comment": "艾伦博士到底有什么秘密？",
+      "createdAt": "2026-06-08T21:30:00Z"
+    },
+    {
+      "id": "fb-003",
+      "chapterId": "chap-001",
+      "emotion": "shocked",
+      "comment": "没想到会有飞船出现！",
+      "createdAt": "2026-06-09T08:45:00Z"
+    },
+    {
+      "id": "fb-004",
+      "chapterId": "chap-001",
+      "emotion": "excited",
+      "comment": "星海之旅要开始了吗！",
+      "createdAt": "2026-06-09T10:20:00Z"
+    },
+    {
+      "id": "fb-005",
+      "chapterId": "chap-001",
+      "emotion": "touched",
+      "comment": "光的决心让我感动",
+      "createdAt": "2026-06-09T12:00:00Z"
+    },
+    {
+      "id": "fb-006",
+      "chapterId": "chap-001",
+      "emotion": "funny",
+      "comment": "博士的表情好可爱",
+      "createdAt": "2026-06-09T14:30:00Z"
+    },
+    {
+      "id": "fb-007",
+      "chapterId": "chap-003",
+      "emotion": "funny",
+      "comment": "经典的叼面包撞人桥段哈哈哈",
+      "createdAt": "2026-06-08T19:00:00Z"
+    },
+    {
+      "id": "fb-008",
+      "chapterId": "chap-003",
+      "emotion": "touched",
+      "comment": "青春真好啊~",
+      "createdAt": "2026-06-08T20:30:00Z"
+    },
+    {
+      "id": "fb-009",
+      "chapterId": "chap-003",
+      "emotion": "excited",
+      "comment": "樱花庄会发生什么故事呢？",
+      "createdAt": "2026-06-09T09:15:00Z"
+    },
+    {
+      "id": "fb-010",
+      "chapterId": "chap-003",
+      "emotion": "suspense",
+      "comment": "期待两人的感情发展",
+      "createdAt": "2026-06-09T11:00:00Z"
+    }
+  ]
+}
