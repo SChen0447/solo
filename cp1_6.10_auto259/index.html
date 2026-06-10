@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>声粒回廊 - Particle Corridor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f111a;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-width: 800px;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #main-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    #main-area {
+      position: relative;
+      flex: 1;
+      display: flex;
+      z-index: 1;
+      min-height: 0;
+    }
+
+    #palette {
+      width: 180px;
+      background: #1a1d2e;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .palette-section h3 {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .note-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .note-block {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      user-select: none;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .note-block:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .note-block:active {
+      cursor: grabbing;
+    }
+
+    .note-block.dragging {
+      opacity: 0.5;
+    }
+
+    .rhythm-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rhythm-block {
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: grab;
+      font-size: 13px;
+      font-weight: 500;
+      color: #d1d5db;
+      user-select: none;
+      transition: background 0.15s ease;
+    }
+
+    .rhythm-block:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .rhythm-block.dragging {
+      opacity: 0.5;
+    }
+
+    #track-container {
+      flex: 1;
+      position: relative;
+      padding: 40px 32px;
+      display: flex;
+      align-items: center;
+    }
+
+    #track-wrapper {
+      width: 100%;
+      position: relative;
+    }
+
+    #track {
+      width: 100%;
+      height: 140px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      position: relative;
+      display: flex;
+      overflow: visible;
+    }
+
+    .beat-slot {
+      flex: 1;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      min-width: 0;
+    }
+
+    .beat-slot:last-child {
+      border-right: none;
+    }
+
+    .beat-slot.drag-over {
+      background: rgba(251, 191, 36, 0.12);
+    }
+
+    .beat-playhead {
+      position: absolute;
+      top: -8px;
+      bottom: -8px;
+      width: 3px;
+      background: #fbbf24;
+      box-shadow: 0 0 16px 4px rgba(251, 191, 36, 0.5), 0 0 32px 8px rgba(251, 191, 36, 0.2);
+      border-radius: 2px;
+      pointer-events: none;
+      transition: left 0.08s linear;
+      z-index: 10;
+    }
+
+    .track-element {
+      position: absolute;
+      width: calc((100% / 16) - 6px);
+      height: 36px;
+      border-radius: 6px;
+      margin: 0 3px;
+      top: 52px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .track-element:hover {
+      transform: scale(1.05);
+    }
+
+    .track-element .remove-hint {
+      position: absolute;
+      top: -18px;
+      right: 0;
+      font-size: 10px;
+      color: #f87171;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+
+    .track-element:hover .remove-hint {
+      opacity: 1;
+    }
+
+    #controls {
+      height: 120px;
+      background: #1a1d2e;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-shrink: 0;
+      z-index: 2;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .control-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      letter-spacing: 0.03em;
+    }
+
+    .control-group .value-display {
+      font-size: 13px;
+      font-weight: 500;
+      color: #fbbf24;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #fbbf24;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #fbbf24;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+    }
+
+    select {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    select:hover, select:focus {
+      border-color: rgba(251, 191, 36, 0.4);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    button {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e5e7eb;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      letter-spacing: 0.02em;
+    }
+
+    button:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    button.primary {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      border-color: transparent;
+      color: #1a1d2e;
+    }
+
+    button.primary:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+    }
+
+    button.danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .play-toggle {
+      min-width: 100px;
+    }
+
+    #app-title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="main-canvas"></canvas>
+    <div id="app-title">声 粒 回 廊</div>
+    <div id="main-area">
+      <aside id="palette">
+        <div class="palette-section">
+          <h3>音符</h3>
+          <div class="note-grid" id="note-palette"></div>
+        </div>
+        <div class="palette-section">
+          <h3>节奏</h3>
+          <div class="rhythm-list" id="rhythm-palette"></div>
+        </div>
+      </aside>
+      <div id="track-container">
+        <div id="track-wrapper">
+          <div id="track">
+            <div class="beat-playhead" id="playhead" style="left: calc((100% / 16) * 0 + (100% / 16 / 2) - 1.5px);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer id="controls">
+      <div class="control-group">
+        <label>速度 (BPM)</label>
+        <div class="slider-row">
+          <input type="range" id="bpm-slider" min="60" max="180" value="120" />
+          <span class="value-display" id="bpm-value">120</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>音量</label>
+        <div class="slider-row">
+          <input type="range" id="volume-slider" min="0" max="100" value="70" />
+          <span class="value-display" id="volume-value">70%</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>粒子密度</label>
+        <div class="slider-row">
+          <input type="range" id="density-slider" min="10" max="100" value="40" />
+          <span class="value-display" id="density-value">40</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <label>音色</label>
+        <select id="waveform-select">
+          <option value="sine">正弦波</option>
+          <option value="square">方波</option>
+          <option value="sawtooth">锯齿波</option>
+          <option value="triangle">三角波</option>
+        </select>
+      </div>
+      <div class="button-group">
+        <button class="primary play-toggle" id="play-btn">▶ 播放</button>
+        <button id="save-btn">保存</button>
+        <button class="danger" id="clear-btn">清空</button>
+      </div>
+    </footer>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
