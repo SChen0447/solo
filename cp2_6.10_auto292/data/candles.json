@@ -1,0 +1,206 @@
+{
+  "candles": [
+    {
+      "id": "candle-001",
+      "name": "月下青柠",
+      "fragrance": "柑橘调",
+      "color": "#F5DEB3",
+      "stock": 15,
+      "packaging": "玻璃瓶",
+      "tags": ["夏日", "清新", "热销"],
+      "photoUrl": "",
+      "createdAt": "2025-12-01T10:00:00.000Z"
+    },
+    {
+      "id": "candle-002",
+      "name": "玫瑰庄园",
+      "fragrance": "花香调",
+      "color": "#E6B8CF",
+      "stock": 8,
+      "packaging": "铁罐",
+      "tags": ["浪漫", "礼物"],
+      "photoUrl": "",
+      "createdAt": "2025-12-05T14:30:00.000Z"
+    },
+    {
+      "id": "candle-003",
+      "name": "檀木沉香",
+      "fragrance": "木质调",
+      "color": "#8B6914",
+      "stock": 12,
+      "packaging": "布袋",
+      "tags": ["禅意", "安神"],
+      "photoUrl": "",
+      "createdAt": "2025-12-10T09:15:00.000Z"
+    },
+    {
+      "id": "candle-004",
+      "name": "薄荷尤加利",
+      "fragrance": "草本调",
+      "color": "#98FB98",
+      "stock": 6,
+      "packaging": "玻璃瓶",
+      "tags": ["提神", "清爽", "限量"],
+      "photoUrl": "",
+      "createdAt": "2025-12-12T16:45:00.000Z"
+    },
+    {
+      "id": "candle-005",
+      "name": "东方琥珀",
+      "fragrance": "东方调",
+      "color": "#CD853F",
+      "stock": 10,
+      "packaging": "铁罐",
+      "tags": ["神秘", "温暖"],
+      "photoUrl": "",
+      "createdAt": "2025-12-15T11:20:00.000Z"
+    },
+    {
+      "id": "candle-006",
+      "name": "海盐微风",
+      "fragrance": "柑橘调",
+      "color": "#B0E0E6",
+      "stock": 20,
+      "packaging": "布袋",
+      "tags": ["海洋", "放松"],
+      "photoUrl": "",
+      "createdAt": "2025-12-18T13:00:00.000Z"
+    },
+    {
+      "id": "candle-007",
+      "name": "茉莉清茶",
+      "fragrance": "花香调",
+      "color": "#FFFACD",
+      "stock": 5,
+      "packaging": "玻璃瓶",
+      "tags": ["淡雅", "春日"],
+      "photoUrl": "",
+      "createdAt": "2025-12-20T15:30:00.000Z"
+    },
+    {
+      "id": "candle-008",
+      "name": "雪松之夜",
+      "fragrance": "木质调",
+      "color": "#556B2F",
+      "stock": 18,
+      "packaging": "铁罐",
+      "tags": ["冬日", "静谧"],
+      "photoUrl": "",
+      "createdAt": "2025-12-22T08:45:00.000Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "order-001",
+      "customerName": "李小雅",
+      "customerPhone": "13800138001",
+      "items": [
+        { "candleId": "candle-001", "candleName": "月下青柠", "quantity": 2 },
+        { "candleId": "candle-004", "candleName": "薄荷尤加利", "quantity": 1 }
+      ],
+      "expectedDate": "2025-12-28",
+      "status": "已完成",
+      "createdAt": "2025-12-20T10:00:00.000Z"
+    },
+    {
+      "id": "order-002",
+      "customerName": "王志远",
+      "customerPhone": "13900139002",
+      "items": [
+        { "candleId": "candle-003", "candleName": "檀木沉香", "quantity": 3 }
+      ],
+      "expectedDate": "2026-01-05",
+      "status": "生产中",
+      "createdAt": "2025-12-25T14:20:00.000Z"
+    },
+    {
+      "id": "order-003",
+      "customerName": "张美玲",
+      "customerPhone": "13700137003",
+      "items": [
+        { "candleId": "candle-002", "candleName": "玫瑰庄园", "quantity": 1 },
+        { "candleId": "candle-005", "candleName": "东方琥珀", "quantity": 2 }
+      ],
+      "expectedDate": "2026-01-08",
+      "status": "待调配",
+      "createdAt": "2025-12-28T09:30:00.000Z"
+    },
+    {
+      "id": "order-004",
+      "customerName": "陈浩然",
+      "customerPhone": "13600136004",
+      "items": [
+        { "candleId": "candle-008", "candleName": "雪松之夜", "quantity": 2 }
+      ],
+      "expectedDate": "2026-01-03",
+      "status": "已发货",
+      "createdAt": "2025-12-26T16:15:00.000Z"
+    }
+  ],
+  "customers": [
+    {
+      "id": "customer-001",
+      "name": "李小雅",
+      "phone": "13800138001",
+      "notes": "喜欢清新淡雅的香味，不喜欢太浓烈的",
+      "fragrancePreferences": {
+        "柑橘调": 5,
+        "花香调": 2,
+        "木质调": 1,
+        "草本调": 4,
+        "东方调": 1
+      },
+      "lastPurchaseDate": "2025-12-20",
+      "favoritePackaging": "玻璃瓶",
+      "orderHistory": ["order-001"]
+    },
+    {
+      "id": "customer-002",
+      "name": "王志远",
+      "phone": "13900139002",
+      "notes": "偏好木质调，用于冥想",
+      "fragrancePreferences": {
+        "柑橘调": 0,
+        "花香调": 1,
+        "木质调": 5,
+        "草本调": 2,
+        "东方调": 3
+      },
+      "lastPurchaseDate": "2025-12-25",
+      "favoritePackaging": "布袋",
+      "orderHistory": ["order-002"]
+    },
+    {
+      "id": "customer-003",
+      "name": "张美玲",
+      "phone": "13700137003",
+      "notes": "送礼为主，喜欢精美包装",
+      "fragrancePreferences": {
+        "柑橘调": 1,
+        "花香调": 4,
+        "木质调": 2,
+        "草本调": 1,
+        "东方调": 5
+      },
+      "lastPurchaseDate": "2025-12-28",
+      "favoritePackaging": "铁罐",
+      "orderHistory": ["order-003"]
+    },
+    {
+      "id": "customer-004",
+      "name": "陈浩然",
+      "phone": "13600136004",
+      "notes": "冬日限定爱好者",
+      "fragrancePreferences": {
+        "柑橘调": 2,
+        "花香调": 1,
+        "木质调": 5,
+        "草本调": 3,
+        "东方调": 2
+      },
+      "lastPurchaseDate": "2025-12-26",
+      "favoritePackaging": "铁罐",
+      "orderHistory": ["order-004"]
+    }
+  ]
+}
