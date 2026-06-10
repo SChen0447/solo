@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>深海矿工</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      min-width: 768px;
+    }
+    body {
+      background: radial-gradient(ellipse at center top, #0a1628 0%, #001d3d 100%);
+      font-family: 'Courier New', monospace;
+      color: #ffffff;
+    }
+    h1#game-title {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      font-size: 28px;
+      letter-spacing: 4px;
+      color: #ffffff;
+      text-shadow: 0 0 8px #00d4ff, 2px 2px 0 #00d4ff;
+      z-index: 10;
+      pointer-events: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #game-canvas {
+      display: block;
+      background: transparent;
+      position: relative;
+    }
+    .shake {
+      animation: shake 0.2s ease-in-out;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-2px); }
+      50% { transform: translateX(2px); }
+      75% { transform: translateX(-2px); }
+    }
+    @media (max-width: 768px) {
+      html, body {
+        transform: scale(0.8);
+        transform-origin: center center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 id="game-title">深海矿工</h1>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <script type="module" src="/src/GameMain.ts"></script>
+</body>
+</html>
