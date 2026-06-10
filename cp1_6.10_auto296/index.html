@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>情绪光子 - Emotion Photons</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d0d1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      color: #ccc;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0a0a1a 0%, #12122a 100%);
+    }
+
+    .emotion-panel {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 10;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    .emotion-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid rgba(200, 200, 200, 0.3);
+      background: rgba(255, 255, 255, 0.95);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: all 0.2s ease;
+      align-self: center;
+    }
+
+    .emotion-btn:hover {
+      transform: scale(1.05);
+      border-color: rgba(200, 200, 200, 0.6);
+    }
+
+    .emotion-btn.active {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .emotion-btn.joy.active { border-color: #ffd700; color: #ffd700; }
+    .emotion-btn.sadness.active { border-color: #4a90d9; color: #4a90d9; }
+    .emotion-btn.anger.active { border-color: #e74c3c; color: #e74c3c; }
+    .emotion-btn.calm.active { border-color: #2ecc71; color: #2ecc71; }
+    .emotion-btn.surprise.active { border-color: #e91e63; color: #e91e63; }
+    .emotion-btn.fear.active { border-color: #8e44ad; color: #8e44ad; }
+    .emotion-btn.disgust.active { border-color: #b1c74e; color: #b1c74e; }
+    .emotion-btn.love.active { border-color: #ff6b9d; color: #ff6b9d; }
+
+    .input-area {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(100% - 480px);
+      max-width: 600px;
+      min-width: 300px;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      padding: 8px 8px 8px 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+    }
+
+    .emotion-input {
+      flex: 1;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 16px;
+      font-family: inherit;
+    }
+
+    .emotion-input::placeholder {
+      color: #888;
+    }
+
+    .submit-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .submit-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .match-tip {
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 20px;
+      font-size: 14px;
+      color: #aaa;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .match-tip.show {
+      opacity: 1;
+    }
+
+    .match-tip .emoji {
+      margin-right: 6px;
+    }
+
+    .match-tip .emotion-name {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .emotion-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        transform: none;
+        width: 100%;
+        padding: 12px 16px;
+        flex-direction: row;
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        background: linear-gradient(180deg, rgba(13, 13, 26, 0.9) 0%, rgba(13, 13, 26, 0) 100%);
+      }
+
+      .panel-title {
+        display: none;
+      }
+
+      .emotion-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+      }
+
+      .input-area {
+        bottom: 16px;
+        width: calc(100% - 32px);
+        max-width: none;
+        min-width: auto;
+        height: 52px;
+      }
+
+      .match-tip {
+        bottom: 84px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="emotion-panel">
+      <div class="panel-title">选择情绪</div>
+      <button class="emotion-btn joy" data-emotion="joy" title="喜悦">😊</button>
+      <button class="emotion-btn sadness" data-emotion="sadness" title="悲伤">😢</button>
+      <button class="emotion-btn anger" data-emotion="anger" title="愤怒">😠</button>
+      <button class="emotion-btn calm" data-emotion="calm" title="平静">😌</button>
+      <button class="emotion-btn surprise" data-emotion="surprise" title="惊讶">😲</button>
+      <button class="emotion-btn fear" data-emotion="fear" title="恐惧">😨</button>
+      <button class="emotion-btn disgust" data-emotion="disgust" title="厌恶">🤢</button>
+      <button class="emotion-btn love" data-emotion="love" title="爱">❤️</button>
+    </div>
+
+    <div class="match-tip" id="match-tip"></div>
+
+    <div class="input-area">
+      <input
+        type="text"
+        class="emotion-input"
+        id="emotion-input"
+        placeholder="输入描述情绪的词语，例如：开心、难过、焦虑..."
+        maxlength="50"
+      />
+      <button class="submit-btn" id="submit-btn" title="提交">
+        <svg viewBox="0 0 24 24">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
