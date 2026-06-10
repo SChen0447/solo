@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SVG 粒子轨迹动画生成器</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+
+  <aside id="controlPanel" class="panel">
+    <div class="panel__header">
+      <h2 class="panel__title">控制面板</h2>
+    </div>
+
+    <div class="panel__content">
+      <div class="control-group">
+        <label class="control-group__label">上传 SVG</label>
+        <div class="file-upload">
+          <input type="file" id="svgFileInput" accept=".svg" hidden>
+          <button type="button" id="uploadBtn" class="btn btn--primary">选择文件</button>
+          <span id="fileName" class="file-name">未选择文件</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-group__label">
+          粒子速度
+          <span id="speedValue" class="value-display">0.5 px/帧</span>
+        </label>
+        <input type="range" id="speedSlider" class="slider"
+               min="0.1" max="2.0" step="0.1" value="0.5">
+      </div>
+
+      <div class="control-group">
+        <label class="control-group__label">颜色模式</label>
+        <div class="color-mode">
+          <button type="button" id="colorModeBtn" class="btn btn--mode is-active" data-mode="gradient">
+            渐变模式
+          </button>
+          <div id="singleColorWrap" class="single-color-wrap">
+            <input type="color" id="singleColorPicker" class="color-picker" value="#00ffff">
+          </div>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <button type="button" id="resetBtn" class="btn btn--secondary">重置粒子位置</button>
+      </div>
+
+      <div class="control-group control-group--info">
+        <div class="info-row">
+          <span>路径数量：</span>
+          <span id="pathCount">0</span>
+        </div>
+        <div class="info-row">
+          <span>粒子总数：</span>
+          <span id="particleCount">0</span>
+        </div>
+        <div class="info-row">
+          <span>当前帧率：</span>
+          <span id="fpsDisplay">-- fps</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
