@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Network Topology Monitor</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Courier New', 'Consolas', monospace;
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3a 100%);
+      color: #00ffcc;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #stats-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 30, 0.75);
+      border: 1px solid rgba(0, 255, 204, 0.5);
+      border-radius: 8px;
+      padding: 16px 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 20px rgba(0, 255, 204, 0.15), inset 0 0 20px rgba(0, 255, 204, 0.05);
+      min-width: 240px;
+      z-index: 10;
+    }
+
+    #stats-panel h3 {
+      color: #00ffcc;
+      font-size: 14px;
+      margin-bottom: 12px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+      border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0;
+      font-size: 12px;
+    }
+
+    .stat-label {
+      color: #00ffcc;
+      opacity: 0.8;
+    }
+
+    .stat-value {
+      color: #00ffcc;
+      font-weight: bold;
+      transition: color 0.3s ease;
+      text-shadow: 0 0 5px rgba(0, 255, 204, 0.3);
+    }
+
+    .stat-value.flash {
+      color: #ff6644;
+      text-shadow: 0 0 10px rgba(255, 102, 68, 0.8);
+    }
+
+    #fps-counter {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(10, 10, 30, 0.75);
+      border: 1px solid rgba(0, 255, 204, 0.5);
+      border-radius: 6px;
+      padding: 8px 14px;
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.15);
+    }
+
+    #timer {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(10, 10, 30, 0.75);
+      border: 1px solid rgba(0, 255, 204, 0.5);
+      border-radius: 6px;
+      padding: 8px 14px;
+      backdrop-filter: blur(10px);
+      font-size: 12px;
+      z-index: 10;
+      box-shadow: 0 0 15px rgba(0, 255, 204, 0.15);
+    }
+
+    .tooltip {
+      background: rgba(10, 10, 30, 0.9);
+      border: 1px solid rgba(0, 255, 204, 0.6);
+      border-radius: 8px;
+      padding: 12px 16px;
+      color: #00ffcc;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 0 25px rgba(0, 255, 204, 0.3), inset 0 0 15px rgba(0, 255, 204, 0.05);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .tooltip-title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+      border-bottom: 1px solid rgba(0, 255, 204, 0.3);
+      padding-bottom: 6px;
+    }
+
+    .tooltip-row {
+      margin: 4px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .tooltip-label {
+      opacity: 0.8;
+    }
+
+    .tooltip-val {
+      font-weight: bold;
+    }
+
+    .dg.main .close-button {
+      background-color: rgba(10, 10, 30, 0.9) !important;
+      color: #00ffcc !important;
+      text-shadow: none !important;
+    }
+
+    .dg.main {
+      font-family: 'Courier New', 'Consolas', monospace !important;
+    }
+
+    .dg .c .slider-fg {
+      background: #00ffcc !important;
+    }
+
+    .dg .c input[type=text] {
+      color: #00ffcc !important;
+      background: rgba(10, 10, 30, 0.6) !important;
+    }
+
+    .dg .property-name {
+      color: #00ffcc !important;
+    }
+
+    .dg .cr.boolean .c {
+      background-color: rgba(0, 255, 204, 0.3) !important;
+    }
+
+    .dg.ac {
+      z-index: 100 !important;
+    }
+
+    #label-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .node-label {
+      position: absolute;
+      color: #00ffcc;
+      font-size: 11px;
+      font-family: 'Courier New', 'Consolas', monospace;
+      text-shadow: 0 0 8px rgba(0, 255, 204, 0.8), 0 0 16px rgba(0, 255, 204, 0.4);
+      transform: translate(-50%, -50%);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="label-container"></div>
+    <div id="stats-panel">
+      <h3>◈ NETWORK MONITOR</h3>
+      <div class="stat-item">
+        <span class="stat-label">Avg Latency</span>
+        <span class="stat-value" id="avg-latency">0 ms</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Throughput</span>
+        <span class="stat-value" id="throughput">0 MB/s</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Active Conns</span>
+        <span class="stat-value" id="active-conns">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Congestion</span>
+        <span class="stat-value" id="congestion">0%</span>
+      </div>
+    </div>
+    <div id="fps-counter">
+      <span class="stat-label">FPS: </span><span class="stat-value" id="fps-val">60</span>
+    </div>
+    <div id="timer">
+      <span class="stat-label">Runtime: </span><span class="stat-value" id="timer-val">00:00</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
