@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>3D 流体粒子系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: radial-gradient(ellipse at center, #1a1a3a 0%, #0a0a1a 100%);
+    }
+
+    #export-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #e74c3c;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+    }
+
+    #export-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 16px rgba(231, 76, 60, 0.5);
+    }
+
+    #export-btn.recording {
+      animation: blink 0.8s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    #export-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    #progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      width: 0%;
+      background: #2ecc71;
+      z-index: 200;
+      transition: width 0.1s linear;
+      display: none;
+    }
+
+    #progress-bar.active {
+      display: block;
+    }
+
+    #gui-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 240px;
+      background: rgba(20, 20, 30, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 20px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #gui-panel h2 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .gui-control {
+      margin-bottom: 14px;
+    }
+
+    .gui-control label {
+      display: block;
+      font-size: 12px;
+      color: #ccc;
+      margin-bottom: 6px;
+      user-select: none;
+    }
+
+    .gui-control input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #4a00e0, #8e2de2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .gui-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s;
+    }
+
+    .gui-control input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .gui-control input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .gui-control .value-display {
+      float: right;
+      color: #8e2de2;
+      font-weight: 500;
+    }
+
+    #mobile-toggle {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(20, 20, 30, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 150;
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0 20px;
+    }
+
+    #mobile-toggle span {
+      font-size: 14px;
+      color: #fff;
+      font-weight: 500;
+    }
+
+    #mobile-toggle .chevron {
+      width: 10px;
+      height: 10px;
+      border-left: 2px solid #fff;
+      border-top: 2px solid #fff;
+      transform: rotate(-135deg);
+      margin-left: 10px;
+      transition: transform 0.3s;
+    }
+
+    #mobile-toggle.expanded .chevron {
+      transform: rotate(45deg);
+    }
+
+    @media (max-width: 768px) {
+      #gui-panel {
+        top: auto;
+        bottom: -240px;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 0;
+        height: 240px;
+        overflow-y: auto;
+        transition: bottom 0.3s ease;
+        padding-bottom: 80px;
+      }
+
+      #gui-panel.mobile-open {
+        bottom: 0;
+      }
+
+      #mobile-toggle {
+        display: flex;
+      }
+
+      #export-btn {
+        top: 16px;
+        left: 16px;
+        width: 42px;
+        height: 42px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="progress-bar"></div>
+    
+    <button id="export-btn" title="导出 GIF">
+      <svg viewBox="0 0 24 24">
+        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+      </svg>
+    </button>
+
+    <div id="gui-panel">
+      <h2>粒子控制面板</h2>
+      
+      <div class="gui-control">
+        <label>流速 <span class="value-display" id="flowSpeed-value">1.2</span></label>
+        <input type="range" id="flowSpeed" min="0.5" max="3.0" step="0.1" value="1.2" />
+      </div>
+
+      <div class="gui-control">
+        <label>湍流强度 <span class="value-display" id="turbulence-value">0.4</span></label>
+        <input type="range" id="turbulence" min="0" max="1" step="0.05" value="0.4" />
+      </div>
+
+      <div class="gui-control">
+        <label>色相偏移 <span class="value-display" id="hueOffset-value">180°</span></label>
+        <input type="range" id="hueOffset" min="0" max="360" step="1" value="180" />
+      </div>
+
+      <div class="gui-control">
+        <label>粒子大小 <span class="value-display" id="particleSize-value">0.3</span></label>
+        <input type="range" id="particleSize" min="0.1" max="0.5" step="0.05" value="0.3" />
+      </div>
+
+      <div class="gui-control">
+        <label>发射率 <span class="value-display" id="emissionRate-value">0.6</span></label>
+        <input type="range" id="emissionRate" min="0.1" max="1.0" step="0.05" value="0.6" />
+      </div>
+    </div>
+
+    <div id="mobile-toggle">
+      <span>控制面板</span>
+      <div class="chevron"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

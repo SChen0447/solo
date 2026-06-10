@@ -1,0 +1,22 @@
+{
+  "name": "fluid-particle-system",
+  "version": "1.0.0",
+  "description": "3D抽象流体粒子系统交互设计与导出应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "lodash": "^4.17.21",
+    "gif.js": "0.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "5.0.0",
+    "@types/three": "^0.160.0",
+    "@types/lodash": "^4.14.202"
+  }
+}
