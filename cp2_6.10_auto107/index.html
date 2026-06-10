@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>关卡路径检测器</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: #1A252C;
+    color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+  .toolbar {
+    height: 56px;
+    background: #0D1B2A;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-bottom: 2px solid #E67E22;
+    flex-shrink: 0;
+  }
+  .toolbar-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .toolbar-title::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 28px;
+    background: #E67E22;
+    border-radius: 4px;
+  }
+  .toolbar-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .btn {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-gray {
+    background: #BDC3C7;
+    color: #000;
+  }
+  .btn-gray:hover {
+    background: #cfd5d9;
+    filter: brightness(1.15);
+  }
+  .btn-green {
+    background: #2ECC71;
+    color: #fff;
+  }
+  .btn-green:hover {
+    background: #27AE60;
+    filter: brightness(1.15);
+  }
+  .main-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+  }
+  .canvas-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: auto;
+  }
+  .canvas-container {
+    position: relative;
+    border: 1px solid #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+  }
+  #levelCanvas {
+    display: block;
+    background: #F0F0F0;
+    border-radius: 3px;
+  }
+  .btn-detect {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 10px 20px;
+    background: #2ECC71;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    z-index: 10;
+    box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+  }
+  .btn-detect:hover {
+    background: #27AE60;
+    filter: brightness(1.15);
+  }
+  .btn-detect:active { transform: scale(0.98); }
+  .side-panel {
+    width: 180px;
+    background: #0D1B2A;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    border-left: 1px solid #2C3E50;
+    flex-shrink: 0;
+  }
+  .panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #E67E22;
+    margin-bottom: 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #2C3E50;
+  }
+  .platform-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 12px;
+    background: #1A252C;
+    border-radius: 8px;
+    cursor: grab;
+    transition: all 0.15s ease;
+    border: 2px solid transparent;
+  }
+  .platform-item:hover {
+    border-color: #E67E22;
+    transform: translateY(-2px);
+  }
+  .platform-item:active { cursor: grabbing; }
+  .platform-preview {
+    border-radius: 2px;
+  }
+  .platform-label {
+    font-size: 12px;
+    color: #BDC3C7;
+  }
+  .slider-bar {
+    height: 60px;
+    background: #2C3E50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 36px;
+    padding: 0 24px;
+    flex-shrink: 0;
+    border-top: 1px solid #1A252C;
+  }
+  .slider-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .slider-label {
+    font-size: 14px;
+    color: #fff;
+    white-space: nowrap;
+    min-width: 70px;
+  }
+  .slider-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #2ECC71;
+    min-width: 44px;
+    text-align: right;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 180px;
+    height: 6px;
+    background: #1A252C;
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #E67E22;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  input[type="range"]::-webkit-slider-thumb:active {
+    transform: scale(0.95);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #E67E22;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  .hidden-input {
+    display: none;
+  }
+  @media (max-width: 960px) {
+    .canvas-container { transform: scale(0.8); transform-origin: top center; }
+  }
+  @media (max-width: 600px) {
+    .canvas-container { transform: none; }
+    .canvas-wrapper { overflow-x: auto; justify-content: flex-start; }
+    .slider-bar { flex-wrap: wrap; height: auto; padding: 12px; gap: 12px; }
+    .side-panel { width: 140px; padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="toolbar">
+    <div class="toolbar-title">关卡路径检测器</div>
+    <div class="toolbar-actions">
+      <button class="btn btn-gray" id="btnSave">保存关卡</button>
+      <button class="btn btn-gray" id="btnLoad">加载关卡</button>
+      <input type="file" id="fileInput" accept=".json" class="hidden-input" />
+    </div>
+  </div>
+  <div class="main-content">
+    <div class="canvas-wrapper">
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="levelCanvas" width="800" height="400"></canvas>
+        <button class="btn-detect" id="btnDetect">检测路径</button>
+      </div>
+    </div>
+    <div class="side-panel" id="sidePanel">
+      <div class="panel-title">平台预设</div>
+      <div class="platform-item" draggable="true" data-size="small">
+        <div class="platform-preview" style="width:40px;height:20px;background:#8B5A2B;"></div>
+        <span class="platform-label">小平台 40×20</span>
+      </div>
+      <div class="platform-item" draggable="true" data-size="medium">
+        <div class="platform-preview" style="width:80px;height:20px;background:#A9A9A9;"></div>
+        <span class="platform-label">中平台 80×20</span>
+      </div>
+      <div class="platform-item" draggable="true" data-size="large">
+        <div class="platform-preview" style="width:120px;height:20px;background:#4682B4;"></div>
+        <span class="platform-label">大平台 120×20</span>
+      </div>
+    </div>
+  </div>
+  <div class="slider-bar">
+    <div class="slider-group">
+      <span class="slider-label">跳跃力度</span>
+      <input type="range" id="jumpPower" min="50" max="150" value="100" />
+      <span class="slider-value" id="jumpPowerVal">100</span>
+    </div>
+    <div class="slider-group">
+      <span class="slider-label">水平速度</span>
+      <input type="range" id="horizontalSpeed" min="100" max="300" value="200" />
+      <span class="slider-value" id="horizontalSpeedVal">200</span>
+    </div>
+    <div class="slider-group">
+      <span class="slider-label">重力倍数</span>
+      <input type="range" id="gravityMultiplier" min="0.5" max="2.0" step="0.1" value="1.0" />
+      <span class="slider-value" id="gravityMultiplierVal">1.0</span>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
