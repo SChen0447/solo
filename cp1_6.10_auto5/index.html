@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星际飞船 - 小行星穿越</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0015;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #mainMenu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, rgba(30, 10, 60, 0.8) 0%, rgba(5, 0, 15, 0.95) 100%);
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+
+    #mainMenu.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #gameTitle {
+      font-size: clamp(32px, 6vw, 72px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(180deg, #ff9f43 0%, #ff6b35 50%, #ee5253 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 40px rgba(255, 107, 53, 0.5);
+      margin-bottom: 20px;
+      animation: titlePulse 3s ease-in-out infinite;
+    }
+
+    #gameSubtitle {
+      font-size: clamp(14px, 1.8vw, 20px);
+      color: #a29bfe;
+      letter-spacing: 2px;
+      margin-bottom: 60px;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.02); filter: brightness(1.2); }
+    }
+
+    #startButton {
+      padding: 18px 60px;
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+      border: 2px solid #a29bfe;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 30px rgba(108, 92, 231, 0.5);
+    }
+
+    #startButton:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 40px rgba(108, 92, 231, 0.7);
+      background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+    }
+
+    #startButton:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    #controlsHint {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: #747d8c;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    #controlsHint span {
+      display: inline-block;
+      padding: 3px 10px;
+      margin: 0 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      color: #dfe6e9;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+    <div id="mainMenu">
+      <h1 id="gameTitle">星际飞船</h1>
+      <p id="gameSubtitle">ASTEROID BELT EXPLORER</p>
+      <button id="startButton">开始游戏</button>
+      <div id="controlsHint">
+        <p><span>↑</span><span>↓</span><span>←</span><span>→</span> 或 <span>W</span><span>A</span><span>S</span><span>D</span> 移动飞船</p>
+        <p><span>Shift</span> 加速冲刺 &nbsp;&nbsp; <span>空格</span> 释放护盾（能量满时）</p>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
