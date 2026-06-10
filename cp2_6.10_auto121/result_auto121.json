@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:22:59.551Z",
+  "task_name": "auto121",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线协作式思维导图编辑与实时预览应用，让团队成员能同时编辑同一张思维导图，并自动保存版本历史。使用TypeScript、React和Vite实现。文件结构如下：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、uuid、lodash、react-beautiful-dnd，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，含meta viewport和标题）\n - src/App.tsx（主组件，管理思维导图全局状态）\n - src/components/MapCanvas.tsx（画布组件，渲染节点和连线，支持拖拽和缩放）\n - src/components/NodeEditor.tsx（节点编辑面板，修改标题、颜色、备注）\n - src/components/HistoryPanel.tsx（版本历史侧栏，展示操作快照和回滚按钮）\n - src/utils/store.ts（状态管理工具，基于useReducer实现undo/redo）\n\n具体需求：\n1. 节点创建与编辑：用户在画布上双击空白处创建新节点（初始标题为\"新节点\"，背景色#f0f0f0，圆角8px，边框1px solid #ddd），点击节点进入编辑模式（弹出悬浮编辑器，包含文字框、颜色选择器、备注文本域），按Enter或失焦保存。\n2. 节点连线与布局：从节点底部或顶部的拖拽点（灰色小圆点，hover时变为深蓝#3498db）拖出连线到其他节点，自动生成带箭头（箭头长度10px，颜色#555）的有向连线，连线路径为二次贝塞尔曲线（控制点自动计算以避免重叠）。\n3. 画布操作：支持鼠标滚轮缩放（0.5x - 3x，步长0.1，缩放时显示当前比例在右上角），鼠标拖拽平移画布（光标变为grab/grabbing），缩放时节点大小按比例保持但文字最小字号12px。\n4. 版本历史与回滚：每次节点添加、删除、移动、连线变更、文字修改都会生成一个snapshot（存储节点位置、内容、连线状态的JSON快照），历史面板按时间倒序显示（格式\"MM-dd HH:mm:ss\"，每条前面有回滚按钮），点击回滚恢复到该快照状态（支持Ctrl+Z触发回滚上一个）。\n5. 实时协作模拟：所有操作都记录在本地store中，不依赖后端，但支持导出当前思维导图为JSON文件（点击导出按钮，下载一个.json文件，包含版本号和时间戳），以及从JSON导入（清空当前画布后加载）。\n\n界面方面：整体采用深色主题（主背景#2c3e50，画布区域#ecf0f1），左侧工具栏（宽度50px，垂直排列图标按钮：新建节点、导出JSON、导入JSON、回退一步），右侧可收起的历史面板（默认收起，点击历史按钮展开，宽度280px，背景#34495e，白色文字），画布占据剩余区域。节点文字默认深色#2d3436，选中时边框变为亮蓝#2980b9加2px实线，连线动画在生成时有0.3秒淡入效果。响应式适配：当屏幕宽度小于768px时，工具栏移到顶部（高度50px，水平排列），历史面板改为底部弹出式（遮罩层半透明）。所有交互反馈要有0.2秒缓动过渡。\n\n性能要求：画布上同时操作50个节点（每个带文本和颜色）时，拖拽帧率不低于30fps，节点编辑响应时间不超过100ms。\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2dd37fb6f7ee14a2cf8d5b6af0be2fb6_6a2867d7d220f71f4ef40bf9.6a286807d220f71f4ef40c09.6a28680747631a36807a1c91:Trae CN.T(2026/6/10 03:22:47)",
+    "user_id": "3986207660317399",
+    "trace_id": "2dd37fb6f7ee14a2cf8d5b6af0be2fb6",
+    "session_id": "6a2867d7d220f71f4ef40bf9",
+    "task_id": "6a286807d220f71f4ef40c09",
+    "message_id": "6a28680747631a36807a1c91",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:22:47",
+    "format": "full"
+  },
+  "trace": "null"
+}
