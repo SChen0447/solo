@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SONAR DUNGEON · 声纳地牢</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: 'VT323', 'Share Tech Mono', 'Courier New', monospace;
+      color: #00ffff;
+      cursor: crosshair;
+    }
+    
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000000;
+    }
+    
+    #game-canvas {
+      display: block;
+      background: #000000;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      box-shadow: 
+        0 0 30px rgba(0, 255, 255, 0.15),
+        inset 0 0 60px rgba(93, 63, 211, 0.1);
+    }
+    
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      z-index: 10;
+      mix-blend-mode: overlay;
+      opacity: 0.12;
+    }
+    
+    .hud {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 20;
+      padding: 16px 20px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #5D3FD3;
+      font-size: 20px;
+      line-height: 1.6;
+      min-width: 220px;
+      box-shadow: 
+        0 0 20px rgba(93, 63, 211, 0.3),
+        inset 0 0 10px rgba(0, 255, 255, 0.05);
+    }
+    
+    .hud::before,
+    .hud::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 2px solid #00ffff;
+    }
+    
+    .hud::before {
+      top: -2px;
+      left: -2px;
+      border-right: none;
+      border-bottom: none;
+    }
+    
+    .hud::after {
+      bottom: -2px;
+      right: -2px;
+      border-left: none;
+      border-top: none;
+    }
+    
+    .hud-title {
+      color: #00ffff;
+      font-size: 22px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #5D3FD3;
+      padding-bottom: 6px;
+      text-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+    }
+    
+    .hud-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .hud-label {
+      color: #8888aa;
+      letter-spacing: 1px;
+    }
+    
+    .hud-value {
+      color: #00ffff;
+      font-weight: bold;
+      text-shadow: 0 0 6px rgba(0, 255, 255, 0.6);
+    }
+    
+    .hud-value.gold {
+      color: #FFD700;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+    }
+    
+    .hud-value.silver {
+      color: #C0C0C0;
+      text-shadow: 0 0 6px rgba(192, 192, 192, 0.6);
+    }
+    
+    .hud-value.deep {
+      color: #FF4444;
+      text-shadow: 0 0 6px rgba(255, 68, 68, 0.6);
+    }
+    
+    .level-info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 20;
+      padding: 12px 18px;
+      background: rgba(0, 0, 0, 0.85);
+      border: 2px solid #5D3FD3;
+      font-size: 22px;
+      box-shadow: 
+        0 0 20px rgba(93, 63, 211, 0.3),
+        inset 0 0 10px rgba(0, 255, 255, 0.05);
+    }
+    
+    .level-info::before,
+    .level-info::after {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 2px solid #00ffff;
+    }
+    
+    .level-info::before {
+      top: -2px;
+      right: -2px;
+      border-left: none;
+      border-bottom: none;
+    }
+    
+    .level-info::after {
+      bottom: -2px;
+      left: -2px;
+      border-right: none;
+      border-top: none;
+    }
+    
+    .level-label {
+      color: #8888aa;
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+    
+    .level-num {
+      color: #00ffff;
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+    }
+    
+    .controls-hint {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      padding: 10px 24px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid #5D3FD3;
+      font-size: 16px;
+      color: #8888aa;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    
+    .controls-hint .key {
+      display: inline-block;
+      padding: 2px 8px;
+      margin: 0 3px;
+      background: rgba(93, 63, 211, 0.3);
+      border: 1px solid #5D3FD3;
+      color: #00ffff;
+      font-weight: bold;
+    }
+    
+    .message {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 30;
+      padding: 20px 40px;
+      background: rgba(0, 0, 0, 0.95);
+      border: 2px solid #00ffff;
+      font-size: 32px;
+      color: #00ffff;
+      text-shadow: 0 0 15px rgba(0, 255, 255, 0.8);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      letter-spacing: 3px;
+      box-shadow: 
+        0 0 40px rgba(0, 255, 255, 0.4),
+        inset 0 0 20px rgba(0, 255, 255, 0.1);
+    }
+    
+    .message.show {
+      opacity: 1;
+    }
+    
+    .title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 15;
+      font-size: 24px;
+      letter-spacing: 6px;
+      color: #00ffff;
+      text-shadow: 
+        0 0 10px rgba(0, 255, 255, 0.6),
+        0 0 20px rgba(93, 63, 211, 0.3);
+    }
+    
+    @media (max-width: 900px) {
+      .hud {
+        padding: 10px 14px;
+        font-size: 16px;
+        min-width: 160px;
+        top: 10px;
+        right: 10px;
+      }
+      
+      .hud-title {
+        font-size: 18px;
+      }
+      
+      .level-info {
+        top: 10px;
+        left: 10px;
+        padding: 8px 14px;
+        font-size: 16px;
+      }
+      
+      .level-num {
+        font-size: 22px;
+      }
+      
+      .title {
+        font-size: 18px;
+        letter-spacing: 3px;
+      }
+      
+      .controls-hint {
+        font-size: 13px;
+        padding: 8px 16px;
+      }
+      
+      .message {
+        font-size: 22px;
+        padding: 14px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <canvas class="scanlines" id="scanlines-canvas"></canvas>
+    
+    <div class="title">◢ SONAR DUNGEON ◣</div>
+    
+    <div class="level-info">
+      <div class="level-label">DEPTH</div>
+      <div class="level-num"><span id="level-display">1</span> / 6</div>
+    </div>
+    
+    <div class="hud">
+      <div class="hud-title">◈ SONAR STATS ◈</div>
+      <div class="hud-row">
+        <span class="hud-label">回声强度</span>
+        <span class="hud-value" id="echo-intensity">0.00</span>
+      </div>
+      <div class="hud-row">
+        <span class="hud-label">地形密度</span>
+        <span class="hud-value" id="terrain-density">0.00</span>
+      </div>
+      <div class="hud-row">
+        <span class="hud-label">金币</span>
+        <span class="hud-value gold" id="coins-count">0</span>
+      </div>
+      <div class="hud-row">
+        <span class="hud-label">钥匙</span>
+        <span class="hud-value silver" id="keys-count">0</span>
+      </div>
+    </div>
+    
+    <div class="controls-hint">
+      <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 移动 &nbsp;·&nbsp;
+      <span class="key">SPACE</span> 发射声波
+    </div>
+    
+    <div class="message" id="game-message"></div>
+  </div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
