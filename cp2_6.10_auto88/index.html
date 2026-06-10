@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>渐变网格纹理混色器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #1E1E1E;
+      color: #E0E0E0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app-container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .export-btn {
+      background: #3A3A3A;
+      color: #E0E0E0;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .export-btn:hover {
+      background: #4A4A4A;
+    }
+
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 24px;
+    }
+
+    .canvas-section {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .canvas-wrapper {
+      background: #2D2D2D;
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #previewCanvas {
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.08);
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .palette-section {
+      background: #2A2A2A;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .palette-title {
+      font-size: 14px;
+      color: #A0A0A0;
+      margin-bottom: 16px;
+    }
+
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(40px, 40px));
+      gap: 12px;
+      justify-content: start;
+    }
+
+    .color-swatch {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.15s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.1);
+    }
+
+    .copy-toast {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.85);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .copy-toast.show {
+      opacity: 1;
+    }
+
+    .layers-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .layers-title {
+      font-size: 14px;
+      color: #A0A0A0;
+      margin-bottom: 4px;
+    }
+
+    .layers-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .layer-card {
+      background: #2D2D2D;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  opacity 0.3s ease,
+                  box-shadow 0.2s ease;
+      cursor: grab;
+    }
+
+    .layer-card:active {
+      cursor: grabbing;
+    }
+
+    .layer-card.dragging {
+      opacity: 0.5;
+      transform: scale(0.98);
+    }
+
+    .layer-card.drag-over {
+      box-shadow: 0 0 0 2px #5A9AFF;
+    }
+
+    .drag-handle {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 20px;
+      flex-shrink: 0;
+      cursor: grab;
+      user-select: none;
+    }
+
+    .drag-handle span {
+      width: 4px;
+      height: 4px;
+      background: #6A6A6A;
+      border-radius: 50%;
+      margin: 2px 0;
+    }
+
+    .layer-controls {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .control-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #A0A0A0;
+    }
+
+    .control-row-inline {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    select,
+    input[type="range"],
+    input[type="color"] {
+      background: #3A3A3A;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13px;
+      transition: background-color 0.2s ease;
+    }
+
+    select:hover,
+    input[type="range"]:hover,
+    input[type="color"]:hover {
+      background: #4A4A4A;
+    }
+
+    input[type="color"] {
+      width: 36px;
+      height: 32px;
+      padding: 2px;
+      cursor: pointer;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      padding: 0;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: #3A3A3A;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #5A9AFF;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #7AB0FF;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #5A9AFF;
+      cursor: pointer;
+      border: none;
+    }
+
+    .range-value {
+      font-size: 12px;
+      color: #A0A0A0;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .colors-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .color-group {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .color-group label {
+      font-size: 12px;
+      color: #A0A0A0;
+    }
+
+    .opacity-input {
+      width: 50px;
+      background: #3A3A3A;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 6px;
+      padding: 6px;
+      font-size: 12px;
+      text-align: center;
+      transition: background-color 0.2s ease;
+    }
+
+    .opacity-input:hover,
+    .opacity-input:focus {
+      background: #4A4A4A;
+      outline: none;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .modal-content {
+      background: #2D2D2D;
+      border-radius: 16px;
+      padding: 24px;
+      width: 90%;
+      max-width: 560px;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(1);
+      transition: transform 0.2s ease;
+    }
+
+    .modal-overlay.hidden .modal-content {
+      transform: scale(0.9);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h2 {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #A0A0A0;
+      font-size: 24px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background-color 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: #3A3A3A;
+    }
+
+    .export-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .export-tab {
+      flex: 1;
+      background: #3A3A3A;
+      color: #A0A0A0;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .export-tab:hover {
+      background: #4A4A4A;
+    }
+
+    .export-tab.active {
+      background: #5A9AFF;
+      color: #fff;
+    }
+
+    .export-preview {
+      background: #1E1E1E;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 150px;
+      margin-bottom: 16px;
+    }
+
+    .code-block {
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #E0E0E0;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .copy-btn {
+      width: 100%;
+      background: #5A9AFF;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: #4A8AEF;
+    }
+
+    @media (max-width: 768px) {
+      .main-content {
+        grid-template-columns: 1fr;
+      }
+
+      #previewCanvas {
+        width: 100%;
+        height: auto;
+      }
+
+      .header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="header">
+      <h1>渐变网格纹理混色器</h1>
+      <button class="export-btn" id="exportBtn">导出</button>
+    </div>
+
+    <div class="main-content">
+      <div class="canvas-section">
+        <div class="canvas-wrapper">
+          <canvas id="previewCanvas" width="400" height="300"></canvas>
+        </div>
+
+        <div class="palette-section">
+          <div class="palette-title">调色板</div>
+          <div class="palette-grid" id="paletteGrid"></div>
+        </div>
+      </div>
+
+      <div class="layers-section">
+        <div class="layers-title">图层</div>
+        <div class="layers-list" id="layersList"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="copy-toast" id="copyToast">已复制</div>
+
+  <div class="modal-overlay hidden" id="exportModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>导出</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="export-tabs">
+        <button class="export-tab active" data-tab="png">PNG 图片</button>
+        <button class="export-tab" data-tab="css">CSS 代码</button>
+        <button class="export-tab" data-tab="svg">SVG 代码</button>
+      </div>
+      <div class="export-preview" id="exportPreview"></div>
+      <button class="copy-btn" id="copyExportBtn">下载 / 复制</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
