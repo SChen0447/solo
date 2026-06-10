@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>积木幻境</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas"></canvas>
+
+    <div id="toolbar" class="toolbar-left">
+      <div class="toolbar-section">
+        <div class="section-title">积木形状</div>
+        <div class="shape-picker" id="shape-picker">
+          <div class="shape-btn active" data-shape="cube">
+            <div class="shape-preview cube-preview"></div>
+            <span>立方体</span>
+          </div>
+          <div class="shape-btn" data-shape="cylinder">
+            <div class="shape-preview cylinder-preview"></div>
+            <span>柱体</span>
+          </div>
+          <div class="shape-btn" data-shape="sphere">
+            <div class="shape-preview sphere-preview"></div>
+            <span>球体</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar-section">
+        <div class="section-title">颜色</div>
+        <div class="color-picker" id="color-picker">
+          <div class="color-btn active" data-color="#e74c3c" style="background:#e74c3c"></div>
+          <div class="color-btn" data-color="#f39c12" style="background:#f39c12"></div>
+          <div class="color-btn" data-color="#f1c40f" style="background:#f1c40f"></div>
+          <div class="color-btn" data-color="#2ecc71" style="background:#2ecc71"></div>
+          <div class="color-btn" data-color="#3498db" style="background:#3498db"></div>
+          <div class="color-btn" data-color="#8e44ad" style="background:#8e44ad"></div>
+          <div class="color-btn" data-color="#9b59b6" style="background:#9b59b6"></div>
+          <div class="color-btn" data-color="#ff6b81" style="background:#ff6b81"></div>
+        </div>
+      </div>
+
+      <div class="toolbar-section transform-section" id="transform-section" style="display:none">
+        <div class="section-title">旋转角度</div>
+        <div class="slider-group">
+          <label>X: <span id="rot-x-val">0</span>°</label>
+          <input type="range" id="rot-x" min="0" max="360" value="0" />
+        </div>
+        <div class="slider-group">
+          <label>Y: <span id="rot-y-val">0</span>°</label>
+          <input type="range" id="rot-y" min="0" max="360" value="0" />
+        </div>
+        <div class="slider-group">
+          <label>Z: <span id="rot-z-val">0</span>°</label>
+          <input type="range" id="rot-z" min="0" max="360" value="0" />
+        </div>
+        <div class="section-title">缩放</div>
+        <div class="slider-group">
+          <label>大小: <span id="scale-val">1.0</span>x</label>
+          <input type="range" id="scale-slider" min="0.5" max="2" step="0.05" value="1" />
+        </div>
+      </div>
+
+      <div class="toolbar-section">
+        <button id="mode-toggle" class="mode-btn">
+          <span class="mode-icon">🌙</span>
+          <span class="mode-text">夜景模式</span>
+        </button>
+        <button id="delete-btn" class="delete-btn" style="display:none">
+          <span>删除选中</span>
+        </button>
+        <button id="clear-btn" class="clear-btn">
+          <span>清空场景</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="info-panel" class="info-panel" style="display:none">
+      <div class="info-row">位置: (<span id="info-pos-x">0</span>, <span id="info-pos-y">0</span>, <span id="info-pos-z">0</span>)</div>
+      <div class="info-row">旋转: (<span id="info-rot-x">0</span>, <span id="info-rot-y">0</span>, <span id="info-rot-z">0</span>)</div>
+      <div class="info-row">缩放: <span id="info-scale">1.0</span>x</div>
+    </div>
+
+    <div id="mobile-panel" class="mobile-panel" style="display:none">
+      <div class="mobile-panel-header">
+        <span>调整积木</span>
+        <button id="mobile-panel-close">×</button>
+      </div>
+      <div class="slider-group">
+        <label>X旋转: <span id="m-rot-x-val">0</span>°</label>
+        <input type="range" id="m-rot-x" min="0" max="360" value="0" />
+      </div>
+      <div class="slider-group">
+        <label>Y旋转: <span id="m-rot-y-val">0</span>°</label>
+        <input type="range" id="m-rot-y" min="0" max="360" value="0" />
+      </div>
+      <div class="slider-group">
+        <label>Z旋转: <span id="m-rot-z-val">0</span>°</label>
+        <input type="range" id="m-rot-z" min="0" max="360" value="0" />
+      </div>
+      <div class="slider-group">
+        <label>缩放: <span id="m-scale-val">1.0</span>x</label>
+        <input type="range" id="m-scale" min="0.5" max="2" step="0.05" value="1" />
+      </div>
+      <button id="m-delete-btn" class="delete-btn full-width">删除此积木</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
