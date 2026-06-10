@@ -1,0 +1,19 @@
+{
+  "name": "sandbox-slingshot-battle",
+  "version": "1.0.0",
+  "description": "2D sandbox slingshot battle game with physics engine",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "matter-js": "^0.19.0"
+  },
+  "devDependencies": {
+    "@types/matter-js": "^0.19.6",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
