@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音频频谱可视化播放器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0a1a;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      padding: 20px;
+      transition: border-color 0.3s ease;
+    }
+
+    body.drag-over {
+      border: 3px solid #00bfff;
+      animation: flash-border 0.3s ease-in-out 2;
+    }
+
+    @keyframes flash-border {
+      0%, 100% { border-color: #00bfff; }
+      50% { border-color: transparent; }
+    }
+
+    .app-container {
+      max-width: 1200px;
+      min-width: 600px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 24px;
+      font-size: 28px;
+      background: linear-gradient(90deg, #00bfff, #1e90ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .upload-area {
+      border: 2px dashed #3a3a5a;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 24px;
+      background-color: #1a1a2e;
+      transition: all 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: #00bfff;
+      background-color: #1f1f3a;
+    }
+
+    .upload-area.dragover {
+      border-color: #00bfff;
+      background-color: #1a2a3a;
+    }
+
+    .upload-area p {
+      font-size: 16px;
+      color: #a0a0c0;
+    }
+
+    .upload-area .hint {
+      font-size: 13px;
+      color: #707090;
+      margin-top: 8px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    .main-content {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .visualization-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .canvas-container {
+      border-radius: 8px;
+      padding: 12px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+    }
+
+    .canvas-container canvas {
+      display: block;
+      border-radius: 4px;
+      background-color: #0a0a1a;
+    }
+
+    #waveformCanvas {
+      width: 100%;
+      max-width: 500px;
+      height: 150px;
+    }
+
+    #spectrumCanvas {
+      width: 100%;
+      height: 250px;
+    }
+
+    .controls-panel {
+      width: 280px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .controls-panel h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+      color: #00bfff;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #c0c0e0;
+    }
+
+    .control-group select,
+    .control-group input[type="range"] {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #3a3a5a;
+      background-color: #0a0a1a;
+      color: #e0e0e0;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .control-group select:focus {
+      border-color: #00bfff;
+    }
+
+    .animation-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .animation-options label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    .animation-options input[type="radio"] {
+      accent-color: #00bfff;
+    }
+
+    .playback-controls {
+      background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .playback-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .play-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #00bfff 0%, #1e90ff 100%);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .play-btn:hover {
+      background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%);
+      transform: scale(1.05);
+    }
+
+    .play-btn:active {
+      transform: scale(0.95);
+    }
+
+    .play-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .time-display {
+      font-size: 14px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      color: #a0a0c0;
+      white-space: nowrap;
+    }
+
+    .progress-container {
+      flex: 1;
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .progress-bar {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #3a3a5a;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .progress-bar::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00bfff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+    }
+
+    .progress-bar::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #00bfff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+    }
+
+    .volume-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .volume-container span {
+      font-size: 13px;
+      color: #a0a0c0;
+      min-width: 40px;
+    }
+
+    .volume-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 4px;
+      border-radius: 2px;
+      background: #3a3a5a;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00bfff;
+      cursor: pointer;
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #00bfff;
+      cursor: pointer;
+      border: none;
+    }
+
+    .stats-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(26, 26, 46, 0.9);
+      border: 1px solid #3a3a5a;
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 14px;
+      z-index: 100;
+    }
+
+    .stats-panel .fps {
+      font-weight: bold;
+    }
+
+    .stats-panel .fps.good { color: #00ff00; }
+    .stats-panel .fps.warn { color: #ffaa00; }
+    .stats-panel .fps.bad { color: #ff0000; }
+
+    .stats-panel .sample-rate {
+      color: #a0a0c0;
+      margin-top: 4px;
+    }
+
+    .error-message {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #ff4444;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      z-index: 1000;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .app-container {
+        min-width: auto;
+      }
+
+      .main-content {
+        flex-direction: column;
+      }
+
+      .controls-panel {
+        width: 100%;
+      }
+
+      button, select, label, input {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <h1>🎵 音频频谱可视化播放器</h1>
+
+    <div class="upload-area" id="uploadArea">
+      <p>点击或拖拽音频文件到此</p>
+      <p class="hint">支持 .mp3 和 .wav 格式，文件大小不超过 10MB</p>
+      <input type="file" id="fileInput" accept=".mp3,.wav,audio/mpeg,audio/wav">
+    </div>
+
+    <div class="playback-controls">
+      <div class="playback-row">
+        <button class="play-btn" id="playBtn" disabled>▶</button>
+        <div class="time-display">
+          <span id="currentTime">00:00</span> / <span id="totalTime">00:00</span>
+        </div>
+        <div class="progress-container">
+          <input type="range" class="progress-bar" id="progressBar" min="0" max="100" value="0" disabled>
+        </div>
+      </div>
+      <div class="volume-container">
+        <span>🔊 音量</span>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
+        <span id="volumeValue">80%</span>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="visualization-area">
+        <div class="canvas-container">
+          <canvas id="waveformCanvas" width="500" height="150"></canvas>
+        </div>
+        <div class="canvas-container">
+          <canvas id="spectrumCanvas" width="600" height="250"></canvas>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <h3>🎨 主题与动画</h3>
+
+        <div class="control-group">
+          <label for="themeSelect">颜色主题</label>
+          <select id="themeSelect">
+            <option value="neon">霓虹幻彩</option>
+            <option value="ocean">海洋迷雾</option>
+            <option value="fire">火焰熔岩</option>
+            <option value="aurora">极光星云</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>动画模式</label>
+          <div class="animation-options">
+            <label><input type="radio" name="animationMode" value="bars" checked> 经典柱状</label>
+            <label><input type="radio" name="animationMode" value="pulse"> 脉冲扩散</label>
+            <label><input type="radio" name="animationMode" value="glow"> 光晕效果</label>
+            <label><input type="radio" name="animationMode" value="particles"> 粒子雨</label>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <label for="opacitySlider">不透明度 (<span id="opacityValue">1.00</span>)</label>
+          <input type="range" id="opacitySlider" min="0.2" max="1.0" step="0.05" value="1.0">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-panel">
+    <div class="fps good" id="fpsDisplay">FPS: 60</div>
+    <div class="sample-rate" id="sampleRateDisplay">采样率: -- Hz</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
