@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:02:36.195Z",
+  "task_name": "auto13",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位独立开发者正在搭建个人作品集网站，希望通过一个交互式的项目时间轴来展示自己的开发历程与技术成长，让浏览者能直观地查看每个项目的核心数据和背后的故事。\n\n构建一个3D时间轴作品集展示应用，使用TypeScript、React 18、Three.js和Framer Motion在浏览器中渲染。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react, react-dom, three, @react-three/fiber, @react-three/drei, framer-motion, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（配置React插件，设置ESM模式）\n - tsconfig.json（严格模式，jsx: react-jsx）\n - index.html（挂载React根节点）\n - src/App.tsx（根组件，管理时间轴模式切换和全局状态，数据流向：从外部json导入项目数据→分发至Timeline和DetailPanel）\n - src/components/Timeline.tsx（渲染3D时间轴，项目卡片沿螺旋线排列，鼠标拖拽旋转场景；接收项目数据，点击时触发选中事件向上传递至App）\n - src/components/DetailPanel.tsx（选中项目后，右侧弹出详细面板展示项目名称、描述、技术栈标签和效果截图缩略图；数据接收来自App传递的当前项目对象）\n\n功能需求：\n1) 加载包含至少8个虚构项目的JSON数据，每个项目包含标题、描述、日期、技术栈数组和一张占位图片URL（可使用picsum.photos），数据在页面加载时通过一个自定义hook（useProjects）异步获取并缓存。\n2) 3D时间轴默认沿Z轴螺旋上升排列项目卡片，卡片正面显示项目标题和图标，背面显示简短摘要；鼠标拖拽旋转摄像机视角，滚轮缩放，镜头自动跟随所选卡片。\n3) 点击任意卡片，该卡片平滑前移至屏幕中央并放大（动画持续0.8秒，easeOutCubic），同时右侧DetailPanel从右侧滑入显示项目详细信息；点击空白区域或关闭按钮，卡片退回原位，面板滑出。\n4) 时间轴提供两种模式：3D螺旋模式和2D平面网格模式（点击右上角切换按钮切换），切换时卡片位置通过Framer Motion的layout动画平滑过渡，持续0.6秒。\n5) 每个卡片支持“点赞”交互，点击爱心图标后图标填充红色并伴随弹跳动画（使用弹簧物理模拟），点赞计数实时更新并存储在localStorage中，页面刷新后保留。\n\n界面要求：整体采用深色渐变背景（从深蓝#0A0A2E过渡到深紫#1A1A3A），卡片主体为磨砂玻璃效果（背景模糊+半透明边框），标题文字使用霓虹蓝#00D4FF，技术栈标签用圆角药丸形状（背景色#2A2A5A，文字#CCCCFF）。交互反馈包括：卡片悬停时发光边框（0.5px rgba(0,212,255,0.6)）、点击涟漪效果、面板滑入时0.3秒淡入。页面响应式，当宽度<768px时自动切换为垂直滚动列表（2D模式），卡片宽度自适应。\n\n性能约束：3D场景中渲染8张卡片时保持至少45FPS，卡片纹理使用压缩的webp格式（通过canvas生成占位图），动画帧率上限60fps。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:160de8757dea8c9ad8516811afd550f7_6a28469462479e6699699957.6a28472062479e66996999b9.6a28471fc23666041ef46ddb:Trae CN.T(2026/6/10 01:02:24)",
+    "user_id": "3986207660317399",
+    "trace_id": "160de8757dea8c9ad8516811afd550f7",
+    "session_id": "6a28469462479e6699699957",
+    "task_id": "6a28472062479e66996999b9",
+    "message_id": "6a28471fc23666041ef46ddb",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:02:24",
+    "format": "full"
+  },
+  "trace": "null"
+}

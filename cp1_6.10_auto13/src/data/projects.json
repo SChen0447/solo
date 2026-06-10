@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "title": "电商平台重构",
+    "description": "使用Next.js和GraphQL重构大型电商平台，实现SSR优化，首屏加载时间从4.2秒降至1.1秒，日活用户提升35%。引入微前端架构，支持多团队并行开发。",
+    "summary": "Next.js + GraphQL 电商平台性能优化",
+    "date": "2024-01",
+    "techStack": ["Next.js", "GraphQL", "TypeScript", "TailwindCSS", "PostgreSQL"],
+    "imageUrl": "https://picsum.photos/seed/ecommerce/800/500",
+    "icon": "🛒"
+  },
+  {
+    "id": 2,
+    "title": "AI智能客服系统",
+    "description": "基于大语言模型构建的智能客服系统，支持多轮对话、情感识别和意图分析。系统准确率达94%，自动处理80%的常见问题，人工客服效率提升3倍。",
+    "summary": "LLM驱动的智能对话系统",
+    "date": "2023-09",
+    "techStack": ["Python", "LangChain", "FastAPI", "React", "Redis"],
+    "imageUrl": "https://picsum.photos/seed/aibot/800/500",
+    "icon": "🤖"
+  },
+  {
+    "id": 3,
+    "title": "数据可视化大屏",
+    "description": "为金融机构开发的实时数据可视化大屏，支持百万级数据点的流畅渲染，采用WebGL加速和数据分块加载技术。",
+    "summary": "WebGL 实时金融数据可视化",
+    "date": "2023-05",
+    "techStack": ["React", "D3.js", "Three.js", "WebSocket", "Node.js"],
+    "imageUrl": "https://picsum.photos/seed/dataviz/800/500",
+    "icon": "📊"
+  },
+  {
+    "id": 4,
+    "title": "移动端社交应用",
+    "description": "跨平台社交应用，日活用户10万+，实现实时消息、短视频、直播等功能。使用React Native构建，90%代码共享iOS和Android。",
+    "summary": "React Native 跨平台社交APP",
+    "date": "2023-01",
+    "techStack": ["React Native", "Firebase", "Redux", "WebRTC", "FFmpeg"],
+    "imageUrl": "https://picsum.photos/seed/social/800/500",
+    "icon": "📱"
+  },
+  {
+    "id": 5,
+    "title": "DevOps自动化平台",
+    "description": "企业级CI/CD自动化平台，集成K8s容器编排、蓝绿发布、自动化测试和监控告警。部署效率提升80%，故障恢复时间从小时级降至分钟级。",
+    "summary": "K8s + Jenkins 持续交付平台",
+    "date": "2022-08",
+    "techStack": ["Kubernetes", "Jenkins", "Docker", "Go", "Prometheus"],
+    "imageUrl": "https://picsum.photos/seed/devops/800/500",
+    "icon": "⚙️"
+  },
+  {
+    "id": 6,
+    "title": "在线教育平台",
+    "description": "支持百万学生同时在线的教育平台，包含直播课堂、录播回放、作业系统、学习数据分析等模块。",
+    "summary": "高性能在线教育SaaS平台",
+    "date": "2022-03",
+    "techStack": ["Vue.js", "Node.js", "MongoDB", "WebRTC", "AWS"],
+    "imageUrl": "https://picsum.photos/seed/education/800/500",
+    "icon": "🎓"
+  },
+  {
+    "id": 7,
+    "title": "区块链溯源系统",
+    "description": "基于以太坊的供应链溯源系统，确保产品从生产到消费者的全程透明可追溯。智能合约实现自动化验证，数据不可篡改。",
+    "summary": "以太坊智能合约供应链溯源",
+    "date": "2021-11",
+    "techStack": ["Solidity", "Web3.js", "React", "IPFS", "Node.js"],
+    "imageUrl": "https://picsum.photos/seed/blockchain/800/500",
+    "icon": "⛓️"
+  },
+  {
+    "id": 8,
+    "title": "个人博客引擎",
+    "description": "开源静态博客引擎，支持Markdown写作、主题定制、SEO优化。GitHub 2k+ Stars，被全球数千名开发者使用。",
+    "summary": "高性能静态博客生成器",
+    "date": "2021-06",
+    "techStack": ["TypeScript", "Vite", "React", "MDX", "Vercel"],
+    "imageUrl": "https://picsum.photos/seed/blog/800/500",
+    "icon": "✍️"
+  }
+]
