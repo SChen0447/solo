@@ -1,0 +1,59 @@
+{
+  "gradients": [
+    { "id": "g1", "name": "珊瑚日落", "colors": ["#ff6b6b", "#feca57"] },
+    { "id": "g2", "name": "薄荷清新", "colors": ["#1dd1a1", "#48dbfb"] },
+    { "id": "g3", "name": "薰衣草梦", "colors": ["#a55eea", "#5f27cd"] },
+    { "id": "g4", "name": "暖阳金辉", "colors": ["#feca57", "#ff9ff3"] },
+    { "id": "g5", "name": "深海极光", "colors": ["#0abde3", "#10ac84"] },
+    { "id": "g6", "name": "玫瑰晚霞", "colors": ["#ee5a6f", "#a55eea"] },
+    { "id": "g7", "name": "森林清晨", "colors": ["#00d2d3", "#1dd1a1"] },
+    { "id": "g8", "name": "蜜桃甜茶", "colors": ["#ff9f43", "#ff6b6b"] },
+    { "id": "g9", "name": "紫罗暮色", "colors": ["#5f27cd", "#48dbfb"] }
+  ],
+  "patterns": [
+    { "id": "p1", "name": "菱形", "type": "diamond" },
+    { "id": "p2", "name": "六边形", "type": "hexagon" },
+    { "id": "p3", "name": "圆形", "type": "circle" },
+    { "id": "p4", "name": "三角", "type": "triangle" },
+    { "id": "p5", "name": "条纹", "type": "stripe" },
+    { "id": "p6", "name": "点阵", "type": "dots" },
+    { "id": "p7", "name": "波浪", "type": "wave" },
+    { "id": "p8", "name": "十字", "type": "cross" },
+    { "id": "p9", "name": "星形", "type": "star" }
+  ],
+  "keywords": {
+    "温暖": ["g1", "g4", "g8"],
+    "清新": ["g2", "g5", "g7"],
+    "梦幻": ["g3", "g6", "g9"],
+    "热情": ["g1", "g6", "g8"],
+    "宁静": ["g2", "g5", "g7"],
+    "浪漫": ["g4", "g6", "g9"],
+    "活力": ["g1", "g4", "g5"],
+    "优雅": ["g3", "g6", "g9"]
+  },
+  "texts": [
+    "「每一个碎片都是故事的开端」",
+    "「灵感在此刻交织成网」",
+    "「让色彩诉说心中的千言万语」",
+    "「捕捉那些稍纵即逝的美好」",
+    "「在几何之间寻找诗意的秩序」",
+    "「光影流动，情绪由此蔓延」",
+    "「创意的种子在混沌中发芽」",
+    "「将想象编织成可见的形状」",
+    "「让颜色成为情绪的语言」",
+    "「在碎片中发现完整的自己」",
+    "「用纹理记录时间的温度」",
+    "「每个形状都藏着一个秘密」"
+  ],
+  "presetElements": [
+    { "id": "e1", "gradientId": "g1", "patternId": "p1" },
+    { "id": "e2", "gradientId": "g2", "patternId": "p2" },
+    { "id": "e3", "gradientId": "g3", "patternId": "p3" },
+    { "id": "e4", "gradientId": "g4", "patternId": "p4" },
+    { "id": "e5", "gradientId": "g5", "patternId": "p5" },
+    { "id": "e6", "gradientId": "g6", "patternId": "p6" },
+    { "id": "e7", "gradientId": "g7", "patternId": "p7" },
+    { "id": "e8", "gradientId": "g8", "patternId": "p8" },
+    { "id": "e9", "gradientId": "g9", "patternId": "p9" }
+  ]
+}
