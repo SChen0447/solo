@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光影织梦</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(ellipse at center, #302b63 0%, #0f0c29 50%, #24243e 100%);
+      transition: background 1.5s ease-in-out;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #canvas-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      border: 8px solid;
+      border-image: linear-gradient(135deg, #8e44ad, #3498db) 1;
+      z-index: 10;
+    }
+
+    #main-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #main-canvas.drawing {
+      cursor: crosshair;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 50%;
+      left: 24px;
+      transform: translateY(-50%);
+      width: 280px;
+      background: rgba(15, 12, 41, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      padding: 24px;
+      z-index: 20;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-title {
+      color: #fff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      background: linear-gradient(90deg, #8e44ad, #3498db);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .control-value {
+      color: #60efff;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(96, 239, 255, 0.6);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 18px rgba(96, 239, 255, 0.9);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      transform: scale(0.95);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(96, 239, 255, 0.6);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    select {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: transform 0.1s ease, border-color 0.2s ease;
+    }
+
+    select:hover {
+      border-color: rgba(96, 239, 255, 0.5);
+    }
+
+    select:focus {
+      border-color: #60efff;
+    }
+
+    select option {
+      background: #0f0c29;
+      color: #fff;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #8e44ad, #3498db);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .btn:hover {
+      box-shadow: 0 0 20px rgba(96, 239, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+    }
+
+    .drawer-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(15, 12, 41, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 15;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.1s ease;
+    }
+
+    .drawer-toggle:active {
+      transform: translateX(-50%) scale(0.95);
+    }
+
+    .drawer-toggle::before {
+      content: '';
+      width: 24px;
+      height: 3px;
+      background: linear-gradient(90deg, #8e44ad, #3498db);
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: translateY(100%);
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        transition: transform 0.3s ease-out;
+      }
+
+      .control-panel.open {
+        transform: translateY(0);
+      }
+
+      .drawer-toggle {
+        display: flex;
+      }
+
+      #canvas-container::before {
+        border-width: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="main-canvas"></canvas>
+  </div>
+
+  <div class="control-panel" id="control-panel">
+    <h2 class="panel-title">光影织梦</h2>
+
+    <div class="control-group">
+      <label class="control-label">
+        线密度
+        <span class="control-value" id="density-value">0.6</span>
+      </label>
+      <input type="range" id="density" min="0.2" max="1.0" step="0.1" value="0.6" />
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        脉动速度
+        <span class="control-value" id="pulse-value">1.5</span>
+      </label>
+      <input type="range" id="pulse" min="0.5" max="3.0" step="0.1" value="1.5" />
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        光晕强度
+        <span class="control-value" id="glow-value">0.7</span>
+      </label>
+      <input type="range" id="glow" min="0" max="1.0" step="0.05" value="0.7" />
+    </div>
+
+    <div class="control-group">
+      <label class="control-label">
+        颜色主题
+      </label>
+      <select id="theme">
+        <option value="aurora">极光幻彩</option>
+        <option value="lava">熔岩炙热</option>
+        <option value="ocean">深海幽蓝</option>
+        <option value="nebula">星云紫晶</option>
+      </select>
+    </div>
+
+    <button class="btn" id="clear-btn">清空画布</button>
+  </div>
+
+  <button class="drawer-toggle" id="drawer-toggle" aria-label="切换控制面板"></button>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
