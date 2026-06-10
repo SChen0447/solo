@@ -1,0 +1,19 @@
+{
+  "name": "level-workshop",
+  "version": "1.0.0",
+  "description": "2D平台游戏关卡编辑器与测试运行器",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/lodash": "^4.14.202"
+  }
+}

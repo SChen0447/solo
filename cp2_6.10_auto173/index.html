@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>关卡工坊 - Level Workshop</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #1a1a2e;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #e0e0e0;
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .too-small {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #1a1a2e;
+      color: #ff6b6b;
+      font-size: 24px;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      text-align: center;
+      padding: 20px;
+    }
+
+    @media (max-width: 799px) {
+      #app { display: none; }
+      .too-small { display: flex; }
+    }
+
+    .toolbar {
+      height: 56px;
+      background: linear-gradient(90deg, #16213e, #0f3460);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      border-bottom: 1px solid #2a3f5f;
+      flex-shrink: 0;
+    }
+
+    .toolbar-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffd700;
+      margin-right: 20px;
+      letter-spacing: 1px;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
+    }
+
+    .btn-save { background: #2196f3; }
+    .btn-load { background: #2196f3; }
+    .btn-test {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      padding: 14px 28px;
+      background: #4caf50;
+      border-radius: 8px;
+      font-size: 16px;
+      z-index: 100;
+    }
+
+    .btn-back {
+      background: #ff9800;
+      margin-left: auto;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .entity-panel {
+      width: 180px;
+      background: #16213e;
+      border-radius: 8px;
+      margin: 12px;
+      padding: 16px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #88aaff;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .entity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #0f3460;
+      transition: background 0.2s, box-shadow 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .entity-item:hover {
+      background: #1a4a7a;
+    }
+
+    .entity-item.selected {
+      border-color: #ffffff;
+      box-shadow: 0 0 8px rgba(255,255,255,0.4);
+    }
+
+    .entity-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+    }
+
+    .entity-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      position: relative;
+    }
+
+    #gameCanvas {
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    }
+
+    #gameCanvas.play-mode {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+    }
+
+    .status-bar {
+      height: 36px;
+      background: #16213e;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      border-top: 1px solid #2a3f5f;
+      flex-shrink: 0;
+      font-size: 13px;
+    }
+
+    .status-warning {
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    .status-ok {
+      color: #4caf50;
+    }
+
+    .hud-lives {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-size: 20px;
+      font-weight: 700;
+      color: #ff4444;
+      z-index: 100;
+      display: none;
+    }
+
+    .hud-lives.visible {
+      display: block;
+    }
+
+    .victory-modal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.8);
+      background: linear-gradient(135deg, #16213e, #0f3460);
+      padding: 40px 60px;
+      border-radius: 16px;
+      border: 2px solid #ffd700;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      z-index: 200;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.3);
+    }
+
+    .victory-modal.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .victory-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffd700;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+
+    .victory-text {
+      font-size: 16px;
+      color: #a0c4ff;
+      margin-bottom: 24px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .vignette {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%);
+      z-index: 90;
+      display: none;
+    }
+
+    .vignette.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="toolbar">
+      <span class="toolbar-title">关卡工坊 ⚙</span>
+      <button class="btn btn-save" id="btnSave">保存</button>
+      <button class="btn btn-load" id="btnLoad">加载</button>
+      <button class="btn btn-back hidden" id="btnBack">返回编辑</button>
+    </div>
+
+    <div class="main-content">
+      <div class="entity-panel" id="entityPanel">
+        <div class="panel-title">元件库</div>
+        <div class="entity-item" data-type="platform">
+          <canvas class="entity-icon" width="28" height="28"></canvas>
+          <span class="entity-label">平台</span>
+        </div>
+        <div class="entity-item" data-type="enemy">
+          <canvas class="entity-icon" width="28" height="28"></canvas>
+          <span class="entity-label">敌人</span>
+        </div>
+        <div class="entity-item" data-type="spike">
+          <canvas class="entity-icon" width="28" height="28"></canvas>
+          <span class="entity-label">尖刺</span>
+        </div>
+        <div class="entity-item" data-type="goal">
+          <canvas class="entity-icon" width="28" height="28"></canvas>
+          <span class="entity-label">终点旗</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper" id="canvasWrapper">
+        <canvas id="gameCanvas"></canvas>
+        <div class="hud-lives" id="hudLives">❤❤❤</div>
+        <div class="vignette" id="vignette"></div>
+        <div class="victory-modal" id="victoryModal">
+          <div class="victory-title">🎉 胜利！</div>
+          <div class="victory-text">恭喜你到达终点！</div>
+          <button class="btn btn-save" id="btnVictoryBack">返回编辑</button>
+        </div>
+        <button class="btn btn-test" id="btnTest">开始测试</button>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <span id="statusText" class="status-ok">就绪</span>
+    </div>
+  </div>
+
+  <div class="too-small">请使用更大屏幕（最小宽度 800px）</div>
+
+  <input type="file" id="fileInput" accept=".json" style="display: none;" />
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
