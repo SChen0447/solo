@@ -1,0 +1,25 @@
+{
+  "name": "bookstore-manager",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "react": "18",
+    "react-dom": "18",
+    "react-router-dom": "6",
+    "uuid": "9",
+    "lodash": "4"
+  },
+  "devDependencies": {
+    "@types/react": "18",
+    "@types/react-dom": "18",
+    "@types/uuid": "9",
+    "@types/lodash": "4",
+    "@vitejs/plugin-react": "4",
+    "typescript": "5",
+    "vite": "5"
+  }
+}
