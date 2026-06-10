@@ -1,0 +1,21 @@
+{
+  "name": "asteroid-belt-visualizer",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "three": "^0.160.0",
+    "tweakpane": "^4.0.3"
+  }
+}
