@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>地牢寻宝</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: 'Press Start 2P', monospace;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #game-canvas {
+      display: block;
+      background: #1a1a2e;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    #title {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffffff;
+      font-size: 24px;
+      letter-spacing: 4px;
+      text-shadow: 0 0 8px #ff8c00, 0 0 16px rgba(255, 140, 0, 0.5);
+      z-index: 10;
+      user-select: none;
+    }
+    #status-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(42, 42, 74, 0.9);
+      border-radius: 8px;
+      padding: 16px 20px;
+      color: #ffffff;
+      font-size: 10px;
+      line-height: 1.8;
+      z-index: 10;
+      min-width: 180px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    #status-panel .row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    #status-panel .row:last-child {
+      margin-bottom: 0;
+    }
+    #status-panel .label {
+      color: #aaaaaa;
+      margin-right: 8px;
+      min-width: 60px;
+    }
+    #hearts {
+      display: inline-flex;
+      gap: 4px;
+    }
+    .heart {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+    }
+    .heart.full {
+      background: #ff4444;
+      clip-path: polygon(
+        50% 15%, 100% 0%, 100% 50%, 50% 100%,
+        0% 50%, 0% 0%
+      );
+      box-shadow: 0 0 4px rgba(255, 68, 68, 0.6);
+    }
+    .heart.empty {
+      background: #3a3a5a;
+      clip-path: polygon(
+        50% 15%, 100% 0%, 100% 50%, 50% 100%,
+        0% 50%, 0% 0%
+      );
+    }
+    .coin-icon {
+      width: 14px;
+      height: 14px;
+      background: #ffd700;
+      display: inline-block;
+      margin-right: 6px;
+      transform: rotate(45deg);
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+    }
+    #victory-screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(26, 26, 46, 0.95);
+      z-index: 100;
+      color: #ffffff;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    #victory-screen.show {
+      display: flex;
+      opacity: 1;
+    }
+    #victory-screen h1 {
+      font-size: 48px;
+      color: #ffd700;
+      text-shadow: 0 0 20px #ff8c00, 0 0 40px rgba(255, 140, 0, 0.5);
+      margin-bottom: 32px;
+      letter-spacing: 8px;
+    }
+    #victory-screen p {
+      font-size: 14px;
+      color: #aaaaaa;
+      letter-spacing: 2px;
+    }
+    #victory-screen .final-coins {
+      color: #ffd700;
+      font-size: 20px;
+      margin-top: 16px;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+    #instructions {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #6a6a8a;
+      font-size: 8px;
+      letter-spacing: 1px;
+      z-index: 10;
+      user-select: none;
+    }
+    #fade-overlay {
+      position: absolute;
+      inset: 0;
+      background: #1a1a2e;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.5s ease;
+    }
+    #fade-overlay.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="title">地牢寻宝</div>
+    <div id="status-panel">
+      <div class="row">
+        <span class="label">生命</span>
+        <div id="hearts"></div>
+      </div>
+      <div class="row">
+        <span class="label">金币</span>
+        <span><span class="coin-icon"></span><span id="gold-count">0</span> / 20</span>
+      </div>
+      <div class="row">
+        <span class="label">层数</span>
+        <span id="floor-count">1 / 3</span>
+      </div>
+    </div>
+    <div id="instructions">WASD 移动 · 收集金币 · 击败敌人 · 寻找楼梯</div>
+    <div id="fade-overlay"></div>
+    <div id="victory-screen">
+      <h1>通关！</h1>
+      <p>你成功征服了地牢</p>
+      <p class="final-coins">收集金币：<span id="final-coins">0</span></p>
+    </div>
+  </div>
+  <script type="module" src="/src/Game.ts"></script>
+</body>
+</html>
