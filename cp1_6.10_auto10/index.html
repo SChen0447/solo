@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 粒子音乐雕塑</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1a3e 100%);
+      color: #ffffff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #camera-video {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 160px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid rgba(138, 43, 226, 0.5);
+      transform: scaleX(-1);
+      z-index: 10;
+      display: none;
+    }
+
+    #camera-video.active {
+      display: block;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 24px;
+      background: rgba(20, 20, 60, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 1px solid rgba(138, 43, 226, 0.3);
+    }
+
+    .control-panel button,
+    .control-panel label {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(138, 43, 226, 0.3);
+      color: #ffffff;
+      font-size: 14px;
+      font-family: 'Segoe UI', sans-serif;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-panel button:hover,
+    .control-panel label:hover {
+      transform: scale(1.05);
+      background: rgba(138, 43, 226, 0.5);
+    }
+
+    .control-panel button:active,
+    .control-panel label:active {
+      animation: shake 0.2s ease-out;
+    }
+
+    .control-panel button.active {
+      background: rgba(0, 200, 255, 0.5);
+    }
+
+    .control-panel input[type="file"] {
+      display: none;
+    }
+
+    .mode-indicator {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      padding: 8px 20px;
+      background: rgba(20, 20, 60, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 20px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 200;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(20, 20, 60, 0.6);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    @keyframes shake {
+      0% { transform: translateX(0) scale(1.05); }
+      25% { transform: translateX(2px) scale(1.05); }
+      75% { transform: translateX(-2px) scale(1.05); }
+      100% { transform: translateX(0) scale(1.05); }
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+
+      .control-panel {
+        flex-direction: column;
+        top: 74px;
+        left: auto;
+        right: 20px;
+        transform: translateX(0);
+        width: auto;
+        display: none;
+      }
+
+      .control-panel.open {
+        display: flex;
+      }
+
+      #camera-video {
+        width: 100px;
+        height: 75px;
+        bottom: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <video id="camera-video" autoplay playsinline muted></video>
+
+  <button class="menu-toggle" id="menu-toggle">☰</button>
+
+  <div class="control-panel" id="control-panel">
+    <button id="camera-toggle">📷 摄像头</button>
+    <label for="audio-upload">🎵 上传音频</label>
+    <input type="file" id="audio-upload" accept="audio/*" />
+    <button id="mode-1" class="active">模式 1</button>
+    <button id="mode-2">模式 2</button>
+    <button id="mode-3">模式 3</button>
+    <button id="reset-btn">🔄 重置</button>
+  </div>
+
+  <div class="mode-indicator" id="mode-indicator">
+    按 R 重置 | 按 1-3 切换模式 | 拖拽旋转 | 滚轮缩放
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
