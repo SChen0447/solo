@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:31:03.199Z",
+  "task_name": "auto233",
+  "task_type": "0-1代码生成",
+  "business_domain": "游戏开发",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中模拟「音律坠球」的交互式节奏落球游戏，主要解决玩家如何通过听觉与视觉的同步反应来获得沉浸式打击体验——屏幕上会不断掉落代表不同音阶的彩色小球（红C、橙D、黄E、绿F、蓝G、靛A、紫B），每个球落在底部判定线上时会产生对应的音高（由Web Audio API生成正弦波音）和粒子爆散效果，玩家需要在球到达判定线前点击对应颜色的虚拟键盘键（屏幕底部一排）或按下键盘A到G键来击中它，击中得分并播放音效，漏接则扣生命值，每首曲目由预设的掉落序列构成，掉落的节奏和颜色顺序模拟一段简单的旋律，玩家在接球的同时像是在演奏一首曲子。\n\n它应当具备以下能力：\n1) 主场景为一个全屏Canvas画布，背景从#1a1a2e到#16213e的深色渐变，顶部显示得分（白色24px字体）、连击数（#feca57金色字体）和生命条（5颗心形图标，每漏接一颗变灰）。\n2) 小球从画布顶部随机横向位置生成，以恒定加速度下落（初始速度120px/s，加速度30px/s²），球体半径20px，每种颜色对应一个白键的圆形表示，球体带有半透明发光光晕（颜色同球体，alpha 0.3），下落时在尾部拖出3个渐小的残影（alpha递减）。\n3) 底部判定线为一条水平发光条（宽度2px，颜色#ffffff，alpha 0.6），判定线下方排列7个虚拟键位（宽60px高30px，圆角8px，颜色#2a2a4a，激活时颜色变亮至对应色调），键位下方标注字母A到G。当球距离判定线<15px时，按对应键可击中，球体在0.2秒内缩小的同时向四周爆射8个粒子（半径3px，速度150px/s，颜色随机在#ff6b6b #feca57 #48dbfb之间），并播放对应频率的正弦波音（C4 262Hz, D4 294Hz, E4 330Hz, F4 349Hz, G4 392Hz, A4 440Hz, B4 494Hz），音长0.3秒。\n4) 曲目模式：内置3首短曲目（每首约30秒），掉落序列由JSON配置文件加载，每首曲目包含一组[颜色,下落时间戳（毫秒）]对，曲目播放时顶部显示曲名和进度条（宽度全宽，高度4px，颜色#4fc3f7）。游戏结束后显示总分、连击峰值和评价等级（S/A/B/C）。\n5) 界面切换：初始为标题界面，显示「音律坠球」艺术字（渐变填充#feca57到#ff6b6b，字体大小48px），下方有「开始游戏」和「曲目选择」两个按钮（圆角12px，背景#2a2a4a，悬停#3a3a5a），曲目选择界面显示3首曲目的卡片（宽200px高120px，圆角16px，阴影偏移4px alpha0.3），点击后返回主界面并开始对应曲目。\n\n界面方面要求：整体采用深蓝与金紫的夜店风格配色，主背景#1a1a2e，辅助色#2a2a4a，强调色#feca57和#ff6b6b。游戏画布全屏自适应，500px以下宽度时虚拟键位缩小至宽45px高24px，而球体半径减小至15px。标题界面按钮具有悬停放大1.05倍+阴影加深的过渡动画（持续0.2秒 ease-out）。曲目选择卡片在鼠标悬停时轻微上浮8px并增加阴影。游戏中的得分数字在增加时有0.3秒的弹跳缩放动画（scale 1→1.2→1），连击数达到10/25/50时屏幕中央闪现金色大字提示（持续0.8秒 fade-out）。视觉风格统一——所有UI元素（按钮、卡片、键位）均采用圆角、半透明底色、发光边框和一致的阴影模糊（8px, #000 alpha0.5），确保看起来像一个精致的节奏游戏。\n\n性能要求：保证在60fps下平稳运行，单帧粒子数量不超过200个，Web Audio音效延迟小于50ms。\n\n实现采用TypeScript和Vite，按以下文件组织代码：\n - package.json（含依赖：typescript, vite；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启HMR）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，引入main.ts，viewport适配）\n - src/main.ts（游戏循环入口，负责初始化Canvas、加载曲目配置、启动requestAnimationFrame循环，每帧调用update和render，同时绑定键盘事件到GameEngine）\n - src/GameEngine.ts（核心游戏逻辑类，管理小球生成（存储为对象数组，每个含x, y, vx, vy, color, frequency）、命中检测（遍历小球，判断y坐标与判定线距离，处理键盘输入）、计分、生命值（初始5）、曲目播放进度；调用AudioPlayer播放音效，调用ParticleSystem生成爆散粒子；暴露update(deltaTime)和render(ctx)方法供main.ts调用；数据流向：main.ts提供deltaTime → GameEngine更新小球位置和状态 → 输出渲染指令给ctx）\n - src/AudioPlayer.ts（封装Web Audio API，提供playTone(frequency, duration)方法，内部创建OscillatorNode并连接到GainNode，设置衰减包络（0.3秒线性增益衰减），确保每次调用只产生一个短音不叠加，暴露dispose方法）\n - src/ParticleSystem.ts（粒子系统，存储粒子数组（每个含x, y, vx, vy, radius, color, life, maxLife），提供emit(x, y, count, color)方法生成爆散粒子（每个粒子初始速度随机方向，life=0.5秒），update(deltaTime)更新位置和生命衰减，render(ctx)绘制所有粒子为半透明圆点（life/maxLife影响alpha），超出生命或画布的粒子自动移除，保证总数不超过200）\n - src/songs.json（曲目配置文件，数组包含3个对象，每个有name, durationMs, notes（数组，每个含color和timeMs），示例数据需完整填充至少100个音符）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:124c4a7b7ec4a4172974916c514d7b4d_6a28a1fb3dad42da9ad53b5c.6a28a22b3dad42da9ad53b6c.6a28a22b015c851ff4168886:Trae CN.T(2026/6/10 07:30:51)",
+    "user_id": "3986207660317399",
+    "trace_id": "124c4a7b7ec4a4172974916c514d7b4d",
+    "session_id": "6a28a1fb3dad42da9ad53b5c",
+    "task_id": "6a28a22b3dad42da9ad53b6c",
+    "message_id": "6a28a22b015c851ff4168886",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:30:51",
+    "format": "full"
+  },
+  "trace": "null"
+}
