@@ -1,0 +1,19 @@
+{
+  "name": "magic-circle-simulator",
+  "version": "1.0.0",
+  "description": "2D魔法阵模拟演示应用 - 通过拖拽符文触发元素连锁反应",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  }
+}
