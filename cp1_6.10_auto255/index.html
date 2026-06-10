@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>笔锋诗痕 - 汉字笔顺动画生成器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'ZCOOL XiaoWei', 'KaiTi', 'STKaiti', serif;
+    }
+
+    #mainCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      z-index: 0;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 32px;
+      left: 32px;
+      padding: 20px 24px;
+      background: rgba(245, 240, 232, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .panel-title {
+      font-family: 'Ma Shan Zheng', 'KaiTi', serif;
+      font-size: 22px;
+      color: #2c2c2c;
+      letter-spacing: 2px;
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #charInput {
+      width: 240px;
+      height: 36px;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: 20px;
+      font-family: 'Ma Shan Zheng', 'KaiTi', serif;
+      color: #1a1a1a;
+      border-bottom: 1px solid #d0cdc7;
+      padding: 0 4px;
+      letter-spacing: 4px;
+      text-align: center;
+    }
+
+    #charInput::placeholder {
+      color: #a8a49e;
+      font-size: 16px;
+      letter-spacing: 1px;
+    }
+
+    #writeBtn {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3a3a3a, #1a1a1a);
+      color: #f5f0e8;
+      font-size: 15px;
+      font-family: 'ZCOOL XiaoWei', 'KaiTi', serif;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #writeBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    #writeBtn:active {
+      transform: translateY(0);
+    }
+
+    .palette {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      padding: 12px 20px;
+      background: rgba(245, 240, 232, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      z-index: 10;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    .swatch {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .swatch:hover {
+      transform: scale(1.08);
+    }
+
+    .swatch.selected {
+      border: 2px solid #4a4a4a;
+      box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.2);
+    }
+
+    .swatch-label {
+      position: absolute;
+      bottom: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: #6a6660;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .swatch:hover .swatch-label {
+      opacity: 1;
+    }
+
+    #exportBtn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #8b6f47, #5c4033);
+      color: #f5f0e8;
+      font-size: 14px;
+      font-family: 'ZCOOL XiaoWei', 'KaiTi', serif;
+      cursor: pointer;
+      letter-spacing: 2px;
+      z-index: 10;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px rgba(92, 64, 51, 0.3);
+    }
+
+    #exportBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(92, 64, 51, 0.45);
+    }
+
+    #exportBtn:active {
+      transform: translateY(0);
+    }
+
+    .hint {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Ma Shan Zheng', 'KaiTi', serif;
+      font-size: 48px;
+      color: rgba(26, 26, 26, 0.15);
+      letter-spacing: 8px;
+      z-index: 5;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .hint.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mainCanvas"></canvas>
+
+  <div class="control-panel">
+    <div class="panel-title">笔锋诗痕</div>
+    <div class="input-group">
+      <input type="text" id="charInput" placeholder="请输入汉字，如：永、龙、梦" maxlength="4" />
+      <button id="writeBtn">开始书写</button>
+    </div>
+  </div>
+
+  <div class="palette" id="palette">
+    <div class="swatch selected" data-color="#1a1a1a" style="background: #1a1a1a;"><span class="swatch-label">松烟黑</span></div>
+    <div class="swatch" data-color="#c0392b" style="background: #c0392b;"><span class="swatch-label">朱砂红</span></div>
+    <div class="swatch" data-color="#2980b9" style="background: #2980b9;"><span class="swatch-label">石青蓝</span></div>
+    <div class="swatch" data-color="#f1c40f" style="background: #f1c40f;"><span class="swatch-label">藤黄</span></div>
+    <div class="swatch" data-color="#8e44ad" style="background: #8e44ad;"><span class="swatch-label">赭石</span></div>
+  </div>
+
+  <button id="exportBtn">导出图片</button>
+
+  <div class="hint" id="hint">翰墨传情 · 笔走龙蛇</div>
+
+  <script type="module" src="/src/uiController.ts"></script>
+</body>
+</html>
