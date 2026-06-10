@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星云演化模拟器</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #0a0a23;
+      }
+      #canvas-container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        background: radial-gradient(ellipse at center, #1a1a3e 0%, #0a0a23 100%);
+      }
+      #app-title {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: white;
+        font-size: 24px;
+        letter-spacing: 2px;
+        font-family: 'Microsoft YaHei', sans-serif;
+        text-shadow: 0 0 10px rgba(100, 200, 255, 0.8),
+                     0 0 20px rgba(100, 200, 255, 0.5),
+                     0 0 30px rgba(100, 200, 255, 0.3);
+        z-index: 10;
+        user-select: none;
+      }
+      #fps-counter {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        color: #00ff88;
+        font-size: 12px;
+        font-family: 'Consolas', monospace;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 6px 12px;
+        border-radius: 6px;
+        z-index: 10;
+        user-select: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-container">
+      <div id="app-title">星云演化模拟器</div>
+      <div id="fps-counter">FPS: --</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
