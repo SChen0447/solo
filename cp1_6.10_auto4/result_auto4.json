@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T16:49:22.554Z",
+  "task_name": "auto4",
+  "task_type": "0-1代码生成",
+  "business_domain": "游戏开发",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于音乐节拍实时控制游戏角色动作的节奏跑酷项目。想法是玩家控制的角色需要在一条无尽跑道上奔跑，背景音乐播放时，角色会跟随音乐的节拍自动做出跳跃、滑铲或攻击动作，同时路上会随机出现障碍物，玩家需要根据节拍提示在正确时机按下对应按键（比如空格对应跳跃，Shift对应滑铲）来完美躲避得分，如果动作与节拍时间偏差超过一定阈值就算失误扣血。\n\n希望它能做到：\n第一，核心玩法是实时音频分析——游戏运行时能加载一首MP3或Web Audio生成的节拍音轨，通过Web Audio API解析节拍时间点（BPM检测或beat detection），并将节拍点以可视化波点形式显示在跑道两侧，每个波点跟随音乐节奏闪烁放大，给玩家视觉提示。\n第二，游戏角色动画与节拍同步——角色有单独的跳跃、滑铲、奔跑三套Sprite动画（用Canvas2D绘制简单几何角色即可），每套动画的播放速度需与当前BPM挂钩，比如奔跑动画每秒帧数等于BPM/60，跳跃动画的起跳帧必须对齐节拍点，视觉上让玩家感觉角色“踩在拍子上”跳跃。\n第三，障碍物生成系统——跑道上的障碍物分为低障碍（需要跳跃越过）和高障碍（需要滑铲通过），它们出现的时机与节拍点错开半个节拍间隔，制造需要玩家预判的挑战；每过10秒BPM自动提升5%，障碍物密度同步增加，提高难度。\n第四，完美节拍判定与评分反馈——玩家按键与最近的节拍点时间差小于100ms判定为Perfect，显示金色闪光+得2分；100~250ms为Good，银色闪光+得1分；超过250ms为Miss，扣1血（初始5血）。每次判定时屏幕中央出现一个圆环扩散动画，颜色根据Perfect/Good/Miss变化（金/银/红），并且配合一个短促的电子音效。\n第五，结果界面与重玩——角色血量为0或撞上障碍物时游戏结束，显示本次得分、Perfect/Good/Miss统计、最高连续Perfect次数，并提供重玩按钮，重玩时重新加载同一首音乐但BPM重置为初始值。\n\n界面上希望采用暗色赛博朋克风格背景（深紫色到蓝色渐变），跑道以发光的青色线条构成透视效果，角色用高饱和霓虹粉色，节拍波点用黄色与青色交替闪烁。背景有缓慢飘动的粒子流形成速度感，角色跳跃时地面产生光晕扩散动画，得分时屏幕边缘有短暂色散闪光效果。整个UI需适配到移动端和桌面端，采用弹性布局。\n\n性能上希望动画帧率稳定在60FPS，音频分析和节拍判定不能导致音频卡顿，Web Worker可考虑用于节拍计算以避免主线程阻塞。\n\n实现用TypeScript + HTML5 Canvas + Web Audio API，所有代码放在一个模块化项目里，文件组织如下：\n - package.json（含依赖：vite, typescript，启动脚本：npm run dev）\n - vite.config.js（Vite原生构建配置，无需框架插件）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，含一个大Canvas和UI叠加层）\n - src/main.ts（游戏入口，初始化音频上下文、启动循环、管理场景切换）\n - src/beatAnalyzer.ts（音频分析模块，接收AudioBuffer，输出节拍点时间数组和BPM，数据流向：加载音频→analyze()→返回beatTimes[]和bpm给GameLoop）\n - src/gameLoop.ts（游戏主循环，管理角色状态、障碍物生成、碰撞检测、节拍判定和分数逻辑，引用sceneRenderer绘制每帧）\n - src/sceneRenderer.ts（绘图模块，负责跑道透视、角色动画、节拍波点、判定特效、粒子流、UI文字的所有Canvas2D绘制，接收gameLoop的状态对象渲染）\n - src/character.ts（角色类，管理位置、速度、动画帧、当前动作状态，提供jump()、slide()、run()方法，与gameLoop交互）\n\n跑 npm install && npm run dev 就能直接在浏览器中打开index.html运行游戏。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:c50652cb406c3dce6e6edc8c53bf12c9_6a284391176de296b08fa2e5.6a284406176de296b08fa33c.6a28440686f72554029cd247:Trae CN.T(2026/6/10 00:49:10)",
+    "user_id": "3986207660317399",
+    "trace_id": "c50652cb406c3dce6e6edc8c53bf12c9",
+    "session_id": "6a284391176de296b08fa2e5",
+    "task_id": "6a284406176de296b08fa33c",
+    "message_id": "6a28440686f72554029cd247",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 00:49:10",
+    "format": "full"
+  },
+  "trace": "null"
+}
