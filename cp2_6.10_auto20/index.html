@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>碳排放数据探索仪表盘</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --accent-start: #e94560;
+      --accent-end: #0f3460;
+      --line-color: #00b4d8;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --border-color: #2a2a4e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-header {
+      padding: 24px 32px;
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .app-title {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, var(--accent-start), var(--line-color));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-subtitle {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    #controls {
+      padding: 16px 32px;
+      background-color: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .year-slider-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #yearSlider {
+      width: 200px;
+      accent-color: var(--accent-start);
+      cursor: pointer;
+    }
+
+    #yearValue {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--line-color);
+      min-width: 48px;
+      text-align: center;
+    }
+
+    .continent-groups {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .continent-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .continent-group input[type="checkbox"] {
+      accent-color: var(--accent-start);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    #resetBtn {
+      margin-left: auto;
+      padding: 10px 24px;
+      background: linear-gradient(135deg, var(--accent-start), var(--accent-end));
+      color: var(--text-primary);
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    }
+
+    #resetBtn:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+      box-shadow: 0 4px 16px rgba(233, 69, 96, 0.4);
+    }
+
+    #resetBtn:active {
+      transform: scale(0.98);
+    }
+
+    .hamburger-btn {
+      display: none;
+      background: none;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .charts-container {
+      display: flex;
+      gap: 24px;
+      padding: 24px 32px;
+      min-height: calc(100vh - 220px);
+    }
+
+    .chart-section {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-section.left {
+      flex: 0 0 60%;
+    }
+
+    .chart-section.right {
+      flex: 1;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-primary);
+    }
+
+    .chart-subtitle {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .chart-wrapper {
+      flex: 1;
+      position: relative;
+      min-height: 400px;
+    }
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .axis text {
+      fill: var(--text-secondary);
+      font-size: 11px;
+    }
+
+    .axis path,
+    .axis line {
+      stroke: var(--border-color);
+    }
+
+    .bar {
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    .bar:hover {
+      opacity: 0.8;
+    }
+
+    .bar.selected {
+      stroke: var(--line-color);
+      stroke-width: 3px;
+    }
+
+    .tooltip {
+      position: absolute;
+      padding: 8px 14px;
+      background: rgba(22, 33, 62, 0.95);
+      color: var(--text-primary);
+      border: 1px solid var(--line-color);
+      border-radius: 6px;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.08s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip-line {
+      margin: 2px 0;
+    }
+
+    .tooltip-label {
+      color: var(--text-secondary);
+    }
+
+    .tooltip-value {
+      color: var(--line-color);
+      font-weight: 700;
+    }
+
+    .dot {
+      cursor: pointer;
+      transition: r 0.15s ease;
+    }
+
+    .dot:hover {
+      r: 7;
+    }
+
+    @media (max-width: 768px) {
+      .app-header {
+        padding: 16px 20px;
+      }
+
+      .app-title {
+        font-size: 20px;
+      }
+
+      #controls {
+        padding: 12px 20px;
+        position: relative;
+      }
+
+      .hamburger-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .control-group.year-control {
+        flex-direction: row;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .continent-groups,
+      .control-group:not(.year-control) {
+        display: none;
+      }
+
+      #controls.mobile-open .continent-groups,
+      #controls.mobile-open .control-group:not(.year-control) {
+        display: flex;
+        width: 100%;
+      }
+
+      #controls.mobile-open {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      #resetBtn {
+        margin-left: 0;
+        width: 100%;
+      }
+
+      .charts-container {
+        flex-direction: column;
+        padding: 16px 20px;
+      }
+
+      .chart-section.left,
+      .chart-section.right {
+        flex: 1;
+      }
+
+      .chart-wrapper {
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">全球碳排放数据探索仪表盘</h1>
+    <p class="app-subtitle">对比不同国家与年份的碳排放趋势，助力深度数据报道</p>
+  </header>
+
+  <div id="controls"></div>
+
+  <div class="charts-container">
+    <section class="chart-section left">
+      <h2 class="chart-title">各国年度碳排放总量</h2>
+      <p class="chart-subtitle">点击柱体查看该国家的多年趋势</p>
+      <div class="chart-wrapper" id="barChartWrapper">
+        <svg id="barChart"></svg>
+      </div>
+    </section>
+
+    <section class="chart-section right">
+      <h2 class="chart-title" id="lineChartTitle">碳排放年度趋势</h2>
+      <p class="chart-subtitle" id="lineChartSubtitle">悬停数据点查看详细数值</p>
+      <div class="chart-wrapper" id="lineChartWrapper">
+        <svg id="lineChart"></svg>
+      </div>
+    </section>
+  </div>
+
+  <div id="tooltip" class="tooltip"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
