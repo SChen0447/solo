@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T21:23:16.359Z",
+  "task_name": "auto185",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个帮助小企业主或自由职业者在浏览器中快速生成与客户之间的在线合同草稿、追踪合同签署状态并导出PDF的项目。想法是解决传统用Word或电子邮件来回修改合同很麻烦，而且分享和记录签署状态时容易搞混版本、忘记截止日期的问题。希望它能在浏览器里直接让双方在线编辑条款、添加签名和日期，还能从历史记录里看到每条合同从创建到签署的全过程。\n\n希望它能做到：第一，页面顶部是一个可切换的导航条，左边是“我的合同”按钮（活跃时下划线#4fc3f7），右边是“创建新合同”按钮（背景色#1976d2，圆角8px，文字白色），点击后进入合同创建表单，表单包含合同标题、甲方信息（姓名+邮箱）、乙方信息（姓名+邮箱）、条款内容（富文本编辑区，500px宽，背景#ffffff，边框#ddd，圆角6px）和一排提交与暂存按钮（背景色#4caf50保存草稿、#f44336关闭）。第二，创建后合同会以卡片形式展示在“我的合同”列表中，卡片宽280px、高120px，圆角12px，背景渐变色#1e3a5f到#2c5f8a，文字白色，显示双方名称、创建日期和进度标签（未签、部分签、已完成），每张卡片有删除和编辑小按钮（icon颜色#e0e0e0，hover变#ffffff）。第三，点击卡片进入详情页，左侧是一份只读格式的合同正文（背景#f5f5f5，内边距20px，圆角12px），右侧是签字区——上方显示两部分的签名槽，甲方和乙方各一个矩形虚线框（宽200px、高60px，边框#9e9e9e），用户可以在框内用手指或鼠标绘制签名（Canvas画布，默认浅灰笔触），签名后出现“确认签署”按钮（背景色#4caf50，圆角6px，不可用时显示灰色#bdbdbd），一旦双方都确认，合同状态即变“已完成”。第四，页面右下角有悬浮“下载PDF”按钮（背景色#ff5722，圆角50%，宽50px、高50px，带白色打印图标），点击后生成PDF并下载，PDF需包含合同正文、双方签名截图和签署日期。第五，所有合同的签署记录（包括每次签署操作的时间戳和签署人邮箱）会显示在详情页最下方的一个履历列表中，每条记录左侧有一个绿色小圆点（实心），中间是操作描述（如“张三于2025-01-20 14:30签署”），右侧时间戳格式“YYYY-MM-DD HH:mm”，列表高度不超过400px，超过则滚动（scrollbar样式#4fc3f7细线）。\n\n界面上希望整体采用深蓝灰主色调（#1a1a2e作为背景，#16213e作为卡片和侧栏底色），文本使用白色和浅蓝（#e0e0e0和#4fc3f7），按钮和链接用高饱和蓝（#1976d2）、橙色（#ff5722）和绿色（#4caf50）点缀。表单输入框在获得焦点时有细框动画（border-color从#ddd渐变为#4fc3f7，过渡0.3s）。签名Canvas在绘制时显示细笔触预览（strokeStyle #333，lineWidth 2），并具备clear功能小按钮（圆形，背景色#e57373）。所有卡片在鼠标悬停时放大1.02倍并增加阴影（box-shadow从0 2px 8px rgba(0,0,0,0.2)变为0 4px 16px rgba(0,0,0,0.3)，过渡0.2s）。页面要响应式，在手机宽度（≤768px）时导航改为汉堡菜单，卡片变成竖向列表。加载合同列表时顶部显示环形进度条（颜色#4fc3f7，宽36px）。\n\n实现用TypeScript和Vue 3（含vue-router 4）以及Vite，并用一个mock服务文件模拟后端数据存储和PDF生成逻辑。把代码拆成以下文件：\n - package.json（含依赖：vue@3、vue-router@4、typescript@5、vite@5、@vitejs/plugin-vue、uuid、file-saver、jsPDF、lodash，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，开启devServer端口3000）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，内嵌深蓝背景）\n - src/main.ts（Vue应用入口，挂载路由和根组件）\n - src/App.vue（根组件，包含导航和路由视图）\n - src/views/ContractList.vue（合同列表页，展示卡片，加载状态，删除功能）\n - src/views/ContractDetail.vue（合同详情页，包含只读正文、签名区、签署履历、PDF下载按钮）\n - src/services/mockService.ts（模拟后端API，提供初始化合同数据、保存/更新、生成PDF逻辑，使用localStorage持久化）\n - src/contracts.d.ts（TypeScript类型定义，定义合同接口、签署记录）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:382c0df457a9293c24d0578198bb008f_6a28840809985ea6d9716f2a.6a28843809985ea6d9716f3a.6a28843899ae341fadfa4be0:Trae CN.T(2026/6/10 05:23:04)",
+    "user_id": "3986207660317399",
+    "trace_id": "382c0df457a9293c24d0578198bb008f",
+    "session_id": "6a28840809985ea6d9716f2a",
+    "task_id": "6a28843809985ea6d9716f3a",
+    "message_id": "6a28843899ae341fadfa4be0",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 05:23:04",
+    "format": "full"
+  },
+  "trace": "null"
+}
