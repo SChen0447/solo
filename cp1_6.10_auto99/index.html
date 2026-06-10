@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>表情驱动虚拟角色</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #2f3542;
+      color: #ececec;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+
+    .main-container {
+      display: flex;
+      gap: 32px;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #camera-video {
+      width: 320px;
+      height: 240px;
+      border-radius: 16px;
+      border: 2px solid #cccccc;
+      object-fit: cover;
+      background-color: #1a1a1a;
+      transform: scaleX(-1);
+    }
+
+    #expression-indicators {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .indicator-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.3);
+      transition: all 0.3s ease-in-out;
+      position: relative;
+    }
+
+    .indicator-dot.active {
+      transform: scale(1.17);
+      box-shadow: 0 0 10px currentColor;
+    }
+
+    .indicator-dot.happy { color: #ffd93d; background-color: #ffd93d; }
+    .indicator-dot.sad { color: #74b9ff; background-color: #74b9ff; }
+    .indicator-dot.angry { color: #ff7675; background-color: #ff7675; }
+    .indicator-dot.surprised { color: #a29bfe; background-color: #a29bfe; }
+    .indicator-dot.disgusted { color: #00b894; background-color: #00b894; }
+    .indicator-dot.neutral { color: #b2bec3; background-color: #b2bec3; }
+
+    .indicator-label {
+      font-size: 11px;
+      color: #aaaaaa;
+      margin-top: 4px;
+      text-align: center;
+      display: flex;
+      gap: 5px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .indicator-label span {
+      width: 18px;
+      text-align: center;
+    }
+
+    #character-canvas {
+      width: 800px;
+      height: 600px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .bottom-panel {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #record-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #ff4757;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #record-btn::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      background-color: #ffffff;
+      border-radius: 50%;
+    }
+
+    #record-btn:hover {
+      background-color: #ff6b81;
+    }
+
+    #record-btn:active {
+      transform: scale(0.95);
+    }
+
+    #record-btn.recording {
+      background-color: #ff6b81;
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    #record-btn.recording::before {
+      border-radius: 4px;
+      width: 18px;
+      height: 18px;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(255, 71, 87, 0.7);
+      }
+      50% {
+        box-shadow: 0 0 0 14px rgba(255, 71, 87, 0);
+      }
+    }
+
+    .record-hint {
+      font-size: 13px;
+      color: #999999;
+    }
+
+    #playback-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      background-color: #5352ed;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 13px;
+      font-family: inherit;
+      transition: background-color 0.2s ease;
+      display: none;
+    }
+
+    #playback-btn:hover {
+      background-color: #6c5ce7;
+    }
+
+    #playback-btn.visible {
+      display: inline-block;
+    }
+
+    #status-text {
+      font-size: 12px;
+      color: #888888;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎭 表情驱动虚拟卡通角色</h1>
+  <div class="main-container">
+    <div class="left-panel">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <div id="expression-indicators">
+          <div class="indicator-dot happy" data-expression="happy"></div>
+          <div class="indicator-dot sad" data-expression="sad"></div>
+          <div class="indicator-dot angry" data-expression="angry"></div>
+          <div class="indicator-dot surprised" data-expression="surprised"></div>
+          <div class="indicator-dot disgusted" data-expression="disgusted"></div>
+          <div class="indicator-dot neutral" data-expression="neutral"></div>
+        </div>
+        <div class="indicator-label">
+          <span>😊</span>
+          <span>😢</span>
+          <span>😠</span>
+          <span>😲</span>
+          <span>🤢</span>
+          <span>😐</span>
+        </div>
+      </div>
+    </div>
+    <canvas id="character-canvas" width="800" height="600"></canvas>
+  </div>
+  <div class="bottom-panel">
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <button id="record-btn" title="录制表情序列"></button>
+      <button id="playback-btn" title="回放录制的表情">▶ 回放</button>
+    </div>
+    <span class="record-hint">点击圆形按钮开始录制，再次点击停止</span>
+    <div id="status-text">正在加载模型...</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1633559619/camera_utils.js" crossorigin="anonymous"></script>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
