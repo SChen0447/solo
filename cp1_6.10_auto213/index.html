@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>弦律流 - 抽象线条动画生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0e0b1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #playBtn {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #ff6b8a;
+      border: none;
+      cursor: pointer;
+      z-index: 10;
+      transition: width 0.2s ease-out, height 0.2s ease-out, box-shadow 0.2s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #playBtn:hover {
+      width: 52px;
+      height: 52px;
+      box-shadow: 0 0 20px 2px rgba(255, 107, 138, 0.6);
+    }
+
+    #playBtn.playing {
+      width: 52px;
+      height: 52px;
+      box-shadow: 0 0 20px 2px rgba(255, 107, 138, 0.6);
+    }
+
+    #playBtn::before {
+      content: '';
+      display: block;
+      width: 0;
+      height: 0;
+      border-left: 14px solid #fff;
+      border-top: 9px solid transparent;
+      border-bottom: 9px solid transparent;
+      margin-left: 3px;
+    }
+
+    #playBtn.playing::before {
+      border: none;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      margin-left: 0;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 32px;
+      z-index: 10;
+      background: rgba(14, 11, 26, 0.7);
+      padding: 20px 32px;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-label {
+      color: #a0a0c0;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 200px;
+      height: 6px;
+      border-radius: 3px;
+      background: #444;
+      outline: none;
+      transition: background 0.2s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4fc3f7;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(79, 195, 247, 0.6);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px rgba(79, 195, 247, 0.9);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #4fc3f7;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(79, 195, 247, 0.6);
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px rgba(79, 195, 247, 0.9);
+    }
+
+    .slider-value {
+      color: #4fc3f7;
+      font-size: 13px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: left;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 600px) {
+      #playBtn {
+        width: 38px;
+        height: 38px;
+      }
+
+      #playBtn:hover {
+        width: 42px;
+        height: 42px;
+      }
+
+      #controls {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 20px;
+        bottom: 24px;
+      }
+
+      input[type="range"] {
+        width: 160px;
+      }
+
+      .slider-group {
+        transform: scale(0.8);
+        transform-origin: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+    <button id="playBtn" aria-label="播放"></button>
+    <div id="controls">
+      <div class="slider-group">
+        <span class="slider-label">振幅 AMP</span>
+        <div class="slider-row">
+          <input type="range" id="ampSlider" min="10" max="80" step="1" value="40" />
+          <span class="slider-value" id="ampValue">40</span>
+        </div>
+      </div>
+      <div class="slider-group">
+        <span class="slider-label">频率 FREQ</span>
+        <div class="slider-row">
+          <input type="range" id="freqSlider" min="0.1" max="2.0" step="0.05" value="0.5" />
+          <span class="slider-value" id="freqValue">0.50</span>
+        </div>
+      </div>
+      <div class="slider-group">
+        <span class="slider-label">颜色周期 HUE</span>
+        <div class="slider-row">
+          <input type="range" id="hueSlider" min="1" max="20" step="0.5" value="8" />
+          <span class="slider-value" id="hueValue">8.0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
