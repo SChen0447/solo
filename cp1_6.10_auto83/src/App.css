@@ -1,0 +1,101 @@
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-header {
+  text-align: center;
+  padding: 20px 0 30px;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #ff4757;
+  margin-bottom: 8px;
+}
+
+.app-subtitle {
+  font-size: 16px;
+  color: #666;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.carousel-section {
+  width: 100%;
+}
+
+.countdown-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.inventory-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.action-section {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 40px;
+}
+
+.action-btn {
+  background: linear-gradient(135deg, #ff6348 0%, #ff4757 100%);
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  padding: 16px 60px;
+  border-radius: 12px;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 10px rgba(255, 71, 87, 0.3);
+}
+
+.action-btn:hover:not(.disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+}
+
+.action-btn:active:not(.disabled) {
+  transform: scale(0.95);
+}
+
+.action-btn.disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+  }
+
+  .app-title {
+    font-size: 24px;
+  }
+
+  .app-subtitle {
+    font-size: 14px;
+  }
+
+  .action-btn {
+    font-size: 18px;
+    padding: 14px 48px;
+    width: 100%;
+  }
+}
