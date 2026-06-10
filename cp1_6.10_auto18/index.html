@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>呼吸气球漂流冒险</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+    }
+    #permissionOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ff9a8b 0%, #ff6a88 55%, #ff99ac 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    #permissionOverlay h1 {
+      font-size: 2.2em;
+      margin-bottom: 16px;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+    }
+    #permissionOverlay p {
+      font-size: 1.1em;
+      margin-bottom: 28px;
+      max-width: 480px;
+      line-height: 1.6;
+      opacity: 0.95;
+    }
+    #startBtn {
+      padding: 16px 48px;
+      font-size: 1.3em;
+      border: none;
+      border-radius: 50px;
+      background: rgba(255,255,255,0.25);
+      backdrop-filter: blur(10px);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    #startBtn:hover {
+      background: rgba(255,255,255,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    }
+    #startBtn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="permissionOverlay">
+    <h1>🎈 呼吸气球漂流冒险</h1>
+    <p>吸气让气球上升，呼气让气球下降，平稳呼吸保持高度。<br/>穿越山谷，收集能量球，避开障碍物！</p>
+    <button id="startBtn">开始游戏 (需麦克风权限)</button>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
