@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:33:20.751Z",
+  "task_name": "auto72",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中创建和编辑SVG矢量插画的轻量级在线绘图应用，主要解决用户在没有专业设计软件（如Illustrator）时，也能高效完成简单矢量图形绘制、图层管理和导出的问题。\n\n它应当具备以下能力：\n1) 提供包含矩形、圆形、椭圆、直线、折线、贝塞尔曲线（三次）等基本矢量绘图工具，绘制时实时显示辅助对齐线（当新图形靠近已有图形边缘或中心15px范围内时，显示红色虚线对齐辅助线，对齐后自动吸附，吸附力阈值10px）。\n2) 支持图层面板：右侧面板以列表形式展示所有图层（每个图层显示缩略图、名称和可见性复选框），用户可通过拖拽调整图层顺序，双击图层名称可重命名，下方有“添加”、“复制”、“删除”和“合并选中图层”按钮，合并时自动将选中图层的SVG元素合并到第一个图层的<g>标签内。\n3) 选中任意图形后，右侧属性面板展示并允许编辑：位置（X/Y输入框，精确到0.1）、尺寸（宽/高输入框）、旋转角度（0-360度滑块+数值输入）、填充颜色（色板+自定义hex输入）、描边颜色和宽度（1-20px滑块）、透明度（0-100%滑块），所有修改实时反映在画布上。\n4) 支持撤销/重做（最多50步历史），快捷键Ctrl+Z撤销、Ctrl+Shift+Z重做，撤销时整个SVG画布状态回退（包括图形、位置、属性、图层结构），用户点击画布空白处取消所有选中。\n5) 提供导出功能：点击导出按钮弹出模态框，可选择导出格式为SVG（.svg）或PNG（.png，分辨率可选1x/2x/3x），导出PNG时自动将画布内容渲染到隐藏的Canvas上并调用toDataURL，导出SVG时直接序列化当前SVG字符串，下载文件名为“illustration-{时间戳}.svg/png”。\n\n界面方面要求：整体采用极简深色主题，主背景色#1e1e2e，工具栏为左侧固定竖条（宽度60px，半透明毛玻璃效果，背景rgba(30,30,46,0.85)），每个工具按钮尺寸44x44px，选中时底部有下划线动画（从中间向两侧展开，持续0.2s）。画布区域占据剩余空间，画布背景为浅灰色（#f0f0f0）带细微网格（间距20px，网格线颜色#ddd，0.5px实线），图形在画布上带微弱投影（偏移3px，模糊6px，透明度0.2）。右侧属性面板宽度280px，与工具栏风格一致。整体所有交互操作（点击按钮、拖拽图形、滑块拖动）都伴随0.15-0.3秒的平滑过渡动画（transform和opacity变化）。响应式布局：当视口宽度小于800px时，工具栏和属性面板自动收起为汉堡菜单和底部浮层。性能上需要编辑时帧率不低于50fps，拖拽图形时响应延迟低于50ms。\n\n实现采用TypeScript、React 18和Vite，按以下文件组织代码：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, uuid, file-saver；启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，含一个id为root的div，标题“SVG矢量绘图工具”），背景色跟随应用主题\n - src/main.tsx（React入口，渲染App组件，导入全局样式文件）\n - src/App.tsx（主组件，管理全局状态：当前工具、图形列表、选中图形ID、历史记录栈、缩放比例，组合Layout、Toolbar、Canvas、PropertiesPanel组件；定义图形数据接口包括id、type、x、y、width、height、rotation、fill、stroke、strokeWidth、opacity、layerIndex）\n - src/components/Toolbar.tsx（渲染左侧工具栏，包含绘图工具按钮、选择工具、导出按钮，接收appState和setAppState回调，工具切换时调用setAppState更新currentTool）\n - src/components/Canvas.tsx（核心渲染组件，使用ref操作内部svg元素，负责根据graphics数组绘制所有SVG图形，实现鼠标事件处理（mousedown、mousemove、mouseup）来创建新图形或拖拽选中图形、显示对齐辅助线、更新历史记录栈，内部维护拖拽状态和辅助线状态）\n - src/components/PropertiesPanel.tsx（右侧属性编辑面板，接收选中图形对象，若为空则显示“未选中图形”提示，否则渲染各属性输入控件，修改时调用回调更新graphics数组并触发重绘）\n - src/hooks/useHistory.ts（自定义hook，管理撤销/重做栈，提供pushSnapshot、undo、redo、canUndo、canRedo方法，snapshot为当前graphics数组的深拷贝）\n - src/styles.css（全局样式，定义深色主题变量，毛玻璃效果，过渡动画，响应式媒体查询，工具栏和面板的布局样式）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:6f468dda5341fad717ec92c273c99dde_6a285b92f70538c9673ff6cc.6a285c64f70538c9673ff77f.6a285c64cb34985f4d09fbc5:Trae CN.T(2026/6/10 02:33:08)",
+    "user_id": "3986207660317399",
+    "trace_id": "6f468dda5341fad717ec92c273c99dde",
+    "session_id": "6a285b92f70538c9673ff6cc",
+    "task_id": "6a285c64f70538c9673ff77f",
+    "message_id": "6a285c64cb34985f4d09fbc5",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:33:08",
+    "format": "full"
+  },
+  "trace": "null"
+}
