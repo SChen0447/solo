@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座故事 - 创造你的星空</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #0a0e27;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 640px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 640px;
+      height: 480px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #starCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: default;
+    }
+
+    #starCanvas.mode-connect {
+      cursor: crosshair;
+    }
+
+    #starCanvas.mode-erase {
+      cursor: pointer;
+    }
+
+    .toolbar {
+      width: 640px;
+      height: 60px;
+      background: rgba(15, 12, 41, 0.8);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .tool-btn {
+      padding: 10px 24px;
+      border: 2px solid transparent;
+      border-radius: 20px;
+      background: #1a1d3a;
+      color: #e0e0e0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .tool-btn:active {
+      transform: scale(0.95);
+    }
+
+    .tool-btn.active {
+      border-color: #6a9cff;
+      background: rgba(106, 156, 255, 0.2);
+    }
+
+    #textInput {
+      width: 640px;
+      height: 80px;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: #1a1d3a;
+      color: #e0e0e0;
+      font-size: 14px;
+      font-family: inherit;
+      resize: none;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    #textInput:focus {
+      box-shadow: 0 0 0 2px #6a9cff;
+    }
+
+    #textInput::placeholder {
+      color: #6a6a8a;
+    }
+
+    .publish-wrapper {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    #publishBtn {
+      width: 120px;
+      height: 40px;
+      border: none;
+      border-radius: 20px;
+      background: #e94560;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    #publishBtn:hover {
+      transform: scale(1.05);
+    }
+
+    #publishBtn:active {
+      transform: scale(0.95);
+      background: #c73e54;
+    }
+
+    .history-section {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0e0e0;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: row;
+      gap: 16px;
+      overflow-x: auto;
+      padding: 8px 4px 16px;
+      scrollbar-width: thin;
+      scrollbar-color: #6a9cff #1a1d3a;
+    }
+
+    .history-list::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .history-list::-webkit-scrollbar-track {
+      background: #1a1d3a;
+      border-radius: 3px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: #6a9cff;
+      border-radius: 3px;
+    }
+
+    .history-card {
+      flex-shrink: 0;
+      width: 240px;
+      height: 180px;
+      background: #1a1d3a;
+      border-radius: 12px;
+      border: 8px solid #e94560;
+      padding: 8px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      overflow: hidden;
+    }
+
+    .history-card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 24px rgba(233, 69, 96, 0.3);
+    }
+
+    .card-thumbnail {
+      width: 100%;
+      height: 90px;
+      border-radius: 4px;
+      object-fit: cover;
+      background: #0a0e27;
+    }
+
+    .card-text {
+      flex: 1;
+      font-size: 12px;
+      color: #c0c0d0;
+      line-height: 1.4;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .share-btn {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e94560;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .share-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .share-btn:active {
+      transform: scale(0.9);
+    }
+
+    .share-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .toast {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      font-size: 14px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px 12px;
+      }
+
+      .canvas-wrapper,
+      .toolbar,
+      #textInput {
+        width: 100%;
+      }
+
+      .canvas-wrapper {
+        height: auto;
+        aspect-ratio: 640 / 480;
+      }
+
+      .history-list {
+        flex-direction: column;
+        overflow-x: visible;
+      }
+
+      .history-card {
+        width: 100%;
+        height: auto;
+        min-height: 180px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="canvas-wrapper">
+      <canvas id="starCanvas" width="640" height="480"></canvas>
+    </div>
+
+    <div class="toolbar">
+      <button id="connectBtn" class="tool-btn">连线</button>
+      <button id="eraseBtn" class="tool-btn">擦除</button>
+    </div>
+
+    <textarea id="textInput" placeholder="为你的星座写一个简短的故事或诗句..."></textarea>
+
+    <div class="publish-wrapper">
+      <button id="publishBtn">发布</button>
+    </div>
+
+    <div class="history-section">
+      <div class="history-title">我的星座故事</div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
