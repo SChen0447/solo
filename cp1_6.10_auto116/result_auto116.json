@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:57:00.876Z",
+  "task_name": "auto116",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个多人协作的在线食谱编辑与分享平台的侧边原型项目，想法是让几个朋友能同时浏览、编辑和评论同一份数字菜谱，每个人添加的食材和步骤会实时同步到所有人的屏幕上，像一起做饭时互相参考一样方便。希望它能做到：第一，主页面左侧是固定宽度的食材列表（宽320px，每个食材卡片带有复选框和增减按钮，点击复选框时卡片左边缘滑入绿色对勾动画，动画时长0.3秒，背景色从#fafafa渐变为#e8f5e9），右侧是步骤区（宽剩余空间，每个步骤用大号编号和深色卡片展示，卡片的背景色#ffffff带#e0e0e0细边框，鼠标悬停时卡片上浮4px并加深阴影到#00000020），两种区域间用可拖拽的分隔条调整宽度，分隔条宽度6px，悬停时变为grab光标。第二，任意用户编辑食材数量或修改步骤文字时，其他在线用户会在0.5秒内看到内容更新（用WebSocket广播变更消息，新数据用淡蓝色#e3f2fd高亮背景闪烁两次，每次0.3秒），并且页面右上角显示当前在线人数（圆圈数字，绿色#4caf50背景，白色文字，直径32px，新用户加入时数字弹跳放大到120%再弹回原尺寸，动画0.4秒）。第三，所有编辑操作都有版本历史记录，用户可点击页面顶部工具栏的“历史”按钮（图标为沙漏，按钮背景透明，宽36px高36px，点击时顺时针旋转180度，过渡0.3秒），展开一个从右侧滑入的面板（宽400px，背景#fafafa，带左阴影2px），按时间倒序列出每次编辑的摘要（如“用户A 增加了 2个 鸡蛋”），每条记录左侧有一个圆形头像缩略图（直径24px，随机分配颜色如#ff7043），点击可回滚到该版本，回滚时食材列表和步骤区整体以0.4秒淡入淡出过渡。界面方面，整体配色温柔素雅，使用暖白#fef9f0为主背景，辅以浅灰#eeeee和淡绿#c8e6c9作为强调色，字体用系统无衬线，页眉高度56px，背景#ffffff带底部1px浅灰#e0e0e0分隔线，所有交互元素都有平滑的transition: all 0.2s ease，小屏幕（宽<768px）时左侧食材列表收起为汉堡菜单按钮（按钮在页眉左侧，图标三条横线，点击时列表从左侧滑出覆盖内容区，菜单宽度自动适配320px或80%屏幕宽），收起时步骤区占满宽度。性能上，实时同步延迟不超过100ms，页面加载时间小于3秒，交互响应（如食材勾选、步骤滚动）在60fps下运行，编辑历史记录最多保留100条以控制内存。实现用TypeScript、React 18和Vite，后端使用Node.js Express和ws库处理WebSocket与简单的内存存储（不连数据库），把代码拆成以下文件：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, express, ws, uuid，启动脚本：npm run dev 启动前端和后端）\n - index.html（入口，meta viewport适配，body背景#fef9f0）\n - vite.config.js（React插件，端口5173，proxy /api 和 /ws 到后端端口3001）\n - tsconfig.json（严格模式，target ES2020, module ESNext, jsx react-jsx）\n - src/main.tsx（React入口，渲染App）\n - src/App.tsx（主应用组件，管理WebSocket连接和当前版本状态，调用IngredientsPanel和StepsPanel子组件，负责分发同步更新和版本快照）\n - src/IngredientsPanel.tsx（食材列表组件，渲染可编辑食材卡片，处理增删改交互，发送变更到WebSocket，接收外部更新并高亮，拖拽分隔条功能内联逻辑）\n - src/StepsPanel.tsx（步骤区组件，渲染步骤卡片序列，支持添加、编辑、删除和重新排序，发送变更到WebSocket，处理历史回滚时整体淡入淡出过渡）\n - src/HistoryPanel.tsx（历史侧滑面板组件，从右侧滑入，按时间倒序渲染编辑摘要，每条含用户头像缩略图和描述，点击回滚按钮触发版本恢复回调，收起时从右侧滑出）\n - src/useWebSocket.ts（自定义Hook，封装WebSocket连接建立、消息解析（JSON格式）、断线重连（指数退避，最大间隔30秒）、暴露发送方法和最新状态）\n - server.js（Express后端，提供静态文件服务和WebSocket服务端口3001，维护在内存中的共享文档对象和版本历史数组，接收客户端变更并广播给其他客户端，支持版本回滚请求）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:609962775ef3f2483d6005ff0f19399f_6a286f4164dc08e504a2b63b.6a28700064dc08e504a2b6c8.6a28700055791c72bc398339:Trae CN.T(2026/6/10 03:56:48)",
+    "user_id": "3986207660317399",
+    "trace_id": "609962775ef3f2483d6005ff0f19399f",
+    "session_id": "6a286f4164dc08e504a2b63b",
+    "task_id": "6a28700064dc08e504a2b6c8",
+    "message_id": "6a28700055791c72bc398339",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:56:48",
+    "format": "full"
+  },
+  "trace": "null"
+}
