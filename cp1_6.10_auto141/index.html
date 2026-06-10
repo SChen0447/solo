@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>记忆翻牌连连看</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a14;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #status-bar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 900px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      z-index: 10;
+    }
+    #steps {
+      color: #34495e;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    #remaining {
+      color: #27ae60;
+      font-size: 22px;
+      font-weight: bold;
+    }
+    #game-canvas {
+      display: block;
+      background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    #game-size-select {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+    #game-size-select button {
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    #game-size-select button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    #game-size-select button.active {
+      background: #3498db;
+    }
+    #modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    #modal-overlay.visible {
+      display: flex;
+    }
+    #modal-panel {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+    #modal-title {
+      font-size: 28px;
+      color: #2c3e50;
+      margin-bottom: 24px;
+    }
+    #modal-restart {
+      padding: 12px 32px;
+      background: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #modal-restart:hover {
+      background: #2980b9;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="status-bar">
+      <span id="steps">步数：0</span>
+      <span id="remaining">剩余配对：8</span>
+    </div>
+    <div id="game-size-select">
+      <button data-size="4" class="active">4 × 4（简单）</button>
+      <button data-size="6">6 × 6（困难）</button>
+    </div>
+    <canvas id="game-canvas"></canvas>
+    <div id="modal-overlay">
+      <div id="modal-panel">
+        <div id="modal-title">恭喜完成！步数：0</div>
+        <button id="modal-restart">再来一局</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
