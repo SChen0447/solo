@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:54:45.853Z",
+  "task_name": "auto139",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助前端开发者快速测试和比较不同CSS弹性布局（Flexbox）属性组合（如flex-direction、justify-content、align-items、flex-wrap、gap等）在容器内对子元素排列效果的影响，并自动生成对应CSS代码片段的交互式沙盒应用，主要解决在设计页面布局时，需要在开发者工具中反复修改CSS属性来对比不同布局方案，效率低下且难以直观保存对比结果的问题。\n\n它应当具备以下能力：\n1) 布局容器与子元素管理：页面中央显示一个宽600px、高400px的弹性容器（背景色#f0f0f0，圆角12px，边框1px solid #ccc），默认放置4个子元素（每个宽80px、高60px，分别用不同的柔和渐变色表示，圆角8px，文字居中显示编号1-4）。用户可通过右侧控制面板的“添加子元素”按钮（蓝色#3498db，圆角6px）添加最多8个子元素，或通过每个子元素右上角的“×”按钮删除（红色#e74c3c，悬停时放大1.1倍）。\n2) 弹性属性控制面板：页面右侧（宽度320px，背景色#2c3e50，圆角12px，内边距20px）包含以下控件组：flex-direction（下拉选择row/row-reverse/column/column-reverse）、flex-wrap（下拉选择nowrap/wrap/wrap-reverse）、justify-content（下拉选择flex-start/center/flex-end/space-between/space-around/space-evenly）、align-items（下拉选择stretch/center/flex-start/flex-end/baseline）、align-content（当下拉选择wrap时激活，选项同justify-content）、gap（滑块0-40px，步长4px，实时显示数值）。每个控件变化时，容器内子元素立即重排，并伴有平滑过渡动画（transition-duration 300ms，easing cubic-bezier(0.4, 0, 0.2, 1)）。\n3) 子元素尺寸和顺序调整：用户可单独拖拽每个子元素右下角的调节手柄（直径12px的圆点，颜色#e67e22）来改变其宽度和高度（最小60px，最大200px，步长10px），拖拽时子元素边框变为橙色虚线和阴影。同时，控制面板底部提供一个“翻转排列顺序”按钮（紫色#9b59b6，圆角8px），点击后子元素在容器内的DOM顺序反转，但保留各自的尺寸和颜色。\n4) 预设布局方案与对比：预置三套弹性布局方案（居中对齐、两端对齐、网格排列），每种方案以按钮形式显示在控制面板上方（按钮宽120px，高40px，圆角6px，背景#34495e，文字白色，悬停变亮#5dade2）。点击任一预设，所有控件值自动更新，容器内子元素重新排列并播放一次缩放动画（初始scale 0.95，结束1.0，持续400ms，缓出）。\n5) 代码导出与重置：控制面板底部有两个按钮：“复制CSS代码”（绿色#27ae60，圆角8px，点击后弹出提示“已复制到剪贴板！”并显示3秒后消失）和“重置为默认”（灰色#7f8c8d，圆角8px，点击后所有控件归零，子元素恢复初始数量4个）。导出的CSS代码格式为：.flex-container { display: flex; flex-direction: ...; ... }，并在每个属性后加注释。\n\n界面方面要求：整体页面采用深色主题（主背景#1a1a2e），布局为左右两栏结构（左栏弹性容器占中间区域，右栏控制面板固定宽320px并带有顶部标题“弹性布局实验室”和分隔线）。所有控件标签使用亮色文字（#ecf0f1），下拉选择框和滑块带有细边框和半透明背景，滑块轨道为#34495e，滑块按钮为#3498db（悬停变亮）。所有按钮悬停时有轻微上浮效果（transform translateY(-2px)）和阴影变化。响应式方面，当屏幕宽度小于900px时，右栏控制面板转为底部固定高度300px的横向滚动面板，弹性容器宽高自适应缩小。\n\n性能上需要：所有控件操作后的布局重排和动画渲染在60FPS下无卡顿。\n\n实现采用TypeScript、React和Vite，按以下文件组织代码：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、uuid、lodash，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，挂载id为root的div，背景色#1a1a2e）\n - src/App.tsx（主组件，包含左右两栏布局，管理所有弹性布局状态和子元素列表，接收控制面板组件的回调更新属性）\n - src/Container.tsx（弹性容器组件，根据App传入的flex属性和子元素列表渲染实际布局，提供子元素尺寸调整手柄和删除按钮）\n - src/Controls.tsx（控制面板组件，包含所有flex属性控件、预设按钮和导出/重置按钮，emit事件到App）\n - src/utils.ts（工具函数，生成CSS代码字符串、处理子元素颜色和初始数据）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:f3b40f19fb07ad177148a2532c24f400_6a286ec43c6321d5e485e441.6a286f693c6321d5e485e4ba.6a286f69f5869894236c3370:Trae CN.T(2026/6/10 03:54:17)",
+    "user_id": "3986207660317399",
+    "trace_id": "f3b40f19fb07ad177148a2532c24f400",
+    "session_id": "6a286ec43c6321d5e485e441",
+    "task_id": "6a286f693c6321d5e485e4ba",
+    "message_id": "6a286f69f5869894236c3370",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:54:17",
+    "format": "full"
+  },
+  "trace": "null"
+}
