@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D迷宫逃脱</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #1a1a1a;
+        font-family: 'Orbitron', monospace;
+        cursor: crosshair;
+      }
+      #app { width: 100%; height: 100%; position: relative; }
+      canvas.game-canvas { display: block; width: 100%; height: 100%; }
+
+      .ui-text {
+        font-family: 'Orbitron', monospace;
+        color: #b8860b;
+        text-shadow:
+          0 0 5px #b8860b,
+          0 0 10px #b8860b,
+          1px 1px 0 #000,
+          -1px -1px 0 #000,
+          1px -1px 0 #000,
+          -1px 1px 0 #000;
+        letter-spacing: 1px;
+      }
+
+      #timer {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        font-size: 20px;
+        font-weight: 700;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      #minimap {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        width: 150px;
+        height: 150px;
+        border: 2px solid #b8860b;
+        box-shadow: 0 0 10px rgba(184, 134, 11, 0.5);
+        background: #0a0a0a;
+        z-index: 10;
+        pointer-events: none;
+      }
+
+      #crosshair {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 20px;
+        height: 20px;
+        pointer-events: none;
+        z-index: 10;
+      }
+      #crosshair::before,
+      #crosshair::after {
+        content: '';
+        position: absolute;
+        background: rgba(255, 255, 255, 0.85);
+      }
+      #crosshair::before {
+        left: 50%;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        transform: translateX(-50%);
+      }
+      #crosshair::after {
+        top: 50%;
+        left: 0;
+        height: 2px;
+        width: 100%;
+        transform: translateY(-50%);
+      }
+
+      #startPanel,
+      #deathPanel,
+      #winPanel {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        pointer-events: none;
+      }
+      #startPanel .panel-bg,
+      #winPanel .panel-bg {
+        background: rgba(0, 0, 0, 0.75);
+        padding: 40px 60px;
+        border: 2px solid #b8860b;
+        box-shadow: 0 0 30px rgba(184, 134, 11, 0.4);
+        text-align: center;
+      }
+      #startPanel h1,
+      #winPanel h1 {
+        font-size: 42px;
+        margin-bottom: 16px;
+        color: #b8860b;
+        text-shadow: 0 0 15px #b8860b;
+      }
+      #startPanel p,
+      #winPanel p {
+        font-size: 20px;
+        color: #b8860b;
+        text-shadow: 0 0 8px #b8860b;
+      }
+      #deathPanel {
+        background: rgba(200, 0, 0, 0);
+        animation: deathFlash 0.6s ease-out;
+      }
+      @keyframes deathFlash {
+        0%   { background: rgba(200, 0, 0, 0.7); }
+        50%  { background: rgba(200, 0, 0, 0.3); }
+        100% { background: rgba(200, 0, 0, 0.15); }
+      }
+      #deathPanel h1 {
+        font-size: 64px;
+        color: #ff3030;
+        text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000;
+      }
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="timer" class="ui-text hidden">0.0 s</div>
+      <canvas id="minimap" width="150" height="150"></canvas>
+      <div id="crosshair"></div>
+
+      <div id="startPanel">
+        <div class="panel-bg">
+          <h1>3D 迷宫逃脱</h1>
+          <p>按空格键开始</p>
+          <p style="margin-top:14px;font-size:14px;opacity:0.75;">WASD 移动 · 鼠标拖拽视角</p>
+        </div>
+      </div>
+
+      <div id="deathPanel" class="hidden">
+        <h1>死 亡</h1>
+      </div>
+
+      <div id="winPanel" class="hidden">
+        <div class="panel-bg">
+          <h1>胜 利</h1>
+          <p id="winTime">用时: 0.0 s</p>
+          <p style="margin-top:14px;font-size:14px;opacity:0.75;">按空格键重新开始</p>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
