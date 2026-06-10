@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RHYTHM BARRAGE</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #0a0b1e;
+      overflow: hidden;
+      font-family: monospace;
+    }
+    #game-container {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    #game-title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #00ffcc;
+      letter-spacing: 4px;
+      z-index: 10;
+      text-shadow: 0 0 10px #00ffcc;
+    }
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      cursor: none;
+    }
+    #start-hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #00ffcc;
+      font-size: 18px;
+      letter-spacing: 2px;
+      z-index: 20;
+      text-align: center;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1 id="game-title">RHYTHM BARRAGE</h1>
+    <div id="start-hint">CLICK TO START<br />移动鼠标控制飞船 | 空格释放超爆发</div>
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
