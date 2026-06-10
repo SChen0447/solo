@@ -1,0 +1,19 @@
+{
+  "name": "combo-tree-editor",
+  "version": "1.0.0",
+  "description": "2D横版动作游戏连招树编辑器",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.202"
+  }
+}
