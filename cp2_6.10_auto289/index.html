@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星辰仪·历史星图模拟器</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div id="main-layout">
+        <div id="scene-container"></div>
+
+        <div id="projection-panel">
+          <div class="panel-header">
+            <h2>天球极方位投影</h2>
+          </div>
+          <canvas id="projection-canvas"></canvas>
+          <div class="constellation-selector">
+            <button class="const-btn active" data-const="UrsaMajor">北斗七星</button>
+            <button class="const-btn" data-const="Orion">猎户座</button>
+          </div>
+          <div id="coordinates-display">
+            <div class="coord-row">
+              <span class="coord-label">观测日期：</span>
+              <span class="coord-value" id="coord-date">--</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-label">观测时间：</span>
+              <span class="coord-value" id="coord-time">--</span>
+            </div>
+            <div class="coord-row">
+              <span class="coord-label">恒星时角：</span>
+              <span class="coord-value" id="coord-ha">--</span>
+            </div>
+            <hr class="coord-divider" />
+            <div id="stars-coords"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="control-panel">
+        <button id="hamburger-btn" class="hamburger-btn" aria-label="菜单">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="panel-content">
+          <div class="control-section">
+            <label class="control-label">历史星表</label>
+            <select id="dataset-select">
+              <option value="ptolemy">公元150年 · 托勒密星表</option>
+              <option value="islamic">公元1000年 · 伊斯兰星表</option>
+              <option value="tycho">公元1600年 · 第谷星表</option>
+            </select>
+            <p class="dataset-note" id="dataset-note"></p>
+          </div>
+          <div class="control-section">
+            <button id="demo-btn" class="action-btn">自动演示</button>
+            <button id="export-btn" class="action-btn">导出星盘读数</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="time-controls">
+        <div class="slider-group">
+          <label class="slider-label">
+            日期：<span id="date-label">1月1日</span>
+          </label>
+          <input type="range" id="date-slider" min="1" max="365" value="80" />
+        </div>
+        <div class="slider-group">
+          <label class="slider-label">
+            时间：<span id="time-label">12:00</span>
+          </label>
+          <input type="range" id="time-slider" min="0" max="1439" value="720" />
+        </div>
+      </div>
+
+      <div id="layer-info-card" class="hidden">
+        <h3 id="layer-name">--</h3>
+        <p id="layer-desc">--</p>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
