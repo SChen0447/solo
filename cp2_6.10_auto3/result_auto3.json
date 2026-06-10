@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T16:03:05.015Z",
+  "task_name": "auto3",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个线上的交互式时间轴项目，想法是让用户能够以可视化的方式记录和回顾个人生活或项目中的关键事件。希望它能做到：第一，用户可以在时间轴上添加事件，每个事件包含标题、日期、详细描述和一张小图标（用emoji表示），事件按时间顺序自动排列在横向时间线上；第二，支持对事件进行拖拽排序调整时间，也能点击事件卡片进入编辑模式修改内容，所有数据保存在浏览器的localStorage中，保证刷新后不丢失；第三，提供一个视觉切换按钮，能在“列表视图”和“时间线视图”之间切换，时间线视图用Canvas或SVG渲染，展示事件节点之间的连线，并带有平滑的滚动和缩放动画。界面上希望整体采用深色渐变背景（从深蓝到紫色），时间线用发光线条连接，事件卡片用半透明磨砂玻璃效果，卡片悬浮时有上浮光影动画和轻微缩放反馈，事件添加和编辑时弹出模态框带淡入淡出效果，左右两端有箭头导航可快速跳转到相邻年份，页面在手机和桌面都能自适应布局。性能上要求时间线拖拽和缩放动画不低于30FPS，事件渲染不超过200ms。实现用TypeScript、Vite和原生Web Components（不要任何框架），把代码拆成以下文件：\n - package.json（含依赖：typescript、vite、lit-element或仅用原生shadow DOM也可，启动脚本：npm run dev）\n - index.html（入口页面，加载主模块）\n - vite.config.js（构建配置，支持TypeScript）\n - tsconfig.json（严格模式，target es2020）\n - src/timeline-component.ts（封装的Web Component，负责时间线Canvas渲染、节点连线、缩放滚动逻辑，数据流向：接收事件数组→绘制时间线→输出选中事件）\n - src/event-card.ts（封装的Web Component，展示单个事件卡片，支持编辑模式，数据流向：接收事件对象→渲染卡片→输出编辑事件）\n - src/app.ts（主应用逻辑，管理事件列表数据、视图切换、存储读写，数据流向：初始化加载→分配数据到子组件→监听子组件事件更新数据）\n - src/style.css（全局样式和主题变量，包括深色渐变、磨砂玻璃效果、动画关键帧）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}

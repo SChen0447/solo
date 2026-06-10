@@ -1,0 +1,15 @@
+{
+  "name": "interactive-timeline",
+  "version": "1.0.0",
+  "description": "An interactive timeline application for recording and reviewing personal life or project key events",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
