@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:52:03.182Z",
+  "task_name": "auto41",
+  "task_type": "0-1代码生成",
+  "business_domain": "游戏开发",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个基于时间线操作的像素角色动画编辑器应用，实现用户通过拖拽和设置关键帧来创建2D角色骨骼动画。使用TypeScript、React 18和Canvas API在浏览器中运行。文件结构如下：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，包含id为root的挂载点）\n - src/components/Timeline.tsx（时间线组件，负责显示关键帧轨道、播放控制按钮和当前帧指针，接收动画状态和调度方法作为props）\n - src/components/Canvas.tsx（画布组件，负责渲染角色骨骼、当前帧姿态和实时骨骼操作，接收骨骼数据和当前帧索引）\n - src/hooks/useAnimationEngine.ts（自定义Hook，管理动画状态：帧列表、当前帧索引、播放状态、骨骼属性Keyframe数组，提供添加/删除关键帧、播放/暂停、自动补间插值计算等方法）\n - src/types.ts（定义骨骼节点、关键帧、帧数据结构等TypeScript接口）\n\n具体需求：\n1. 画布区域显示一个由5个关节组成的简化人体骨骼（头部、躯干、左右臂、左右腿），每个关节用圆形节点表示，关节间用线段连接，用户可以拖拽任意关节节点（圆形半径8像素，拖拽时节点变色并显示半径12像素的选中光晕）来改变其角度，拖拽时实时更新骨骼姿态并记录当前帧对应关节的旋转角。\n2. 底部时间线区域显示一横行帧格，每个帧格代表一帧（初始长度1秒共24帧），用户点击帧格可选中该帧，选中的帧格高亮（背景色从#2a2a2a变为#4a90d9），当前帧的姿态信息（5个关节角度值）会同步到画布上；用户还可以双击帧格将其标记为关键帧（帧格上方出现一个小菱形标记），关键帧之间的非关键帧姿态由系统自动线性插值计算得出，确保过渡平滑。\n3. 时间线左侧提供播放控制按钮组：播放/暂停按钮（▶/⏸图标，播放时每帧间隔41.7ms）、停止按钮（⏹回到第0帧）、循环开关（🔁，开启后播放到最后一帧自动跳回第0帧），播放时画布上的骨骼按时间顺序逐帧展示动画，帧进度指示器（一个垂直标尺线）从左向右平滑移动（非关键帧之间每帧停留约42ms，关键帧处停留时间加倍以强调姿势变化）。\n4. 提供一键清空所有帧和关键帧的复位功能，以及导出当前动画数据为JSON格式的按钮（导出内容包含所有关键帧的关节角度值和帧索引，格式为：{frames: [{index: number, joints: {head: number, torso: number, leftArm: number, rightArm: number, leftLeg: number, rightLeg: number}}]}），导出的JSON文件自动下载为 animation_data.json。\n\n界面方面：整体采用暗色主题（背景#1a1a2e，文字#e0e0e0），画布区域占据页面主体（约70%宽度），带有轻微网格背景（灰色线条透明度20%），骨骼节点颜色为#ff6b6b（红色），连线为#ffd93d（黄色），时间线区域置于底部（高度约200px），帧格之间用1px灰色分割线分隔，关键帧菱形标记颜色为#6bff6b（亮绿色），播放按钮使用#4a90d9（蓝色）填充白色图标，按钮悬停时有缩放1.05倍和亮度提亮20%的动画效果，所有交互（拖拽、点击、播放时帧更新）使用requestAnimationFrame驱动，保证动画流畅度不低于50FPS。\n\n性能要求：拖拽关节节点时画布重绘延迟不超过16ms，播放过程中帧切换与插值计算总耗时不超过8ms，确保60FPS平滑播放。运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:aededa9c239945615f1e07171e1beb8a_6a28528867cc8b34a197a9db.6a2852b767cc8b34a197a9eb.6a2852b7649e0aca5685e27d:Trae CN.T(2026/6/10 01:51:51)",
+    "user_id": "3986207660317399",
+    "trace_id": "aededa9c239945615f1e07171e1beb8a",
+    "session_id": "6a28528867cc8b34a197a9db",
+    "task_id": "6a2852b767cc8b34a197a9eb",
+    "message_id": "6a2852b7649e0aca5685e27d",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:51:51",
+    "format": "full"
+  },
+  "trace": "null"
+}
