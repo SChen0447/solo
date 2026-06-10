@@ -1,0 +1,15 @@
+{
+  "name": "productivity-kanban",
+  "version": "1.0.0",
+  "description": "集成式生产力看板应用 - 四象限待办、笔记速记、日历视图",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
