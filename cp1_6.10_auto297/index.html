@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>萤火虫之森</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      overflow: hidden;
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 20px;
+    }
+    #canvas-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+    }
+    #game-canvas {
+      display: block;
+      width: 800px;
+      height: 600px;
+      cursor: none;
+    }
+    #status-bar {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 760px;
+      height: 40px;
+      background: rgba(26, 26, 26, 0.8);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+    }
+    #status-left {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .status-quiet {
+      color: #a5d6a7;
+    }
+    .status-attract {
+      color: #ffea00;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1.0; }
+      50% { opacity: 0.5; }
+    }
+    #status-right {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      color: #b0bec5;
+    }
+    #count-display {
+      color: #ffea00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="game-canvas" width="800" height="600"></canvas>
+    <div id="status-bar">
+      <div id="status-left" class="status-quiet">静夜</div>
+      <div id="status-right">
+        <span>萤火虫：<span id="count-display">0</span>/60</span>
+        <span id="time-display">00:00:00</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
