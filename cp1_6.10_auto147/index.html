@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>视觉错觉交互探索器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="title">
+        <span class="title-accent">OPTICAL</span> ILLUSION LAB
+      </div>
+      <div class="fps-counter" id="fpsCounter">-- FPS</div>
+    </div>
+
+    <div class="main-container">
+      <div class="tab-bar">
+        <button class="tab-btn active" data-illusion="herrmann" title="赫尔曼网格">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <line x1="8" y1="8" x2="32" y2="8" stroke="#eaeaea" stroke-width="3" />
+            <line x1="8" y1="20" x2="32" y2="20" stroke="#eaeaea" stroke-width="3" />
+            <line x1="8" y1="32" x2="32" y2="32" stroke="#eaeaea" stroke-width="3" />
+            <line x1="8" y1="8" x2="8" y2="32" stroke="#eaeaea" stroke-width="3" />
+            <line x1="20" y1="8" x2="20" y2="32" stroke="#eaeaea" stroke-width="3" />
+            <line x1="32" y1="8" x2="32" y2="32" stroke="#eaeaea" stroke-width="3" />
+          </svg>
+        </button>
+        <button class="tab-btn" data-illusion="kanizsa" title="卡尼莎三角形">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <polygon points="20,6 34,32 6,32" fill="none" stroke="#eaeaea" stroke-width="2" stroke-dasharray="3,3" />
+            <circle cx="8" cy="30" r="5" fill="#eaeaea" />
+            <circle cx="32" cy="30" r="5" fill="#eaeaea" />
+            <circle cx="20" cy="8" r="5" fill="#eaeaea" />
+          </svg>
+        </button>
+        <button class="tab-btn" data-illusion="snakes" title="旋转蛇错觉">
+          <svg viewBox="0 0 40 40" width="40" height="40">
+            <path d="M20 8 A12 12 0 1 1 8 20" fill="none" stroke="#eaeaea" stroke-width="3" stroke-linecap="round" />
+            <path d="M20 12 A8 8 0 1 0 28 28" fill="none" stroke="#e94560" stroke-width="3" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="3" fill="#eaeaea" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="content-area">
+        <div class="canvas-wrapper">
+          <canvas id="illusionCanvas" width="800" height="600"></canvas>
+          <div class="canvas-overlay">
+            <div class="illusion-name" id="illusionName">赫尔曼网格</div>
+          </div>
+        </div>
+
+        <div class="control-panel">
+          <div class="panel-header">
+            <h2>参数控制</h2>
+            <p class="panel-subtitle" id="panelSubtitle">调整参数观察错觉变化</p>
+          </div>
+          <div class="panel-content" id="controlsContainer">
+          </div>
+          <div class="panel-footer">
+            <button class="reset-btn" id="resetBtn">重置参数</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="info-text">移动滑块实时调整参数 · 点击标签切换错觉类型</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
