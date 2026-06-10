@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>云层微物理3D可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d0d2b;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #88ccff;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .control-panel {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      padding: 20px;
+      background: rgba(26, 26, 62, 0.75);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(136, 204, 255, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 280px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #88ccff;
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(136, 204, 255, 0.2);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: #6aa9dd;
+    }
+
+    .altitude-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .alt-btn {
+      flex: 1;
+      padding: 10px 8px;
+      background: rgba(136, 204, 255, 0.08);
+      border: 2px solid transparent;
+      border-radius: 4px;
+      color: #88ccff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .alt-btn:hover {
+      background: rgba(136, 204, 255, 0.15);
+    }
+
+    .alt-btn:active {
+      transform: scale(0.95);
+    }
+
+    .alt-btn.active {
+      border-color: #88ccff;
+      background: rgba(136, 204, 255, 0.2);
+    }
+
+    .slider-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 4px;
+      background: rgba(136, 204, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #88ccff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(136, 204, 255, 0.6);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 14px rgba(136, 204, 255, 0.9);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #88ccff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(136, 204, 255, 0.6);
+    }
+
+    .slider-highlight {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 6px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #4488cc, #88ccff);
+      pointer-events: none;
+      transition: width 0.05s ease;
+    }
+
+    .value-display {
+      font-size: 12px;
+      color: #88ccff;
+      text-align: right;
+    }
+
+    .info-text {
+      font-size: 11px;
+      color: #5588aa;
+      line-height: 1.5;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(136, 204, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        border-radius: 12px 12px 0 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-width: unset;
+        padding: 12px 16px;
+        gap: 12px;
+      }
+
+      .panel-title {
+        width: 100%;
+        margin-bottom: 0;
+        padding-bottom: 8px;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .altitude-buttons {
+        flex-direction: row;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="control-panel" id="control-panel">
+      <div class="panel-title">云层微物理控制面板</div>
+
+      <div class="control-group">
+        <label class="control-label">海拔区间</label>
+        <div class="altitude-buttons">
+          <button class="alt-btn active" data-altitude="low">低层云 (0-5)</button>
+          <button class="alt-btn" data-altitude="mid">中层云 (5-10)</button>
+          <button class="alt-btn" data-altitude="high">高层云 (10-15)</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">空气饱和度</label>
+        <div class="slider-container">
+          <div class="slider-highlight" id="slider-highlight" style="width: 50%"></div>
+          <input type="range" min="0" max="100" value="50" class="slider" id="saturation-slider" />
+        </div>
+        <div class="value-display"><span id="saturation-value">50</span>%</div>
+      </div>
+
+      <div class="info-text">
+        鼠标拖拽旋转视角 · 滚轮缩放 · 粒子数量: 2500
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
