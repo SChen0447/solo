@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>谜题机关沙盒 - Puzzle Sandbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #0d0e1a;
+      color: #e0e0f0;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(ellipse at top, #1a1b3a 0%, #0d0e1a 70%);
+    }
+
+    .app-header {
+      height: 52px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(180deg, #1e1f35 0%, #15162a 100%);
+      border-bottom: 1px solid #2a2b50;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 700;
+      background: linear-gradient(90deg, #00d2ff, #7c5cff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    .app-subtitle {
+      font-size: 12px;
+      color: #8888aa;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      min-height: 0;
+    }
+
+    #element-panel {
+      width: 180px;
+      min-width: 180px;
+      background: linear-gradient(180deg, #252540 0%, #1e1f35 100%);
+      border-radius: 12px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid #333355;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00d2ff;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid #333355;
+      letter-spacing: 1px;
+    }
+
+    .element-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 6px;
+      background: rgba(42, 43, 69, 0.6);
+      border-radius: 8px;
+      border: 1px solid #333355;
+      transition: all 0.2s;
+    }
+
+    .element-item:hover {
+      border-color: #00d2ff;
+      background: rgba(42, 43, 80, 0.8);
+      transform: translateY(-1px);
+    }
+
+    .element-icon {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #2a2b45;
+      border-radius: 8px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .element-icon canvas {
+      border-radius: 4px;
+    }
+
+    .element-name {
+      font-size: 12px;
+      color: #ccccdd;
+      font-weight: 500;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 5px 0;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(180deg, #00d2ff, #0088cc);
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 6px rgba(0, 210, 255, 0.3);
+    }
+
+    .add-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .add-btn:active {
+      transform: scale(0.95);
+    }
+
+    .center-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+      min-width: 0;
+    }
+
+    .board-wrapper {
+      padding: 16px;
+      background: linear-gradient(180deg, #1e1f35 0%, #151628 100%);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid #2a2b50;
+    }
+
+    #board-canvas {
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(0, 210, 255, 0.15), inset 0 0 40px rgba(0, 0, 0, 0.4);
+      cursor: pointer;
+    }
+
+    #control-bar {
+      width: 100%;
+      max-width: 440px;
+      height: 60px;
+      background: linear-gradient(180deg, #1e1f30 0%, #151625 100%);
+      border-radius: 12px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid #2a2b50;
+    }
+
+    .ctrl-btn {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.5px;
+    }
+
+    .ctrl-btn:hover:not(:disabled) {
+      filter: brightness(1.15);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .ctrl-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .status-indicator {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 600;
+      color: #8888aa;
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      border: 1px solid #333355;
+    }
+
+    .right-col {
+      width: 240px;
+      min-width: 240px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 0;
+    }
+
+    #properties-panel {
+      background: linear-gradient(180deg, #2a2b45 0%, #1e1f35 100%);
+      border-radius: 8px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid #333355;
+      max-height: 340px;
+      overflow-y: auto;
+    }
+
+    .prop-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .prop-label {
+      font-size: 12px;
+      color: #aaaacc;
+      flex-shrink: 0;
+    }
+
+    .prop-value {
+      font-size: 12px;
+      color: #00d2ff;
+      font-weight: 600;
+    }
+
+    .prop-value.small {
+      font-size: 10px;
+      font-family: monospace;
+    }
+
+    .prop-row input[type="number"],
+    .prop-row select {
+      flex: 1;
+      max-width: 120px;
+      padding: 4px 8px;
+      font-size: 12px;
+      background: #1a1b2e;
+      color: #e0e0f0;
+      border: 1px solid #444466;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .prop-row input[type="number"]:focus,
+    .prop-row select:focus {
+      border-color: #00d2ff;
+    }
+
+    .connect-btn, .delete-btn {
+      width: 100%;
+      padding: 8px 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-top: 4px;
+    }
+
+    .connect-btn {
+      background: linear-gradient(180deg, #e74c3c, #c0392b);
+      box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
+    }
+
+    .delete-btn {
+      background: linear-gradient(180deg, #555577, #333355);
+    }
+
+    .connect-btn:hover, .delete-btn:hover {
+      filter: brightness(1.15);
+    }
+
+    .connect-btn:active, .delete-btn:active {
+      transform: scale(0.95);
+    }
+
+    .empty-hint {
+      font-size: 12px;
+      color: #666688;
+      text-align: center;
+      padding: 20px 0;
+      font-style: italic;
+    }
+
+    #logic-panel {
+      height: 150px;
+      min-height: 150px;
+      background: #1e1f30;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.05);
+      border: 1px solid #333355;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .logic-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #00d2ff;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #333355;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .logic-canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+
+    #logic-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: pointer;
+    }
+
+    #history-panel {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      width: 280px;
+      max-height: 400px;
+      background: linear-gradient(180deg, #252540 0%, #1e1f35 100%);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+      border: 1px solid #333355;
+      z-index: 100;
+      display: none;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #00d2ff;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333355;
+      margin-bottom: 10px;
+    }
+
+    #history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      background: rgba(42, 43, 69, 0.6);
+      border-radius: 6px;
+      border: 1px solid #333355;
+    }
+
+    .history-name {
+      font-size: 12px;
+      color: #e0e0f0;
+      font-weight: 500;
+    }
+
+    .history-time {
+      font-size: 10px;
+      color: #8888aa;
+      margin-top: 2px;
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mini-btn {
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .mini-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .mini-btn:active {
+      transform: scale(0.95);
+    }
+
+    .toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      padding: 10px 20px;
+      background: linear-gradient(180deg, #2a2b45, #1e1f35);
+      color: #00d2ff;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid #00d2ff;
+      box-shadow: 0 4px 20px rgba(0, 210, 255, 0.3);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .main-container {
+        flex-direction: column;
+        overflow-y: auto;
+        padding: 12px;
+      }
+
+      #element-panel {
+        width: 100%;
+        min-width: 0;
+        flex-direction: row;
+        flex-wrap: wrap;
+        height: auto;
+      }
+
+      .element-item {
+        width: calc(33.33% - 8px);
+      }
+
+      .center-col {
+        width: 100%;
+      }
+
+      #control-bar {
+        max-width: 100%;
+      }
+
+      .right-col {
+        width: 100%;
+        min-width: 0;
+      }
+
+      #properties-panel {
+        max-height: none;
+      }
+
+      #logic-panel {
+        height: 180px;
+      }
+
+      #history-panel {
+        right: 12px;
+        left: 12px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="app-header">
+      <div class="app-title">⚙ 谜题机关沙盒</div>
+      <div class="app-subtitle">Puzzle Sandbox Editor</div>
+    </div>
+
+    <div class="main-container">
+      <div id="element-panel"></div>
+
+      <div class="center-col">
+        <div class="board-wrapper">
+          <canvas id="board-canvas" width="400" height="400"></canvas>
+        </div>
+        <div id="control-bar"></div>
+      </div>
+
+      <div class="right-col">
+        <div id="properties-panel"></div>
+        <div id="logic-panel">
+          <div class="logic-title">逻辑预览</div>
+          <div class="logic-canvas-wrap">
+            <canvas id="logic-canvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="history-panel">
+      <div class="history-title">历史布局</div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
