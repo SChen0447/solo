@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>风弦琴 - 交互式数字风铃</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f0c29;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    #canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: default;
+    }
+    #history-panel {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      width: 180px;
+      min-height: 80px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: #fff;
+      font-size: 11px;
+      pointer-events: none;
+      backdrop-filter: blur(4px);
+      z-index: 10;
+    }
+    #history-panel .title {
+      font-size: 12px;
+      font-weight: 600;
+      opacity: 0.9;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 0;
+      opacity: 0.85;
+    }
+    .history-item svg {
+      flex-shrink: 0;
+    }
+    .history-item .color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+    .history-item .time {
+      margin-left: auto;
+      opacity: 0.6;
+      font-variant-numeric: tabular-nums;
+    }
+    .empty-hint {
+      opacity: 0.4;
+      font-size: 10px;
+      padding: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <div id="history-panel">
+    <div class="title">最近弹奏</div>
+    <div id="history-list">
+      <div class="empty-hint">点击风铃开始演奏...</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main-loop.ts"></script>
+</body>
+</html>
