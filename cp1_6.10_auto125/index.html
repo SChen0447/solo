@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="description" content="交互式诗词接龙与对联生成工具" />
+    <title>诗韵联芳 · 诗词接龙与对联生成</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="app-header">
+      <h1 class="app-title">诗韵联芳</h1>
+      <button id="favToggleBtn" class="fav-toggle-btn" aria-label="收藏夹">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <main class="app-main">
+      <section class="search-section">
+        <div class="search-box-wrapper">
+          <input
+            id="searchInput"
+            type="text"
+            class="search-input"
+            placeholder="输入关键字，如“月”、“春”、“风”…"
+            autocomplete="off"
+          />
+        </div>
+
+        <div id="searchResults" class="search-results"></div>
+      </section>
+
+      <section class="couplet-section">
+        <div id="coupletCard" class="couplet-card">
+          <div id="coupletContent" class="couplet-content">
+            <p class="couplet-hint">点击下方按钮，生成一副对联</p>
+          </div>
+          <div class="couplet-actions">
+            <button id="generateBtn" class="btn btn-primary">生成对联</button>
+            <button id="favCoupletBtn" class="btn btn-icon" aria-label="收藏对联">
+              <svg class="heart-icon heart-outline" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#ccc" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div id="drawerMask" class="drawer-mask"></div>
+    <aside id="favDrawer" class="fav-drawer">
+      <div class="drawer-header">
+        <h2 class="drawer-title">我的收藏</h2>
+        <button id="closeDrawerBtn" class="close-drawer-btn" aria-label="关闭">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="drawer-tabs">
+        <button class="drawer-tab active" data-tab="poems">诗词</button>
+        <button class="drawer-tab" data-tab="couplets">对联</button>
+      </div>
+
+      <div class="drawer-sort">
+        <button id="sortBtn" class="sort-btn">按时间排序</button>
+      </div>
+
+      <div id="favPoemsList" class="fav-list active"></div>
+      <div id="favCoupletsList" class="fav-list"></div>
+    </aside>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
