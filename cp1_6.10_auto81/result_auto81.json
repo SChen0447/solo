@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:56:17.100Z",
+  "task_name": "auto81",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中通过鼠标拖拽和键盘快捷键来拼接、调整和导出CSS渐变色彩方案的应用，主要解决设计师在编写CSS渐变时，难以直观预览多色阶渐变和实时调整色相、饱和度、亮度及角度的问题。\n\n它应当具备以下能力：\n1) 支持用户添加至少5个色标（color stop），每个色标通过双击可弹出HSL颜色选择器（色相环360度，饱和度0-100%，亮度0-100%，并显示十六进制值），色标沿一条水平渐变条排列（渐变条宽100%、高60px，两侧有圆角12px和1px浅灰边框），色标位置通过拖拽调整（最小间隔10px），每个色标上方显示一个小圆点（直径16px，颜色与当前色标一致，带1.5px白色边框），拖拽时实时更新渐变预览。\n2) 提供渐变角度控制旋钮（圆环直径80px，中心有指针，从0°到360°可旋转，步长1°，当前角度数值显示在旋钮中央，字体14px、颜色#333），同时有一个线性渐变预览框（宽200px高100px，圆角8px，显示当前角度和所有色标合成的渐变），渐变条和预览框都会在色标或角度变化时实时重绘（响应时间<50ms）。\n3) 支持一键复制CSS渐变代码（格式：background: linear-gradient(angle, color1 pos1, color2 pos2, ...);），复制按钮点击后显示“已复制”反馈（0.5秒后自动消失），同时旁边提供导出SVG图片功能（导出的SVG包含一个宽800px高50px的矩形，填充当前渐变，无边框）。\n4) 所有操作支持键盘快捷键：Ctrl+Z撤销上一次色标操作（最多10步），Ctrl+S导出当前CSS代码到剪贴板，Delete键删除当前选中的色标（选中的色标有2px蓝色虚线边框高亮）。\n5) 界面底部有一个预设面板（横向滚动，隐藏滚动条），包含至少6个预设渐变方案（如“日落橙黄”、“海洋蓝绿”、“极光紫绿”、“火焰红黄”、“森林绿棕”、“薰衣草粉紫”），每个预设显示为一个小卡片（宽120px高60px，圆角8px，填充对应渐变，下方有方案名称文字，字号12px、颜色#666），点击后自动替换当前色标和角度。\n\n界面方面：整体采用深色主题（背景色#1a1a2e，文字颜色#e0e0e0），主操作区居中布局（最大宽度1200px，左右各留80px留白），渐变条和控制旋钮水平排列在顶部区域（间距40px），下方为色标编辑区（每个色标显示为可拖拽的矩形块，宽80px高40px，圆角6px，左侧显示色标颜色缩略图，右侧显示HSL值和位置百分比），底部为预设面板和导出按钮行。交互反馈包括：拖拽时色标卡轻微放大（1.05倍）并添加阴影（0 4px 12px rgba(0,0,0,0.3)），旋钮旋转时有缓出动画（transition: transform 0.05s ease-out），预设卡片悬停时上移4px并加亮边框（边框色从transparent变为rgba(255,255,255,0.3)）。响应式方面，当屏幕宽度小于768px时，渐变条和旋钮改为垂直排列（旋钮在上，渐变条在下），色标卡宽度变为100%，预设面板改为网格布局（每行2个卡片）。\n\n性能上需要：所有拖拽和旋钮操作的响应时间不超过50ms（使用requestAnimationFrame节流），渐变预览重绘帧率不低于55fps，色标数量上限为10个时界面不出现卡顿。\n\n实现采用TypeScript、React 18和Vite，把代码拆成以下文件：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, react-colorful, uuid；启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，包含div#root，背景色#1a1a2e，字体sans-serif）\n - src/App.tsx（根组件，管理渐变状态[色标数组、角度、历史记录]，渲染子组件，传递回调函数）\n - src/GradientBar.tsx（负责渲染水平渐变条，支持色标拖拽位置调整，触发onColorStopsChange回调，使用React.memo优化重渲染）\n - src/ColorPicker.tsx（封装react-colorful的HSL颜色选择器，显示色标当前颜色，拖拽时实时更新父组件状态）\n - src/AngleControl.tsx（渲染角度旋钮，接受angle和onAngleChange，使用Canvas绘制圆盘和指针，鼠标拖拽旋转）\n - src/PresetsPanel.tsx（预设方案列表，每个预设存储为一个{name, stops, angle}对象，点击时触发onSelectPreset回调）\n - src/utils.ts（工具函数：gradientToCSS根据色标和角度生成CSS代码，validateStops检查色标合法性，generatePresets返回内置预设数组）\n\n关系说明：App.tsx是状态管理中心，GradientBar和AngleControl分别控制色标和角度，ColorPicker供每个色标编辑颜色，PresetsPanel提供预设方案，utils.ts提供纯函数辅助。运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:de6d94935ee05b9fbd434c2857afbc7c_6a286196962e00e3314cfb36.6a2861c5962e00e3314cfb46.6a2861c5a1ef94d1cf620147:Trae CN.T(2026/6/10 02:56:05)",
+    "user_id": "3986207660317399",
+    "trace_id": "de6d94935ee05b9fbd434c2857afbc7c",
+    "session_id": "6a286196962e00e3314cfb36",
+    "task_id": "6a2861c5962e00e3314cfb46",
+    "message_id": "6a2861c5a1ef94d1cf620147",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:56:05",
+    "format": "full"
+  },
+  "trace": "null"
+}
