@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:17:58.086Z",
+  "task_name": "auto225",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位独立策展人希望为线上艺术节制作一个虚拟展厅，让观众以鼠标拖拽的方式漫步于一个由几何画廊构成的迷宫中，每面墙上悬挂着可点击放大的数字画作，并配有随距离渐变的氛围音乐。\n\n构建一个名为「几何回廊」的全栈web应用，观众在迷宫中自由漫游，点击画作可弹出全屏鉴赏模式，画作下方显示作者名和创作故事（由JSON数据加载）。使用TypeScript、React 18、CSS 3D变换和Vite实现，所有画作数据通过本地JSON模拟API，行走路径记录在localStorage中。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react@18, react-dom@18, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr，alias：@指向src）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，引入main.tsx）\n - src/main.tsx（React入口，渲染App组件，调用GalleryApp作为根组件）\n - src/GalleryApp.tsx（迷宫主逻辑，管理用户位置、视角旋转和画作状态，数据流向：从画作JSON加载展厅布局→构建3D墙体→监听鼠标拖拽和键盘事件→更新用户位置并检测与画作的碰撞→通知画作点击事件）\n - src/ArtCard.tsx（画作卡片组件，接收画作元数据（标题、作者、风格、颜色调色板）和点击回调，展示缩略图和悬停动画，数据流向：父组件GalleryApp传入画作数据→render缩略图→点击时调用父回调弹出鉴赏模式）\n - src/hall.json（画作元数据数组，包含每件画作的id、title、author、description、imageUrl、wallPosition（墙面编号和坐标）、style标签和colorPalette数组）\n - src/styles.css（全局样式：viewport 100vh背景渐变，画作卡片悬浮阴影和放大过渡，鉴赏模式遮罩+居中卡片，响应式适配移动端触摸）\n\n功能需求：\n1) 迷宫生成：程序化生成一个4x4的网格走廊，每面墙高3米、宽2米，地面和天花板为深色木纹质感，墙体采用#2a2a3a的亚光质感，走廊转角处放置指向性标识箭头。用户通过鼠标拖拽（按住左键拖动视野方向）和键盘WASD控制前进/后退/左转/右转，移动视角时走廊两侧的灯光根据距离计算强度，产生由亮到暗的渐变效果，给观众一种真实的漫步沉浸感。\n2) 画作挂载与点击：在每段走廊的内墙上随机挂载1-2幅画作（由hall.json提供），每幅画作显示为一个带有细黑框的矩形卡片（宽150px、高200px），位置固定在墙面1.5米高度。当用户移动到距离画作2米范围内时，画作卡片自动放大1.2倍并显示悬浮光晕（#ffd700），同时画作title以淡入动画出现在卡片下方。用户点击画作时，触发全屏鉴赏模式——画面向前推近，画作填满屏幕宽度，背景变暗（#000 0.8透明遮罩），画作下方出现作者、创作故事和关闭按钮，关闭时反向动画返回迷宫。\n3) 氛围音乐控制：每幅画作用JSON中的style标签关联一段音频（base64或网络URL，模拟实现），当用户接近画作时，对应的音乐以低音量淡入（从0到0.3，持续2秒），离开时淡出（持续1.5秒）。音乐使用HTMLAudioElement管理，同一时间最多播放两首，新音乐切入时旧音乐平滑淡出（crossfade），营造沉浸式过渡。\n4) 行走轨迹记录：用户在迷宫中每3秒自动记录一次当前位置（x,z坐标、朝向角度）到localStorage，使用滚动数组保留最近20条记录。当用户刷新页面时，自动恢复到最后记录的位置，并提供“重置起始点”按钮（位于屏幕右上角，点击后位置重置到迷宫入口坐标0,0,0）。\n5) 画作详情编辑：在鉴赏模式下，观众可以长按（或右键）画作进入编辑模式，此时会显示一个浮动的文本输入框，允许用户添加/修改画作的创作故事（修改存储在hall.json的数据，通过localStorage同步），编辑完成后点击保存退出编辑模式，故事即时更新并保持持久化。\n\n界面要求：全屏3D迷宫使用CSS 3D perspective实现，视口初始perspective: 1200px，随着用户移动perspective值在800到1400px之间根据速度动态变化，模拟景深感。颜色主题采用暗色调：背景为#1a1a2e，墙体为#2a2a3a，地面为#3e3e4e，画作背板为#f5f0e8。动画过渡：移动时镜头平滑插值（ease-out 0.3s），画作放大和光晕使用transition+transform（0.4s cubic-bezier），音乐淡入淡出用volume线性增益（setInterval模拟）。所有卡片在hover时带有微光流动（CSS keyframes从金色渐变到白色），移动端（屏幕宽度<768px）支持触摸滑动控制行走（touchmove监听）。\n\n性能约束：在60Hz刷新率下，移动渲染帧率保持50fps以上，同时最多缓存3首音频，画作数据JSON大小不超过50KB，localStorage写入频率不超过每2秒一次，避免卡顿。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:70d196bf18c7310e38f4bccef56cb13c_6a289eea2f0fffa38d8e4775.6a289f1a2f0fffa38d8e4785.6a289f1a5bb65eb93a2606c6:Trae CN.T(2026/6/10 07:17:46)",
+    "user_id": "3986207660317399",
+    "trace_id": "70d196bf18c7310e38f4bccef56cb13c",
+    "session_id": "6a289eea2f0fffa38d8e4775",
+    "task_id": "6a289f1a2f0fffa38d8e4785",
+    "message_id": "6a289f1a5bb65eb93a2606c6",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:17:46",
+    "format": "full"
+  },
+  "trace": "null"
+}
