@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>塔防布局与攻击范围可视化模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #1a1a2e;
+      font-family: monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #app {
+      position: relative;
+      width: 800px;
+      height: 600px;
+    }
+
+    #canvas {
+      display: block;
+      background: #2d3436;
+      border: 2px solid #636e72;
+    }
+
+    #towerPanel {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #1e1e2e;
+      border-radius: 8px;
+      padding: 10px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    }
+
+    .tower-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      position: relative;
+    }
+
+    .tower-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .tower-btn.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    }
+
+    .tower-btn.machinegun {
+      background: #e74c3c;
+    }
+
+    .tower-btn.cannon {
+      background: #3498db;
+    }
+
+    .tower-btn.laser {
+      background: #2ecc71;
+    }
+
+    .tower-label {
+      color: #ffffff;
+      font-size: 10px;
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+    }
+
+    #pathButtons {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+    }
+
+    .path-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      background: #2980b9;
+      color: #ffffff;
+      font-family: monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .path-btn:hover {
+      background: #1f618d;
+    }
+
+    .path-btn.active {
+      background: #27ae60;
+    }
+
+    #infoPanel {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(30, 30, 46, 0.95);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #ffffff;
+      font-size: 12px;
+      min-width: 160px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      display: none;
+    }
+
+    #infoPanel.visible {
+      display: block;
+    }
+
+    #infoPanel .title {
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #636e72;
+    }
+
+    #infoPanel .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    #infoPanel .label {
+      color: #b2bec3;
+    }
+
+    #infoPanel .value {
+      color: #ffffff;
+    }
+
+    #hintText {
+      position: absolute;
+      top: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ffeaa7;
+      font-size: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 6px 12px;
+      border-radius: 4px;
+      display: none;
+    }
+
+    #hintText.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas" width="800" height="600"></canvas>
+
+    <div id="towerPanel">
+      <button class="tower-btn machinegun active" data-type="machinegun" title="机枪">
+        <span class="tower-label">机枪</span>
+      </button>
+      <button class="tower-btn cannon" data-type="cannon" title="加农炮">
+        <span class="tower-label">加农炮</span>
+      </button>
+      <button class="tower-btn laser" data-type="laser" title="激光">
+        <span class="tower-label">激光</span>
+      </button>
+    </div>
+
+    <div id="pathButtons">
+      <button class="path-btn" id="simulatePathBtn">模拟路径</button>
+      <button class="path-btn" id="clearPathBtn">清除路径</button>
+    </div>
+
+    <div id="infoPanel"></div>
+    <div id="hintText"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
