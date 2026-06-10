@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:16:37.751Z",
+  "task_name": "auto24",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位内容创作者希望搭建一个浏览器内的图文笔记编辑器，能够将文字和手绘草图自由混合排版，并批量导出为PDF或图片。\n\n构建一个图文混合笔记编辑器应用，使用TypeScript、React 18、Vite和Canvas实现在浏览器中运行。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, jspdf, html2canvas，启动脚本：npm run dev）\n - vite.config.js（React插件配置，路径别名@指向src）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，包含夜间模式meta标签）\n - src/App.tsx（主组件，状态管理：notes数组、当前选中工具、画布缩放比例。调用SketchCanvas和NotePanel，传递回调函数）\n - src/components/SketchCanvas.tsx（画布组件，接收绘画工具类型和颜色，渲染指点笔迹。使用Canvas API处理鼠标/触控事件，支持undo/redo历史）\n - src/components/NotePanel.tsx（笔记侧边栏，渲染文字卡片列表，支持添加、删除和拖拽排序。通过App传入的setNotes更新数据）\n - src/utils/exportUtils.ts（导出工具，使用jspdf生成PDF，html2canvas截图导出图片）\n\n功能需求：\n1) 左侧为可无限滚动的笔记区域，右侧为画布区域，用户可以在笔记区域添加纯文本卡片（Markdown语法支持粗体、斜体和列表），在画布区域用手指或鼠标绘制任意图形（支持铅笔、直线、矩形、圆形四种笔刷，颜色从预设24色盘中选取）。\n2) 支持将画布上绘制的图形选中后（点击选中，出现resize手柄）拖拽到文字卡片区域，自动将图形截图嵌入为卡片的一部分，嵌入后卡片高度自适应增加。\n3) 文字卡片支持双击编辑内容，编辑时背景变为柔和渐变色（#F0E6FF到#E6F2FF），编辑结束后平滑恢复白色背景。所有卡片之间绘制一条浅灰色虚线作为分隔线，当卡片被拖拽排序时虚线跟随移动。\n4) 在右上角工具栏提供“导出为PDF”和“导出为PNG”按钮，点击后先渲染整个笔记（文字+嵌入图形），PDF使用竖版A4尺寸，PNG为1920x1080，导出时显示进度条（0%-100%）并伴有蓝色波纹填充动画。\n5) 支持无限撤销/重做（Ctrl+Z / Ctrl+Y），撤销时变化历史用堆栈管理，堆栈最大200步，超出自动丢弃最早记录。\n\n界面要求：整体采用毛玻璃质感设计，主背景为浅灰蓝（#F5F7FA），工具栏区域使用半透明磨砂玻璃效果（backdrop-filter: blur(12px)），笔记区域左边界有2px内阴影。颜色主题以蓝紫色渐变为主（#7C5CFC到#48C6EF），按钮悬停时扩大阴影并上移2px，点击时缩小为0.95倍。卡片之间插入或删除操作均使用0.3秒ease-in-out过渡动画。响应式方面，宽度小于768px时转为上下布局（画布在上，笔记在下，各占50%高度），画布工具栏悬浮在左下角。\n\n性能约束：画布上同时显示1000个绘制的控制点（如密集的曲线）时，帧率不低于30FPS；撤销堆栈操作响应时间不超过10ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0b76e417e23e652d3a374bb51861001c_6a284997b6c3e0c5ba306b62.6a284a69b6c3e0c5ba306c2b.6a284a68693421126bce289f:Trae CN.T(2026/6/10 01:16:25)",
+    "user_id": "3986207660317399",
+    "trace_id": "0b76e417e23e652d3a374bb51861001c",
+    "session_id": "6a284997b6c3e0c5ba306b62",
+    "task_id": "6a284a69b6c3e0c5ba306c2b",
+    "message_id": "6a284a68693421126bce289f",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:16:25",
+    "format": "full"
+  },
+  "trace": "null"
+}
