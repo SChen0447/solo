@@ -1,0 +1,137 @@
+{
+  "ingredients": [
+    {
+      "id": "ing-1",
+      "name": "高筋面粉",
+      "stock": 25,
+      "unit": "kg",
+      "costPerUnit": 8.5,
+      "safetyStock": 10
+    },
+    {
+      "id": "ing-2",
+      "name": "低筋面粉",
+      "stock": 8,
+      "unit": "kg",
+      "costPerUnit": 7.8,
+      "safetyStock": 5
+    },
+    {
+      "id": "ing-3",
+      "name": "黄油",
+      "stock": 5,
+      "unit": "kg",
+      "costPerUnit": 45,
+      "safetyStock": 3
+    },
+    {
+      "id": "ing-4",
+      "name": "白砂糖",
+      "stock": 12,
+      "unit": "kg",
+      "costPerUnit": 6.5,
+      "safetyStock": 5
+    },
+    {
+      "id": "ing-5",
+      "name": "酵母",
+      "stock": 0.8,
+      "unit": "kg",
+      "costPerUnit": 120,
+      "safetyStock": 0.5
+    },
+    {
+      "id": "ing-6",
+      "name": "盐",
+      "stock": 3,
+      "unit": "kg",
+      "costPerUnit": 3.5,
+      "safetyStock": 1
+    },
+    {
+      "id": "ing-7",
+      "name": "鸡蛋",
+      "stock": 60,
+      "unit": "个",
+      "costPerUnit": 1.2,
+      "safetyStock": 30
+    },
+    {
+      "id": "ing-8",
+      "name": "牛奶",
+      "stock": 15,
+      "unit": "L",
+      "costPerUnit": 8,
+      "safetyStock": 10
+    },
+    {
+      "id": "ing-9",
+      "name": "肉桂粉",
+      "stock": 0.3,
+      "unit": "kg",
+      "costPerUnit": 85,
+      "safetyStock": 0.2
+    }
+  ],
+  "recipes": [
+    {
+      "id": "rec-1",
+      "name": "酸种面包",
+      "description": "经典法式酸种面包，外皮酥脆内部柔软，带有自然发酵的微酸风味",
+      "ingredients": [
+        { "ingredientId": "ing-1", "amount": 0.5 },
+        { "ingredientId": "ing-5", "amount": 0.005 },
+        { "ingredientId": "ing-6", "amount": 0.01 }
+      ],
+      "estimatedYield": 1,
+      "sellingPrice": 38,
+      "productionTime": 480
+    },
+    {
+      "id": "rec-2",
+      "name": "法棍",
+      "description": "正宗法式长棍面包，外脆内软，气孔丰富",
+      "ingredients": [
+        { "ingredientId": "ing-1", "amount": 0.35 },
+        { "ingredientId": "ing-5", "amount": 0.003 },
+        { "ingredientId": "ing-6", "amount": 0.008 }
+      ],
+      "estimatedYield": 2,
+      "sellingPrice": 28,
+      "productionTime": 360
+    },
+    {
+      "id": "rec-3",
+      "name": "肉桂卷",
+      "description": "香甜肉桂卷，配奶油糖霜，温暖治愈的经典甜点",
+      "ingredients": [
+        { "ingredientId": "ing-1", "amount": 0.25 },
+        { "ingredientId": "ing-3", "amount": 0.06 },
+        { "ingredientId": "ing-4", "amount": 0.08 },
+        { "ingredientId": "ing-5", "amount": 0.004 },
+        { "ingredientId": "ing-7", "amount": 1 },
+        { "ingredientId": "ing-8", "amount": 0.12 },
+        { "ingredientId": "ing-9", "amount": 0.008 }
+      ],
+      "estimatedYield": 6,
+      "sellingPrice": 18,
+      "productionTime": 180
+    },
+    {
+      "id": "rec-4",
+      "name": "黄油可颂",
+      "description": "层次分明的法式可颂，黄油香气浓郁，入口即化",
+      "ingredients": [
+        { "ingredientId": "ing-1", "amount": 0.2 },
+        { "ingredientId": "ing-3", "amount": 0.15 },
+        { "ingredientId": "ing-5", "amount": 0.003 },
+        { "ingredientId": "ing-4", "amount": 0.02 },
+        { "ingredientId": "ing-6", "amount": 0.005 },
+        { "ingredientId": "ing-8", "amount": 0.1 }
+      ],
+      "estimatedYield": 8,
+      "sellingPrice": 15,
+      "productionTime": 540
+    }
+  ]
+}

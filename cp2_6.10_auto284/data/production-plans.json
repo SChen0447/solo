@@ -1,0 +1,44 @@
+{
+  "plans": [
+    {
+      "id": "plan-1",
+      "recipeId": "rec-1",
+      "date": "2026-06-10",
+      "plannedQuantity": 35,
+      "startTime": "05:30",
+      "prepStatus": "in-progress",
+      "progress": 45,
+      "order": 0
+    },
+    {
+      "id": "plan-2",
+      "recipeId": "rec-4",
+      "date": "2026-06-10",
+      "plannedQuantity": 50,
+      "startTime": "04:00",
+      "prepStatus": "completed",
+      "progress": 100,
+      "order": 1
+    },
+    {
+      "id": "plan-3",
+      "recipeId": "rec-2",
+      "date": "2026-06-10",
+      "plannedQuantity": 40,
+      "startTime": "06:30",
+      "prepStatus": "pending",
+      "progress": 0,
+      "order": 2
+    },
+    {
+      "id": "plan-4",
+      "recipeId": "rec-3",
+      "date": "2026-06-10",
+      "plannedQuantity": 60,
+      "startTime": "07:30",
+      "prepStatus": "pending",
+      "progress": 0,
+      "order": 3
+    }
+  ]
+}

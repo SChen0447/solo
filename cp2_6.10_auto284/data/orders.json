@@ -1,0 +1,54 @@
+{
+  "orders": [
+    {
+      "id": "ord-1",
+      "recipeId": "rec-1",
+      "quantity": 5,
+      "pickupDate": "2026-06-10",
+      "customerName": "张女士",
+      "customerPhone": "13800138001",
+      "status": "pending",
+      "createdAt": "2026-06-09T10:30:00Z"
+    },
+    {
+      "id": "ord-2",
+      "recipeId": "rec-3",
+      "quantity": 12,
+      "pickupDate": "2026-06-11",
+      "customerName": "李先生",
+      "customerPhone": "13900139002",
+      "status": "pending",
+      "createdAt": "2026-06-09T14:20:00Z"
+    }
+  ],
+  "salesHistory": [
+    { "date": "2026-06-03", "recipeId": "rec-1", "quantity": 28, "returns": 1 },
+    { "date": "2026-06-03", "recipeId": "rec-2", "quantity": 32, "returns": 0 },
+    { "date": "2026-06-03", "recipeId": "rec-3", "quantity": 45, "returns": 2 },
+    { "date": "2026-06-03", "recipeId": "rec-4", "quantity": 38, "returns": 1 },
+    { "date": "2026-06-04", "recipeId": "rec-1", "quantity": 25, "returns": 0 },
+    { "date": "2026-06-04", "recipeId": "rec-2", "quantity": 35, "returns": 1 },
+    { "date": "2026-06-04", "recipeId": "rec-3", "quantity": 50, "returns": 1 },
+    { "date": "2026-06-04", "recipeId": "rec-4", "quantity": 42, "returns": 0 },
+    { "date": "2026-06-05", "recipeId": "rec-1", "quantity": 30, "returns": 2 },
+    { "date": "2026-06-05", "recipeId": "rec-2", "quantity": 38, "returns": 0 },
+    { "date": "2026-06-05", "recipeId": "rec-3", "quantity": 55, "returns": 3 },
+    { "date": "2026-06-05", "recipeId": "rec-4", "quantity": 45, "returns": 2 },
+    { "date": "2026-06-06", "recipeId": "rec-1", "quantity": 32, "returns": 1 },
+    { "date": "2026-06-06", "recipeId": "rec-2", "quantity": 40, "returns": 2 },
+    { "date": "2026-06-06", "recipeId": "rec-3", "quantity": 60, "returns": 1 },
+    { "date": "2026-06-06", "recipeId": "rec-4", "quantity": 48, "returns": 0 },
+    { "date": "2026-06-07", "recipeId": "rec-1", "quantity": 22, "returns": 0 },
+    { "date": "2026-06-07", "recipeId": "rec-2", "quantity": 28, "returns": 1 },
+    { "date": "2026-06-07", "recipeId": "rec-3", "quantity": 42, "returns": 2 },
+    { "date": "2026-06-07", "recipeId": "rec-4", "quantity": 35, "returns": 1 },
+    { "date": "2026-06-08", "recipeId": "rec-1", "quantity": 27, "returns": 1 },
+    { "date": "2026-06-08", "recipeId": "rec-2", "quantity": 33, "returns": 0 },
+    { "date": "2026-06-08", "recipeId": "rec-3", "quantity": 48, "returns": 1 },
+    { "date": "2026-06-08", "recipeId": "rec-4", "quantity": 40, "returns": 2 },
+    { "date": "2026-06-09", "recipeId": "rec-1", "quantity": 30, "returns": 1 },
+    { "date": "2026-06-09", "recipeId": "rec-2", "quantity": 36, "returns": 2 },
+    { "date": "2026-06-09", "recipeId": "rec-3", "quantity": 52, "returns": 0 },
+    { "date": "2026-06-09", "recipeId": "rec-4", "quantity": 44, "returns": 1 }
+  ]
+}

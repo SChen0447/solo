@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:54:06.368Z",
+  "task_name": "auto284",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个帮助小型独立面包店或烘焙爱好者管理每日产品生产计划、原料库存和客户预订订单的全栈web应用。使用TypeScript、React 18（前端）和Node.js + Express（后端）实现，所有数据存储在本地JSON文件中模拟数据库。文件结构如下：\n - package.json（依赖：react@18、react-dom@18、typescript@5、vite@5、@vitejs/plugin-react、express@4、cors、uuid、date-fns、react-beautiful-dnd，启动脚本：npm run dev）\n - index.html（入口页面，暖色调背景#faf3e0，标题“面包坊工坊”深棕色字体，居中布局）\n - tsconfig.json（严格模式，目标ES2020）\n - vite.config.js（基础构建配置）\n - src/App.jsx（主应用组件，管理路由和全局状态，向后端API发送请求）\n - src/components/Dashboard.jsx（面板组件，显示每日生产计划卡片列表，支持拖拽排序和状态切换）\n - src/components/RecipeCard.jsx（配方卡片组件，展示配料清单、预估产量和成本，点击展开详情）\n - src/components/OrderForm.jsx（预订订单表单组件，选择产品、数量、预计取货日期，验证库存充足性）\n - src/api/bakeryApi.js（封装所有后端API调用，包括GET /recipes、POST /orders、PUT /production-plans）\n - server/index.js（Express服务器，提供CRUD接口，数据存储于data/recipes.json、data/orders.json）\n\n具体需求：\n1. 每日生产计划管理：Dashboard组件以卡片网格展示当天计划烘烤的面包品类（如酸种面包、法棍、肉桂卷），每张卡片显示预计开始时间、配料准备状态（待准备/进行中/已完成）和实际完成进度（百分比进度条），卡片可通过拖拽调整生产顺序（使用react-beautiful-dnd）。\n2. 配方详情与成本计算：点击RecipeCard可展开显示完整配料清单（名称、用量、单位、每件成本），自动根据当日原材料库存价格计算每批次的总成本和单件成本，并在卡片角落显示“预估毛利”标签。\n3. 客户预订订单创建：OrderForm组件包含产品下拉选择（从API拉取可用产品列表）、数量输入（校验不超过当前生产计划剩余产能）、预计取货日期选择（限制为今日起7天内），提交时后端自动检查原料库存是否足够，若不够则返回具体短缺原料名称和缺口数量。\n4. 库存预警与补料建议：后端在每次创建订单或更新生产计划后，检查原料库存水平，当某种原料剩余量低于安全库存（如面粉低于10kg）时，在Dashboard顶部显示红色警告条，并自动生成建议补料列表（基于未来3天已有订单的总需求计算最佳补货量）。\n5. 历史数据统计看板：Dashboard底部新增统计区域，以简易条形图显示过去7天每种面包的销量和退货数量（使用CSS绘制，不引入图表库），旁边标注总收入和总成本对比。\n\n界面方面：整体以暖色调为主，背景色#faf3e0，卡片白色圆角带细微阴影，标题字体采用衬线体（Georgia），正文无衬线（Arial）。每个卡片在状态变更时有轻微向上弹跳动画（transform: translateY(-4px) + box-shadow加深），拖拽时出现半透明占位符。所有按钮悬停变为深棕色#5c3a21，点击水波纹效果。订单表单在提交成功时显示绿色小鸟飞过动画（CSS关键帧），失败时表单轻微抖动。桌面布局两栏（左侧生产计划+统计区域占60%，右侧配方详情+订单表单占40%），平板设备下自动切换为上下叠放，手机设备下卡片全宽并缩小字体。\n\n性能要求：页面首次加载时数据获取应在500ms内完成，拖拽排序时动画帧率稳定在50fps以上，API响应时间不超过200ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:aebc62f16ba7b8f986fd5356d52d6e46_6a28a6fcf9b60338384531e8.6a28a792f9b603383845327f.6a28a792da9da30cfaa5252a:Trae CN.T(2026/6/10 07:53:54)",
+    "user_id": "3986207660317399",
+    "trace_id": "aebc62f16ba7b8f986fd5356d52d6e46",
+    "session_id": "6a28a6fcf9b60338384531e8",
+    "task_id": "6a28a792f9b603383845327f",
+    "message_id": "6a28a792da9da30cfaa5252a",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:53:54",
+    "format": "full"
+  },
+  "trace": "null"
+}
