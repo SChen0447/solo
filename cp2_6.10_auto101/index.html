@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Gradient Generator</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>CSS 渐变背景生成器</h1>
+      <p class="subtitle">实时预览 · 一键导出优化代码</p>
+    </header>
+
+    <main class="main-content">
+      <section class="preview-section">
+        <div class="preview-wrapper">
+          <canvas id="previewCanvas" width="400" height="300"></canvas>
+        </div>
+
+        <div class="code-output">
+          <div class="code-header">
+            <span class="code-label">CSS 代码</span>
+            <div class="code-actions">
+              <button id="copyBtn" class="btn btn-secondary">复制代码</button>
+              <button id="downloadBtn" class="btn btn-primary">下载CSS</button>
+            </div>
+          </div>
+          <pre id="codeDisplay" class="code-display"><code></code></pre>
+        </div>
+      </section>
+
+      <aside class="control-panel">
+        <div class="control-scroll">
+          <div class="card">
+            <h3 class="card-title">渐变类型</h3>
+            <select id="gradientType" class="select-control">
+              <option value="linear">线性渐变 (Linear)</option>
+              <option value="radial">径向渐变 (Radial)</option>
+              <option value="conic">圆锥渐变 (Conic)</option>
+            </select>
+          </div>
+
+          <div id="linearParams" class="card param-panel param-panel-active">
+            <h3 class="card-title">线性渐变参数</h3>
+            <div class="control-group">
+              <label class="control-label">
+                <span>角度</span>
+                <span class="value-display" id="angleValue">90°</span>
+              </label>
+              <input type="range" id="angleSlider" class="slider" min="0" max="360" value="90" step="1" />
+            </div>
+          </div>
+
+          <div id="radialParams" class="card param-panel">
+            <h3 class="card-title">径向渐变参数</h3>
+            <div class="control-group">
+              <label class="control-label">
+                <span>半径</span>
+                <span class="value-display" id="radiusValue">50%</span>
+              </label>
+              <input type="range" id="radiusSlider" class="slider" min="10" max="100" value="50" step="1" />
+            </div>
+            <div class="control-group">
+              <label class="control-label">
+                <span>中心点 X</span>
+                <span class="value-display" id="centerXValue">50%</span>
+              </label>
+              <input type="range" id="centerXSlider" class="slider" min="0" max="100" value="50" step="1" />
+            </div>
+            <div class="control-group">
+              <label class="control-label">
+                <span>中心点 Y</span>
+                <span class="value-display" id="centerYValue">50%</span>
+              </label>
+              <input type="range" id="centerYSlider" class="slider" min="0" max="100" value="50" step="1" />
+            </div>
+          </div>
+
+          <div id="conicParams" class="card param-panel">
+            <h3 class="card-title">圆锥渐变参数</h3>
+            <div class="control-group">
+              <label class="control-label">
+                <span>起始角度</span>
+                <span class="value-display" id="startAngleValue">0°</span>
+              </label>
+              <input type="range" id="startAngleSlider" class="slider" min="0" max="360" value="0" step="1" />
+            </div>
+            <div class="control-group">
+              <label class="control-label">
+                <span>中心点 X</span>
+                <span class="value-display" id="conicCenterXValue">50%</span>
+              </label>
+              <input type="range" id="conicCenterXSlider" class="slider" min="0" max="100" value="50" step="1" />
+            </div>
+            <div class="control-group">
+              <label class="control-label">
+                <span>中心点 Y</span>
+                <span class="value-display" id="conicCenterYValue">50%</span>
+              </label>
+              <input type="range" id="conicCenterYSlider" class="slider" min="0" max="100" value="50" step="1" />
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="color-stops-header">
+              <h3 class="card-title">颜色停止点</h3>
+              <button id="addStopBtn" class="btn btn-small btn-primary">+ 添加停止点</button>
+            </div>
+            <div id="colorStopsContainer" class="color-stops-list">
+            </div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

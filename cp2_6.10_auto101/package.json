@@ -1,0 +1,19 @@
+{
+  "name": "css-gradient-generator",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "@types/lodash": "^4.14.202"
+  }
+}
