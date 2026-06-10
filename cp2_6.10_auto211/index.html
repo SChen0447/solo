@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分形植物生成器 | Fractal Plant Generator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+        'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background-color: #1b2838;
+      color: #e0e6ed;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 280px;
+      max-height: calc(100vh - 40px);
+      background: rgba(42, 47, 74, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px;
+      overflow-y: auto;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .presets-container {
+      margin-bottom: 20px;
+    }
+
+    .presets-label {
+      font-size: 13px;
+      color: #a0a8b8;
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .presets-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #c8d0dc;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+      color: #ffffff;
+    }
+
+    .preset-btn.active {
+      background: #1db954;
+      color: #ffffff;
+    }
+
+    .slider-group {
+      margin-bottom: 18px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      color: #a0a8b8;
+      font-weight: 500;
+    }
+
+    .slider-value {
+      font-size: 13px;
+      color: #1db954;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type='range'] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type='range']::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #1db954;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(29, 185, 84, 0.4);
+    }
+
+    input[type='range']::-webkit-slider-thumb:hover {
+      background: #28e070;
+      transform: scale(1.15);
+    }
+
+    input[type='range']::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #1db954;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(29, 185, 84, 0.4);
+    }
+
+    input[type='range']::-moz-range-thumb:hover {
+      background: #28e070;
+      transform: scale(1.15);
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-export {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: #1db954;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #28e070;
+    }
+
+    .btn-primary:active {
+      background: #17a34a;
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      background: rgba(29, 185, 84, 0.4);
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #c8d0dc;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .btn-secondary:active {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(0.98);
+    }
+
+    .btn-export {
+      background: rgba(41, 98, 255, 0.8);
+      color: #ffffff;
+    }
+
+    .btn-export:hover {
+      background: rgba(66, 120, 255, 1);
+    }
+
+    .btn-export:active {
+      background: rgba(33, 82, 220, 0.9);
+      transform: scale(0.98);
+    }
+
+    .panel-toggle {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin-top: 8px;
+      cursor: pointer;
+    }
+
+    .status-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      padding: 8px 14px;
+      background: rgba(42, 47, 74, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #a0a8b8;
+      z-index: 100;
+    }
+
+    .status-bar span {
+      color: #1db954;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: auto;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        max-height: 60vh;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(calc(100% - 50px));
+        transition: transform 0.3s ease;
+      }
+
+      .control-panel.expanded {
+        transform: translateY(0);
+      }
+
+      .panel-toggle {
+        display: block;
+      }
+
+      .status-bar {
+        bottom: 70px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="control-panel" id="controlPanel">
+      <div class="panel-toggle" id="panelToggle"></div>
+      <div class="panel-title">🌿 分形植物控制台</div>
+
+      <div class="presets-container">
+        <div class="presets-label">预设模型</div>
+        <div class="presets-buttons">
+          <button class="preset-btn" data-preset="maple">枫树</button>
+          <button class="preset-btn" data-preset="fern">蕨类</button>
+          <button class="preset-btn" data-preset="vine">藤蔓</button>
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">分支角度</span>
+          <span class="slider-value" id="angleValue">45°</span>
+        </div>
+        <input type="range" id="angleSlider" min="15" max="90" step="1" value="45" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">分支深度</span>
+          <span class="slider-value" id="depthValue">5</span>
+        </div>
+        <input type="range" id="depthSlider" min="3" max="8" step="1" value="5" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">长度衰减</span>
+          <span class="slider-value" id="decayValue">0.70</span>
+        </div>
+        <input type="range" id="decaySlider" min="0.5" max="0.9" step="0.05" value="0.7" />
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-header">
+          <span class="slider-label">随机扰动</span>
+          <span class="slider-value" id="noiseValue">0.10</span>
+        </div>
+        <input type="range" id="noiseSlider" min="0" max="0.3" step="0.01" value="0.1" />
+      </div>
+
+      <div class="action-buttons">
+        <button class="btn-primary" id="growBtn">▶ 生长动画</button>
+        <button class="btn-secondary" id="resetBtn">⟲ 重置</button>
+        <button class="btn-export" id="exportBtn">⬇ 导出 OBJ</button>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      FPS: <span id="fpsCounter">60</span> | 分支数: <span id="branchCounter">0</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
