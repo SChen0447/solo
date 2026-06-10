@@ -1,0 +1,23 @@
+{
+  "name": "collaborative-whiteboard",
+  "version": "1.0.0",
+  "description": "Real-time collaborative whiteboard with WebSocket",
+  "scripts": {
+    "dev": "vite",
+    "server": "npx tsx server/index.ts",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1",
+    "ws": "^8.16.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12",
+    "tsx": "^4.7.0"
+  }
+}

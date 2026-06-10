@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:14:28.757Z",
+  "task_name": "auto96",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于浏览器WebSocket的多人实时协作白板项目，想法是让多个用户在同一块无限画布上同时画画、写字、贴便签，每个人的笔迹颜色和粗细都不同，还能用聊天框实时交流想法，适合远程头脑风暴或在线教学场景。希望它能做到：第一，画布支持无限平移和缩放（平移用鼠标拖拽或触控板双指滑动，缩放用滚轮或捏合手势，缩放范围0.2到5倍，画布默认背景色#f5f0e8，有浅灰细网格线间距50px、线宽0.5px、透明度0.3），每个用户的笔迹用不同颜色（从预设的12种鲜艳色中自动分配，颜色饱和度高且色相差至少30度，比如#ff6b6b、#4ecdc4、#ffe66d），笔触是圆头实线（默认粗细4px，可选1-20px），路径平滑用Catmull-Rom样条插值，实时同步到其他客户端延迟低于200ms；第二，支持五种绘图工具：画笔（自由绘制）、直线（两点连线）、矩形（拖拽生成，填充色半透明且带2px边框）、圆形（拖拽半径，填充色半透明）、便签（点击生成一个圆角矩形卡片，尺寸160x120px，背景色#fff9c4、阴影4px rgba(0,0,0,0.15)，双击编辑文字、支持换行），所有工具切换用左侧垂直工具栏按钮（按钮48x48px，图标用简单SVG图形，选中时按钮背景色#e3f2fd、左边框3px solid #1976d2）；第三，右侧有一个可折叠的实时用户列表和聊天面板（用户列表显示头像圆形缩略图40px、姓名和当前使用的颜色与笔触粗细，聊天消息按时间排列、每条消息左侧有用户颜色标识圆点8px、文字用14px/1.5行高Inter字体、消息气泡背景白色、圆角12px、底部外边距8px），面板收缩后只显示一个宽48px的标签条，悬停自动展开；第四，所有绘图数据和聊天记录使用WebSocket实时同步到Node.js服务器（服务器用原生http和ws模块，不需要框架），服务器维护一个房间内所有用户的操作历史（最多保留最近5000步），新用户加入时自动拉取全量历史进行回放，支持房间URL分享（如/room/abc123），同一个URL下的用户进入同一房间。界面方面，整体采用浅色极简风格，主色调围绕暖灰（#f5f0e8）和冷蓝（#1976d2），按钮和交互元素使用统一圆角8px和0.2s ease过渡动画，工具切换和颜色选择有轻微弹跳反馈（scale 1.05），画布边缘超出窗口时显示渐变遮罩提示可平移，底部有状态栏显示当前工具名称、画布缩放百分比和连接状态（绿色圆点已连接、橙色圆点连接中、红色圆点断开），连接断开时画布上显示半透明遮罩和重连按钮。性能上要求画笔绘制时帧率不低于45fps，单房间支持至少6人同时在线，WebSocket消息在200ms内送达。实现用TypeScript（前端用原生TypeScript加Vite打包，后端用Node.js原生ws模块不需要Express），把代码拆成以下文件：\n - package.json（含依赖：typescript, vite, ws, uuid，启动脚本：前端 npm run dev 运行在5173端口，后端 npm run server 运行在3001端口）\n - index.html（入口页面，包含全屏div容器#app、加载字体Inter和Material Icons，背景色#f5f0e8）\n - tsconfig.json（严格模式，target ES2020，module ESNext，前端和后端共用）\n - vite.config.js（基础Vite配置，output dir dist，port 5173，proxy /ws到localhost:3001）\n - src/main.ts（前端入口，初始化Canvas、WebSocket连接、事件绑定，调用各模块）\n - src/canvas.ts（画布核心，管理无限画布平移缩放、网格背景、笔触渲染、Catmull-Rom样条插值、工具切换，导出draw和clear方法，接收来自network模块的远程绘图数据）\n - src/network.ts（WebSocket客户端，处理连接、重连、消息序列化/反序列化，发送本地绘图操作和聊天消息，接收远程数据并分发给canvas和chat模块）\n - src/chat.ts（聊天和用户列表UI，管理消息列表DOM、用户颜色分配、消息气泡渲染，导出addMessage和updateUserList方法）\n - server/index.ts（Node.js后端，创建WebSocket服务器，管理房间状态、用户列表、操作历史（环形缓冲区5000步），处理加入/离开/绘图/聊天消息广播，生成唯一房间ID）\n - server/room.ts（房间类，管理用户连接集、操作历史队列、用户颜色分配，导出broadcast和addHistory方法）\n\n跑 npm install 然后同时打开两个终端：一个跑 npm run dev 启动前端，一个跑 npm run server 启动后端，打开浏览器访问 http://localhost:5173 就能看到白板界面，开两个窗口测试实时协作效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:fd0ded9643e731957c9f65eafa2f9d82_6a2864a00549b969160b41da.6a2865f70549b969160b4321.6a2865f7103a5271f8fc6f64:Trae CN.T(2026/6/10 03:13:59)",
+    "user_id": "3986207660317399",
+    "trace_id": "fd0ded9643e731957c9f65eafa2f9d82",
+    "session_id": "6a2864a00549b969160b41da",
+    "task_id": "6a2865f70549b969160b4321",
+    "message_id": "6a2865f7103a5271f8fc6f64",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:13:59",
+    "format": "full"
+  },
+  "trace": "null"
+}
