@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>手绘草图转SVG编辑器</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="toolbar">
+      <h1 class="title">手绘草图转SVG编辑器</h1>
+      <div class="toolbar-actions">
+        <button id="exportBtn" class="btn btn-primary">导出SVG</button>
+        <button id="clearBtn" class="btn btn-secondary">清空重画</button>
+      </div>
+    </header>
+
+    <div class="main-container">
+      <section class="canvas-panel">
+        <div class="panel-header">
+          <span class="panel-title">绘图画布</span>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="drawCanvas" width="600" height="400"></canvas>
+        </div>
+        <div class="control-panel">
+          <div class="control-group">
+            <label for="toleranceSlider">简化容差: <span id="toleranceValue">5</span>px</label>
+            <input type="range" id="toleranceSlider" min="2" max="15" value="5" step="1">
+          </div>
+          <button id="convertBtn" class="btn btn-convert">转换为SVG</button>
+        </div>
+      </section>
+
+      <div class="divider" id="divider"></div>
+
+      <section class="preview-panel">
+        <div class="panel-header">
+          <span class="panel-title">SVG预览区</span>
+        </div>
+        <div class="svg-wrapper">
+          <svg id="svgPreview" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 600 400" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+                <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#E0E0E0" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            <g id="svgContent"></g>
+            <g id="controlPoints"></g>
+          </svg>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

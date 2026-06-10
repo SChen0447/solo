@@ -1,0 +1,264 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #F5F0E8;
+  color: #2B2B2B;
+  min-height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-width: 768px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #2B2B2B;
+  color: white;
+  padding: 12px 24px;
+  min-height: 56px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.toolbar-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out, transform 0.1s ease-in-out;
+  color: white;
+  font-family: inherit;
+}
+
+.btn:hover {
+  filter: brightness(1.15);
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background-color: #4A7C9B;
+}
+
+.btn-secondary {
+  background-color: #6B6B6B;
+}
+
+.btn-convert {
+  background-color: #2E4057;
+  padding: 10px 24px;
+  font-size: 15px;
+}
+
+.main-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.canvas-panel {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  background-color: #F5F0E8;
+  min-width: 0;
+}
+
+.preview-panel {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  background-color: #FAFAF7;
+  min-width: 0;
+}
+
+.panel-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #D8D2C4;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5A5248;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 0;
+}
+
+#drawCanvas {
+  background-color: #F5F0E8;
+  border: 1px solid #D8D2C4;
+  border-radius: 4px;
+  cursor: crosshair;
+  max-width: 100%;
+  max-height: 100%;
+  touch-action: none;
+}
+
+.svg-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 0;
+}
+
+#svgPreview {
+  background-color: white;
+  border: 1px solid #D8D2C4;
+  border-radius: 4px;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 16px 24px;
+  border-top: 1px solid #D8D2C4;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.control-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5A5248;
+}
+
+#toleranceSlider {
+  width: 100%;
+  accent-color: #2E4057;
+}
+
+.divider {
+  width: 6px;
+  background-color: #C0B8A8;
+  cursor: col-resize;
+  transition: background-color 0.2s ease-in-out;
+  flex-shrink: 0;
+}
+
+.divider:hover {
+  background-color: #8A7F6E;
+}
+
+.control-point {
+  cursor: grab;
+  transition: r 0.15s ease-in-out, filter 0.15s ease-in-out;
+}
+
+.control-point:hover {
+  filter: drop-shadow(0 0 4px rgba(74, 124, 155, 0.8));
+}
+
+.control-point.dragging {
+  cursor: grabbing;
+}
+
+.toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.fade-out {
+  animation: fadeOut 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #app {
+    min-width: 100%;
+  }
+
+  .main-container {
+    flex-direction: column;
+  }
+
+  .canvas-panel,
+  .preview-panel {
+    width: 100%;
+  }
+
+  .canvas-panel {
+    height: 55%;
+  }
+
+  .preview-panel {
+    height: 45%;
+  }
+
+  .divider {
+    width: 100%;
+    height: 6px;
+    cursor: row-resize;
+  }
+}
