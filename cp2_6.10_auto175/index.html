@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>天际线工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #1a237e;
+      color: #e0e0e0;
+    }
+
+    #app {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #scene-container {
+      flex: 1;
+      position: relative;
+      min-width: 0;
+    }
+
+    #scene-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+      cursor: grab;
+    }
+
+    #scene-container canvas:active {
+      cursor: grabbing;
+    }
+
+    #time-dial-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .time-dial {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      user-select: none;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .time-dial:hover {
+      box-shadow: 0 6px 28px rgba(0, 0, 0, 0.3);
+    }
+
+    .dial-background {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #f5f5f5, #e0e0e0);
+    }
+
+    .dial-ticks {
+      position: absolute;
+      inset: 0;
+    }
+
+    .dial-tick {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 2px;
+      height: 6px;
+      background: #9e9e9e;
+      transform-origin: center 52px;
+      margin-left: -1px;
+      margin-top: -52px;
+      border-radius: 1px;
+    }
+
+    .dial-tick.major {
+      width: 3px;
+      height: 10px;
+      background: #616161;
+    }
+
+    .dial-hours {
+      position: absolute;
+      inset: 0;
+    }
+
+    .dial-hour {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      font-size: 11px;
+      font-weight: 600;
+      color: #424242;
+      cursor: pointer;
+      transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .dial-hour:hover {
+      color: #ff7043;
+      transform: translate(-50%, -50%) scale(1.2);
+    }
+
+    .dial-slider {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 4px;
+      height: 46px;
+      background: linear-gradient(180deg, #ff7043, #ffca28);
+      transform-origin: center bottom;
+      margin-left: -2px;
+      margin-top: -46px;
+      border-radius: 2px;
+      box-shadow: 0 0 8px rgba(255, 112, 67, 0.5);
+      pointer-events: none;
+    }
+
+    .dial-slider::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 14px;
+      background: #ff7043;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .dial-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #ffffff, #f0f0f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .time-display {
+      font-size: 13px;
+      font-weight: 700;
+      color: #37474f;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #control-panel {
+      width: 300px;
+      background: #263238;
+      border-radius: 16px 0 0 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      letter-spacing: 0.5px;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #90a4ae;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #no-selection {
+      padding: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      color: #78909c;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    #building-info {
+      display: none;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      transition: background 0.2s ease;
+    }
+
+    .info-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .info-label {
+      font-size: 13px;
+      color: #90a4ae;
+    }
+
+    .info-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .material-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .material-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 2px solid transparent;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .material-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    .material-btn.active {
+      background: rgba(255, 202, 40, 0.12);
+      border-color: #ffca28;
+    }
+
+    .material-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .material-swatch.glass {
+      background: linear-gradient(135deg, #77bbff 0%, rgba(119, 187, 255, 0.4) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .material-swatch.concrete {
+      background: linear-gradient(135deg, #aaaaaa 0%, #888888 100%);
+    }
+
+    .material-swatch.metal {
+      background: linear-gradient(135deg, #f0f0f0 0%, #b0b0b0 50%, #d0d0d0 100%);
+    }
+
+    .material-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .material-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .material-desc {
+      font-size: 11px;
+      color: #78909c;
+    }
+
+    .help-text {
+      padding: 12px;
+      background: rgba(100, 181, 246, 0.08);
+      border-left: 3px solid #64b5f6;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #b0bec5;
+      line-height: 1.6;
+    }
+
+    .help-text strong {
+      color: #64b5f6;
+    }
+
+    #bottom-toolbar {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      gap: 12px;
+      padding: 8px;
+      background: rgba(38, 50, 56, 0.9);
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    #export-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: #ff7043;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(255, 112, 67, 0.4);
+    }
+
+    #export-btn:hover {
+      background: #ff8a65;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(255, 112, 67, 0.5);
+    }
+
+    #export-btn:active {
+      transform: translateY(0);
+    }
+
+    #hamburger-btn {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 200;
+      width: 44px;
+      height: 44px;
+      background: rgba(38, 50, 56, 0.9);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+    }
+
+    #hamburger-btn:hover {
+      background: rgba(38, 50, 56, 1);
+    }
+
+    #hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: #e0e0e0;
+      border-radius: 1px;
+      transition: all 0.2s ease;
+    }
+
+    .panel-close {
+      display: none;
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 18px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s ease;
+    }
+
+    .panel-close:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      #scene-container {
+        width: 100%;
+        height: 100%;
+      }
+
+      #hamburger-btn {
+        display: flex;
+      }
+
+      #control-panel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-height: 70vh;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+        z-index: 300;
+      }
+
+      #control-panel.open {
+        transform: translateY(0);
+      }
+
+      .panel-close {
+        display: flex;
+      }
+
+      #time-dial-container {
+        top: auto;
+        bottom: 90px;
+        right: 16px;
+      }
+
+      .time-dial {
+        width: 100px;
+        height: 100px;
+      }
+
+      .dial-tick {
+        transform-origin: center 43px;
+        margin-top: -43px;
+      }
+
+      .dial-hour {
+        font-size: 10px;
+      }
+
+      .dial-slider {
+        height: 38px;
+        margin-top: -38px;
+      }
+
+      .dial-center {
+        width: 44px;
+        height: 44px;
+      }
+
+      #bottom-toolbar {
+        bottom: 16px;
+      }
+
+      #export-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button id="hamburger-btn" aria-label="打开面板">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div id="scene-container">
+      <div id="time-dial-container"></div>
+    </div>
+
+    <aside id="control-panel">
+      <button class="panel-close" onclick="document.getElementById('control-panel')?.classList.remove('open')" aria-label="关闭面板">×</button>
+      
+      <h1 class="panel-title">天际线工坊</h1>
+
+      <div class="panel-section">
+        <span class="section-label">建筑信息</span>
+        <div id="no-selection">点击场景中的建筑进行选择</div>
+        <div id="building-info">
+          <div class="info-row">
+            <span class="info-label">高度</span>
+            <span class="info-value" id="building-height">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">网格坐标</span>
+            <span class="info-value" id="building-pos">—</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <span class="section-label">材质类型</span>
+        <div class="material-options">
+          <button class="material-btn" data-material="glass">
+            <span class="material-swatch glass"></span>
+            <span class="material-info">
+              <span class="material-name">玻璃</span>
+              <span class="material-desc">半透明 · 反射强度 0.3</span>
+            </span>
+          </button>
+          <button class="material-btn" data-material="concrete">
+            <span class="material-swatch concrete"></span>
+            <span class="material-info">
+              <span class="material-name">混凝土</span>
+              <span class="material-desc">哑光 · 反射强度 0.05</span>
+            </span>
+          </button>
+          <button class="material-btn" data-material="metal">
+            <span class="material-swatch metal"></span>
+            <span class="material-info">
+              <span class="material-name">金属</span>
+              <span class="material-desc">高反射 · 反射强度 0.7</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <span class="section-label">操作提示</span>
+        <div class="help-text">
+          <strong>左键拖拽</strong> 旋转视角<br>
+          <strong>滚轮</strong> 缩放场景<br>
+          <strong>点击建筑</strong> 选中并编辑<br>
+          <strong>拖拽建筑顶面</strong> 调整高度
+        </div>
+      </div>
+    </aside>
+
+    <div id="bottom-toolbar">
+      <button id="export-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        导出轮廓
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
