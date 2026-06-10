@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T20:54:31.081Z",
+  "task_name": "auto172",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助家庭园艺爱好者或社区园艺小组在浏览器中快速创建个性化种植日历、记录植物生长进度并生成可视化生长报告的应用，主要解决纸质记录容易丢失、Excel表格缺乏直观性以及难以结合天气数据推算浇水/施肥提醒的问题。\n\n它应当具备以下能力：\n1) 种植计划管理：左侧面板展示用户添加的植物列表（每项包含植物名称、品种、种植日期、预计收获天数），右侧主区域以日历视图展示每株植物的关键节点（播种、发芽、移栽、开花、收获），节点用不同颜色的圆点标记（播种=#4caf50, 发芽=#8bc34a, 移栽=#2196f3, 开花=#ff9800, 收获=#f44336），点击圆点可编辑或删除节点。\n2) 生长进度记录：点击某植物卡片可进入详情页，顶部显示该植物的当前生长阶段进度条（从播种到收获的百分比），下方为时间线形式的观察记录（每次记录需包含日期、照片URL、高度cm、叶片数、备注文字），每项记录右侧有“编辑”和“删除”图标按钮。\n3) 天气数据集成：在日历视图顶部显示最近7天的天气预报（使用模拟数据，包括日期、天气图标、最高/最低气温、降雨概率），当某天气温低于10°C时自动在对应植物节点上显示红色警告三角图标。\n4) 可视化生长报告：点击“生成报告”按钮（位于详情页右上角，背景色#1e88e5，圆角8px，白色文字），弹出模态框展示该植物的高度随时间变化的折线图（x轴为日期，y轴为高度cm）和叶片数变化的柱状图，图表下方显示“导出为PNG”按钮。\n5) 数据持久化支持：所有植物列表、生长记录、天气数据均存储在localStorage中，页面刷新后数据不丢失，并在首次加载时自动初始化3个示例植物（番茄、薄荷、向日葵）的模拟数据。\n\n界面方面要求采用深色主题（主背景#121212，卡片背景#1e1e2e，圆角12px，内边距16px），所有卡片悬停时上移4px并添加box-shadow过渡效果（0.2s ease），日历视图中的节点圆点点击时放大1.2倍并弹出tooltip气泡。页面布局采用左侧固定宽度280px的导航栏+右侧自适应主区域的响应式设计，在宽度小于768px时导航栏折叠为顶部汉堡菜单。所有交互反馈要求有光滑动画（如卡片新增时向下滑动出现，删除时向左滑动消失，进度条更新时数字跳动效果）。性能上需要日历视图的节点渲染和工具提示在拖动/点击时的响应延迟不超过50ms，图表生成时间不超过100ms。\n\n实现采用TypeScript、React和Vite，并利用Recharts库生成图表。按以下文件组织代码：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、recharts@2、uuid、lodash，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target ES2020，jsx react-jsx）\n - index.html（入口页面，标题为“园艺种植助手”，引入Google Fonts字体Inter）\n - src/App.tsx（主应用组件，负责状态管理和路由分发，内联使用Context API提供全局植物数据）\n - src/components/PlantList.tsx（左侧植物列表组件，展示植物卡片和“添加植物”按钮，点击卡片切换详情）\n - src/components/CalendarView.tsx（右侧日历视图组件，渲染月度网格和节点圆点，集成模拟天气数据）\n - src/components/PlantDetail.tsx（植物详情页组件，包含进度条、时间线记录、天气警告和图表报告生成）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2e8b4c2b4ffafb013dc10e1fc45d0e2b_6a287c8795e40f3ba6ddd202.6a287d6a95e40f3ba6ddd2a7.6a287d6a3af2c2b03ee1010a:Trae CN.T(2026/6/10 04:54:02)",
+    "user_id": "3986207660317399",
+    "trace_id": "2e8b4c2b4ffafb013dc10e1fc45d0e2b",
+    "session_id": "6a287c8795e40f3ba6ddd202",
+    "task_id": "6a287d6a95e40f3ba6ddd2a7",
+    "message_id": "6a287d6a3af2c2b03ee1010a",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 04:54:02",
+    "format": "full"
+  },
+  "trace": "null"
+}
