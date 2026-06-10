@@ -1,0 +1,23 @@
+{
+  "name": "3d-city-skyline",
+  "version": "1.0.0",
+  "description": "3D城市天际线动态生成与参数调节应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/three": "^0.160.0",
+    "dat.gui": "^0.7.9",
+    "lodash": "^4.17.21",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "@types/dat.gui": "^0.7.12",
+    "@types/lodash": "^4.14.202",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
