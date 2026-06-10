@@ -1,0 +1,12 @@
+{
+  "name": "tingyuxuan",
+  "version": "1.0.0",
+  "description": "听雨轩 - 交互式数字雨景应用",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^5.0.0"
+  }
+}
