@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星语拼图</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #1a0533 0%, #0d1b2a 100%);
+      color: #ffffff;
+      user-select: none;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ui-layer {
+      position: fixed;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .ui-layer > * {
+      pointer-events: auto;
+    }
+
+    .counter {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 500;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .counter:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(255, 215, 0, 0.2);
+    }
+
+    .counter .star-icon {
+      width: 20px;
+      height: 20px;
+      fill: #ffd700;
+      filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+    }
+
+    .counter .count {
+      color: #ffd700;
+      font-weight: 700;
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .reset-btn {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden;
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 20px rgba(79, 195, 247, 0.3);
+    }
+
+    .reset-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: #4fc3f7;
+      filter: drop-shadow(0 0 6px rgba(79, 195, 247, 0.6));
+      animation: spin 8s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .puzzle-slot-container {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(80vw, 900px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .completed-words {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      min-height: 36px;
+    }
+
+    .completed-word {
+      padding: 6px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8),
+                   0 0 20px rgba(255, 215, 0, 0.4);
+      letter-spacing: 2px;
+      animation: wordGlow 0.6s ease-out;
+    }
+
+    @keyframes wordGlow {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.15);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .puzzle-slot {
+      width: 100%;
+      height: 72px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 16px;
+      overflow-x: auto;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .puzzle-slot.drag-over {
+      border-color: rgba(255, 215, 0, 0.6);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+    }
+
+    .puzzle-slot::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .puzzle-slot::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .slot-char {
+      min-width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      border-radius: 10px;
+      font-size: 22px;
+      font-weight: 600;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.5);
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .slot-char:hover {
+      transform: scale(1.08);
+      background: rgba(255, 215, 0, 0.25);
+    }
+
+    .puzzle-slot-placeholder {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 14px;
+      letter-spacing: 2px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1280px) {
+      .puzzle-slot-container {
+        width: min(88vw, 760px);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .puzzle-slot-container {
+        width: 92vw;
+      }
+      .puzzle-slot {
+        height: 64px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <div class="ui-layer">
+    <div class="counter" title="已拼出词语">
+      <svg class="star-icon" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      <span class="count" id="word-count">0</span>
+    </div>
+
+    <button class="reset-btn" id="reset-btn" title="重置">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+      </svg>
+    </button>
+
+    <div class="puzzle-slot-container">
+      <div class="completed-words" id="completed-words"></div>
+      <div class="puzzle-slot" id="puzzle-slot">
+        <span class="puzzle-slot-placeholder">拖拽发光的汉字粒子到此处拼词</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
