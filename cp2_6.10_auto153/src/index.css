@@ -1,0 +1,119 @@
+:root {
+  --bg-main: #1a1a2e;
+  --bg-editor: #1e1e2e;
+  --bg-preview: #252a34;
+  --bg-code: #2d2d44;
+  --bg-comment-panel: #1a1a2e;
+  --bg-comment: #222240;
+  --text-main: #eaeaea;
+  --text-muted: #9ca3af;
+  --accent-purple: #7c3aed;
+  --accent-purple-hover: #8b5cf6;
+  --accent-yellow: #f0db4f;
+  --divider: #4a4a6a;
+  --divider-hover: #7c3aed;
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+  --border-radius-sm: 4px;
+  --transition-fast: 0.2s ease-out;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+}
+
+code, pre {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: transform var(--transition-fast), background-color var(--transition-fast), color var(--transition-fast);
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+input, select, textarea {
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--divider);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--divider-hover);
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.comment-item-enter {
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+.cm-editor {
+  height: 100%;
+  font-size: 14px;
+  background-color: transparent !important;
+}
+
+.cm-scroller {
+  background-color: transparent !important;
+}
+
+.cm-gutters {
+  background-color: transparent !important;
+  border-right: none !important;
+}
