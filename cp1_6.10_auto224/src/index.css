@@ -1,0 +1,94 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: 'Georgia', 'Times New Roman', 'Noto Serif SC', serif;
+  background: #faf6ef;
+  color: #4a3d2b;
+  overflow: hidden;
+}
+
+:root {
+  --deep-brown: #2e2b26;
+  --earth-brown: #4a3d2b;
+  --sand-gold: #c9a96e;
+  --sand-gold-dark: #b8945a;
+  --beige: #e0d5c1;
+  --cream: #faf6ef;
+  --positive: #f5a623;
+  --neutral: #7ec8e3;
+  --negative: #d0021b;
+  --text-gray: #8a7a62;
+}
+
+@keyframes cardPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) rotate(var(--rotation, 0deg));
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-8px) rotate(var(--rotation, 0deg));
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(var(--rotation, 0deg));
+  }
+}
+
+@keyframes cardShrink {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotate(var(--rotation, 0deg));
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0) rotate(var(--rotation, 0deg));
+  }
+}
+
+@keyframes cardBounce {
+  0% {
+    transform: scale(1) rotate(var(--rotation, 0deg));
+  }
+  50% {
+    transform: scale(1.03) rotate(var(--rotation, 0deg));
+  }
+  100% {
+    transform: scale(1) rotate(var(--rotation, 0deg));
+  }
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e0d5c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #c9a96e;
+}
