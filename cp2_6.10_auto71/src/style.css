@@ -1,0 +1,235 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #ccc;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.app-container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.app-title {
+  color: #f8f0e0;
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.chord-display {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  justify-content: center;
+}
+
+.chord-label {
+  font-size: 14px;
+  color: #888;
+}
+
+.chord-name {
+  font-size: 32px;
+  font-weight: bold;
+  color: #4a90d9;
+}
+
+.piano-roll {
+  width: 100%;
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 10px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.roll-row {
+  display: flex;
+  align-items: center;
+  height: 10px;
+  gap: 10px;
+}
+
+.roll-label {
+  width: 40px;
+  font-size: 10px;
+  text-align: right;
+  padding-right: 8px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.roll-line {
+  flex: 1;
+  height: 10px;
+  border-radius: 2px;
+  position: relative;
+  transition: background 0.1s;
+}
+
+.roll-line.white {
+  background: #3a3a3a;
+}
+
+.roll-line.black {
+  background: #2a2a2a;
+}
+
+.roll-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff8c42;
+  box-shadow: 0 0 8px #ff8c42;
+  transition: transform 0.1s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.roll-dot.active {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.note-display {
+  font-size: 16px;
+  color: #ccc;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.note-label {
+  color: #888;
+}
+
+.note-list {
+  font-weight: bold;
+  color: #f8f0e0;
+  letter-spacing: 2px;
+}
+
+.piano-container {
+  background: #2c2c2c;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.piano {
+  position: relative;
+  display: flex;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.white-key {
+  width: 40px;
+  height: 200px;
+  background: #f8f0e0;
+  border: none;
+  border-right: 1px solid #ccc;
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, transform 0.05s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.white-key:first-child {
+  border-left: 1px solid #ccc;
+}
+
+.white-key:hover {
+  background: #f0e8d0;
+}
+
+.white-key.pressed {
+  background: #4a90d9;
+  transform: translateY(2px);
+}
+
+.black-key {
+  position: absolute;
+  width: 24px;
+  height: 130px;
+  background: #1a1a1a;
+  border: none;
+  border-radius: 0 0 3px 3px;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.15s, transform 0.05s;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.5), inset 0 -2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.black-key:hover {
+  background: #333;
+}
+
+.black-key.pressed {
+  background: #4a90d9;
+  transform: translateY(2px);
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.5);
+}
+
+.waveform-container {
+  width: 100%;
+  background: #2c2c2c;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+#waveformCanvas {
+  width: 100%;
+  height: 150px;
+  display: block;
+}
+
+.hint {
+  font-size: 13px;
+  color: #666;
+  text-align: center;
+  max-width: 600px;
+}
+
+@media (max-width: 650px) {
+  .white-key {
+    width: 24px;
+  }
+
+  .black-key {
+    width: 14.4px;
+  }
+
+  .app-title {
+    font-size: 22px;
+  }
+
+  .chord-name {
+    font-size: 24px;
+  }
+}

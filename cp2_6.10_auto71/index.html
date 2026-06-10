@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>交互式钢琴键盘</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <h1 class="app-title">🎹 交互式钢琴键盘</h1>
+
+    <div class="chord-display" id="chordDisplay">
+      <span class="chord-label">当前和弦：</span>
+      <span class="chord-name" id="chordName">非和弦</span>
+    </div>
+
+    <div class="piano-roll" id="pianoRoll"></div>
+
+    <div class="note-display" id="noteDisplay">
+      <span class="note-label">当前音符：</span>
+      <span class="note-list" id="noteList">-</span>
+    </div>
+
+    <div class="piano-container" id="pianoContainer"></div>
+
+    <div class="waveform-container">
+      <canvas id="waveformCanvas" width="800" height="150"></canvas>
+    </div>
+
+    <div class="hint">
+      使用鼠标点击琴键，或使用键盘演奏（A S D F G H J K L 对应白键，W E T Y U O P 对应黑键）
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
