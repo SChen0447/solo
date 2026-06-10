@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>文物探微 - 3D交互观察</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a1a;
+      font-family: 'Georgia', 'Times New Roman', 'Noto Serif SC', serif;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #app-title {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      font-size: 32px;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.75);
+      letter-spacing: 8px;
+      z-index: 10;
+      pointer-events: none;
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .progress-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .progress-ring svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-ring-circle {
+      stroke-dasharray: 326.7;
+      stroke-dashoffset: 326.7;
+      transition: stroke-dashoffset 0.3s ease;
+      stroke-linecap: round;
+    }
+
+    .progress-ring-track {
+      stroke: rgba(201, 168, 76, 0.15);
+      fill: none;
+      stroke-width: 6;
+    }
+
+    #loading-text {
+      margin-top: 24px;
+      font-size: 14px;
+      color: #e5d4a0;
+      letter-spacing: 4px;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 40px;
+      right: 40px;
+      width: 320px;
+      background: rgba(45, 45, 45, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 16px;
+      padding: 24px;
+      z-index: 20;
+      border: 1px solid rgba(201, 168, 76, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      color: #c9a84c;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+      letter-spacing: 2px;
+    }
+
+    .artifact-info {
+      margin-bottom: 20px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 13px;
+    }
+
+    .info-label {
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    .info-value {
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .mode-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .mode-btn {
+      position: relative;
+      padding: 10px 8px;
+      font-size: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: inherit;
+      letter-spacing: 1px;
+    }
+
+    .mode-btn:hover {
+      transform: scale(1.05);
+      background: rgba(201, 168, 76, 0.15);
+      border-color: rgba(201, 168, 76, 0.3);
+      color: #c9a84c;
+    }
+
+    .mode-btn.active {
+      background: rgba(201, 168, 76, 0.25);
+      border-color: #c9a84c;
+      color: #c9a84c;
+    }
+
+    .mode-btn[data-tooltip]:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.9);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .action-btn {
+      position: relative;
+      padding: 12px 16px;
+      font-size: 13px;
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.3), rgba(201, 168, 76, 0.1));
+      color: #e5d4a0;
+      border: 1px solid rgba(201, 168, 76, 0.4);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+      font-family: inherit;
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.5), rgba(201, 168, 76, 0.2));
+      box-shadow: 0 4px 16px rgba(201, 168, 76, 0.2);
+    }
+
+    .action-btn.active {
+      background: linear-gradient(135deg, rgba(201, 168, 76, 0.7), rgba(201, 168, 76, 0.3));
+      color: #fff;
+    }
+
+    .hint-text {
+      margin-top: 16px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+      line-height: 1.8;
+      letter-spacing: 0.5px;
+    }
+
+    .hint-text kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    @media (max-width: 1440px) {
+      #control-panel {
+        width: 280px;
+        padding: 20px;
+      }
+      #app-title {
+        font-size: 26px;
+        top: 30px;
+        left: 30px;
+      }
+    }
+
+    @media (max-width: 1366px) {
+      #control-panel {
+        width: 260px;
+        padding: 16px;
+        top: 24px;
+        right: 24px;
+      }
+      #app-title {
+        font-size: 22px;
+        top: 24px;
+        left: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <h1 id="app-title">文物探微</h1>
+
+    <div id="loading-overlay">
+      <div class="progress-ring">
+        <svg viewBox="0 0 120 120">
+          <circle class="progress-ring-track" cx="60" cy="60" r="52" />
+          <defs>
+            <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#c9a84c" />
+              <stop offset="100%" style="stop-color:#e5d4a0" />
+            </linearGradient>
+          </defs>
+          <circle
+            class="progress-ring-circle"
+            cx="60"
+            cy="60"
+            r="52"
+            fill="none"
+            stroke="url(#progressGradient)"
+            stroke-width="6"
+          />
+        </svg>
+      </div>
+      <p id="loading-text">正在解析纹理...</p>
+    </div>
+
+    <div id="control-panel" style="display:none;">
+      <h2 class="panel-title">文物信息</h2>
+      <div class="artifact-info">
+        <div class="info-item">
+          <span class="info-label">名称</span>
+          <span class="info-value">古埃及彩陶祭祀罐</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">年代</span>
+          <span class="info-value">约公元前1350年</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">出土地</span>
+          <span class="info-value">埃及·底比斯</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">材质</span>
+          <span class="info-value">釉面彩陶</span>
+        </div>
+      </div>
+
+      <h2 class="panel-title">观察模式</h2>
+      <div class="mode-buttons">
+        <button class="mode-btn active" data-mode="normal" data-tooltip="标准观察模式">标准</button>
+        <button class="mode-btn" data-mode="macro" data-tooltip="表面微距·SSAO">微距</button>
+        <button class="mode-btn" data-mode="xray" data-tooltip="X光透视模式">X光</button>
+        <button class="mode-btn" data-mode="evolution" data-tooltip="年代演化·5秒" style="grid-column: span 3;">年代演化</button>
+      </div>
+
+      <div class="action-buttons">
+        <button class="action-btn" id="rubbings-btn">生成拓片</button>
+      </div>
+
+      <div class="hint-text">
+        <kbd>鼠标拖动</kbd> 旋转文物<br/>
+        <kbd>滚轮</kbd> 缩放查看<br/>
+        <kbd>1</kbd> 微距 · <kbd>2</kbd> X光 · <kbd>3</kbd> 演化
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
