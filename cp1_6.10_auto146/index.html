@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>思维导图卡片</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header id="header" class="header">
+      <span class="header-title">思维导图卡片</span>
+    </header>
+    <div id="main" class="main">
+      <aside id="sidebar" class="sidebar">
+        <button id="addCardBtn" class="sidebar-btn">
+          <span class="btn-icon">+</span>
+          <span class="btn-text">添加卡片</span>
+        </button>
+        <button id="saveBtn" class="sidebar-btn">
+          <span class="btn-icon">💾</span>
+          <span class="btn-text">保存</span>
+        </button>
+        <button id="clearBtn" class="sidebar-btn">
+          <span class="btn-icon">🗑</span>
+          <span class="btn-text">清空</span>
+        </button>
+        <div class="sidebar-divider"></div>
+        <div class="toggle-container">
+          <label class="toggle-label">虚线连线</label>
+          <label class="switch">
+            <input type="checkbox" id="dashedToggle" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </aside>
+      <main id="canvasContainer" class="canvas-container">
+        <svg id="connectionsSvg" class="connections-svg"></svg>
+        <div id="canvas" class="canvas"></div>
+      </main>
+    </div>
+  </div>
+
+  <div id="confirmModal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <p class="modal-text">确定要清空所有卡片吗？此操作不可恢复。</p>
+      <div class="modal-actions">
+        <button id="confirmCancel" class="modal-btn modal-btn-cancel">取消</button>
+        <button id="confirmOk" class="modal-btn modal-btn-ok">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
