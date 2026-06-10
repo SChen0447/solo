@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>记忆宫殿 · 元素配对训练</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #111;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e6ed;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #0d1117 0%, #16213e 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      padding: 24px;
+      gap: 24px;
+    }
+
+    .card-grid-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+    }
+
+    #cardGrid {
+      display: grid;
+      gap: 12px;
+      perspective: 1000px;
+    }
+
+    .card {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateZ(0);
+    }
+
+    .card.size-small { width: 40px; height: 40px; }
+    .card.size-medium { width: 56px; height: 56px; }
+    .card.size-large { width: 72px; height: 72px; }
+
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card.shaking {
+      animation: shake 0.4s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0) rotateY(180deg); }
+      25% { transform: translateX(-6px) rotateY(180deg); }
+      75% { transform: translateX(6px) rotateY(180deg); }
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(85, 221, 255, 0.15);
+      overflow: hidden;
+    }
+
+    .card-back {
+      background: #1a2332;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(85, 221, 255, 0.3) 0.5px, transparent 1px),
+        radial-gradient(circle at 60% 70%, rgba(85, 221, 255, 0.2) 0.5px, transparent 1px),
+        radial-gradient(circle at 80% 20%, rgba(85, 221, 255, 0.25) 0.5px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(85, 221, 255, 0.2) 0.5px, transparent 1px);
+      background-size: 18px 18px, 22px 22px, 16px 16px, 20px 20px;
+      animation: starTwinkle 3s ease-in-out infinite;
+    }
+
+    @keyframes starTwinkle {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .card-front {
+      transform: rotateY(180deg);
+      font-size: 28px;
+      font-weight: 600;
+    }
+
+    .card.size-small .card-front { font-size: 16px; }
+    .card.size-medium .card-front { font-size: 22px; }
+    .card.size-large .card-front { font-size: 28px; }
+
+    .card.matched .card-front {
+      box-shadow: 0 0 20px rgba(85, 221, 255, 0.4);
+      border-color: rgba(85, 221, 255, 0.5);
+    }
+
+    .hint-glow {
+      position: absolute;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border-radius: 16px;
+      border: 2px solid rgba(85, 221, 255, 0.6);
+      animation: hintPulse 0.8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes hintPulse {
+      0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+    }
+
+    .memory-palace {
+      width: 30%;
+      min-width: 300px;
+      border-radius: 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(85, 221, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .memory-palace-title {
+      position: absolute;
+      top: 16px;
+      left: 20px;
+      font-size: 14px;
+      color: rgba(85, 221, 255, 0.7);
+      letter-spacing: 2px;
+      z-index: 10;
+    }
+
+    #palaceCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #effectsCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .settings-btn {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(85, 221, 255, 0.2);
+      color: #55ddff;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: all 0.2s ease;
+    }
+
+    .settings-btn:hover {
+      background: rgba(85, 221, 255, 0.1);
+      border-color: rgba(85, 221, 255, 0.5);
+      animation: gearSpin 2s linear infinite;
+    }
+
+    .settings-btn:active {
+      transform: scale(0.95);
+    }
+
+    @keyframes gearSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      min-width: 420px;
+      max-width: 90vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 20px;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(13, 17, 23, 0.9);
+      border: 1px solid rgba(85, 221, 255, 0.2);
+      padding: 32px;
+      z-index: 300;
+      opacity: 1;
+      transition: all 0.25s ease;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .panel.hidden {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      pointer-events: none;
+    }
+
+    .panel-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: transparent;
+      border: none;
+      color: #8a94a6;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .panel-close:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #55ddff;
+    }
+
+    .panel-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: #55ddff;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+
+    .setting-group {
+      margin-bottom: 24px;
+    }
+
+    .setting-label {
+      font-size: 13px;
+      color: #8a94a6;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .size-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .size-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(85, 221, 255, 0.15);
+      color: #c0c8d4;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .size-btn:hover {
+      border-color: rgba(85, 221, 255, 0.4);
+      background: rgba(85, 221, 255, 0.05);
+    }
+
+    .size-btn.active {
+      background: rgba(85, 221, 255, 0.15);
+      border-color: #55ddff;
+      color: #55ddff;
+    }
+
+    .size-btn:active {
+      transform: scale(0.95);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .switch.on {
+      background: #55ddff;
+    }
+
+    .switch-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      transition: left 0.2s ease;
+    }
+
+    .switch.on .switch-knob {
+      left: 22px;
+    }
+
+    .volume-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      margin-top: 10px;
+    }
+
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #55ddff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(85, 221, 255, 0.5);
+    }
+
+    .volume-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #55ddff;
+      cursor: pointer;
+      border: none;
+    }
+
+    .difficulty-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .diff-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(85, 221, 255, 0.15);
+      color: #c0c8d4;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .diff-btn:hover {
+      border-color: rgba(85, 221, 255, 0.4);
+    }
+
+    .diff-btn.active {
+      background: rgba(85, 221, 255, 0.15);
+      border-color: #55ddff;
+      color: #55ddff;
+    }
+
+    .diff-btn:active {
+      transform: scale(0.95);
+    }
+
+    .stats-score {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .score-number {
+      font-size: 64px;
+      font-weight: 700;
+      color: #55ddff;
+      line-height: 1;
+      text-shadow: 0 0 30px rgba(85, 221, 255, 0.5);
+    }
+
+    .score-label {
+      font-size: 14px;
+      color: #8a94a6;
+      margin-top: 8px;
+      letter-spacing: 4px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-item {
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(85, 221, 255, 0.1);
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      color: #e0e6ed;
+      font-family: 'SF Mono', 'Consolas', monospace;
+    }
+
+    .stat-name {
+      font-size: 12px;
+      color: #8a94a6;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .chart-container {
+      margin-bottom: 28px;
+      padding: 16px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(85, 221, 255, 0.08);
+    }
+
+    .chart-title {
+      font-size: 12px;
+      color: #8a94a6;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    #chartCanvas {
+      width: 100%;
+      height: 120px;
+      display: block;
+    }
+
+    .panel-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(85, 221, 255, 0.1);
+      border: 1px solid rgba(85, 221, 255, 0.3);
+      color: #55ddff;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 1px;
+    }
+
+    .action-btn:hover {
+      background: rgba(85, 221, 255, 0.2);
+      border-color: #55ddff;
+      color: #77eeff;
+    }
+
+    .action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .action-btn.primary {
+      background: linear-gradient(135deg, #55ddff 0%, #3399cc 100%);
+      border-color: transparent;
+      color: #0d1117;
+    }
+
+    .action-btn.primary:hover {
+      background: linear-gradient(135deg, #77eeff 0%, #55bbee 100%);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 250;
+      transition: opacity 0.25s ease;
+    }
+
+    .overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        flex-direction: column;
+        padding: 12px;
+        gap: 12px;
+      }
+
+      .memory-palace {
+        width: 100%;
+        min-width: 0;
+        height: 40%;
+      }
+
+      .card.size-small { width: 36px; height: 36px; }
+      .card.size-medium { width: 48px; height: 48px; }
+      .card.size-large { width: 60px; height: 60px; }
+
+      .card.size-small .card-front { font-size: 14px; }
+      .card.size-medium .card-front { font-size: 18px; }
+      .card.size-large .card-front { font-size: 24px; }
+
+      .panel {
+        min-width: 90vw;
+        padding: 20px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="game-container">
+      <div class="card-grid-wrapper">
+        <div id="cardGrid"></div>
+      </div>
+      <div class="memory-palace">
+        <div class="memory-palace-title">记 忆 宫 殿</div>
+        <canvas id="palaceCanvas"></canvas>
+      </div>
+    </div>
+
+    <canvas id="effectsCanvas"></canvas>
+
+    <button class="settings-btn" id="settingsBtn" title="设置">⚙️</button>
+
+    <div class="overlay hidden" id="overlay"></div>
+
+    <div class="panel hidden" id="settingsPanel">
+      <button class="panel-close" id="settingsClose">✕</button>
+      <div class="panel-title">游 戏 设 置</div>
+
+      <div class="setting-group">
+        <div class="setting-label">卡片尺寸</div>
+        <div class="size-options">
+          <button class="size-btn" data-size="small">小</button>
+          <button class="size-btn active" data-size="medium">中</button>
+          <button class="size-btn" data-size="large">大</button>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">背景音乐</div>
+        <div class="toggle-row">
+          <span style="color:#c0c8d4;font-size:14px;">播放</span>
+          <div class="switch" id="musicSwitch">
+            <div class="switch-knob"></div>
+          </div>
+        </div>
+        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="50" />
+      </div>
+
+      <div class="setting-group">
+        <div class="setting-label">难度级别</div>
+        <div class="difficulty-options">
+          <button class="diff-btn active" data-diff="easy">简单 (4×4)</button>
+          <button class="diff-btn" data-diff="normal">普通 (5×4)</button>
+          <button class="diff-btn" data-diff="hard">困难 (6×6)</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel hidden" id="statsPanel">
+      <button class="panel-close" id="statsClose">✕</button>
+      <div class="panel-title">本 轮 成 绩</div>
+
+      <div class="stats-score">
+        <div class="score-number" id="finalScore">0</div>
+        <div class="score-label">总 得 分</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-item">
+          <div class="stat-value" id="totalTime">0s</div>
+          <div class="stat-name">总 耗 时</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="accuracy">0%</div>
+          <div class="stat-name">正确配对率</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="avgReaction">0ms</div>
+          <div class="stat-name">平均反应时间</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" id="errorCount">0</div>
+          <div class="stat-name">错误次数</div>
+        </div>
+      </div>
+
+      <div class="chart-container">
+        <div class="chart-title">难 度 曲 线 (配对耗时)</div>
+        <canvas id="chartCanvas"></canvas>
+      </div>
+
+      <div class="panel-buttons">
+        <button class="action-btn" id="restartBtn">重 新 开 始</button>
+        <button class="action-btn primary" id="nextRoundBtn">下 一 轮</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
