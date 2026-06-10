@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星轨绘卷</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0b0d17;
+      color: #fff;
+      user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #gameCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
+    }
+
+    #gameCanvas:active {
+      cursor: grabbing;
+    }
+
+    #flashOverlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0);
+      pointer-events: none;
+      z-index: 10;
+      transition: background 0.5s ease-out;
+    }
+
+    #flashOverlay.active {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    #controlPanel {
+      position: absolute;
+      top: 50%;
+      right: 24px;
+      transform: translateY(-50%);
+      width: 220px;
+      padding: 24px 20px;
+      background: rgba(26, 29, 58, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      z-index: 5;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+
+    #controlPanel:hover {
+      transform: translateY(calc(-50% - 2px));
+      box-shadow: 0 12px 40px rgba(106, 156, 255, 0.2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    .star-count {
+      font-size: 24px;
+      color: #f0e68c;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .star-count-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: normal;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6a9cff, #c084fc);
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.3s ease-out;
+    }
+
+    .constellation-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .constellation-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .constellation-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: rgba(26, 29, 58, 0.8);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+      position: relative;
+    }
+
+    .constellation-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(106, 156, 255, 0.5);
+      border-color: rgba(106, 156, 255, 0.6);
+    }
+
+    .constellation-btn.active {
+      border-color: #f0e68c;
+      box-shadow: 0 0 16px rgba(240, 230, 140, 0.4);
+    }
+
+    .constellation-btn.locked {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .constellation-btn.locked:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-badge {
+      position: absolute;
+      bottom: -4px;
+      right: -4px;
+      background: #6a9cff;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      color: #fff;
+    }
+
+    #legendCard {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 360px;
+      padding: 32px 28px;
+      background: rgba(26, 29, 58, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(240, 230, 140, 0.4);
+      border-radius: 16px;
+      z-index: 20;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    #legendCard.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+
+    .legend-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .legend-name {
+      font-size: 24px;
+      color: #f0e68c;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+
+    .legend-text {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .legend-close {
+      background: linear-gradient(135deg, #6a9cff, #c084fc);
+      border: none;
+      color: #fff;
+      padding: 10px 32px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    }
+
+    .legend-close:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(106, 156, 255, 0.4);
+    }
+
+    #rareBadge {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.2), rgba(254, 202, 87, 0.2));
+      border: 1px solid rgba(254, 202, 87, 0.5);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: #feca57;
+      z-index: 6;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    }
+
+    #rareBadge.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #challengeHint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 5;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas"></canvas>
+    <div id="flashOverlay"></div>
+
+    <div id="rareBadge">
+      ✦ 稀有碎片已解锁
+    </div>
+
+    <div id="controlPanel">
+      <div class="panel-title">已收集星星</div>
+      <div class="star-count">
+        <span id="starCountNum">0</span>
+        <span class="star-count-label">颗</span>
+      </div>
+
+      <div class="progress-label">当前星座进度</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+
+      <div class="constellation-title">星座图鉴</div>
+      <div class="constellation-buttons">
+        <button class="constellation-btn active" data-id="0" title="猎户座">
+          🏹
+          <span class="btn-badge" id="badge-0">已解锁</span>
+        </button>
+        <button class="constellation-btn" data-id="1" title="北斗七星">
+          🐻
+          <span class="btn-badge" id="badge-1"></span>
+        </button>
+        <button class="constellation-btn locked" data-id="2" title="仙后座">
+          👑
+          <span class="btn-badge" id="badge-2">锁定</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="legendCard">
+      <div class="legend-icon" id="legendIcon">🏹</div>
+      <div class="legend-name" id="legendName">猎户座</div>
+      <div class="legend-text" id="legendText">
+        猎户座是冬夜最辉煌的星座，象征着伟大的猎人俄里翁。
+        传说中他因追求女神阿耳忒弥斯而被月神派遣的蝎子杀死，
+        宙斯将他升上天空成为星座，永远与天蝎座遥遥相对。
+      </div>
+      <button class="legend-close" id="legendClose">继续探索</button>
+    </div>
+
+    <div id="challengeHint">提示：快速放置星星可触发隐藏挑战</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
