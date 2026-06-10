@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T21:39:40.665Z",
+  "task_name": "auto174",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位独立民宿经营者希望为旗下几间特色小木屋制作一个在线管理与展示页面，客人可以通过浏览器查看每间木屋的实时状态（是否已预订、剩余房间数）并发送入住申请，经营者端可标记确认或拒绝并更新木屋信息。\n\n构建一个名为「小木屋日记」的轻量全栈web应用，使用TypeScript、React 18、Vite和纯前端模拟后端数据（localStorage + 状态管理）实现，不依赖外部后端服务。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，输出目录dist，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，加载React应用容器，内联基础全局字体与重置样式）\n - src/data.ts（模拟民宿数据存储模块，导出预设木屋列表（5间木屋，每间含id、名称、图片url、床位数、已预订数、简介文字、价格/晚、在地图上的经纬度模拟坐标），并提供读取/更新localStorage的getCabins和updateCabin方法。数据流向：其他模块通过调用该模块读取初始或持久化数据，更新时调用updateCabin写回localStorage）\n - src/App.tsx（主应用组件，管理民宿列表状态和当前选中的木屋id，渲染左侧列表面板（占宽35%）和右侧详情面板（占宽65%），并协调两个子组件的数据交互。数据流向：从data.ts读取全部木屋列表传给CabinList；将选中的木屋详情传给CabinDetail；监听CabinDetail中的确认/拒绝操作后更新localStorage）\n - src/components/CabinList.tsx（展示木屋列表的纯展示组件，接收cabins数组和onSelect回调，每个木屋卡片显示名称、图片缩略图、剩余房间数（总床位数-已预订数）、价格；若已预订数等于总床位数则卡片半透明并显示「已满」标签；卡片采用磨砂玻璃效果背景（backdrop-filter: blur(8px)），悬浮时提升阴影。数据流向：接收父亲传来的数据，选中时调用onSelect(id)）\n - src/components/CabinDetail.tsx（展示选中木屋的完整详情组件，接收cabin对象和onUpdate回调；显示大图、名称、描述、价格、剩余房间数；提供一个「确认入住」按钮（绿色#27ae60）和一个「拒绝入住」按钮（红色#e74c3c），点击后分别将已预订数+1或-1（不低于0），并调用onUpdate(id, newBookedCount)）。\n\n功能需求：\n1) 初始加载时，从localStorage读取木屋数据；若没有则使用data.ts中的默认数据并初始化存入localStorage。\n2) 左侧列表按剩余房间数从多到少排序展示，每张卡片显示名称、一张正方形缩略图（120x120px，用placehold.co或固定占位图）、剩余房间数（以「剩余X间」橙色文字显示）、价格（绿色粗体）。\n3) 点击任一张卡片后，右侧面板平滑切换展示该木屋的详情：大图（480x360px，占详情面板上部）、名称（24px粗体#2c3e50）、简介文本（16px，#7f8c8d）。\n4) 右侧详情面板底部有两个操作按钮「确认入住」和「拒绝入住」，点击「确认入住」后已预订数+1（不超过总床位数），同时弹出一个淡入的绿色toast提示「入住成功！」，持续2.5秒自动消失；点击「拒绝入住」则已预订数-1（不低于0），弹出红色toast「已拒绝」。\n5) 每次数据更新后，左侧列表会自动重新排序和更新剩余房间数显示，且「已满」状态的卡片变灰半透明。\n6) 右侧详情面板在切换木屋时，有一个从右向左滑入的0.3秒过渡动画（translateX(20px) → translateX(0) 加 opacity 0 → 1）。\n\n界面要求：整体采用复古原木风配色——主背景#f5f0e6（米白），左侧面板用#e8dcc8（浅黄褐），右侧面板用#ffffff（纯白）；顶部应用标题「小木屋日记」居中，32px，粗体，颜色#3e2723（深棕），带1.5倍行高和底部12px间距；所有按钮具有圆角8px和0.2秒hover背景色加深过渡；卡片之间用8px间距，响应式宽度适配：当屏幕宽度小于768px时左侧面板占满宽度，右侧面板占满宽度并置于下方，列表卡片改为横向滚动。\n\n性能约束：页面首次加载时间应小于1.5秒（基于普通3G网络模拟），切换木屋详情时无需重新请求数据，列表重新排序的计算耗时不应超过16ms以避免掉帧。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:b3f293a1be12fbeaf32cd431d2b4beff_6a2887267d3cfbad2679c16e.6a2888107d3cfbad2679c248.6a288810f62419538ad10598:Trae CN.T(2026/6/10 05:39:28)",
+    "user_id": "3986207660317399",
+    "trace_id": "b3f293a1be12fbeaf32cd431d2b4beff",
+    "session_id": "6a2887267d3cfbad2679c16e",
+    "task_id": "6a2888107d3cfbad2679c248",
+    "message_id": "6a288810f62419538ad10598",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 05:39:28",
+    "format": "full"
+  },
+  "trace": "null"
+}
