@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素风关卡编辑器</title>
+  <link rel="stylesheet" href="/src/styles/main.css">
+</head>
+<body>
+  <div id="app">
+    <aside id="toolbar" class="toolbar">
+      <h2 class="toolbar-title">工具箱</h2>
+      <div class="block-tools">
+        <button class="block-btn" data-type="ground" title="地面砖块">
+          <span class="block-icon block-ground"></span>
+          <span class="block-label">地面</span>
+        </button>
+        <button class="block-btn" data-type="spike" title="尖刺">
+          <span class="block-icon block-spike"></span>
+          <span class="block-label">尖刺</span>
+        </button>
+        <button class="block-btn" data-type="coin" title="金币">
+          <span class="block-icon block-coin"></span>
+          <span class="block-label">金币</span>
+        </button>
+        <button class="block-btn" data-type="enemy" title="敌人出生点">
+          <span class="block-icon block-enemy"></span>
+          <span class="block-label">敌人</span>
+        </button>
+      </div>
+      <div class="action-tools">
+        <button id="undoBtn" class="action-btn" title="撤销 (Ctrl+Z)">
+          ↶ 撤销
+        </button>
+        <button id="clearBtn" class="action-btn">
+          清除所有
+        </button>
+        <button id="exportBtn" class="action-btn">
+          导出JSON
+        </button>
+        <div id="exportTip" class="export-tip"></div>
+      </div>
+    </aside>
+    <main id="main-content">
+      <div id="editor-container">
+        <canvas id="editorCanvas"></canvas>
+        <div id="tooltip" class="tooltip"></div>
+        <div id="statusBar" class="status-bar">
+          <span id="currentTool">当前工具：无</span>
+          <span id="coordDisplay">坐标：(-, -)</span>
+        </div>
+      </div>
+      <div id="confirmDialog" class="confirm-dialog hidden">
+        <div class="dialog-content">
+          <p class="dialog-message">确定要清除整个关卡吗？</p>
+          <div class="dialog-buttons">
+            <button id="confirmYes" class="dialog-btn dialog-btn-confirm">确定</button>
+            <button id="confirmNo" class="dialog-btn dialog-btn-cancel">取消</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
