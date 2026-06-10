@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>四季植物景观预览</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #e2e8f0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ---------- 状态显示（右上角） ---------- */
+    #status-bar {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 10px 18px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #cbd5e1;
+      font-size: 14px;
+      z-index: 10;
+      user-select: none;
+      letter-spacing: 0.5px;
+    }
+
+    /* ---------- 控制面板 ---------- */
+    #control-panel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 280px;
+      height: 100vh;
+      padding: 24px 20px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      overflow-y: auto;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* 季节按钮 */
+    .season-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+    }
+
+    .season-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: #1e293b;
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+
+    .season-btn:hover {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .season-btn:active {
+      transform: scale(0.9);
+    }
+
+    .season-btn.active {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .season-spring { background: #ffb7c5; }
+    .season-summer { background: #4ade80; }
+    .season-autumn { background: #fb923c; }
+    .season-winter { background: #94a3b8; }
+
+    /* 滑块样式 */
+    .slider-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .slider-icon {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #time-slider {
+      background: linear-gradient(to right, #6366f1, #a855f7, #fb923c, #fbbf24);
+    }
+
+    #wind-slider {
+      background: linear-gradient(to right, #334155, #38bdf8);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: #cbd5e1;
+      min-width: 48px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* 视角按钮 */
+    .camera-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .camera-btn {
+      flex: 1;
+      padding: 10px 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .camera-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+    }
+
+    .camera-btn:active {
+      transform: scale(0.94);
+    }
+
+    .camera-btn.active {
+      background: rgba(99, 102, 241, 0.35);
+      border-color: rgba(99, 102, 241, 0.6);
+    }
+
+    /* 植物选择 */
+    .plant-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .plant-btn {
+      padding: 10px 4px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .plant-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
+    }
+
+    .plant-btn:active {
+      transform: scale(0.94);
+    }
+
+    .plant-btn.active {
+      background: rgba(74, 222, 128, 0.3);
+      border-color: rgba(74, 222, 128, 0.6);
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #64748b;
+      line-height: 1.6;
+      padding: 8px 10px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 8px;
+    }
+
+    /* 右键菜单 */
+    #plant-menu {
+      position: fixed;
+      min-width: 200px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+      display: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    #plant-menu.visible {
+      display: block;
+      animation: menuFadeIn 0.15s ease;
+    }
+
+    @keyframes menuFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .menu-title {
+      padding: 8px 10px 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
+    }
+
+    .menu-info {
+      padding: 6px 10px;
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .menu-info span:last-child {
+      color: #e2e8f0;
+      text-align: right;
+    }
+
+    .color-dots {
+      display: flex;
+      gap: 4px;
+      justify-content: flex-end;
+    }
+
+    .color-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .menu-btn {
+      flex: 1;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .menu-btn:hover {
+      background: rgba(255, 255, 255, 0.16);
+    }
+
+    .menu-btn.danger {
+      background: rgba(239, 68, 68, 0.25);
+      color: #fca5a5;
+    }
+
+    .menu-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.4);
+    }
+
+    /* 移动端抽屉 */
+    #drawer-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 56px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      border: none;
+      cursor: pointer;
+      z-index: 11;
+    }
+
+    /* 响应式 */
+    @media (max-width: 767px) {
+      #control-panel {
+        width: 100%;
+        height: 50vh;
+        top: auto;
+        bottom: 0;
+        border-right: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px 16px 0 0;
+        transform: translateY(calc(100% - 24px));
+        padding-bottom: 32px;
+      }
+
+      #control-panel.open {
+        transform: translateY(0);
+      }
+
+      #drawer-toggle {
+        display: block;
+      }
+
+      #status-bar {
+        top: 12px;
+        right: 12px;
+        padding: 8px 14px;
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="status-bar">夏季 12:00</div>
+    <button id="drawer-toggle" aria-label="展开控制面板"></button>
+    <aside id="control-panel">
+      <div>
+        <div class="panel-title">四季景观预览</div>
+        <div class="section-label" style="margin-top:4px;">Seasonal Landscape</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">季节</div>
+        <div class="season-buttons">
+          <button class="season-btn season-spring" data-season="spring" title="春季">春</button>
+          <button class="season-btn season-summer active" data-season="summer" title="夏季">夏</button>
+          <button class="season-btn season-autumn" data-season="autumn" title="秋季">秋</button>
+          <button class="season-btn season-winter" data-season="winter" title="冬季">冬</button>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">种植植物</div>
+        <div class="plant-buttons">
+          <button class="plant-btn active" data-plant="sakura">樱花</button>
+          <button class="plant-btn" data-plant="ginkgo">银杏</button>
+          <button class="plant-btn" data-plant="pine">松树</button>
+          <button class="plant-btn" data-plant="bush">灌木</button>
+          <button class="plant-btn" data-plant="grass">草地</button>
+        </div>
+        <div class="hint-text">点击网格地面种植 · 右键植物查看详情</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">时间</div>
+        <div class="slider-wrapper">
+          <div class="slider-row">
+            <span class="slider-icon">☀️</span>
+            <input type="range" id="time-slider" min="6" max="20" step="0.1" value="12" />
+            <span class="slider-value" id="time-value">12:00</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">风力</div>
+        <div class="slider-wrapper">
+          <div class="slider-row">
+            <span class="slider-icon">🍃</span>
+            <input type="range" id="wind-slider" min="0" max="10" step="0.5" value="0" />
+            <span class="slider-value" id="wind-value">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">视角</div>
+        <div class="camera-buttons">
+          <button class="camera-btn" data-camera="top">俯视</button>
+          <button class="camera-btn active" data-camera="eye">45°</button>
+          <button class="camera-btn" data-camera="near">近景</button>
+        </div>
+      </div>
+    </aside>
+
+    <div id="plant-menu"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
