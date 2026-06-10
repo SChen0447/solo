@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D声波传播可视化</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <button id="sidebar-toggle" class="sidebar-toggle" title="展开控制面板">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h2>声波控制面板</h2>
+        <button id="sidebar-close" class="sidebar-close" title="关闭">×</button>
+      </div>
+      
+      <div class="control-section">
+        <h3>播放控制</h3>
+        <div class="button-group">
+          <button id="btn-play" class="btn btn-primary">播放</button>
+          <button id="btn-reset" class="btn btn-secondary">重置</button>
+        </div>
+      </div>
+      
+      <div class="control-section">
+        <h3>声源 1 <span class="color-dot" style="background:#FF6B35"></span></h3>
+        <div class="toggle-row">
+          <label>启用</label>
+          <label class="switch">
+            <input type="checkbox" id="source1-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="input-row">
+          <label>X 坐标</label>
+          <input type="number" id="source1-x" value="-3" min="-10" max="10" step="0.1">
+        </div>
+        <div class="input-row">
+          <label>Z 坐标</label>
+          <input type="number" id="source1-z" value="0" min="-10" max="10" step="0.1">
+        </div>
+      </div>
+      
+      <div class="control-section">
+        <h3>声源 2 <span class="color-dot" style="background:#00B4D8"></span></h3>
+        <div class="toggle-row">
+          <label>启用</label>
+          <label class="switch">
+            <input type="checkbox" id="source2-enabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="input-row">
+          <label>X 坐标</label>
+          <input type="number" id="source2-x" value="3" min="-10" max="10" step="0.1">
+        </div>
+        <div class="input-row">
+          <label>Z 坐标</label>
+          <input type="number" id="source2-z" value="0" min="-10" max="10" step="0.1">
+        </div>
+      </div>
+      
+      <div class="control-section">
+        <h3>频率控制</h3>
+        <div class="slider-row">
+          <label>频率: <span id="freq-value">440</span> Hz</label>
+          <input type="range" id="frequency" min="110" max="880" value="440" step="10">
+        </div>
+      </div>
+      
+      <div class="control-section">
+        <h3>屏障设置</h3>
+        <div class="slider-row">
+          <label>高度: <span id="barrier-value">0</span> 单位</label>
+          <input type="range" id="barrier-height" min="0" max="3" value="0" step="0.1">
+        </div>
+        <button id="btn-snap" class="btn btn-secondary btn-full">吸附到 Y 轴</button>
+      </div>
+      
+      <div class="control-section">
+        <h3>介质选择</h3>
+        <select id="medium" class="select-full">
+          <option value="air">空气 (343 m/s)</option>
+          <option value="water">水 (1482 m/s)</option>
+          <option value="glass">玻璃 (4540 m/s)</option>
+        </select>
+      </div>
+      
+      <div class="control-section info-section">
+        <h3>实时信息</h3>
+        <div class="info-row">
+          <span>声源距离:</span>
+          <span id="info-distance">6.00</span>
+        </div>
+        <div class="info-row">
+          <span>最大半径:</span>
+          <span id="info-radius">0.00</span>
+        </div>
+        <div class="info-row">
+          <span>干涉级次:</span>
+          <span id="info-interference">0</span>
+        </div>
+        <div class="info-row">
+          <span>衍射角度:</span>
+          <span id="info-diffraction">0°</span>
+        </div>
+      </div>
+    </div>
+    
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
