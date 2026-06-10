@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>魔法阵工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 100%);
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #f0f0f0;
+      min-width: 800px;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-title {
+      text-align: center;
+      padding: 16px 0;
+      font-size: 32px;
+      font-weight: bold;
+      color: #f0f0f0;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                   0 0 20px rgba(255, 215, 0, 0.3);
+      letter-spacing: 4px;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      padding: 0 20px 20px 20px;
+      gap: 20px;
+      min-height: 0;
+    }
+
+    .rune-panel {
+      width: 20%;
+      min-width: 160px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      backdrop-filter: blur(10px);
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 8px;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+    }
+
+    .rune-item {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      position: relative;
+    }
+
+    .rune-item:hover {
+      filter: brightness(1.2);
+      transform: scale(1.1);
+    }
+
+    .rune-item.selected {
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+      transform: scale(1.1);
+    }
+
+    .rune-item svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .action-btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: bold;
+      color: white;
+      transition: all 0.2s ease-out;
+    }
+
+    .action-btn:hover {
+      filter: brightness(1.2);
+      transform: translateY(-1px);
+    }
+
+    .action-btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-clear {
+      background-color: #e74c3c;
+    }
+
+    .btn-undo {
+      background-color: #7f8c8d;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+    }
+
+    #magicCanvas {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    .spell-text {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8),
+                   0 0 20px rgba(255, 215, 0, 0.4);
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+      pointer-events: none;
+      text-align: center;
+    }
+
+    .spell-text.visible {
+      opacity: 1;
+    }
+
+    .spell-description {
+      font-size: 14px;
+      color: #f0f0f0;
+      margin-top: 6px;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+    }
+
+    .history-panel {
+      width: 20%;
+      min-width: 160px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+      min-height: 0;
+    }
+
+    .history-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .history-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .history-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .history-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 215, 0, 0.4);
+      border-radius: 3px;
+    }
+
+    .history-item {
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 12px;
+    }
+
+    .history-item.latest {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .history-runes {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+
+    .history-rune-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .history-name {
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 4px;
+    }
+
+    .history-time {
+      color: #aaa;
+      font-size: 11px;
+    }
+
+    .empty-history {
+      text-align: center;
+      color: #888;
+      padding: 40px 0;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1 class="app-title">魔法阵工坊</h1>
+    <div class="main-container">
+      <div class="rune-panel">
+        <div class="panel-title">符文选择</div>
+        <div id="runeContainer"></div>
+      </div>
+      <div class="canvas-area">
+        <div class="action-buttons">
+          <button id="btnClear" class="action-btn btn-clear">清空法阵</button>
+          <button id="btnUndo" class="action-btn btn-undo">撤销上一步</button>
+        </div>
+        <div class="canvas-wrapper">
+          <div id="spellText" class="spell-text"></div>
+          <canvas id="magicCanvas" width="800" height="600"></canvas>
+        </div>
+      </div>
+      <div class="history-panel">
+        <div class="panel-title">施法记录</div>
+        <div id="historyList" class="history-list">
+          <div class="empty-history">暂无施法记录</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
