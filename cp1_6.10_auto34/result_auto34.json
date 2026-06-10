@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:39:41.277Z",
+  "task_name": "auto34",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助个人用户跟踪日常习惯、记录时间投入并可视化坚持轨迹的轻量级习惯追踪器应用，主要解决手动记录习惯过程繁琐、缺乏直观激励反馈的问题。\n\n它应当具备以下能力：\n1) 支持添加和管理习惯（如阅读、运动、冥想等），每个习惯可设置目标频率（每日/每周/自定义天数周期）和提醒时间（浏览器通知），添加时选择一个表情符号作为习惯图标，页面顶部以标签栏形式展示所有习惯，当前活跃习惯高亮并带有微弱的上下浮动动画。\n2) 在主内容区，每天以时间线形式展示当日所有习惯的打卡记录，每个习惯条目显示：图标、名称、当前连续天数（以火焰徽章🔥标记，连续超过7天火焰变大并变色），以及一个圆形进度环（表示当天完成进度，如每日阅读30分钟则环填充比例对应实际分钟/目标分钟），点击环中心可快速打卡或取消打卡，打卡时环从0平滑填充到目标值并伴有清脆的叮铃声。\n3) 支持查看任意习惯的历史完成日历（类似GitHub贡献格子图），每个格子按完成度染色（未完成灰色，低完成度浅绿，中完成度深绿，全完成翠绿），点击格子弹出该日详情气泡（包含打卡时间、耗时备注），日历区域可左右滑动切换月份，切换时卡片以水平滑动转场。\n4) 提供一个全局统计面板：展示所有习惯的总坚持天数、本周完成率（折线图，横轴星期、纵轴完成百分比，每日更新点连线，鼠标悬浮显示具体数字）、以及一个按完成度排序的习惯排行榜（纵向卡片列表，前三位用金、银、铜色边框装饰，卡片有轻微的悬停上浮阴影效果）。\n\n界面方面要求采用深色主题底色（#1a1a2e），主色调为青色系（#00d2d3），辅助色用暖橙色（#ff6b6b）表示中断或警告，所有卡片使用圆角10px并带有1px半透明边框，卡片悬停时背景亮度略微提升并带有平滑过渡动画（0.3s ease）。整体布局采用两栏结构：左侧窄边栏为习惯标签和全局统计入口（可折叠，折叠时缩小为图标按钮），右侧主区域为时间线和日历视图，页面标题区域右侧有“添加习惯”浮动按钮（圆形，青色渐变背景，悬停时旋转30度并放大1.1倍）。所有交互反馈要求0.2秒内响应，列表滚动流畅无卡顿（使用will-change: transform硬件加速）。\n\n性能上需要页面在Chrome/Edge上以60FPS流畅运行，习惯数量扩展到50个时日历渲染时间不超过200ms，LocalStorage存储数据总量不超过5MB（需提醒用户定期清理）。\n\n实现采用TypeScript、React 18、Vite和LocalStorage，按以下文件组织代码：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, uuid, date-fns；启动脚本：npm run dev，构建：npm run build）\n - index.html（入口页面，加载@vitejs/plugin-react的模块）\n - vite.config.js（React插件配置，别名@指向src目录，端口5173）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - src/hooks/useHabits.ts（自定义Hook，管理习惯数据的增删改查和打卡记录，数据流向：接收组件操作→更新LocalStorage→返回状态和触发重渲染）\n - src/components/HabitCard.tsx（单个习惯卡片组件，渲染图标、名称、进度环、连续天数，点击事件通过props传递给父组件处理）\n - src/components/Timeline.tsx（时间线视图组件，按日期渲染所有习惯记录，接收日期和习惯数据，支持水平滑动切换月份）\n - src/components/StatsPanel.tsx（统计面板组件，渲染日历格子和折线图，使用Canvas绘制折线，接收习惯数据计算指标）\n\n运行方式：npm install && npm run dev，浏览器开localStorage后直接使用，所有数据持久化在LocalStorage中。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:01c3b1c071593d685c0f92861036dc61_6a284f8bbe538834bf6faeb5.6a284fd1be538834bf6faef6.6a284fd1ab371d44df2d4c93:Trae CN.T(2026/6/10 01:39:29)",
+    "user_id": "3986207660317399",
+    "trace_id": "01c3b1c071593d685c0f92861036dc61",
+    "session_id": "6a284f8bbe538834bf6faeb5",
+    "task_id": "6a284fd1be538834bf6faef6",
+    "message_id": "6a284fd1ab371d44df2d4c93",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:39:29",
+    "format": "full"
+  },
+  "trace": "null"
+}
