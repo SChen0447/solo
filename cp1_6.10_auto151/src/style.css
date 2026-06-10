@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0f0c29 100%);
+  min-height: 100vh;
+  overflow: hidden;
+  color: #fff;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button-group {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  display: flex;
+  gap: 16px;
+}
+
+.button-group button {
+  height: 40px;
+  padding: 0 24px;
+  border: none;
+  border-radius: 20px;
+  background: #2d3436;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.button-group button:hover {
+  transform: translateY(-2px);
+  background: #636e72;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.button-group button:active {
+  transform: translateY(0);
+}
+
+#canvas-container {
+  width: 80%;
+  height: calc(80vh - 40px);
+  margin-top: 88px;
+  position: relative;
+  border-radius: 12px;
+  padding: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+#mainCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  cursor: crosshair;
+  background: radial-gradient(circle at center, #302b63 0%, #0f0c29 100%);
+}
+
+#control-panel {
+  position: fixed;
+  bottom: 64px;
+  right: 24px;
+  width: 240px;
+  padding: 20px;
+  border-radius: 16px;
+  background: rgba(15, 12, 41, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 100;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.slider-group {
+  margin-bottom: 20px;
+}
+
+.slider-group:last-child {
+  margin-bottom: 0;
+}
+
+.slider-group label {
+  display: block;
+  font-size: 13px;
+  color: #b2bec3;
+  margin-bottom: 8px;
+}
+
+.slider-wrapper {
+  position: relative;
+}
+
+.slider-wrapper input[type="range"] {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+}
+
+.slider-wrapper input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+.slider-wrapper input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.slider-wrapper input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+}
+
+#durationSlider::-webkit-slider-thumb {
+  background: #ff6b6b;
+}
+
+#durationSlider::-moz-range-thumb {
+  background: #ff6b6b;
+}
+
+#glowSlider::-webkit-slider-thumb {
+  background: #48dbfb;
+}
+
+#glowSlider::-moz-range-thumb {
+  background: #48dbfb;
+}
+
+#brightnessSlider::-webkit-slider-thumb {
+  background: #feca57;
+}
+
+#brightnessSlider::-moz-range-thumb {
+  background: #feca57;
+}
+
+.slider-value {
+  position: absolute;
+  top: -28px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+  pointer-events: none;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+#status-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: #1a1a2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  z-index: 50;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#status-bar span {
+  font-size: 13px;
+  color: #b2bec3;
+}
+
+@media (max-width: 768px) {
+  #canvas-container {
+    width: 90%;
+    height: 60vh;
+    margin-top: 100px;
+  }
+
+  #control-panel {
+    position: fixed;
+    bottom: 40px;
+    left: 0;
+    right: 0;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    padding: 16px 24px;
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+  }
+
+  .slider-group {
+    margin-bottom: 0;
+    min-width: 180px;
+    flex: 1;
+  }
+
+  .button-group {
+    top: 16px;
+    gap: 8px;
+  }
+
+  .button-group button {
+    padding: 0 16px;
+    font-size: 13px;
+  }
+}

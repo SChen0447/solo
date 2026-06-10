@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音痕墙 - Sound Trace Wall</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <div class="button-group">
+      <button id="clearBtn">清空画布</button>
+      <button id="saveBtn">保存壁画</button>
+      <button id="randomBtn">随机生成</button>
+    </div>
+
+    <div id="canvas-container">
+      <canvas id="mainCanvas"></canvas>
+    </div>
+
+    <div id="control-panel">
+      <div class="slider-group">
+        <label for="durationSlider">音符持续时间</label>
+        <div class="slider-wrapper">
+          <input type="range" id="durationSlider" min="0.3" max="2.0" step="0.1" value="0.5">
+          <span class="slider-value" id="durationValue">0.5s</span>
+        </div>
+      </div>
+      <div class="slider-group">
+        <label for="glowSlider">光晕半径</label>
+        <div class="slider-wrapper">
+          <input type="range" id="glowSlider" min="20" max="80" step="1" value="40">
+          <span class="slider-value" id="glowValue">40px</span>
+        </div>
+      </div>
+      <div class="slider-group">
+        <label for="brightnessSlider">背景亮度</label>
+        <div class="slider-wrapper">
+          <input type="range" id="brightnessSlider" min="10" max="90" step="1" value="50">
+          <span class="slider-value" id="brightnessValue">50%</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="status-bar">
+      <span id="noteCount">音符块：0</span>
+      <span id="undoCount">撤销栈：0 / 20</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
