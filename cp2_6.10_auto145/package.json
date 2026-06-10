@@ -1,0 +1,19 @@
+{
+  "name": "particle-system-editor",
+  "version": "1.0.0",
+  "description": "2D粒子系统编辑器 - 游戏特效设计师工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.0",
+    "@types/lodash": "^4.14.202"
+  }
+}
