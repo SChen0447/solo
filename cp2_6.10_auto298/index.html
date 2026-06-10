@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>符文工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #3e2723;
+      font-family: 'Courier New', monospace;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #game-container {
+      position: relative;
+    }
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .title {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 32px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 
+        2px 2px 0 #d4a574,
+        -2px -2px 0 #d4a574,
+        2px -2px 0 #d4a574,
+        -2px 2px 0 #d4a574,
+        0 0 10px rgba(212, 165, 116, 0.5);
+      letter-spacing: 4px;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .title::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent
+      );
+      animation: sweep 3s infinite;
+    }
+    @keyframes sweep {
+      0% { left: -100%; }
+      50%, 100% { left: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="game-container">
+      <div class="title">符 文 工 坊</div>
+      <canvas id="gameCanvas"></canvas>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
