@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T20:11:18.092Z",
+  "task_name": "auto150",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线影视作品评论与评分聚合看板应用，让用户能搜索影片、查看详细信息、提交评论并查看影片的平均评分趋势。使用TypeScript、React和Vite实现。文件结构如下：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、uuid、lodash、recharts@2，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口页面，挂载id为root的div，引入Google Fonts的Inter字体）\n - src/types.ts（定义Movie, Review, RatingTrend等TypeScript接口类型）\n - src/main.tsx（ReactDOM渲染入口）\n - src/App.tsx（主应用组件，管理路由和全局状态，包含影片搜索、详情展示、评论提交和评分图表面板）\n - src/api.ts（模拟API调用：根据关键词搜索影片、根据ID获取影片详情及评论列表、提交新评论，所有数据使用本地生成的假数据）\n - src/components/SearchBar.tsx（搜索输入框组件）\n - src/components/MovieCard.tsx（影片卡片组件，显示海报、标题、年份和平均评分）\n - src/components/ReviewList.tsx（评论列表组件，展示所有评论及用户头像昵称）\n - src/components/RatingChart.tsx（评分趋势图表组件，使用Recharts显示每日平均评分变化折线图）\n\n具体需求：\n1. 搜索功能：页面顶部有一个搜索输入框（宽60%，最大宽度600px，圆角24px，内边距12px 20px，深灰#1e1e2e背景白色文字），用户输入关键词后实时显示自动补全建议列表（最多5条，异步300ms防抖），点击建议或按回车触发搜索，结果以网格形式展示（每行3-4张卡片，自适应响应式）。\n2. 影片详情页面：点击任意影片卡片跳转到详情页，展示影片的海报（占左侧40%宽度，圆角8px）、标题（字号24px，粗体）、上映年份、类型标签（浅紫#7c3aed背景白色文字，圆角12px）、剧情简介（行高1.6）以及当前平均评分（大号数字，字号48px，颜色随分值渐变：0-5分为红色#e74c3c，5-8分为橙色#f39c12，8-10分为绿色#2ecc71）。\n3. 评论提交：详情页下方有一个评论表单，包含用户昵称输入（占50%宽度）和评论内容多行文本区（宽100%，高120px，圆角8px，边框#ddd），提交按钮（背景#7c3aed，文字白色，圆角8px，悬停变亮#6d28d9，点击有0.1s缩放动画）。提交成功后，新评论立即出现在评论列表中（无需刷新页面），并在3秒后弹出一条绿色toast提示“评论发布成功！”。\n4. 评分趋势图表：详情页右侧有一个宽100%高300px的折线图面板，显示该影片近30天的每日平均评分变化（X轴为日期，Y轴为1-10分），数据点为圆点（半径4px，颜色#7c3aed），折线渐变填充下方区域（半透明紫色）。当鼠标悬停时显示具体数值和日期。\n5. 响应式适配：在大屏（>=1024px）时，详情页内容为左右两栏布局；在中屏（768-1023px）时，海报缩小至30%宽度，评论列表移到底部；在小屏（<768px）时，所有内容改为单列布局，搜索框宽度变为90%，卡片网格变为每行1-2张。\n\n界面方面：整体采用深色主题（主背景#0f0f23，卡片背景#1e1e2e，文字色#e0e0e0），所有元素圆角统一为8px或12px，过渡动画时长0.2-0.3s（hover时缩放1.02或改变阴影），交互反馈采用微妙的边框颜色变化和阴影扩展，视觉风格统一且富有科技感。\n\n性能要求：首次加载时间不超过3秒（使用Code Splitting），搜索输入响应延迟不超过200ms（client-side），评论提交后列表刷新不超过500ms，图表渲染帧率不低于30fps（使用React.memo和useMemo优化数据计算）。\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0cd1877f6f6028cb2d438438a334e7bc_6a28729482cf5c9a7755b919.6a28735982cf5c9a7755b9f6.6a287359cf024b2bfcc97fda:Trae CN.T(2026/6/10 04:11:05)",
+    "user_id": "3986207660317399",
+    "trace_id": "0cd1877f6f6028cb2d438438a334e7bc",
+    "session_id": "6a28729482cf5c9a7755b919",
+    "task_id": "6a28735982cf5c9a7755b9f6",
+    "message_id": "6a287359cf024b2bfcc97fda",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 04:11:05",
+    "format": "full"
+  },
+  "trace": "null"
+}
