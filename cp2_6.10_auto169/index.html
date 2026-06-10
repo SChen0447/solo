@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 分子结构可视化</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas"></canvas>
+    <div id="label-renderer"></div>
+
+    <div id="info-panel" class="hidden">
+      <div id="info-symbol"></div>
+      <div id="info-coords"></div>
+    </div>
+
+    <div id="mode-buttons">
+      <button id="wireframe-btn" class="mode-btn">线框模式</button>
+      <button id="ballstick-btn" class="mode-btn active">球棍模式</button>
+    </div>
+
+    <div id="control-panel">
+      <button id="panel-toggle" class="panel-toggle-btn">☰</button>
+      <div class="panel-content">
+        <div class="panel-section">
+          <label class="panel-label">选择分子</label>
+          <select id="molecule-select" class="panel-select">
+            <option value="H2O">水 (H₂O)</option>
+            <option value="CO2">二氧化碳 (CO₂)</option>
+            <option value="C6H6">苯环 (C₆H₆)</option>
+          </select>
+        </div>
+
+        <div class="panel-section">
+          <label class="checkbox-label">
+            <input type="checkbox" id="label-toggle" checked />
+            <span>显示标签</span>
+          </label>
+        </div>
+
+        <div class="panel-section">
+          <button id="reset-btn" class="panel-btn">复位视角</button>
+        </div>
+
+        <div class="panel-section">
+          <button id="autorotate-btn" class="panel-btn auto-rotate-btn">自动旋转：关</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
