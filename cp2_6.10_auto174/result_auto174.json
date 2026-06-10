@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T20:56:33.114Z",
+  "task_name": "auto174",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个帮助独立插画师或表情包爱好者在浏览器中快速把静态插画转成循环播放的动态表情包的工具。想法是解决画好一张插画后，手动逐帧调整肢体或面部表情来做成GIF很耗时，而且不同帧之间过渡不自然的问题。希望能通过锚点定位和参数曲线控制，让插画师能拖拽关键帧并自动补间生成平滑的循环动画，还能一健导出为GIF或WebP格式。\n\n希望它能做到：第一，页面左侧是绘图编辑区（600x600的画布，背景色#f5f0eb，带浅色十字辅助线），右侧是时间轴面板（宽度280px，背景色#2d2d3d），时间轴以帧为单位显示当前动画的总长度（默认10帧），用户可以在时间轴上点击添加关键帧（用菱形图标标记，颜色#ff6b6b），拖动关键帧可以调整其位置。第二，每添加一个关键帧，绘图区会自动复制当前画布内容作为该帧的画面，用户可以在绘图区用鼠标绘制或擦除线条（画笔大小可调，默认3px，颜色#333333，工具切换有一个画笔和橡皮擦按钮，按钮背景色#4a4a6a，圆角8px，文字白色），绘制完成后点击“预览”按钮（位于时间轴上方，背景色#4ecdc4，圆角8px，文字白色，hover时背景变亮）即可看到从关键帧A到关键帧B的自动补间动画（补间算法使用线性插值或缓动曲线，默认选择缓出ease-out）。第三，绘图区下方的参数面板（背景#1e1e2e，内边距16px，圆角12px）提供三个滑块：帧速率（5-30 fps，默认12）、循环次数（1-5次，默认3）、输出尺寸（100-500px，默认200px），每个滑块上方有标签和当前值显示。第四，点击“导出GIF”按钮（位于参数面板旁，背景色#ff6b6b，圆角8px，文字白色，带100ms的点击缩放动画）将自动把当前帧序列拼接成GIF并下载，点击“导出WebP”按钮（背景色#845ec2，圆角8px，文字白色）则导出为WebP格式。\n\n界面上希望整体以暗色主题（主要背景#1a1a2e，次要背景#2d2d3d）搭配高饱和度的点缀色（#ff6b6b、#4ecdc4、#845ec2），让操作面板清晰分层。交互反馈需要更丰富一些：时间轴上添加关键帧时有一个轻微的弹簧动画（关键帧图标从透明0变到1并弹性回弹），切换工具时按钮有颜色渐变过渡（0.3s ease），预览动画时绘图区有一个外发光效果（box-shadow: 0 0 20px rgba(78, 205, 196, 0.4)）。响应式上，当屏幕宽度小于768px时，左侧编辑区和右侧面板改为上下布局，参数面板的滑块改为横向排列。性能上要求导出GIF时帧间延迟不超过50ms，预览动画的帧率稳定在30fps以上。\n\n实现用TypeScript、React和Vite，把代码拆成以下文件：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、lodash、gif.js、file-saver，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，标题“表情工坊 - Emoji Workshop”，内联样式设置body margin: 0, 背景色#1a1a2e）\n - src/App.tsx（主组件，管理画布状态、时间轴关键帧列表、参数面板的帧率和循环次数，调用动画引擎进行补间计算和导出，渲染左侧编辑组件和右侧时间轴组件）\n - src/CanvasEditor.tsx（绘图编辑组件，负责Canvas 2D绘制、鼠标事件处理（mousedown/mousemove/mouseup）、画笔和橡皮擦切换、以及将当前帧保存为ImageData传给父组件）\n - src/Timeline.tsx（时间轴组件，以水平条展示所有关键帧，支持拖拽调整关键帧位置、点击添加/删除关键帧，显示当前帧序号的标签）\n - src/animationEngine.ts（动画引擎模块，接收关键帧的ImageData数组和帧速率，使用线性插值或缓动曲线生成中间帧的像素数据，提供给预览和导出使用）\n - src/exportUtils.ts（导出工具模块，将帧序列拼接为GIF（通过gif.js库）或WebP格式，并触发文件下载）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:52c8353a8ac9fff617a5f31ef3d62305_6a287c8a95e40f3ba6ddd206.6a287de495e40f3ba6ddd328.6a287de42d53b1bd94d7eea9:Trae CN.T(2026/6/10 04:56:04)",
+    "user_id": "3986207660317399",
+    "trace_id": "52c8353a8ac9fff617a5f31ef3d62305",
+    "session_id": "6a287c8a95e40f3ba6ddd206",
+    "task_id": "6a287de495e40f3ba6ddd328",
+    "message_id": "6a287de42d53b1bd94d7eea9",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 04:56:04",
+    "format": "full"
+  },
+  "trace": "null"
+}
