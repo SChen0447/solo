@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>碎星带 - Asteroid Belt</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      background: #0a0a0f;
+      font-family: monospace;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #info-card {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      background: rgba(26, 26, 46, 0.85);
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 220px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      z-index: 10;
+    }
+
+    #info-card.visible {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #info-card .card-title {
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #ffddaa;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    #info-card .card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      line-height: 1.9;
+      color: #ffffff;
+    }
+
+    #info-card .card-row .label {
+      color: #b8c6db;
+      opacity: 0.75;
+    }
+
+    #info-card .card-row .value {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    #hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.4);
+      letter-spacing: 1px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="info-card">
+      <div class="card-title" id="card-title">小行星 #0</div>
+      <div class="card-row">
+        <span class="label">轨道半径</span>
+        <span class="value" id="card-radius">—</span>
+      </div>
+      <div class="card-row">
+        <span class="label">公转周期</span>
+        <span class="value" id="card-period">—</span>
+      </div>
+      <div class="card-row">
+        <span class="label">模拟质量</span>
+        <span class="value" id="card-mass">—</span>
+      </div>
+    </div>
+    <div id="hint">拖拽旋转 · 滚轮缩放 · 点击查看行星信息</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
