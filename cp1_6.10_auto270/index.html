@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>墨迹天气</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e0e0;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 100%);
+    }
+
+    #weather-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .clock {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.8);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 0, 0, 0.4);
+      z-index: 10;
+      letter-spacing: 2px;
+      user-select: none;
+    }
+
+    .city-selector {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 10;
+    }
+
+    .city-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 12px 44px 12px 20px;
+      color: #e0e0e0;
+      font-size: 15px;
+      font-family: inherit;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease-in-out;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23e0e0e0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+    }
+
+    .city-select:hover {
+      background-color: rgba(255, 255, 255, 0.22);
+      transform: translateY(-1px);
+    }
+
+    .city-select option {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      padding: 8px;
+    }
+
+    .weather-panel {
+      position: fixed;
+      top: 100px;
+      left: 40px;
+      width: 300px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: 28px 24px;
+      z-index: 10;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .weather-panel:active {
+      cursor: grabbing;
+    }
+
+    .weather-panel:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-date {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-weekday {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 20px;
+    }
+
+    .panel-temperature {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+
+    .temp-icon {
+      font-size: 40px;
+      margin-right: 12px;
+      line-height: 1;
+    }
+
+    .temp-value {
+      font-size: 56px;
+      font-weight: 300;
+      color: #ffffff;
+      line-height: 1;
+      transition: transform 0.3s ease-in-out;
+      display: inline-block;
+      cursor: default;
+    }
+
+    .temp-value.hovered {
+      transform: scale(1.2);
+      animation: tempWobble 0.5s ease-in-out infinite;
+    }
+
+    @keyframes tempWobble {
+      0%, 100% { transform: scale(1.2) translateY(0); }
+      25% { transform: scale(1.2) translateY(-2px); }
+      75% { transform: scale(1.2) translateY(2px); }
+    }
+
+    .temp-unit {
+      font-size: 24px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-left: 4px;
+      align-self: flex-start;
+      margin-top: 6px;
+    }
+
+    .panel-weather-type {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 20px;
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.15);
+      margin: 16px 0;
+    }
+
+    .panel-details {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .detail-item {
+      text-align: center;
+      flex: 1;
+    }
+
+    .detail-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 6px;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .temp-range {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+    }
+
+    .timeline-container {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+    }
+
+    .timeline-container::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .timeline-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .timeline-container::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+    }
+
+    .timeline {
+      display: flex;
+      height: 100%;
+      padding: 0 24px;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timeline-item {
+      flex-shrink: 0;
+      min-width: 100px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 8px 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .timeline-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .timeline-item.active {
+      background: rgba(255, 255, 255, 0.22);
+      border-color: rgba(255, 255, 255, 0.35);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .timeline-date {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+    }
+
+    .timeline-weather {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .timeline-icon {
+      font-size: 18px;
+    }
+
+    .timeline-temp {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 100%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .ink-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .ink-loader::before,
+    .ink-loader::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      animation: inkPulse 1.8s ease-in-out infinite;
+    }
+
+    .ink-loader::before {
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .ink-loader::after {
+      width: 60%;
+      height: 60%;
+      top: 20%;
+      left: 20%;
+      background: rgba(255, 255, 255, 0.5);
+      animation-delay: -0.9s;
+    }
+
+    @keyframes inkPulse {
+      0%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+        filter: blur(2px);
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+        filter: blur(6px);
+      }
+    }
+
+    .loading-text {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 4px;
+    }
+
+    .transition-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(80, 80, 90, 0);
+      z-index: 5;
+      pointer-events: none;
+      transition: background 1.5s ease-in-out;
+    }
+
+    .transition-overlay.fading {
+      background: rgba(80, 80, 90, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      .weather-panel {
+        top: 70px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        padding: 16px 20px;
+        cursor: default;
+      }
+
+      .city-selector {
+        top: auto;
+        bottom: 90px;
+        right: 16px;
+      }
+
+      .clock {
+        top: 16px;
+        left: 16px;
+        font-size: 16px;
+      }
+
+      .timeline-container {
+        height: 60px;
+      }
+
+      .timeline {
+        padding: 0 12px;
+      }
+
+      .timeline-item {
+        min-width: 80px;
+        height: 44px;
+        padding: 4px 10px;
+      }
+
+      .temp-value {
+        font-size: 42px;
+      }
+
+      .temp-icon {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="weather-canvas"></canvas>
+
+  <div class="transition-overlay" id="transition-overlay"></div>
+
+  <div class="clock" id="clock">00:00:00</div>
+
+  <div class="city-selector">
+    <select class="city-select" id="city-select">
+      <option value="beijing">北京</option>
+      <option value="shanghai">上海</option>
+      <option value="guangzhou">广州</option>
+      <option value="chengdu">成都</option>
+    </select>
+  </div>
+
+  <div class="weather-panel" id="weather-panel">
+    <div class="panel-date" id="panel-date">--</div>
+    <div class="panel-weekday" id="panel-weekday">--</div>
+    <div class="panel-temperature">
+      <span class="temp-icon" id="panel-icon">☀️</span>
+      <span class="temp-value" id="panel-temp">--</span>
+      <span class="temp-unit">°C</span>
+    </div>
+    <div class="temp-range" id="panel-temp-range">--</div>
+    <div class="panel-weather-type" id="panel-type">--</div>
+    <div class="panel-divider"></div>
+    <div class="panel-details">
+      <div class="detail-item">
+        <div class="detail-label">风速</div>
+        <div class="detail-value" id="panel-wind">-- km/h</div>
+      </div>
+      <div class="detail-item">
+        <div class="detail-label">湿度</div>
+        <div class="detail-value" id="panel-humidity">--%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-container" id="timeline-container">
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="ink-loader"></div>
+    <div class="loading-text">墨迹天气加载中</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
