@@ -1,0 +1,15 @@
+{
+  "name": "mood-timeline",
+  "version": "1.0.0",
+  "description": "心情时间轴 - 个人心情日记可视化应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
