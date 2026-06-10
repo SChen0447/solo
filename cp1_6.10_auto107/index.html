@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
+  <title>基因表达三维图谱</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="scene-canvas"></canvas>
+    
+    <div id="label-container"></div>
+
+    <div id="title">基因表达三维图谱</div>
+
+    <div id="control-panel">
+      <div class="panel-header">
+        <span>控制面板</span>
+        <button id="panel-toggle" class="icon-btn" title="折叠面板">−</button>
+      </div>
+      <div class="panel-content">
+        <div class="control-group">
+          <label class="control-label">表达水平筛选</label>
+          <input type="range" id="threshold-slider" min="0" max="100" value="0" step="1" />
+          <div class="slider-value">阈值: <span id="threshold-value">0</span></div>
+        </div>
+        <div class="control-group">
+          <button id="reset-view-btn" class="ctrl-btn">重置视角</button>
+          <button id="snapshot-btn" class="ctrl-btn">保存快照</button>
+        </div>
+        <div class="control-group">
+          <div class="fps-display">FPS: <span id="fps-value">60</span></div>
+          <div class="gene-count">显示基因: <span id="gene-count">50</span> / 50</div>
+        </div>
+      </div>
+    </div>
+
+    <button id="panel-fab" class="fab-btn" title="展开面板">⚙</button>
+
+    <div id="detail-panel" class="hidden">
+      <div class="detail-header">
+        <span id="detail-gene-name">基因名称</span>
+        <button id="detail-close" class="icon-btn">×</button>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row"><span class="detail-label">基因ID:</span><span id="detail-gene-id">-</span></div>
+        <div class="detail-row"><span class="detail-label">表达水平:</span><span id="detail-expression">-</span></div>
+        <div class="detail-row"><span class="detail-label">坐标X:</span><span id="detail-coord-x">-</span></div>
+        <div class="detail-row"><span class="detail-label">坐标Y:</span><span id="detail-coord-y">-</span></div>
+        <div class="detail-row"><span class="detail-label">坐标Z:</span><span id="detail-coord-z">-</span></div>
+        <div class="detail-section">
+          <span class="detail-label">相关基因:</span>
+          <div id="detail-related-list" class="related-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
