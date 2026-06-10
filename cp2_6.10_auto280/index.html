@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚空防线</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #3a2a1a;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      user-select: none;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .game-title {
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      text-shadow: 2px 2px 0 #d4b483, 4px 4px 0 #1a0f05;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    .game-container {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      max-width: 100%;
+      max-height: 100%;
+    }
+    .canvas-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .game-canvas {
+      background-color: #2a1d0f;
+      border: 4px solid #d4b483;
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(212, 180, 131, 0.3);
+      cursor: crosshair;
+    }
+    .right-panel {
+      width: 280px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel-section {
+      background-color: #4a3520;
+      border: 2px solid #d4b483;
+      border-radius: 4px;
+      padding: 12px;
+      color: #d4b483;
+    }
+    .panel-section h3 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #f0d8a8;
+      border-bottom: 1px solid #d4b483;
+      padding-bottom: 4px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 3px 0;
+    }
+    .stat-row .label { color: #c9a86a; }
+    .stat-row .value { color: #fff; font-weight: bold; }
+    .tower-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .tower-btn {
+      background-color: #3a2a1a;
+      border: 2px solid #d4b483;
+      color: #d4b483;
+      padding: 8px 6px;
+      cursor: grab;
+      font-size: 11px;
+      border-radius: 3px;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .tower-btn:hover {
+      background-color: #5a4025;
+      transform: scale(1.03);
+    }
+    .tower-btn:active {
+      cursor: grabbing;
+    }
+    .tower-btn.selected {
+      background-color: #d4b483;
+      color: #3a2a1a;
+    }
+    .tower-btn .tower-color {
+      width: 20px;
+      height: 20px;
+      margin: 0 auto 4px;
+      border: 1px solid #000;
+      border-radius: 2px;
+    }
+    .tower-btn .tower-cost {
+      font-size: 10px;
+      color: #ffd700;
+    }
+    .upgrade-panel {
+      display: none;
+    }
+    .upgrade-panel.show {
+      display: block;
+    }
+    .upgrade-btn {
+      background-color: #5a8040;
+      border: 2px solid #8fbc60;
+      color: #fff;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      border-radius: 3px;
+      width: 100%;
+      margin-top: 6px;
+      font-family: 'Courier New', monospace;
+    }
+    .upgrade-btn:disabled {
+      background-color: #4a4a4a;
+      border-color: #6a6a6a;
+      cursor: not-allowed;
+    }
+    .upgrade-btn:hover:not(:disabled) {
+      background-color: #6a9050;
+    }
+    .sell-btn {
+      background-color: #804040;
+      border: 2px solid #bc6060;
+      color: #fff;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 12px;
+      border-radius: 3px;
+      width: 100%;
+      margin-top: 4px;
+      font-family: 'Courier New', monospace;
+    }
+    .sell-btn:hover {
+      background-color: #905050;
+    }
+    .wave-btn {
+      background-color: #806040;
+      border: 2px solid #d4b483;
+      color: #fff;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      border-radius: 3px;
+      width: 100%;
+      font-weight: bold;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 2px;
+    }
+    .wave-btn:hover {
+      background-color: #a07850;
+    }
+    .wave-btn:disabled {
+      background-color: #4a4a4a;
+      cursor: not-allowed;
+    }
+    .seed-input {
+      width: 100%;
+      padding: 6px;
+      background-color: #3a2a1a;
+      border: 2px solid #d4b483;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+    .regen-btn {
+      width: 100%;
+      padding: 4px;
+      margin-top: 6px;
+      background-color: #5a4025;
+      border: 1px solid #d4b483;
+      color: #d4b483;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      border-radius: 3px;
+    }
+    .regen-btn:hover {
+      background-color: #6a5035;
+    }
+    @media (max-width: 900px) {
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        height: 100%;
+      }
+      .right-panel {
+        width: 100%;
+        max-width: 640px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="game-container">
+      <div class="canvas-wrapper">
+        <div class="game-title">虚空防线</div>
+        <canvas id="gameCanvas" class="game-canvas" width="800" height="600"></canvas>
+      </div>
+      <div class="right-panel">
+        <div class="panel-section">
+          <h3>游戏状态</h3>
+          <div class="stat-row"><span class="label">💰 金币:</span><span class="value" id="goldDisplay">200</span></div>
+          <div class="stat-row"><span class="label">❤️ 生命:</span><span class="value" id="hpDisplay">20</span></div>
+          <div class="stat-row"><span class="label">🌊 波次:</span><span class="value" id="waveDisplay">0 / 30</span></div>
+          <div class="stat-row"><span class="label">👾 剩余:</span><span class="value" id="enemyDisplay">0</span></div>
+        </div>
+        <div class="panel-section">
+          <h3>地图种子</h3>
+          <input type="text" class="seed-input" id="seedInput" placeholder="输入种子或留空随机" />
+          <button class="regen-btn" id="regenBtn">重新生成地图</button>
+        </div>
+        <div class="panel-section">
+          <h3>防御塔 (点击选中后在地图上放置)</h3>
+          <div class="tower-list" id="towerList">
+            <div class="tower-btn" data-tower="arrow">
+              <div class="tower-color" style="background:#4caf50;"></div>
+              <div>箭塔</div>
+              <div class="tower-cost">💰 50</div>
+            </div>
+            <div class="tower-btn" data-tower="cannon">
+              <div class="tower-color" style="background:#e53935;"></div>
+              <div>炮塔</div>
+              <div class="tower-cost">💰 100</div>
+            </div>
+            <div class="tower-btn" data-tower="magic">
+              <div class="tower-color" style="background:#9c27b0;"></div>
+              <div>魔法塔</div>
+              <div class="tower-cost">💰 120</div>
+            </div>
+            <div class="tower-btn" data-tower="slow">
+              <div class="tower-color" style="background:#2196f3;"></div>
+              <div>减速塔</div>
+              <div class="tower-cost">💰 80</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel-section upgrade-panel" id="upgradePanel">
+          <h3 id="selectedTowerName">已选塔</h3>
+          <div class="stat-row"><span class="label">等级:</span><span class="value" id="towerLevel">1</span></div>
+          <div class="stat-row"><span class="label">伤害:</span><span class="value" id="towerDamage">0</span></div>
+          <div class="stat-row"><span class="label">射程:</span><span class="value" id="towerRange">0</span></div>
+          <div class="stat-row"><span class="label">攻速:</span><span class="value" id="towerSpeed">0</span></div>
+          <div class="stat-row"><span class="label">击杀:</span><span class="value" id="towerKills">0</span></div>
+          <button class="upgrade-btn" id="upgradeBtn">升级 (💰 0)</button>
+          <button class="sell-btn" id="sellBtn">出售 (💰 0)</button>
+        </div>
+        <div class="panel-section">
+          <button class="wave-btn" id="waveBtn">▶ 开始第 1 波</button>
+        </div>
+        <div class="panel-section">
+          <h3>地形说明</h3>
+          <div class="stat-row"><span class="label" style="color:#6b4423;">■ 草地</span><span class="value">可建塔</span></div>
+          <div class="stat-row"><span class="label" style="color:#1e88e5;">■ 河流</span><span class="value">减速，不可建</span></div>
+          <div class="stat-row"><span class="label" style="color:#2e7d32;">■ 森林</span><span class="value">半价建塔</span></div>
+          <div class="stat-row"><span class="label" style="color:#757575;">■ 岩石</span><span class="value">完全阻挡</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/GameManager.ts"></script>
+</body>
+</html>
