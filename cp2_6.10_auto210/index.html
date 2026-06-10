@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>星际弹幕</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0d0221 0%, #150734 100%);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    #gameContainer {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 32px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow:
+        0 0 10px #7b68ee,
+        0 0 20px #7b68ee,
+        0 0 30px #7b68ee,
+        0 0 40px #483d8b;
+      letter-spacing: 8px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #ui {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #scorePanel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: #ffffff;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    #scorePanel #score {
+      font-size: 20px;
+      text-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+    }
+
+    #scorePanel #combo {
+      font-size: 18px;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
+      margin-top: 4px;
+    }
+
+    #timer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 16px;
+      color: #ff4444;
+      text-shadow: 0 0 8px rgba(255, 68, 68, 0.6);
+    }
+
+    #comboDisplay {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    #gameOverPanel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    #gameOverText {
+      font-size: 36px;
+      font-weight: bold;
+      background: linear-gradient(180deg, #ff6b6b 0%, #c92a2a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+
+    #finalScore {
+      font-size: 24px;
+      color: #ffffff;
+      margin-bottom: 40px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    }
+
+    #restartBtn {
+      padding: 14px 40px;
+      font-size: 20px;
+      color: #ffffff;
+      background: linear-gradient(180deg, #51cf66 0%, #2f9e44 100%);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 0 20px rgba(81, 207, 102, 0.4);
+    }
+
+    #restartBtn:hover {
+      background: linear-gradient(180deg, #69db7c 0%, #40c057 100%);
+      box-shadow: 0 0 30px rgba(81, 207, 102, 0.6);
+      transform: scale(1.02);
+    }
+
+    #restartBtn:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <h1 id="title">星际弹幕</h1>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+      <div id="scorePanel">
+        <div id="score">分数: 0</div>
+        <div id="combo">连击: 0</div>
+      </div>
+      <div id="timer">倒计时: 120s</div>
+      <div id="comboDisplay"></div>
+    </div>
+    <div id="gameOverPanel">
+      <div id="gameOverText">游戏结束</div>
+      <div id="finalScore">最终分数: 0</div>
+      <button id="restartBtn">重新开始</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
