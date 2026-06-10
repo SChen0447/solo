@@ -1,0 +1,21 @@
+{
+  "name": "railway-scheduling-game",
+  "version": "1.0.0",
+  "description": "铁轨铺排与调度 - 2D像素风策略解谜游戏",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.202",
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
