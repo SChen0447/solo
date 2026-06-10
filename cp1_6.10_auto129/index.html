@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>电磁波传播与极化可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1a3e 100%);
+      color: #e0e0ff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #scene-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .param-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      color: #e0e0ff;
+      min-width: 220px;
+      z-index: 10;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    .param-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #c0c0ff;
+      border-bottom: 1px solid rgba(124, 124, 255, 0.3);
+      padding-bottom: 6px;
+    }
+
+    .param-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0;
+    }
+
+    .param-label {
+      color: #a0a0ff;
+    }
+
+    .param-value {
+      display: inline-block;
+      min-width: 60px;
+      text-align: right;
+      transition: transform 0.2s ease, color 0.2s ease;
+      font-weight: bold;
+    }
+
+    .param-value.updating {
+      transform: scale(1.15);
+      color: #7c7cff;
+    }
+
+    .polarization-preview {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #111122;
+      border-radius: 8px;
+      padding: 8px;
+      z-index: 10;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    .polarization-preview h4 {
+      font-size: 12px;
+      color: #c0c0ff;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+
+    #polarization-canvas {
+      display: block;
+      border-radius: 4px;
+    }
+
+    .controls-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 20px 28px;
+      z-index: 10;
+      display: flex;
+      gap: 32px;
+      align-items: flex-end;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 12px;
+      color: #a0a0ff;
+    }
+
+    .slider-container {
+      position: relative;
+      width: 180px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      outline: none;
+      position: relative;
+      z-index: 2;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #2a2a4a 0%, #3a3a6a 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, #2a2a4a 0%, #3a3a6a 100%);
+      border-radius: 12px;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00d4ff 0%, #7c7cff 50%, #ff6b6b 100%);
+      border: 2px solid #fff;
+      cursor: pointer;
+      margin-top: -7px;
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]:hover::-webkit-slider-thumb {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px rgba(0, 212, 255, 0.8);
+    }
+
+    input[type="range"]:active::-webkit-slider-thumb {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, #00d4ff 0%, #ff6b6b 100%);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00d4ff 0%, #7c7cff 50%, #ff6b6b 100%);
+      border: 2px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]:hover::-moz-range-thumb {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px rgba(0, 212, 255, 0.8);
+    }
+
+    .dropdown-container {
+      position: relative;
+    }
+
+    .dropdown-button {
+      background: #2a2a4a;
+      border: 1px solid #5a5aff;
+      color: #e0e0ff;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-width: 140px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dropdown-button:hover {
+      background: #3a3a5a;
+      border-color: #7c7cff;
+    }
+
+    .dropdown-button:active {
+      background: #1a1a3a;
+      transition: background 0.1s ease;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      bottom: 100%;
+      left: 0;
+      margin-bottom: 6px;
+      background: rgba(26, 26, 58, 0.95);
+      backdrop-filter: blur(4px);
+      border: 1px solid #5a5aff;
+      border-radius: 6px;
+      overflow: hidden;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: all 0.2s ease;
+      min-width: 140px;
+      z-index: 100;
+    }
+
+    .dropdown-menu.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-size: 13px;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(124, 124, 255, 0.2);
+    }
+
+    .dropdown-item.active {
+      background: rgba(124, 124, 255, 0.3);
+      color: #7c7cff;
+    }
+
+    .arrow-icon {
+      margin-left: 8px;
+      transition: transform 0.2s ease;
+      font-size: 10px;
+    }
+
+    .dropdown-button.open .arrow-icon {
+      transform: rotate(180deg);
+    }
+
+    .control-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .mode-btn {
+      background: #2a2a4a;
+      border: 1px solid #5a5aff;
+      color: #e0e0ff;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mode-btn:hover {
+      background: #3a3a5a;
+      border-color: #7c7cff;
+    }
+
+    .mode-btn:active {
+      background: #1a1a3a;
+      transition: background 0.1s ease;
+    }
+
+    .mode-btn.active {
+      background: linear-gradient(135deg, #5a5aff 0%, #7c7cff 100%);
+      border-color: #a0a0ff;
+      box-shadow: 0 0 12px rgba(124, 124, 255, 0.4);
+    }
+
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 12px;
+      z-index: 10;
+      font-size: 12px;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+
+    .legend h4 {
+      color: #c0c0ff;
+      margin-bottom: 8px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 4px 0;
+    }
+
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 3px;
+    }
+
+    .legend-color.e-field { background: #ff4444; }
+    .legend-color.h-field { background: #4444ff; }
+    .legend-color.wavefront { background: linear-gradient(135deg, #00d4ff 0%, #7c7cff 100%); }
+    .legend-color.trajectory { background: #ffd700; }
+
+    .fps-counter {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      border-radius: 8px;
+      padding: 8px 12px;
+      z-index: 10;
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      color: #a0a0ff;
+      border: 1px solid rgba(124, 124, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="scene-container"></div>
+
+    <div class="param-panel">
+      <h3>⚡ 实时参数</h3>
+      <div class="param-row">
+        <span class="param-label">频率:</span>
+        <span id="freq-value" class="param-value">1.0 Hz</span>
+      </div>
+      <div class="param-row">
+        <span class="param-label">振幅:</span>
+        <span id="amp-value" class="param-value">1.00</span>
+      </div>
+      <div class="param-row">
+        <span class="param-label">相位差:</span>
+        <span id="phase-value" class="param-value">0°</span>
+      </div>
+      <div class="param-row">
+        <span class="param-label">极化模式:</span>
+        <span id="polarization-value" class="param-value">线极化</span>
+      </div>
+    </div>
+
+    <div class="polarization-preview">
+      <h4>极化轨迹预览</h4>
+      <canvas id="polarization-canvas" width="180" height="180"></canvas>
+    </div>
+
+    <div class="controls-panel">
+      <div class="control-group">
+        <label for="freq-slider">频率 (Hz)</label>
+        <div class="slider-container">
+          <input type="range" id="freq-slider" min="0.5" max="5" step="0.1" value="1" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="amp-slider">振幅</label>
+        <div class="slider-container">
+          <input type="range" id="amp-slider" min="0.2" max="1.5" step="0.1" value="1" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label for="phase-slider">E/H 相位差 (°)</label>
+        <div class="slider-container">
+          <input type="range" id="phase-slider" min="0" max="360" step="5" value="0" />
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>极化模式</label>
+        <div class="control-buttons">
+          <button class="mode-btn active" data-mode="linear">线极化</button>
+          <button class="mode-btn" data-mode="circular">圆极化</button>
+          <button class="mode-btn" data-mode="elliptical">椭圆极化</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <h4>图例</h4>
+      <div class="legend-item">
+        <div class="legend-color e-field"></div>
+        <span>E场 (电场)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color h-field"></div>
+        <span>H场 (磁场)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color wavefront"></div>
+        <span>波前</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color trajectory"></div>
+        <span>极化轨迹</span>
+      </div>
+    </div>
+
+    <div class="fps-counter">
+      FPS: <span id="fps-value">60</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
