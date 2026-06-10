@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T19:26:01.092Z",
+  "task_name": "auto127",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助前端开发者快速测试和验证CSS 3D变换属性（rotateX、rotateY、perspective、translateZ等）组合效果的交互式沙盒应用，主要解决手动调试3D卡片翻转、立方体旋转等效果时，需要在开发者工具中反复修改CSS代码，难以同时对比多组参数组合下的透视畸变和层级穿透问题的痛点。\n\n它应当具备以下能力：\n1) 3D变换参数控制面板：页面右侧提供6组滑块和输入框，分别控制目标元素的transform-origin（X轴-200%到200%，步长10%），rotateX（-180°到180°），rotateY（-180°到180°），perspective（100px到1000px），translateZ（-200px到200px），以及父容器的透视点（perspective-origin，通过两个滑块分别控制X和Y，范围0-100%）。每个参数旁边显示当前数值，滑动时数值实时更新。\n2) 实时3D预览区：页面左侧是一块500x400像素的3D预览区域（深灰#2c3e50背景，带浅灰#bdc3c7的1px边框），内部放置一个150x150像素的正方形卡片（默认浅蓝#3498db背景，带白色文字“3D”，字体粗细bold），卡片的背面使用#e74c3c背景色并写“BACK”，应用了CSS backface-visibility:hidden。卡片的父容器设置了perspective值和perspective-origin。当用户调整参数时，卡片在3D空间中实时旋转和平移，同时背面可见性自动变化。\n3) 多参数快照对比：用户可以通过“保存快照”按钮（每次点击保存当前所有6个参数的快照），快照显示在预览区下方的横向滚动条中（每张卡片150x100px，带2px白色边框和圆角8px），最多保存4个快照。点击任意快照卡片，主预览区恢复为对应的参数状态，并高亮该快照的边框为黄色#f1c40f。快照面板支持鼠标拖拽重新排序。\n4) 关键帧动画回放：用户可以为每个参数设置关键帧（通过一个时间轴面板，总时长3秒，0s、1s、2s、3s四个时间点），点击每个时间点下方的橙色圆点可以记录当前参数值，然后按下“播放”按钮，卡片从第0秒开始按线性插值逐帧变化到第3秒，播放速度可调（0.5x、1x、2x），播放时进度条实时指示当前时间点。\n\n界面方面：整体采用深色主题，背景色#1e272e，主卡片区域浅灰#2d3436，所有滑块使用蓝色#0984e3的圆形手柄、白色轨道，输入框为深灰#0a3d62背景白色文字，按钮主色为#00b894（保存快照）、#0984e3（播放）、#e17055（重置），按钮悬停时亮度增加10%。卡片翻转动画使用ease-in-out缓动，持续200ms。三个区域（参数面板、预览区、快照/时间轴面板）按左-右-下布局，参数面板宽度320px，预览区自适应剩余宽度，下方快照/时间轴区域高度180px。页面宽度低于900px时，参数面板折叠到顶部，预览区和时间轴区域竖向堆叠。所有交互有即时视觉反馈：滑块拖动时显示数值毛玻璃效果（半透明白底、模糊8px、圆角8px），按钮点击有缩小到0.95倍并回弹的微动效。\n\n性能上需要：滑块拖动时3D预览更新响应时间<16ms（60FPS），快照切换动画流畅无卡顿，整个页面在初始加载时所有控件就绪时间<2秒。\n\n实现采用TypeScript、Vite和原生Canvas（用于绘制预览区域中的坐标轴辅助线）以及CSS 3D变换，不依赖任何UI框架。按以下文件组织代码：\n - package.json（含依赖：typescript、vite@5、lodash，启动脚本：npm run dev）\n - index.html（入口，包含一个挂载点div#app和外部样式link）\n - tsconfig.json（严格模式，target ES2020）\n - vite.config.js（基本Vite配置，支持TypeScript，devServer端口3000）\n - src/main.ts（应用入口，初始化UI和事件绑定，职责：读取DOM元素，初始化三个面板的事件监听器，调用其他模块）\n - src/TransformController.ts（核心控制类，职责：管理所有6个变换参数的状态，计算最终的transform字符串，提供getSnapshot和applySnapshot方法，接收来自UI事件的通知并触发预览更新）\n - src/PanelManager.ts（UI面板管理，职责：创建参数滑块、输入框、快照列表和关键帧时间轴，绑定输入事件，更新DOM显示状态）\n - src/Renderer.ts（预览渲染，职责：直接操作CSS样式改变卡片的transform属性，同时在Canvas上绘制透视网格辅助线（在卡片下方绘制），绘制坐标轴和原点标记）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:a7cb9dcd15d24d0549d83bcb40cf472a_6a2867e1d220f71f4ef40c05.6a2868bcd220f71f4ef40d0b.6a2868bcb00992f55033de9c:Trae CN.T(2026/6/10 03:25:48)",
+    "user_id": "3986207660317399",
+    "trace_id": "a7cb9dcd15d24d0549d83bcb40cf472a",
+    "session_id": "6a2867e1d220f71f4ef40c05",
+    "task_id": "6a2868bcd220f71f4ef40d0b",
+    "message_id": "6a2868bcb00992f55033de9c",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 03:25:48",
+    "format": "full"
+  },
+  "trace": "null"
+}
