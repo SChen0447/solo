@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T17:53:16.918Z",
+  "task_name": "auto44",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于浏览器本地存储的团队任务看板项目，想法是让一个小组可以创建、分配和追踪任务，所有数据保存在IndexedDB中，无需后端服务器。希望它能做到：第一，用户进入后先设置团队名称和成员列表（至少添加3-5个虚拟成员，用默认头像和彩色标签区分），然后自动进入一个三列看板视图（待办/进行中/已完成），每个任务卡片显示标题、负责人头像（小圆形彩色标签）、优先级（高/中/低用红黄绿圆点标记）和截止日期，任务可以拖拽跨列移动，拖拽时卡片跟随鼠标带半透明阴影和轻微缩放动画，放下时触发布置动画并更新状态；第二，点击卡片弹出详情面板（从右侧滑入），面板内可以编辑任务描述（富文本，支持粗体和列表）、添加子任务（勾选式列表，完成时子任务标题划掉并轻微闪烁）、调整负责人和优先级，修改后自动保存到IndexedDB，关闭面板时带有侧滑消失的缓动效果；第三，右上角有一个“时间线”视图切换按钮，点击后看板变为甘特图风格（横轴为日期，纵轴为成员），每个任务显示为彩色条块（颜色对应优先级），条块长度表示任务周期，条块在时间轴上横向拖拽可调整起止日期，拖拽时时间轴线头显示精确日期提示，若任务冲突（同一人在同一时间段有两个任务）则冲突条块会变红并抖动提示。界面上希望采用清爽的莫兰迪色系（主色灰蓝#6A7B8D，辅色暖杏#E8A87C，字体使用系统无衬线字体），看板卡片在浅灰背景(#F5F5F5)上带细微圆角(8px)和阴影(0 2px 6px rgba(0,0,0,0.1))，拖拽和状态变化时要有0.2-0.3秒的平滑过渡动画，整体适配从手机到桌面宽屏的响应式布局（手机端看板自动堆叠为单列）。性能上要求拖拽操作帧率稳定在50fps以上，IndexedDB读写延迟不超过200ms。实现用TypeScript和React 18 + Vite，把代码拆成以下文件： - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, uuid, dexie；启动脚本：npm run dev） - index.html（入口） - vite.config.js（React插件配置，路径别名@指向src） - tsconfig.json（严格模式） - src/main.tsx（应用入口，挂载App组件） - src/App.tsx（主组件，管理看板/时间线视图切换和IndexedDB数据流） - src/Board.tsx（看板三列布局和拖拽逻辑） - src/Timeline.tsx（甘特图视图和拖拽调整日期） - src/TaskCard.tsx（任务卡片和详情面板组件） - src/db.ts（IndexedDB操作封装，使用Dexie库，提供增删改查方法） - src/types.ts（类型定义，Task, Member, Column枚举等） 跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:48a7e5a3b2870cf94c1388c1618ba378_6a28528d67cc8b34a197a9e1.6a28530067cc8b34a197aa32.6a285300cd4e73030ae922a2:Trae CN.T(2026/6/10 01:53:04)",
+    "user_id": "3986207660317399",
+    "trace_id": "48a7e5a3b2870cf94c1388c1618ba378",
+    "session_id": "6a28528d67cc8b34a197a9e1",
+    "task_id": "6a28530067cc8b34a197aa32",
+    "message_id": "6a285300cd4e73030ae922a2",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 01:53:04",
+    "format": "full"
+  },
+  "trace": "null"
+}
