@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代战争推演</title>
+  <style>
+    :root {
+      --parchment: #F5DEB3;
+      --dark-brown: #4A2F1A;
+      --gold: #FFD700;
+      --red-team: #B22222;
+      --blue-team: #1E90FF;
+      --grid-gray: #C0C0C0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--parchment);
+      color: var(--dark-brown);
+      font-family: Georgia, "Times New Roman", serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at top left, rgba(74, 47, 26, 0.08), transparent 60%),
+        radial-gradient(ellipse at bottom right, rgba(74, 47, 26, 0.08), transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .flag {
+      position: fixed;
+      width: 50px;
+      height: 70px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .flag-top-left { top: 8px; left: 8px; }
+    .flag-top-right { top: 8px; right: 8px; transform: scaleX(-1); }
+    .flag-bottom-left { bottom: 8px; left: 8px; transform: scaleY(-1); }
+    .flag-bottom-right { bottom: 8px; right: 8px; transform: scale(-1, -1); }
+
+    .flag-pole {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--dark-brown);
+      border-radius: 2px;
+    }
+
+    .flag-cloth {
+      position: absolute;
+      left: 4px;
+      top: 5px;
+      width: 42px;
+      height: 30px;
+      background: var(--dark-brown);
+      clip-path: polygon(0 0, 100% 0, 85% 50%, 100% 100%, 0 100%);
+      transform-origin: left center;
+      animation: flagWave 2.5s ease-in-out infinite;
+    }
+
+    @keyframes flagWave {
+      0%, 100% { transform: skewX(0deg) scaleX(1); }
+      25% { transform: skewX(3deg) scaleX(0.95); }
+      50% { transform: skewX(0deg) scaleX(1.02); }
+      75% { transform: skewX(-3deg) scaleX(0.95); }
+    }
+
+    #app {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 60px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .turn-counter {
+      font-size: 36px;
+      font-weight: bold;
+      color: var(--gold);
+      text-shadow:
+        0 0 10px rgba(255, 215, 0, 0.5),
+        1px 1px 2px var(--dark-brown);
+      letter-spacing: 2px;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .turn-counter span {
+      display: block;
+      font-size: 14px;
+      color: var(--dark-brown);
+      text-shadow: none;
+      letter-spacing: 4px;
+      margin-top: 2px;
+    }
+
+    .army-bars {
+      display: flex;
+      gap: 32px;
+      align-items: center;
+      flex: 1;
+      max-width: 700px;
+    }
+
+    .army-bar {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .army-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .army-bar.red .army-bar-label { color: var(--red-team); }
+    .army-bar.blue .army-bar-label { color: var(--blue-team); }
+
+    .army-bar-track {
+      height: 16px;
+      background: rgba(74, 47, 26, 0.15);
+      border: 2px solid var(--dark-brown);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .army-bar-fill {
+      height: 100%;
+      transition: width 0.4s ease-out;
+      border-radius: 6px;
+    }
+
+    .army-bar.red .army-bar-fill {
+      background: linear-gradient(90deg, #8B1A1A, var(--red-team), #FF6B6B);
+    }
+
+    .army-bar.blue .army-bar-fill {
+      background: linear-gradient(90deg, #1565C0, var(--blue-team), #64B5F6);
+    }
+
+    .canvas-container {
+      border: 4px solid var(--dark-brown);
+      border-radius: 8px;
+      background: var(--parchment);
+      box-shadow:
+        inset 0 0 40px rgba(74, 47, 26, 0.1),
+        0 4px 20px rgba(74, 47, 26, 0.3);
+      padding: 8px;
+      position: relative;
+    }
+
+    #battleCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 28px;
+      font-size: 16px;
+      font-weight: bold;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--dark-brown);
+      background: var(--parchment);
+      border: 3px solid var(--dark-brown);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      letter-spacing: 2px;
+      min-height: 44px;
+      min-width: 100px;
+    }
+
+    .btn:hover {
+      background: var(--gold);
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn.primary {
+      background: var(--dark-brown);
+      color: var(--gold);
+    }
+
+    .btn.primary:hover {
+      background: #5C3A22;
+    }
+
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--dark-brown);
+      min-width: 60px;
+      text-align: center;
+    }
+
+    #progressSlider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 10px;
+      background: rgba(74, 47, 26, 0.3);
+      border: 2px solid var(--dark-brown);
+      border-radius: 5px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #progressSlider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      background: var(--gold);
+      border: 3px solid var(--dark-brown);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+      transition: transform 0.15s ease;
+    }
+
+    #progressSlider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    #progressSlider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      background: var(--gold);
+      border: 3px solid var(--dark-brown);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+    }
+
+    .report-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(74, 47, 26, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .report-overlay.show {
+      display: flex;
+    }
+
+    .report-panel {
+      background: var(--parchment);
+      border: 4px solid var(--dark-brown);
+      border-radius: 12px;
+      padding: 32px 48px;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .report-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: var(--gold);
+      text-shadow: 1px 1px 2px var(--dark-brown);
+      text-align: center;
+      margin-bottom: 24px;
+      letter-spacing: 4px;
+    }
+
+    .report-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .report-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: rgba(74, 47, 26, 0.08);
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .report-row .label {
+      font-weight: bold;
+      color: var(--dark-brown);
+    }
+
+    .report-row .value.red { color: var(--red-team); font-weight: bold; }
+    .report-row .value.blue { color: var(--blue-team); font-weight: bold; }
+    .report-row .value.gold { color: #B8860B; font-weight: bold; }
+
+    .report-winner {
+      text-align: center;
+      font-size: 22px;
+      font-weight: bold;
+      padding: 14px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      letter-spacing: 3px;
+    }
+
+    .report-winner.red { background: rgba(178, 34, 34, 0.15); color: var(--red-team); }
+    .report-winner.blue { background: rgba(30, 144, 255, 0.15); color: var(--blue-team); }
+    .report-winner.draw { background: rgba(74, 47, 26, 0.15); color: var(--dark-brown); }
+
+    .report-close {
+      width: 100%;
+    }
+
+    @media (max-width: 767px) {
+      #app {
+        padding: 12px 16px;
+      }
+
+      .flag {
+        width: 30px;
+        height: 42px;
+      }
+
+      .flag-cloth {
+        width: 25px;
+        height: 18px;
+      }
+
+      .turn-counter {
+        font-size: 24px;
+      }
+
+      .turn-counter span {
+        font-size: 11px;
+        letter-spacing: 2px;
+      }
+
+      .army-bars {
+        gap: 12px;
+      }
+
+      .btn {
+        padding: 10px 18px;
+        font-size: 14px;
+        letter-spacing: 1px;
+        min-width: 80px;
+      }
+
+      .report-panel {
+        padding: 20px 24px;
+      }
+
+      .report-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="flag flag-top-left">
+    <div class="flag-pole"></div>
+    <div class="flag-cloth"></div>
+  </div>
+  <div class="flag flag-top-right">
+    <div class="flag-pole"></div>
+    <div class="flag-cloth"></div>
+  </div>
+  <div class="flag flag-bottom-left">
+    <div class="flag-pole"></div>
+    <div class="flag-cloth"></div>
+  </div>
+  <div class="flag flag-bottom-right">
+    <div class="flag-pole"></div>
+    <div class="flag-cloth"></div>
+  </div>
+
+  <div id="app">
+    <div class="header">
+      <div class="turn-counter">
+        第 <span id="turnNumber">0</span> 回合
+        <span>BATTLE TURN</span>
+      </div>
+      <div class="army-bars">
+        <div class="army-bar red">
+          <div class="army-bar-label">
+            <span>红方</span>
+            <span id="redHpText">0 / 0</span>
+          </div>
+          <div class="army-bar-track">
+            <div id="redHpBar" class="army-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+        <div class="army-bar blue">
+          <div class="army-bar-label">
+            <span id="blueHpText">0 / 0</span>
+            <span>蓝方</span>
+          </div>
+          <div class="army-bar-track">
+            <div id="blueHpBar" class="army-bar-fill" style="width: 100%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="battleCanvas"></canvas>
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <button id="startBtn" class="btn primary">⚔ 开战</button>
+        <button id="pauseBtn" class="btn" disabled>⏸ 暂停</button>
+        <button id="resetBtn" class="btn">↺ 重置</button>
+        <button id="reportBtn" class="btn">📜 战报</button>
+      </div>
+      <div class="progress-container">
+        <span class="progress-label">回放</span>
+        <input type="range" id="progressSlider" min="0" max="0" value="0" />
+        <span class="progress-label" id="progressLabel">0 / 0</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="reportOverlay" class="report-overlay">
+    <div class="report-panel">
+      <div class="report-title">战 损 报 告</div>
+      <div id="winnerBanner" class="report-winner draw">平 局</div>
+      <div class="report-stats">
+        <div class="report-row">
+          <span class="label">总回合数</span>
+          <span id="reportTurns" class="value gold">0</span>
+        </div>
+        <div class="report-row">
+          <span class="label">红方存活</span>
+          <span id="reportRedSurvivors" class="value red">0</span>
+        </div>
+        <div class="report-row">
+          <span class="label">红方总伤害</span>
+          <span id="reportRedDamage" class="value red">0</span>
+        </div>
+        <div class="report-row">
+          <span class="label">蓝方存活</span>
+          <span id="reportBlueSurvivors" class="value blue">0</span>
+        </div>
+        <div class="report-row">
+          <span class="label">蓝方总伤害</span>
+          <span id="reportBlueDamage" class="value blue">0</span>
+        </div>
+      </div>
+      <button id="closeReportBtn" class="btn primary report-close">关 闭</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
