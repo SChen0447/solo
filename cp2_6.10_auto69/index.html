@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>激光追猫行为AI模拟器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <header class="app-header">
+      <h1>🐱 激光追猫行为AI模拟器</h1>
+      <p class="subtitle">移动鼠标控制激光笔光点，观察猫的追逐行为</p>
+    </header>
+
+    <main class="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+    </main>
+
+    <footer class="control-panel">
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">猫位置:</span>
+          <span id="catPosition" class="stat-value">X: 0, Y: 0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">光点距离:</span>
+          <span id="laserDistance" class="stat-value">0 px</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">猫状态:</span>
+          <span id="catState" class="stat-value">追逐</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">帧率:</span>
+          <span id="frameRate" class="stat-value">0 FPS</span>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="sleepButton" class="sleep-btn">😴 睡眠</button>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
