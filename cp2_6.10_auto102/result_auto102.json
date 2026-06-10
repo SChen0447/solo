@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:45:11.579Z",
+  "task_name": "auto102",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个为独立开发者和小团队提供API接口文档在线预览与端点模拟测试的Web应用，想法是解决写好OpenAPI/Swagger YAML文档后，团队成员要一个个对着文档手动构造请求、并且不能端到端测试接口返回结构的痛点。希望它能做到：第一，主页面左侧是一个可折叠的文档树面板，用深蓝(#1e3a5f)为底色，白色文字，逐级展开接口标签（如 /users、/orders 等，每个标签前标注GET/POST/PUT/DELETE色块，GET是绿#27ae60、POST是蓝#2980b9、PUT是橙#f39c12、DELETE是红#e74c3c），点击某个端点后右侧主区域无动画切换展示该端点的详细信息面板（路径参数、请求体JSON schema、返回示例），面板内返回示例用一个半透明灰色背景的代码高亮区块展示（JSON格式，支持折叠深层对象）；第二，每个端点卡片底部有一个“发送模拟请求”按钮，点击后弹出一个模态窗口（背景半透明深色遮罩#00000070，窗口用白色背景，圆角12px，2px浅灰边框，从底部向上弹出动画0.3秒ease-out），窗口中用户可以修改请求头（预设Content-Type: application/json，可手动添加3个自定义头部）、请求体（一个可编辑的JSON编辑器区域，默认填入schema示例数据，支持语法高亮和括号匹配），并点击“发送”按钮（按钮颜色用端点标签色），随后下方显示模拟响应结果（包含状态码200、404、500用不同色块，响应时间以毫秒显示，响应体用代码高亮区块展示）；第三，页面右上角有一个“上传文档”按钮（图标+文字，浅蓝#74b9ff描边圆角按钮，hover时填充浅蓝背景），点击后打开文件选择器（仅接受.yaml .yml .json文件），上传后解析并立即更新左侧文档树，最多支持存储3份文档历史记录（通过页面底部一个小型历史卡片行展示，每张卡片80x40px含文档文件名和上传时间，点击卡片切换文档树，当前文档卡片有2px蓝色边框表示选中态），整体页面布局采用左右分栏（左侧树宽280px固定，右侧内容自适应），响应式断点768px以下左侧树自动折叠为顶部汉堡菜单（点击展开侧滑抽屉，动画0.2秒linear），深色主题的所有交互元素都有0.2秒的transition平滑效果。性能上要求首次文档解析时间不超过500ms（对于100个端点的文档），模拟请求响应时间在本地模拟下不超过50ms。实现采用TypeScript和Vite（无框架依赖，纯原生Web Components或模块化），把代码拆成以下文件： - package.json（含依赖：typescript、vite@5、lodash、js-yaml，启动脚本：npm run dev） - index.html（入口，包含根容器和引入app.ts） - src/app.ts（主程序入口，初始化文档树、事件绑定、路由处理，职责：管理全局状态、协调各模块调用） - src/parser.ts（解析上传的YAML/JSON文档，提取端点列表和schema，输出结构化数据对象，职责：纯解析逻辑，不涉及UI） - src/uiTree.ts（渲染左侧文档树组件，支持折叠展开和高亮选中端点，职责：DOM操作、节点动画） - src/uiEndpoint.ts（渲染右侧端点详情面板和模拟请求模态框，职责：展示逻辑、表单交互、模拟请求处理器） - vite.config.js（Vite构建配置，支持TypeScript，devServer端口3000） - tsconfig.json（严格模式，target为ES2020，包含DOM和WebWorker类型）。跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:510b358ef553339cf6db0a9d39b6c681_6a285e889981d4b43581f4f2.6a285f2b9981d4b43581f583.6a285f2be3ad6818b9b244f2:Trae CN.T(2026/6/10 02:44:59)",
+    "user_id": "3986207660317399",
+    "trace_id": "510b358ef553339cf6db0a9d39b6c681",
+    "session_id": "6a285e889981d4b43581f4f2",
+    "task_id": "6a285f2b9981d4b43581f583",
+    "message_id": "6a285f2be3ad6818b9b244f2",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:44:59",
+    "format": "full"
+  },
+  "trace": "null"
+}
