@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T16:35:38.131Z",
+  "task_name": "auto21",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助用户在线快速构建和预览CSS动画效果的应用，主要解决前端开发中手动编写与调试CSS动画的低效问题。\n\n它应当具备以下能力：\n1) 动画编辑器：提供一个可视化编辑器，用户可以通过下拉菜单和滑块选择动画类型（如淡入、旋转、弹跳）、持续时间（0.1-10秒）、延迟（0-5秒）和缓动函数（ease, ease-in, cubic-bezier），实时生成对应CSS代码并展示在右侧代码面板中。\n2) 预览区与播放控制：在中央预览区域显示一个可交互的示例元素（如一个彩色方块或圆形），点击播放/暂停按钮控制动画播放，同时支持循环播放和速度调节（0.5x到3x），动画帧率不低于30fps。\n3) 代码导出：用户可一键复制生成的CSS代码或导出为独立的.html文件（含完整样式和HTML结构），供直接使用。\n4) 动画库管理：内置至少5个预设动画模板（如心跳、抖动、渐变位移），用户可以点击加载并在此基础上编辑，所有编辑历史保存在localStorage中，支持撤销/重做（最多20步）。\n\n界面方面要求：整体采用毛玻璃（Glassmorphism）设计风格，背景为深色渐变（从#1a1a2e到#16213e），半透明卡片（背景rgba(255,255,255,0.1)）承载控制面板和代码面板，所有控件带悬浮高亮和点击反馈（颜色变化和0.2秒缩放动画）。布局上左侧为参数控制区，中央为预览区，右侧为代码展示区，三者宽度比例约为1:2:1。预览区内的示例元素支持鼠标拖拽移动位置，拖拽时有轻微阴影和透明度变化。适配桌面端（最小宽度1024px），移动端下控制区和代码区折叠为可滚动的横向选项卡。控制面板中的所有滑块和输入框需实时联动更新（响应时间<100ms）。\n\n性能上需要预览区动画播放帧率不低于30fps，代码展示区高亮更新延迟不超过200ms。\n\n实现采用TypeScript、Vite和纯CSS（不使用任何UI框架，CSS动画使用@keyframes），按以下文件组织代码：\n - package.json（含依赖：typescript、vite，启动脚本：npm run dev，构建脚本：npm run build）\n - vite.config.js（Vite构建配置，支持TypeScript，devServer端口3000，开启hmr）\n - tsconfig.json（严格模式，target为ES2020，包含DOM类型）\n - index.html（入口页面，包含应用标题和根容器）\n - src/main.ts（应用入口，负责初始化UI和事件绑定，调用其他模块）\n - src/animator.ts（核心动画引擎，接收用户参数，动态生成@keyframes规则并应用到预览元素，暴露start、stop、reset方法）\n - src/uiController.ts（UI控制器，管理所有DOM事件监听、滑块/下拉框值读取、代码面板内容更新，与animator模块通过接口通信）\n - src/presets.ts（预设动画数据，导出包含5个动画模板对象的数组，每个模板包含name、type、duration等属性，用于初始化下拉列表）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:d15b50af057b2795e30232f8a6d57329_6a284009429c39603232c270.6a2840cd429c39603232c318.6a2840cd691c5675fef868e9:Trae CN.T(2026/6/10 00:35:25)",
+    "user_id": "3986207660317399",
+    "trace_id": "d15b50af057b2795e30232f8a6d57329",
+    "session_id": "6a284009429c39603232c270",
+    "task_id": "6a2840cd429c39603232c318",
+    "message_id": "6a2840cd691c5675fef868e9",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 00:35:25",
+    "format": "full"
+  },
+  "trace": "null"
+}

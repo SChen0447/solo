@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS动画可视化构建工具</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1 class="app-title">✨ CSS动画构建器</h1>
+      <p class="app-subtitle">可视化设计，一键导出专业CSS动画</p>
+    </header>
+
+    <div class="mobile-tabs">
+      <button class="tab-btn active" data-tab="controls">参数控制</button>
+      <button class="tab-btn" data-tab="preview">预览区</button>
+      <button class="tab-btn" data-tab="code">代码</button>
+    </div>
+
+    <main class="app-main">
+      <aside class="panel controls-panel" data-panel="controls">
+        <div class="glass-card">
+          <h2 class="panel-title">动画参数</h2>
+          
+          <div class="control-group">
+            <label class="control-label">
+              <span>动画类型</span>
+              <select id="animationType" class="control-select">
+                <option value="fadeIn">淡入 (Fade In)</option>
+                <option value="fadeOut">淡出 (Fade Out)</option>
+                <option value="slideInLeft">左侧滑入</option>
+                <option value="slideInRight">右侧滑入</option>
+                <option value="slideInUp">底部滑入</option>
+                <option value="slideInDown">顶部滑入</option>
+                <option value="bounce">弹跳 (Bounce)</option>
+                <option value="rotate">旋转 (Rotate)</option>
+                <option value="scale">缩放 (Scale)</option>
+                <option value="shake">抖动 (Shake)</option>
+                <option value="pulse">脉冲 (Pulse)</option>
+                <option value="heartbeat">心跳 (Heartbeat)</option>
+                <option value="float">浮动 (Float)</option>
+                <option value="gradientShift">渐变位移</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span>持续时间: <em id="durationValue">1.0</em>s</span>
+              <input type="range" id="duration" class="control-slider" min="0.1" max="10" step="0.1" value="1">
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span>延迟时间: <em id="delayValue">0.0</em>s</span>
+              <input type="range" id="delay" class="control-slider" min="0" max="5" step="0.1" value="0">
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span>缓动函数</span>
+              <select id="easing" class="control-select">
+                <option value="ease">ease</option>
+                <option value="ease-in">ease-in</option>
+                <option value="ease-out">ease-out</option>
+                <option value="ease-in-out" selected>ease-in-out</option>
+                <option value="linear">linear</option>
+                <option value="cubic-bezier(0.68, -0.55, 0.265, 1.55)">弹性回弹</option>
+                <option value="cubic-bezier(0.175, 0.885, 0.32, 1.275)">柔和回弹</option>
+                <option value="cubic-bezier(0.25, 0.46, 0.45, 0.94)">平滑加速</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span>播放方向</span>
+              <select id="direction" class="control-select">
+                <option value="normal">正向 (Normal)</option>
+                <option value="reverse">反向 (Reverse)</option>
+                <option value="alternate">交替 (Alternate)</option>
+                <option value="alternate-reverse">反向交替</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">
+              <span>填充模式</span>
+              <select id="fillMode" class="control-select">
+                <option value="none">none</option>
+                <option value="forwards" selected>forwards</option>
+                <option value="backwards">backwards</option>
+                <option value="both">both</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="control-group">
+            <label class="control-checkbox">
+              <input type="checkbox" id="loopToggle" checked>
+              <span>循环播放</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h2 class="panel-title">预设动画</h2>
+          <div class="preset-list" id="presetList">
+          </div>
+        </div>
+
+        <div class="glass-card">
+          <h2 class="panel-title">历史操作</h2>
+          <div class="history-controls">
+            <button id="undoBtn" class="action-btn">
+              <span class="btn-icon">↶</span> 撤销
+            </button>
+            <button id="redoBtn" class="action-btn">
+              <span class="btn-icon">↷</span> 重做
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel preview-panel" data-panel="preview">
+        <div class="glass-card preview-card">
+          <div class="preview-header">
+            <h2 class="panel-title">动画预览</h2>
+            <div class="shape-switcher">
+              <button class="shape-btn active" data-shape="square">■</button>
+              <button class="shape-btn" data-shape="circle">●</button>
+            </div>
+          </div>
+          
+          <div class="preview-stage" id="previewStage">
+            <div class="preview-element" id="previewElement">
+              <div class="element-inner">Ani</div>
+            </div>
+          </div>
+
+          <div class="playback-controls">
+            <button id="playPauseBtn" class="play-btn">
+              <span class="play-icon" id="playIcon">▶</span>
+            </button>
+            <button id="resetBtn" class="action-btn">
+              <span class="btn-icon">⟲</span> 重置
+            </button>
+            <div class="speed-control">
+              <span class="speed-label">速度:</span>
+              <input type="range" id="speedSlider" class="control-slider small" min="0.5" max="3" step="0.1" value="1">
+              <span class="speed-value" id="speedValue">1.0x</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel code-panel" data-panel="code">
+        <div class="glass-card">
+          <div class="code-header">
+            <h2 class="panel-title">CSS代码</h2>
+            <div class="code-actions">
+              <button id="copyBtn" class="action-btn">
+                <span class="btn-icon">📋</span> 复制
+              </button>
+              <button id="exportBtn" class="action-btn primary">
+                <span class="btn-icon">⬇</span> 导出HTML
+              </button>
+            </div>
+          </div>
+          <pre class="code-block" id="codeBlock"><code id="codeContent"></code></pre>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
