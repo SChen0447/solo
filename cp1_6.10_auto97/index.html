@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 植物生长模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1a2e;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+      min-width: 1024px;
+      min-height: 768px;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: linear-gradient(180deg, #0f3460 0%, #16c79a 100%);
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: calc(100% - 80px);
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: rgba(22, 33, 62, 0.95);
+      border-top: 2px solid #4fc3f7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 0 40px;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-width: 180px;
+    }
+
+    .slider-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #ffffff;
+      font-weight: 500;
+    }
+
+    .slider-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-value {
+      color: #4fc3f7;
+      font-weight: 600;
+      min-width: 30px;
+      text-align: right;
+    }
+
+    .slider-input {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .slider-input:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .slider-input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4fc3f7, #16c79a);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .slider-input::-webkit-slider-thumb:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px rgba(79, 195, 247, 0.8);
+    }
+
+    .slider-input::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4fc3f7, #16c79a);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .slider-input::-moz-range-thumb:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px rgba(79, 195, 247, 0.8);
+    }
+
+    #stats-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+      min-width: 200px;
+      font-size: 14px;
+      color: #ffffff;
+      z-index: 10;
+    }
+
+    .stats-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: #4fc3f7;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .stats-label {
+      opacity: 0.85;
+    }
+
+    .stats-value {
+      font-weight: 600;
+      color: #7FFF00;
+    }
+
+    .title-bar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+    }
+
+    .title-bar h1 {
+      font-size: 22px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4fc3f7, #16c79a);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 1px;
+    }
+
+    .title-bar p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="title-bar">
+      <h1>🌱 3D 植物生长模拟器</h1>
+      <p>拖拽旋转视角 · 滚轮缩放 · 调整参数观察生长变化</p>
+    </div>
+    <div id="canvas-container"></div>
+    <div id="stats-panel">
+      <div class="stats-title">📊 实时统计</div>
+      <div class="stats-row">
+        <span class="stats-label">分支数量</span>
+        <span class="stats-value" id="stat-branches">0</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">叶片总数</span>
+        <span class="stats-value" id="stat-leaves">0</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">平均分支角度</span>
+        <span class="stats-value" id="stat-angle">0°</span>
+      </div>
+      <div class="stats-row">
+        <span class="stats-label">环境综合评分</span>
+        <span class="stats-value" id="stat-score">0%</span>
+      </div>
+    </div>
+    <div id="controls"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
