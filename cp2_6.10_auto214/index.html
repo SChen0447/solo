@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>大气层剖面</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #0b1026 0%, #1c2a4a 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-title {
+      position: absolute;
+      top: 20px;
+      left: 24px;
+      font-size: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 2px;
+      z-index: 10;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .info-popup {
+      position: absolute;
+      min-width: 220px;
+      padding: 14px 18px;
+      background: rgba(15, 22, 45, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.7;
+      z-index: 100;
+      transform-origin: left top;
+      opacity: 0;
+      transform: scale(0.85);
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      user-select: none;
+    }
+
+    .info-popup.visible {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .info-popup.pinned {
+      border-color: rgba(135, 206, 235, 0.6);
+      box-shadow: 0 4px 20px rgba(135, 206, 235, 0.35);
+    }
+
+    .info-popup .layer-name {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .info-popup .layer-info {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    .info-popup .layer-info .label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .info-popup .layer-info .value {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      color: #87CEEB;
+    }
+
+    .info-popup .composition {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.75);
+    }
+
+    .info-popup .hint {
+      margin-top: 8px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: right;
+    }
+
+    #mobile-panel-toggle {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(46, 58, 90, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(74, 90, 122, 0.6);
+      z-index: 90;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #mobile-panel-toggle::before {
+      content: "";
+      width: 32px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin-right: 10px;
+    }
+
+    #panel-container {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      z-index: 50;
+    }
+
+    #panel-container .tp-dfwv {
+      width: 220px !important;
+      background: rgba(46, 58, 90, 0.85) !important;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(74, 90, 122, 0.6) !important;
+      border-radius: 8px !important;
+      color: #ffffff !important;
+    }
+
+    #panel-container .tp-dfwv .tp-lblv_l,
+    #panel-container .tp-dfwv .tp-txtv,
+    #panel-container .tp-dfwv .tp-rotv_g,
+    #panel-container .tp-dfwv .tp-sldtxtv_s {
+      color: rgba(255, 255, 255, 0.85) !important;
+    }
+
+    @media (max-width: 767px) {
+      #mobile-panel-toggle {
+        display: flex;
+      }
+
+      #panel-container {
+        position: fixed;
+        bottom: 60px;
+        right: 0;
+        left: 0;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+
+      #panel-container.expanded {
+        transform: translateY(0);
+      }
+
+      #panel-container .tp-dfwv {
+        width: 100% !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        border-bottom: none !important;
+      }
+
+      .app-title {
+        top: 14px;
+        left: 16px;
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div class="app-title">大气层剖面</div>
+
+    <div class="info-popup" id="info-popup">
+      <div class="layer-name" id="popup-name"></div>
+      <div class="layer-info">
+        <span class="label">高度范围</span>
+        <span class="value" id="popup-height"></span>
+      </div>
+      <div class="layer-info">
+        <span class="label">平均温度</span>
+        <span class="value" id="popup-temp"></span>
+      </div>
+      <div class="composition" id="popup-composition"></div>
+      <div class="hint">点击固定显示</div>
+    </div>
+
+    <div id="mobile-panel-toggle">图层面板</div>
+    <div id="panel-container"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
