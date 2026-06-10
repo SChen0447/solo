@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T19:59:42.273Z",
+  "task_name": "auto120",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个基于浏览器摄像头进行实时人脸表情识别与情绪标签生成的全栈Web应用，用户上传或拍照后，应用自动识别表情（高兴、悲伤、愤怒、惊讶、恐惧、厌恶）并以动态标签和图表形式展示情绪占比。使用TypeScript、React 18、Vite和TensorFlow.js实现。文件结构如下：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, @tensorflow/tfjs, @tensorflow-models/face-landmarks-detection；启动脚本：npm run dev）\n - vite.config.js（React插件配置，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，包含视频预览区、拍照按钮、结果展示区，背景色#0f172a）\n - src/App.tsx（主组件，负责摄像头初始化、拍照捕获、调用表情识别模块、渲染结果UI）\n - src/emotionDetector.ts（封装TensorFlow.js模型加载与表情推理逻辑，输出情绪标签和置信度数组，数据流向：接收ImageData → 预处理 → 模型推理 → 返回情绪对象）\n - src/emotionChart.ts（基于Canvas绘制极简雷达图或柱状图显示6种情绪的置信度百分比，接收情绪数据数组）\n\n具体需求：\n1. 用户进入页面后自动请求摄像头权限，并在页面左上角展示实时视频流（宽480px高360px，圆角12px，外发光#38bdf8 0 0 12px），如果摄像头不可用则显示静态上传按钮（上传jpg/png格式，最大5MB）。\n2. 点击“拍照”按钮（位于视频下方，按钮背景色从#3b82f6到#1d4ed8渐变，鼠标悬停缩放1.05倍，过渡0.2秒）时，从视频流截取一帧并传给表情识别模块，识别结果以半透明卡片（背景#1e293b/80，圆角16px）展示在视频右侧，卡片内包含六个表情标签，每个标签配有圆点（颜色：高兴#22c55e、悲伤#6366f1、愤怒#ef4444、惊讶#f59e0b、恐惧#a855f7、厌恶#84cc16）和百分比进度条（高度6px圆角，颜色与圆点一致，宽度根据置信度从0%平滑动画到目标值，动画时长0.6秒 ease-out）。\n3. 每次识别后，页面底部展示一个实时更新的情绪雷达图（Canvas绘制，半径120px，六边形网格线透明度0.3，每个顶点标注情绪名称，数据点以带渐变填充的六边形区域表示，内部填充透明度0.4，描边宽2px颜色同圆点），雷达图周围添加微弱的呼吸动画（每隔2秒整体透明度从0.8渐变到1再回到0.8）。\n4. 识别历史展示在雷达图下方，以时间线列表形式呈现（每行显示时间戳、主要情绪Emoji和置信度百分比，如“14:23:05 😡 愤怒 78%”），列表可滚动（最大高度160px），最新记录自动滚动到底部，可点击“清空历史”按钮（按钮背景#dc2626，圆角8px，按下时颜色加深到#b91c1c）删除所有记录。\n5. 要求整体视觉风格为深色科技风（主背景#0f172a，卡片背景#1e293b，文字颜色#f8fafc，强调色#38bdf8），所有交互元素在鼠标悬停时有轻微上浮效果（transform translateY(-2px)加box-shadow 0 4px 12px #38bdf840），响应式适配：视频区在屏幕宽度小于768px时占满宽度，卡片和图表垂直堆叠。\n\n性能约束：从用户点击拍照到结果展示总延迟不超过800ms，模型推理部分单独放在Web Worker中以避免阻塞UI渲染，视频帧率保持30fps以上。\n\n运行方式：npm install && npm run dev。",
+  "session_id": null,
+  "trace": "null"
+}
