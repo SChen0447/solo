@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Music Visualizer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      background: linear-gradient(135deg, #1a0a2e 0%, #0a1628 50%, #0d0d2b 100%);
+      transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-title {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: #ffffff;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(0, 255, 255, 0.5), 0 0 40px rgba(255, 0, 255, 0.3);
+      pointer-events: none;
+    }
+
+    .playlist-panel {
+      position: absolute;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 260px;
+    }
+
+    .playlist-title {
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      opacity: 0.9;
+    }
+
+    .track-card {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 16px;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+      color: #ffffff;
+    }
+
+    .track-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0, 255, 255, 0.15), 0 4px 16px rgba(255, 0, 255, 0.1);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .track-card.active {
+      border-color: rgba(0, 255, 255, 0.5);
+      box-shadow: 0 0 24px rgba(0, 255, 255, 0.2);
+      background: rgba(0, 255, 255, 0.08);
+    }
+
+    .track-name {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .track-meta {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .track-info-panel {
+      position: absolute;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      width: 280px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      color: #ffffff;
+    }
+
+    .current-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .current-bpm {
+      font-size: 13px;
+      opacity: 0.75;
+      margin-bottom: 24px;
+    }
+
+    .spectrum-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      opacity: 0.6;
+      margin-bottom: 16px;
+    }
+
+    .spectrum-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .spectrum-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .spectrum-band {
+      flex: 1;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .spectrum-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 5px;
+      transition: width 0.08s linear;
+    }
+
+    .spectrum-bar.low {
+      background: linear-gradient(90deg, #00ffff, #00aaff);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .spectrum-bar.mid {
+      background: linear-gradient(90deg, #ff00ff, #aa00ff);
+      box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    }
+
+    .spectrum-bar.high {
+      background: linear-gradient(90deg, #ffd700, #ff8c00);
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .spectrum-label-text {
+      width: 40px;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .hint-text {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1 class="app-title">3D MUSIC VISUALIZER</h1>
+
+    <div id="canvas-container"></div>
+
+    <div class="playlist-panel">
+      <div class="playlist-title">播放列表</div>
+      <div class="track-card" data-track="0">
+        <div class="track-name">Electronic Pulse</div>
+        <div class="track-meta">电子 · 128 BPM</div>
+      </div>
+      <div class="track-card" data-track="1">
+        <div class="track-name">Jazz Horizon</div>
+        <div class="track-meta">爵士 · 96 BPM</div>
+      </div>
+      <div class="track-card" data-track="2">
+        <div class="track-name">Classic Dreams</div>
+        <div class="track-meta">古典 · 72 BPM</div>
+      </div>
+    </div>
+
+    <div class="track-info-panel">
+      <div class="current-title" id="current-title">Electronic Pulse</div>
+      <div class="current-bpm" id="current-bpm">BPM: 128</div>
+      <div class="spectrum-label">频谱能量</div>
+      <div class="spectrum-container">
+        <div class="spectrum-row">
+          <span class="spectrum-label-text">LOW</span>
+          <div class="spectrum-band"><div class="spectrum-bar low" id="bar-low"></div></div>
+        </div>
+        <div class="spectrum-row">
+          <span class="spectrum-label-text">MID</span>
+          <div class="spectrum-band"><div class="spectrum-bar mid" id="bar-mid"></div></div>
+        </div>
+        <div class="spectrum-row">
+          <span class="spectrum-label-text">HIGH</span>
+          <div class="spectrum-band"><div class="spectrum-bar high" id="bar-high"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hint-text">拖拽旋转视角 · 滚轮缩放 · 悬停高亮 · 点击几何体播放音效</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
