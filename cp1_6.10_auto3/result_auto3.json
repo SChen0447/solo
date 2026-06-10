@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T16:48:57.916Z",
+  "task_name": "auto3",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助前端开发者轻量级对比两个CSS颜色主题差异的交互式调色板应用，主要解决设计师与开发之间关于颜色值偏差和视觉匹配度的沟通问题。\n\n它应当具备以下能力：\n1) 支持左侧粘贴主色板和右侧粘贴次色板（每组5个色值，支持hex/rgb），自动解析并生成色块卡片列表。\n2) 每个色块卡片显示颜色名、色值、并带一个圆形色块背景；鼠标悬停时放大该色块并显示色值文字标注。\n3) 自动计算每组对应色块的Delta-E色差数值（使用一个内置的近似算法，基于RGB欧几里得距离归一化至0-100），显示在色块下方色差条上，色差条长度随数值变化，颜色从绿渐变至红。\n4) 色块支持点击选中高亮，选中的色块会在右侧弹出详细对比：左右并排显示两个色块及其色值、差异值，并伴有淡入动画。\n5) 页面顶部提供一键重置、导出对比报告（输出为简单文本内容复制到剪贴板）按钮。\n\n界面方面要求：采用深色模式（#1a1a2e作为主背景，#16213e作为卡片背景），色块卡片使用圆角10px、轻微阴影，每个卡片在悬停时有0.3秒的scale(1.05)缩放过渡；左右面板之间用一条垂直渐变分割线；响应式适配：在小于768px时两个面板改为上下排列。整体保持视觉统一，无明亮刺眼对比。\n\n性能上需要：每次粘贴色值后解析渲染在50ms内完成，色块悬停动画不低于30fps。\n\n实现采用TypeScript和原生Web Components（不使用React/Vue框架），不支持低版本浏览器。按以下文件组织代码：\n - package.json（含依赖：typescript, vite, @webcomponents/webcomponentsjs；脚本：\"dev\": \"vite\", \"build\": \"vite build\"）\n - index.html（入口页面，包含一个挂载点<div id=\"app\">，引入主入口脚本）\n - tsconfig.json（严格模式，target: ES2020，module: ESNext，配置好路径映射）\n - vite.config.js（基础Vite配置，指定入口为index.html，启用TypeScript支持）\n - src/app.ts（主模块，负责初始化Web Component：创建左右面板、色板容器、色差计算、导出功能，并作为自定义元素<color-compare>注册到页面）\n - src/color-utils.ts（工具模块，只包含色值解析函数hexToRgb/rgbToHex、近似色差计算函数deltaE（基于RGB欧几里得距离归一化）、色差条颜色生成函数，纯函数无副作用）\n - src/components/color-card.ts（自定义元素<color-card>，负责渲染单个色块卡片，支持attribute变化更新色值、悬停放大动画、点击高亮事件派发）\n\n运行方式：npm install && npm run dev，直接在浏览器打开本地地址即可使用。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:5bc18a24431f930aa80e766630283f65_6a284390176de296b08fa2e3.6a2843ed176de296b08fa32f.6a2843edce89bd0ebcaca5bf:Trae CN.T(2026/6/10 00:48:45)",
+    "user_id": "3986207660317399",
+    "trace_id": "5bc18a24431f930aa80e766630283f65",
+    "session_id": "6a284390176de296b08fa2e3",
+    "task_id": "6a2843ed176de296b08fa32f",
+    "message_id": "6a2843edce89bd0ebcaca5bf",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 00:48:45",
+    "format": "full"
+  },
+  "trace": "null"
+}
