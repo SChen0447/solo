@@ -1,0 +1,19 @@
+{
+  "name": "pixel-daycycle-simulator",
+  "version": "1.0.0",
+  "description": "2D Pixel Style Day/Night Cycle Parameter Simulator with Real-time Preview",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.0",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  }
+}
