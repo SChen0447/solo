@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素农场 Pixel Farm</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #f5e6c8;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      user-select: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: linear-gradient(180deg, #d4a76a 0%, #b8894e 100%);
+      border-bottom: 4px solid #8b6914;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 10;
+      image-rendering: pixelated;
+    }
+    #top-bar .gold {
+      color: #ffd700;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 2px 2px 0 #8b6914;
+      letter-spacing: 1px;
+    }
+    #top-bar .day {
+      color: #fff8e7;
+      font-size: 20px;
+      text-shadow: 2px 2px 0 #8b6914;
+    }
+    #top-bar .hint {
+      color: #fff8e7;
+      font-size: 14px;
+      opacity: 0.85;
+      max-width: 340px;
+      text-align: right;
+    }
+    #shop-toggle {
+      position: absolute;
+      top: 72px;
+      left: 16px;
+      width: 56px;
+      height: 56px;
+      background: #c0392b;
+      border: 4px solid #7b241c;
+      color: #fff;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 10;
+      image-rendering: pixelated;
+      transition: transform 0.1s, background 0.15s;
+    }
+    #shop-toggle:hover {
+      background: #e74c3c;
+      transform: scale(1.08);
+    }
+    #shop-panel {
+      position: absolute;
+      top: 0;
+      left: -320px;
+      width: 300px;
+      height: 100vh;
+      background: #fff8e7;
+      border-right: 4px solid #8b6914;
+      z-index: 20;
+      transition: left 0.3s ease-out;
+      display: flex;
+      flex-direction: column;
+      image-rendering: pixelated;
+    }
+    #shop-panel.open {
+      left: 0;
+    }
+    #shop-panel .shop-header {
+      height: 56px;
+      background: linear-gradient(180deg, #d4a76a 0%, #b8894e 100%);
+      border-bottom: 4px solid #8b6914;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    #shop-panel .shop-header h2 {
+      color: #fff8e7;
+      font-size: 20px;
+      text-shadow: 2px 2px 0 #8b6914;
+    }
+    #shop-panel .shop-close {
+      background: #c0392b;
+      border: 3px solid #7b241c;
+      color: #fff;
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #shop-panel .tabs {
+      display: flex;
+      border-bottom: 3px solid #8b6914;
+    }
+    #shop-panel .tab {
+      flex: 1;
+      padding: 10px 4px;
+      text-align: center;
+      background: #e8d4a8;
+      color: #5d4037;
+      cursor: pointer;
+      font-size: 13px;
+      border-right: 2px solid #8b6914;
+      transition: background 0.15s;
+    }
+    #shop-panel .tab:last-child {
+      border-right: none;
+    }
+    #shop-panel .tab.active {
+      background: #fff8e7;
+      color: #3e2723;
+      font-weight: bold;
+    }
+    #shop-panel .tab:hover:not(.active) {
+      background: #f0dfb8;
+    }
+    #shop-panel .shop-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+    #shop-panel .shop-item {
+      background: #faf0d7;
+      border: 3px solid #8b6914;
+      padding: 10px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.12s, background 0.15s;
+    }
+    #shop-panel .shop-item:hover {
+      background: #fff8e7;
+      transform: scale(1.02);
+    }
+    #shop-panel .item-icon {
+      width: 40px;
+      height: 40px;
+      background: #e8d4a8;
+      border: 2px solid #8b6914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    #shop-panel .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    #shop-panel .item-name {
+      color: #3e2723;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    #shop-panel .item-desc {
+      color: #6d4c41;
+      font-size: 11px;
+      margin-top: 2px;
+    }
+    #shop-panel .item-price {
+      color: #ffd700;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #8b6914;
+      white-space: nowrap;
+    }
+    #shop-panel .buy-btn {
+      background: #27ae60;
+      border: 3px solid #1e8449;
+      color: #fff;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.1s, background 0.15s;
+      flex-shrink: 0;
+    }
+    #shop-panel .buy-btn:hover {
+      background: #2ecc71;
+      transform: scale(1.06);
+    }
+    #canvas-wrapper {
+      margin-top: 56px;
+      margin-bottom: 120px;
+      padding: 20px;
+    }
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      border: 4px solid #8b6914;
+      box-shadow: 0 8px 0 #6b4f0f, 0 12px 20px rgba(0,0,0,0.2);
+    }
+    #bottom-toolbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 110px;
+      background: linear-gradient(0deg, #d4a76a 0%, #b8894e 100%);
+      border-top: 4px solid #8b6914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 0 20px;
+      z-index: 10;
+      image-rendering: pixelated;
+    }
+    #bottom-toolbar .toolbar-label {
+      color: #fff8e7;
+      font-size: 13px;
+      text-shadow: 1px 1px 0 #8b6914;
+      margin-right: 6px;
+    }
+    .crop-btn {
+      width: 76px;
+      height: 84px;
+      background: #fff8e7;
+      border: 3px solid #8b6914;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: transform 0.1s, background 0.15s, border-color 0.15s;
+      font-family: inherit;
+      padding: 4px;
+    }
+    .crop-btn:hover:not(:disabled) {
+      background: #fdf5dc;
+      transform: scale(1.06);
+      border-color: #c49018;
+    }
+    .crop-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .crop-btn .crop-emoji {
+      font-size: 28px;
+      line-height: 1;
+    }
+    .crop-btn .crop-name {
+      font-size: 11px;
+      color: #3e2723;
+    }
+    .crop-btn .crop-cost {
+      font-size: 11px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #8b6914;
+    }
+    #toast-container {
+      position: absolute;
+      bottom: 130px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 30;
+      pointer-events: none;
+    }
+    .toast {
+      background: #3e2723;
+      color: #fff8e7;
+      padding: 12px 24px;
+      border: 3px solid #8b6914;
+      font-size: 14px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.25s, transform 0.25s;
+      white-space: nowrap;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="top-bar">
+      <div class="gold">💰 金币: <span id="gold-value">100</span></div>
+      <div class="day">📅 <span id="day-value">第 1 天</span></div>
+      <div class="hint" id="hint-text">点击土地选中，选择作物种植；成熟后点击收获</div>
+    </div>
+
+    <button id="shop-toggle" title="商店">🛒</button>
+
+    <div id="shop-panel">
+      <div class="shop-header">
+        <h2>🏪 农场商店</h2>
+        <button class="shop-close" id="shop-close">✕</button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="seed">🌱 种子</div>
+        <div class="tab" data-tab="facility">⚙️ 设施</div>
+        <div class="tab" data-tab="decoration">🎨 装饰</div>
+      </div>
+      <div class="shop-items" id="shop-items"></div>
+    </div>
+
+    <div id="canvas-wrapper">
+      <canvas id="game-canvas"></canvas>
+    </div>
+
+    <div id="bottom-toolbar">
+      <span class="toolbar-label">选择作物:</span>
+      <button class="crop-btn" data-crop="wheat">
+        <span class="crop-emoji">🌾</span>
+        <span class="crop-name">小麦</span>
+        <span class="crop-cost">6💰</span>
+      </button>
+      <button class="crop-btn" data-crop="carrot">
+        <span class="crop-emoji">🥕</span>
+        <span class="crop-name">胡萝卜</span>
+        <span class="crop-cost">12💰</span>
+      </button>
+      <button class="crop-btn" data-crop="sunflower">
+        <span class="crop-emoji">🌻</span>
+        <span class="crop-name">向日葵</span>
+        <span class="crop-cost">18💰</span>
+      </button>
+      <button class="crop-btn" data-crop="strawberry">
+        <span class="crop-emoji">🍓</span>
+        <span class="crop-name">草莓</span>
+        <span class="crop-cost">27💰</span>
+      </button>
+      <button class="crop-btn" data-crop="magicCorn">
+        <span class="crop-emoji">🌽</span>
+        <span class="crop-name">魔法玉米</span>
+        <span class="crop-cost">48💰</span>
+      </button>
+    </div>
+
+    <div id="toast-container">
+      <div class="toast" id="toast"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
