@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星尘书卷 - Stardust Scroll</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: monospace;
+        color: #e2e8f0;
+        background: radial-gradient(ellipse at center, #1a1f3a 0%, #0a0e27 100%);
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      #canvas-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      #ui-panel {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      #ui-title {
+        font-size: 14px;
+        letter-spacing: 2px;
+        color: #e2e8f0;
+        opacity: 0.9;
+      }
+      #ui-hint {
+        font-size: 11px;
+        color: #94a3b8;
+        opacity: 0.7;
+      }
+      #input-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      #text-input {
+        width: 220px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-family: monospace;
+        font-size: 13px;
+        outline: none;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        transition: border-color 0.2s;
+      }
+      #text-input:focus {
+        border-color: rgba(139, 92, 246, 0.6);
+      }
+      #text-input::placeholder {
+        color: rgba(226, 232, 240, 0.4);
+      }
+      #generate-btn {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        border: none;
+        border-radius: 8px;
+        color: #ffffff;
+        font-family: monospace;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        letter-spacing: 1px;
+        transition: filter 0.2s, transform 0.1s;
+      }
+      #generate-btn:hover {
+        filter: brightness(1.2);
+      }
+      #generate-btn:active {
+        transform: scale(0.95);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="ui-panel">
+        <div id="ui-title">星尘书卷 · STARDUST SCROLL</div>
+        <div id="input-row">
+          <input
+            id="text-input"
+            type="text"
+            maxlength="20"
+            placeholder="Enter text (A-Z, 0-9, space)"
+          />
+          <button id="generate-btn">GENERATE</button>
+        </div>
+        <div id="ui-hint">Drag to rotate · Scroll to zoom · Click particles for ripple</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
