@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T23:33:36.542Z",
+  "task_name": "auto237",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为「算法花园」的全栈web应用，让用户通过可视化方式探索和比较经典排序算法（冒泡、插入、选择、快速、归并）的执行过程。每个算法以动态柱状图形式展示排序步骤，用户可调整数据规模和排序速度，并实时查看比较次数和交换次数的统计信息。使用TypeScript、React 18和Vite实现。文件结构如下：\n - package.json（含依赖：react@18, react-dom@18, typescript, vite, @vitejs/plugin-react；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr，使用React插件）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，引入src/main.tsx）\n - src/main.tsx（React应用入口，渲染App组件）\n - src/components/App.tsx（主组件，管理算法选择、数据生成、控制面板和柱状图渲染区域）\n - src/utils/sorting.ts（纯函数，导出各个排序算法的生成器函数，每一步返回当前数组状态和操作信息）\n - src/utils/arrayGen.ts（随机数组生成工具，支持指定规模和元素范围）\n\n具体需求：\n1. 页面顶部是一个算法选择按钮组（冒泡/插入/选择/快速/归并五个按钮），选中状态以#6c63ff填充、白色文字高亮，未选中为浅灰#e0e0e0背景，点击切换时伴随0.3秒的背景色渐变过渡动画。\n2. 主区域为800x500像素的柱状图画布，每个柱条宽度根据数据规模自适应（最小宽度4px），柱条默认颜色#4fc3f7，正在比较的两个柱条变为#ff6b6b并轻微上浮（translateY(-4px)持续0.2秒），正在交换的两个柱条变为#feca57并左右平移（translateX±12px持续0.3秒），已排序部分的柱条变为#6fcf97并保留绿色渐变。\n3. 控制面板位于柱状图下方，包含三个滑块：数据规模（10-100，默认30，步长5）、排序速度（1-10倍速，默认5）、初始顺序（随机/正序/倒序），以及开始/暂停/重置三个操作按钮，按钮采用圆角矩形设计（border-radius: 8px），点击时有涟漪效果（ripple动画持续0.4秒），且按钮在排序运行中禁用时样式变灰并降低透明度至0.6。\n4. 右侧信息面板实时显示当前算法的名称、比较次数、交换次数、已用时间（毫秒），数字变化时触发数字翻转动画（从旧数字滚动到新数字，持续0.5秒），显示区域背景为#f0f4f8，文字颜色#2d3748。\n5. 排序完成后，所有柱条以中心向两侧扩散的方式逐个变为#6fcf97（每个柱条延迟50毫秒），同时页面顶部弹出结果弹窗，展示该算法的平均时间复杂度和空间复杂度对比信息，弹窗背景半透明遮罩（rgba(0,0,0,0.4)），弹窗在屏幕居中，关闭按钮为右上角叉号。\n\n界面方面：整体采用浅色主题，主色为#6c63ff（紫色强调），辅助色#4fc3f7（蓝色）、#ff6b6b（红色警告）、#6fcf97（绿色完成），字体使用系统无衬线字体（-apple-system, BlinkMacSystemFont），部分区域使用卡片样式（box-shadow: 0 2px 8px rgba(0,0,0,0.1), border-radius: 12px），页面最大宽度1200px，居中布局，两侧留白20px。按钮和交互元素在hover时增加阴影深度（box-shadow从0 2px到0 4px，transition 0.2s），且光标变为pointer。布局在小屏（宽度<768px）时，信息面板折叠到柱状图下方，采用flex-wrap换行排列。\n\n性能要求：排序动画帧率稳定在60fps，数据规模为100时，排序过程无肉眼可见卡顿，每次重绘间隔不超过16ms。渲染使用requestAnimationFrame驱动，避免setInterval/setTimeout造成的累积误差。",
+  "session_id": null,
+  "trace": "null"
+}
