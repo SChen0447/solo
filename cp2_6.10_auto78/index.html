@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS Blend Mode Sandbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      background-color: #1a1a2e;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    .header {
+      padding: 16px 24px;
+      background-color: #16213e;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .header h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .texture-library {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 8px 4px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+
+    .texture-library::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .texture-library::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .texture-library::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .texture-card {
+      flex: 0 0 auto;
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .texture-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .texture-card:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .texture-card.selected {
+      border-color: #4fc3f7;
+      transform: scale(1.1);
+      box-shadow: 0 0 16px rgba(79, 195, 247, 0.5);
+      z-index: 10;
+    }
+
+    .texture-card .texture-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px 6px;
+      background: rgba(0, 0, 0, 0.6);
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .canvas-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 20px;
+      position: relative;
+    }
+
+    .canvas-section h2 {
+      font-size: 16px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      color: #e0e0e0;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      background-color: #16213e;
+      border-radius: 12px;
+      overflow: hidden;
+      min-height: 300px;
+    }
+
+    .canvas-wrapper canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .mode-label {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: #4fc3f7;
+      pointer-events: none;
+    }
+
+    .divider {
+      width: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: col-resize;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s ease;
+      z-index: 10;
+    }
+
+    .divider:hover {
+      background: #4fc3f7;
+    }
+
+    .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 2px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 1px;
+    }
+
+    .divider.dragging {
+      background: #4fc3f7;
+    }
+
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .controls label {
+      font-size: 13px;
+      color: #a0a0b0;
+    }
+
+    .acrylic-select {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e0e0e0;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      min-width: 180px;
+    }
+
+    .acrylic-select:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .acrylic-select:focus {
+      border-color: #4fc3f7;
+      box-shadow: 0 0 0 3px rgba(79, 195, 247, 0.15);
+    }
+
+    .acrylic-select option {
+      background-color: #16213e;
+      color: #e0e0e0;
+      padding: 8px;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        flex-wrap: nowrap;
+        overflow-y: auto;
+      }
+
+      .divider {
+        width: 100%;
+        height: 6px;
+        cursor: row-resize;
+      }
+
+      .divider::after {
+        width: 40px;
+        height: 2px;
+      }
+
+      .canvas-section {
+        min-height: 400px;
+      }
+
+      html, body {
+        overflow: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <h1>CSS 混合模式沙盒 (Blend Mode Sandbox)</h1>
+      <div class="texture-library" id="textureLibrary">
+      </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+      <div class="canvas-section" id="mixBlendSection" data-section="mix">
+        <h2>mix-blend-mode</h2>
+        <div class="canvas-wrapper">
+          <canvas id="mixBlendCanvas"></canvas>
+          <div class="mode-label" id="mixBlendLabel">mix-blend-mode: multiply</div>
+        </div>
+        <div class="controls">
+          <label>混合模式:</label>
+          <select class="acrylic-select" id="mixBlendSelector">
+            <option value="multiply">multiply</option>
+            <option value="screen">screen</option>
+            <option value="overlay">overlay</option>
+            <option value="darken">darken</option>
+            <option value="lighten">lighten</option>
+            <option value="color-dodge">color-dodge</option>
+            <option value="color-burn">color-burn</option>
+            <option value="hard-light">hard-light</option>
+            <option value="soft-light">soft-light</option>
+            <option value="difference">difference</option>
+            <option value="exclusion">exclusion</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="divider" id="divider"></div>
+
+      <div class="canvas-section" id="bgBlendSection" data-section="background">
+        <h2>background-blend-mode</h2>
+        <div class="canvas-wrapper">
+          <canvas id="bgBlendCanvas"></canvas>
+          <div class="mode-label" id="bgBlendLabel">background-blend-mode: multiply</div>
+        </div>
+        <div class="controls">
+          <label>混合模式:</label>
+          <select class="acrylic-select" id="bgBlendSelector">
+            <option value="multiply">multiply</option>
+            <option value="screen">screen</option>
+            <option value="overlay">overlay</option>
+            <option value="darken">darken</option>
+            <option value="lighten">lighten</option>
+            <option value="color-dodge">color-dodge</option>
+            <option value="color-burn">color-burn</option>
+            <option value="hard-light">hard-light</option>
+            <option value="soft-light">soft-light</option>
+            <option value="difference">difference</option>
+            <option value="exclusion">exclusion</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
