@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Code to Flowchart</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: #FAFAFA;
+      overflow: hidden;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .toolbar {
+      height: 56px;
+      background: #fff;
+      border-bottom: 1px solid #E0E0E0;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .toolbar h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+      margin-right: 20px;
+    }
+
+    .toolbar button {
+      padding: 8px 16px;
+      border: 1px solid #D0D0D0;
+      border-radius: 6px;
+      background: #fff;
+      color: #333;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    .toolbar button:hover {
+      background: #F5F5F5;
+      border-color: #B0B0B0;
+    }
+
+    .toolbar button.primary {
+      background: #4A90D9;
+      border-color: #4A90D9;
+      color: #fff;
+    }
+
+    .toolbar button.primary:hover {
+      background: #3A7BC8;
+    }
+
+    .main-container {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    .editor-panel {
+      width: 45%;
+      min-width: 360px;
+      display: flex;
+      flex-direction: column;
+      background: #1E1E1E;
+      flex-shrink: 0;
+    }
+
+    .editor-header {
+      padding: 12px 16px;
+      background: #252526;
+      border-bottom: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .editor-header span {
+      color: #CCC;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .examples {
+      display: flex;
+      gap: 6px;
+    }
+
+    .examples button {
+      padding: 4px 10px;
+      border: 1px solid #555;
+      border-radius: 4px;
+      background: #333;
+      color: #DDD;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    .examples button:hover {
+      background: #444;
+      border-color: #666;
+    }
+
+    #codeEditor {
+      flex: 1;
+      width: 100%;
+      border: none;
+      outline: none;
+      padding: 16px;
+      background: #1E1E1E;
+      color: #D4D4D4;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      resize: none;
+      tab-size: 2;
+    }
+
+    #codeEditor::selection {
+      background: #264F78;
+    }
+
+    .canvas-panel {
+      flex: 1;
+      position: relative;
+      background: #FAFAFA;
+      overflow: hidden;
+    }
+
+    #flowCanvas {
+      display: block;
+      cursor: grab;
+    }
+
+    #flowCanvas:active {
+      cursor: grabbing;
+    }
+
+    #flowCanvas.node-hover {
+      cursor: pointer;
+    }
+
+    #flowCanvas.dragging-node {
+      cursor: move;
+    }
+
+    .node-info-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 280px;
+      max-height: calc(100% - 32px);
+      background: #fff;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 16px;
+      display: none;
+      overflow-y: auto;
+      transition: all 0.2s ease-out;
+    }
+
+    .node-info-panel.visible {
+      display: block;
+    }
+
+    .node-info-panel h3 {
+      font-size: 14px;
+      color: #333;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #EEE;
+    }
+
+    .node-info-panel label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .node-info-panel textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 8px;
+      border: 1px solid #D0D0D0;
+      border-radius: 4px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+
+    .node-info-panel textarea:focus {
+      outline: none;
+      border-color: #4A90D9;
+    }
+
+    .node-info-panel button {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 4px;
+      background: #4A90D9;
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    .node-info-panel button:hover {
+      background: #3A7BC8;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+      }
+
+      .editor-panel {
+        width: 100%;
+        min-width: 0;
+        height: 45%;
+        min-height: 200px;
+      }
+
+      .toolbar h1 {
+        font-size: 14px;
+        margin-right: 10px;
+      }
+
+      .toolbar button {
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+
+      .node-info-panel {
+        width: calc(100% - 32px);
+        right: 16px;
+        left: 16px;
+        max-height: 40%;
+      }
+
+      #codeEditor {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="toolbar">
+      <h1>Code → Flowchart</h1>
+      <button id="generateBtn" class="primary">生成流程</button>
+      <button id="resetViewBtn">重置视图</button>
+    </div>
+    <div class="main-container">
+      <div class="editor-panel">
+        <div class="editor-header">
+          <span>JavaScript / TypeScript</span>
+          <div class="examples">
+            <button data-example="ifelse">if-else</button>
+            <button data-example="forloop">for循环</button>
+            <button data-example="recursive">递归</button>
+          </div>
+        </div>
+        <textarea id="codeEditor" placeholder="在此输入 JavaScript 或 TypeScript 代码..."></textarea>
+      </div>
+      <div class="canvas-panel">
+        <canvas id="flowCanvas"></canvas>
+        <div class="node-info-panel" id="nodeInfoPanel">
+          <h3>节点信息</h3>
+          <label>代码片段</label>
+          <textarea id="nodeCodeEdit"></textarea>
+          <button id="applyNodeEditBtn">应用修改</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
