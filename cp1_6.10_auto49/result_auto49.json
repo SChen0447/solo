@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T18:04:49.824Z",
+  "task_name": "auto49",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够通过浏览器摄像头捕捉用户实时手写笔记并自动转换为可编辑数字文本的应用，主要解决在会议或课堂上快速记录纸质笔记后需要手动转录的痛点。\n\n它应当具备以下能力：\n1) 用户打开应用后，摄像头实时画面以半透明画布形式铺满屏幕背景（约60%透明度），画布中央叠加一个A4纸大小的白色书写区域（带轻微纸张纹理和圆角阴影），用户将手写笔记置于摄像头前，系统使用MediaPipe的Hand Landmarks和OCR模型（通过Tesseract.js的CDN加载）自动检测书写内容区域并每隔2秒进行一次文字识别，识别结果实时显示在书写区域的正下方文本框中（文本框随识别内容自动扩展高度，带平滑过渡动画）。\n2) 识别出的文字支持用户即时编辑和标注：双击任意单词可调出浮层编辑框（浮层从单词位置弹出，背景毛玻璃效果），修改后按回车确认并更新；用户还可以用手指（通过MediaPipe检测食指触摸）在摄像头画面中圈选文本段落，圈选区域高亮并生成一个矩形批注框（批注框可拖动调整位置，支持输入文字备注），所有编辑和备注内容自动保存到浏览器本地（IndexedDB），页面关闭后再次打开自动恢复上次工作状态。\n3) 支持导出识别结果：提供“导出为Markdown”和“导出为TXT”两个按钮，导出时保留用户所有编辑和批注（Markdown格式会以引用块形式嵌入批注），导出按钮带有按下时收缩弹起的弹性动画和成功提示音效（短促和弦）。\n\n界面方面要求：整体采用极简主义设计风格，主色调为深灰（#2D2D2D）与柔白（#F5F0EB）搭配低饱和度蓝（#5B7FA5）作为强调色。顶部导航栏固定高度56px，左侧显示应用Logo（手写体“NoteSnap”带墨水飞溅微动效），右侧三个图标按钮（设置、导出、清空）悬浮并带有悬浮时背景色渐变动画（0.2秒过渡）。书写区域使用CSS纸张纹理（伪元素实现），识别文本框底部有一个微弱的蓝色下划线指示光标位置。所有交互元素（按钮、浮层、批注框）的显隐和位移均使用CSS过渡（时长0.3秒，ease-out缓动）。页面需适配768px以上屏幕，平板和桌面端布局一致，移动端尺寸低于768px时书写区域缩放至90%宽度并居中，导航栏图标增加触摸反馈（点击时缩放至0.95）。\n\n性能上要求：摄像头画面帧率不低于15fps，OCR识别单次耗时不超过3秒（平均2秒），文字编辑和批注操作响应时间小于100ms，长时间运行（连续使用30分钟）后内存占用不超过300MB。\n\n实现采用TypeScript、React 18和Vite，整个项目作为一个纯前端应用运行（无需后端服务）。按以下文件组织代码：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, @mediapipe/hands, @mediapipe/camera_utils, tesseract.js, uuid；启动脚本：npm run dev）\n - index.html（入口页面，加载Google Fonts的字体，设置viewport和theme-color）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx，resolveJsonModule true）\n - vite.config.js（React插件配置，路径别名@指向src目录，端口5173，开发时开启hmr和cors头）\n - src/main.tsx（React入口，挂载根组件App，引入全局CSS）\n - src/App.tsx（主组件，负责摄像头初始化、OCR轮询调度、本地存储读写，状态管理使用useReducer）\n - src/components/CameraOverlay.tsx（摄像头画布渲染组件，接收视频流、检测手势圈选区域并绘制高亮矩形，通过props回传识别区域坐标）\n - src/components/TextEditor.tsx（文字识别结果显示与编辑组件，支持双击编辑、批注添加、导出功能，使用IndexedDB进行持久化）\n - src/styles.css（全局样式，包含纸张纹理、导航栏、动画过渡、响应式断点等所有界面样式）\n\n运行方式：npm install && npm run dev，然后打开浏览器访问http://localhost:5173，授予摄像头权限后即可开始使用。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:25cb2def2b3b4cb6216e1889a557fb2c_6a28558752ebf02b02778f2c.6a2855b552ebf02b02778f3c.6a2855b5a28fe079ba99b890:Trae CN.T(2026/6/10 02:04:38)",
+    "user_id": "3986207660317399",
+    "trace_id": "25cb2def2b3b4cb6216e1889a557fb2c",
+    "session_id": "6a28558752ebf02b02778f2c",
+    "task_id": "6a2855b552ebf02b02778f3c",
+    "message_id": "6a2855b5a28fe079ba99b890",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 02:04:38",
+    "format": "full"
+  },
+  "trace": "null"
+}
