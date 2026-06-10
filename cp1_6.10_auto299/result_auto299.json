@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-10T01:39:29.745Z",
+  "task_name": "auto299",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为「食谱调色盘」的全栈web应用，让用户能够根据现有食材智能推荐菜谱，并以视觉方式展示每道菜的营养成分比例。用户输入家中已有的食材（通过搜索框从预设食材库中选取），系统根据食材组合匹配并推荐3-5道可行菜谱，每道菜谱以卡片展示：菜名、所需时间、难度等级、匹配度百分比。点击菜谱卡片进入详情页，页面显示完整的食材清单、步骤说明，以及一个饼状图展示蛋白质、碳水、脂肪、维生素的占比。使用TypeScript、React和Vite实现，后端简单模拟（用浏览器localStorage模拟数据库，预置20种常见食材和15道菜谱数据）。文件结构如下：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, recharts；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext，jsx react-jsx）\n - index.html（入口页面，包含根挂载节点，引入Google Fonts字体“Noto Sans SC”用于中文显示）\n - src/main.tsx（React入口，渲染根组件App，挂载到#root）\n - src/App.tsx（主应用组件，管理路由：首页为食材输入与推荐列表页，详情页为 /recipe/:id，包含状态管理和数据传递）\n - src/data.ts（模拟数据库文件，导出const ingredients数组（每个对象含id, name, category, iconEmoji）和const recipes数组（每个对象含id, name, time, difficulty, matchIngredients, steps[], nutrition: { protein, carbs, fat, vitamins }），所有数据纯前端模拟）\n - src/components/IngredientSelector.tsx（食材选择器组件：搜索框+下拉建议列表，已选食材用彩色标签展示，可点击移除）\n - src/components/RecipeCard.tsx（菜谱卡片组件：展示菜名、时间、难度、匹配度百分比，点击触发导航到详情页，匹配度用颜色渐变的进度条表示）\n - src/components/NutritionPieChart.tsx（营养成分饼状图组件：接收nutrition数据，使用recharts的PieChart渲染，四个扇形分别用#FF6384（蛋白质）、#36A2EB（碳水）、#FFCE56（脂肪）、#4BC0C0（维生素），饼图中心显示总卡路里估算值，扇形悬停显示具体克数和百分比）\n - src/styles.css（全局样式：采用暖色系搭配奶油色背景#FFF8F0为主色，辅以橙色#FF6F00作为强调色，卡片阴影柔和圆角12px，所有交互元素hover状态有0.3秒过渡动画；字体全局使用Noto Sans SC；页面最大宽度960px居中，响应式适配手机端750px以下改为单列布局；饼图区域背景为浅灰#F5F0EB，带内凹阴影；滚动条自定义为橙色纤细样式）\n\n具体需求：\n1. 食材选择器支持搜索过滤（根据输入实时匹配食材名称，忽略大小写和部分匹配），已选食材以彩色标签展示在搜索框下方，标签带小叉可点击移除，最多允许选择8种食材，超出时搜索框禁用并提示“最多选择8种食材”。\n2. 推荐算法：根据用户所选食材匹配每道菜谱的matchIngredients数组（菜谱需要的食材），计算匹配比例 = 匹配的食材数 / 菜谱所需总食材数，仅显示匹配度>=60%的菜谱，按匹配度从高到低排序，每道菜卡片的匹配度用渐变进度条（从红#FF4D4D到绿#4CAF50，长度对应百分比）展示并显示数值。\n3. 菜谱详情页展示完整食材清单（每项带emoji图标和用量），步骤按序号列展示（每步开头带圆点标记，步与步之间有20px间距），页面底部有一个“返回推荐”按钮，点击回到首页并保留已选择的食材状态（通过URL参数或sessionStorage实现）。\n4. 饼状图区域在详情页中占顶部右侧区域（左侧为菜谱基本信息），饼图尺寸280x280px，四个扇区各带不同颜色和hover展示tooltip（显示名称、克数、百分比），饼图中心显示橙色大字“估算”+下方小字“卡路里：约XXX kcal”（卡路里根据营养数据估算：蛋白和碳水每克4kcal，脂肪每克9kcal，维生素不算）。\n5. 所有菜谱卡片在悬浮时整体上移3px并加深阴影（从rgba(0,0,0,0.1)到rgba(0,0,0,0.2)），卡片内的匹配度进度条有从左到右填充的入场动画（0.5秒，使用CSS keyframes）。\n6. 当用户没有选择任何食材时，首页显示一个引导提示：“选择你的食材，让我来推荐美味菜谱！（提示：试试西红柿、鸡蛋、牛奶……）”，提示文字带闪烁的光标动画（竖线光标闪烁，间隔0.8秒）。\n7. 应用首页在初始加载时，推荐区域显示5张随机菜谱作为“今日灵感”推荐（不加匹配度进度条，仅展示菜名和emoji），当用户选择食材后，“今日灵感”区域隐藏，替换为匹配推荐列表。\n\n界面方面：整体采用暖色调奶油白背景(#FFF8F0)与橙色(#FF6F00)强调，按钮为圆角8px纯橙色填充，字体使用Noto Sans SC；食材标签为浅橙底深橙字圆角16px；卡片阴影柔和，所有交互元素在hover时过渡0.3秒；详情页左侧内容区与右侧饼图在桌面端并排（各占50%宽度），手机端单列堆叠；滚动条自定义为橙色细条，所有页面统一边距和间距（内容区padding 24px）。\n\n性能要求：推荐算法在用户选择食材变更后必须在200ms内完成计算并渲染更新（使用React useMemo缓存匹配结果）；饼图渲染使用recharts优化，避免频繁重绘。直接运行：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2cedbfe7fd6215b3e8540e239d1b4863_6a28bf867cd113c6ad1159ed.6a28c0457cd113c6ad115a64.6a28c0451d75901052de3296:Trae CN.T(2026/6/10 09:39:17)",
+    "user_id": "3986207660317399",
+    "trace_id": "2cedbfe7fd6215b3e8540e239d1b4863",
+    "session_id": "6a28bf867cd113c6ad1159ed",
+    "task_id": "6a28c0457cd113c6ad115a64",
+    "message_id": "6a28c0451d75901052de3296",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 09:39:17",
+    "format": "full"
+  },
+  "trace": "null"
+}
