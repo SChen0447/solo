@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>元素熔炉 - 3D化学元素可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #e0e6f0;
+      background: linear-gradient(135deg, #0b0e1a 0%, #1a1f35 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .panel {
+      background: rgba(30, 35, 55, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 12px;
+      padding: 16px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #control-panel {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      bottom: 16px;
+      width: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 10;
+    }
+
+    #periodic-panel {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      bottom: 16px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+      overflow-y: auto;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0e6f0;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #a0a8c0;
+    }
+
+    .control-value {
+      font-size: 11px;
+      color: #70a0ff;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(15, 20, 40, 0.6);
+      border: 1px solid rgba(100, 120, 180, 0.3);
+      border-radius: 6px;
+      color: #e0e6f0;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input[type="text"]:focus {
+      border-color: #70a0ff;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      background: rgba(100, 120, 180, 0.3);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #70a0ff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .btn {
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #3d5a9a 0%, #5070c0 100%);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #4d6aaa 0%, #6080d0 100%);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: rgba(60, 70, 110, 0.8);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(80, 90, 130, 0.8);
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 40px;
+      height: 22px;
+      background: rgba(60, 70, 110, 0.8);
+      border-radius: 11px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .toggle-switch.active {
+      background: #70a0ff;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      transition: left 0.3s;
+    }
+
+    .toggle-switch.active::after {
+      left: 20px;
+    }
+
+    .periodic-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(6, 50px);
+      gap: 6px;
+    }
+
+    .element-btn {
+      background: #2a2f4a;
+      border: none;
+      border-radius: 6px;
+      color: #e0e6f0;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .element-btn:hover {
+      background: #3d4a7a;
+      transform: scale(1.05);
+    }
+
+    .element-btn.selected {
+      background: #4d5a8a;
+      box-shadow: 0 0 0 2px #ffd700, 0 0 20px rgba(255, 215, 0, 0.5);
+      animation: goldGlow 0.3s ease-out;
+    }
+
+    @keyframes goldGlow {
+      0% { box-shadow: 0 0 0 0px #ffd700, 0 0 0px rgba(255, 215, 0, 0); }
+      100% { box-shadow: 0 0 0 2px #ffd700, 0 0 20px rgba(255, 215, 0, 0.5); }
+    }
+
+    .element-btn .atomic-num {
+      font-size: 9px;
+      color: #a0a8c0;
+      font-weight: 400;
+    }
+
+    .element-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 12px;
+      background: rgba(15, 20, 40, 0.4);
+      border-radius: 8px;
+    }
+
+    .element-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #e0e6f0;
+    }
+
+    .element-symbol {
+      font-size: 32px;
+      font-weight: 700;
+      color: #70a0ff;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .info-label {
+      color: #a0a8c0;
+    }
+
+    .info-value {
+      color: #e0e6f0;
+      font-weight: 500;
+    }
+
+    .electron-shells {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .shell-badge {
+      padding: 3px 8px;
+      background: rgba(112, 160, 255, 0.2);
+      border-radius: 4px;
+      font-size: 11px;
+      color: #70a0ff;
+    }
+
+    .isotopes {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .isotope-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      padding: 4px 8px;
+      background: rgba(15, 20, 40, 0.3);
+      border-radius: 4px;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: rgba(15, 20, 40, 0.95);
+      border: 1px solid rgba(112, 160, 255, 0.5);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12px;
+      pointer-events: none;
+      z-index: 100;
+      display: none;
+      white-space: nowrap;
+    }
+
+    .tooltip.show {
+      display: block;
+    }
+
+    .panel-toggle {
+      display: none;
+      position: absolute;
+      top: 16px;
+      z-index: 20;
+      padding: 8px 12px;
+      background: rgba(30, 35, 55, 0.9);
+      border: none;
+      border-radius: 6px;
+      color: #e0e6f0;
+      cursor: pointer;
+    }
+
+    #toggle-left {
+      left: 16px;
+    }
+
+    #toggle-right {
+      right: 16px;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #7080a0;
+      font-style: italic;
+    }
+
+    @media (max-width: 800px) {
+      #control-panel {
+        left: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 0 12px 12px 0;
+        transform: translateX(-100%);
+      }
+
+      #control-panel.open {
+        transform: translateX(0);
+      }
+
+      #periodic-panel {
+        right: 0;
+        top: 0;
+        bottom: 0;
+        border-radius: 12px 0 0 12px;
+        transform: translateX(100%);
+      }
+
+      #periodic-panel.open {
+        transform: translateX(0);
+      }
+
+      .panel-toggle {
+        display: block;
+      }
+
+      .periodic-grid {
+        grid-template-rows: repeat(6, 30px);
+        gap: 4px;
+      }
+
+      .element-btn {
+        font-size: 10px;
+      }
+
+      .element-btn .atomic-num {
+        display: none;
+      }
+
+      .hint-text {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <button id="toggle-left" class="panel-toggle">☰ 控制</button>
+    <button id="toggle-right" class="panel-toggle">☰ 周期表</button>
+
+    <div id="control-panel" class="panel">
+      <div class="panel-section">
+        <div class="panel-title">元素熔炉</div>
+        <div class="hint-text">交互式3D化学元素可视化</div>
+      </div>
+
+      <div class="panel-section">
+        <div class="control-group">
+          <label class="control-label">搜索元素（符号）</label>
+          <input type="text" id="search-input" placeholder="如：Fe, H, O..." />
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <button id="reset-view" class="btn btn-secondary">重置视角</button>
+      </div>
+
+      <div class="panel-section">
+        <div class="control-group">
+          <div class="toggle-group">
+            <span class="control-label">自动旋转</span>
+            <div id="auto-rotate-toggle" class="toggle-switch active"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="control-group">
+          <div class="control-label">
+            <span>电子运动速度</span>
+            <span class="control-value" id="electron-speed-value">1.0</span>
+          </div>
+          <input type="range" id="electron-speed" min="0" max="2" step="0.1" value="1" />
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="control-group">
+          <div class="control-label">
+            <span>晶胞透明度</span>
+            <span class="control-value" id="crystal-opacity-value">0.8</span>
+          </div>
+          <input type="range" id="crystal-opacity" min="0.1" max="1" step="0.05" value="0.8" />
+        </div>
+      </div>
+
+      <div class="panel-section" style="margin-top: auto;">
+        <div class="hint-text">按 S 键切换切片视图</div>
+        <button id="export-snapshot" class="btn">导出快照</button>
+      </div>
+    </div>
+
+    <div id="periodic-panel" class="panel">
+      <div class="panel-section">
+        <div class="panel-title">元素信息</div>
+        <div class="element-info">
+          <div class="element-symbol" id="el-symbol">Fe</div>
+          <div class="element-name" id="el-name">铁</div>
+          <div class="info-row">
+            <span class="info-label">原子序数</span>
+            <span class="info-value" id="el-number">26</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">原子量</span>
+            <span class="info-value" id="el-mass">55.845</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">晶体结构</span>
+            <span class="info-value" id="el-crystal">体心立方</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">电子层排布</span>
+          </div>
+          <div class="electron-shells" id="el-shells"></div>
+          <div class="info-row" style="margin-top: 4px;">
+            <span class="info-label">常见同位素</span>
+          </div>
+          <div class="isotopes" id="el-isotopes"></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="panel-title">元素周期表</div>
+        <div class="periodic-grid" id="periodic-grid"></div>
+      </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
