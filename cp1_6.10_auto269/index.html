@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>色界攻防 - 颜色占领对战</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #2C3E50;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #fff;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #top-bar {
+      width: 100%;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background-color 0.3s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 10;
+    }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      min-width: 140px;
+    }
+
+    .player-info.right {
+      justify-content: flex-end;
+    }
+
+    .player-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+    }
+
+    .player-dot.blue { background-color: #4A90D9; }
+    .player-dot.red { background-color: #E74C3C; }
+
+    .score {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .turn-text {
+      font-size: 18px;
+      font-weight: 700;
+      transition: color 0.3s ease;
+      letter-spacing: 2px;
+    }
+
+    #game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      padding-top: 80px;
+      padding-bottom: 40px;
+    }
+
+    #board-wrapper {
+      position: relative;
+      padding: 2px;
+      background-color: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+
+    #game-canvas {
+      display: block;
+      cursor: pointer;
+    }
+
+    #skills-bar {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .skill-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .skill-btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: 2px solid;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .skill-btn:hover:not(:disabled) {
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .skill-btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .skill-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .skill-btn.reinforce {
+      border-color: #F1C40F;
+    }
+
+    .skill-btn.fuse {
+      border-color: #BDC3C7;
+    }
+
+    .skill-btn.active {
+      background-color: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.3);
+    }
+
+    .skill-count {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+
+    #victory-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    #victory-overlay.show {
+      display: flex;
+    }
+
+    .victory-card {
+      background-color: #fff;
+      color: #2C3E50;
+      border-radius: 12px;
+      padding: 32px;
+      min-width: 360px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .victory-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .victory-subtitle {
+      font-size: 14px;
+      color: #7f8c8d;
+      margin-bottom: 24px;
+    }
+
+    .score-chart {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-label {
+      width: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .score-bar-container {
+      flex: 1;
+      height: 28px;
+      background-color: #ecf0f1;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .score-bar {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.8s ease;
+    }
+
+    .score-bar.blue { background-color: #4A90D9; }
+    .score-bar.red { background-color: #E74C3C; }
+
+    .score-value {
+      width: 40px;
+      font-size: 16px;
+      font-weight: 700;
+      text-align: left;
+    }
+
+    .restart-btn {
+      padding: 12px 32px;
+      border: none;
+      border-radius: 8px;
+      background-color: #27AE60;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .restart-btn:hover {
+      background-color: #2ecc71;
+    }
+
+    .restart-btn:active {
+      transform: scale(0.97);
+    }
+
+    @media (max-width: 768px) {
+      #top-bar {
+        padding: 12px 16px;
+      }
+
+      .player-info {
+        font-size: 14px;
+        min-width: 100px;
+      }
+
+      .score {
+        font-size: 16px;
+      }
+
+      .turn-text {
+        font-size: 14px;
+        letter-spacing: 1px;
+      }
+
+      #skills-bar {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .victory-card {
+        min-width: 300px;
+        padding: 24px;
+      }
+
+      .victory-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="top-bar">
+      <div class="player-info">
+        <span class="player-dot blue"></span>
+        <span>蓝方</span>
+        <span class="score" id="score-p1">0</span>
+      </div>
+      <div class="turn-text" id="turn-text">蓝方回合</div>
+      <div class="player-info right">
+        <span class="score" id="score-p2">0</span>
+        <span>红方</span>
+        <span class="player-dot red"></span>
+      </div>
+    </div>
+
+    <div id="game-container">
+      <div id="board-wrapper">
+        <canvas id="game-canvas"></canvas>
+      </div>
+
+      <div id="skills-bar">
+        <div class="skill-group">
+          <button class="skill-btn reinforce" id="btn-reinforce-p1" data-player="1" data-skill="reinforce">
+            强化 <span class="skill-count" id="reinforce-count-p1">2</span>
+          </button>
+          <button class="skill-btn fuse" id="btn-fuse-p1" data-player="1" data-skill="fuse">
+            融合 <span class="skill-count" id="fuse-count-p1">1</span>
+          </button>
+        </div>
+        <div class="skill-group">
+          <button class="skill-btn reinforce" id="btn-reinforce-p2" data-player="2" data-skill="reinforce">
+            强化 <span class="skill-count" id="reinforce-count-p2">2</span>
+          </button>
+          <button class="skill-btn fuse" id="btn-fuse-p2" data-player="2" data-skill="fuse">
+            融合 <span class="skill-count" id="fuse-count-p2">1</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="victory-overlay">
+      <div class="victory-card">
+        <div class="victory-title" id="victory-title">蓝方获胜！</div>
+        <div class="victory-subtitle">最终领地面积对比</div>
+        <div class="score-chart">
+          <div class="score-row">
+            <span class="score-label" style="color: #4A90D9;">蓝方</span>
+            <div class="score-bar-container">
+              <div class="score-bar blue" id="victory-bar-p1" style="width: 0%;"></div>
+            </div>
+            <span class="score-value" id="victory-score-p1">0</span>
+          </div>
+          <div class="score-row">
+            <span class="score-label" style="color: #E74C3C;">红方</span>
+            <div class="score-bar-container">
+              <div class="score-bar red" id="victory-bar-p2" style="width: 0%;"></div>
+            </div>
+            <span class="score-value" id="victory-score-p2">0</span>
+          </div>
+        </div>
+        <button class="restart-btn" id="restart-btn">再来一局</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
