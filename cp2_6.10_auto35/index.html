@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D太阳系模拟器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app"></div>
+
+  <div id="ui-container">
+    <div id="stats-panel">
+      <div class="stat-item">
+        <span class="stat-label">模拟时间</span>
+        <span id="simulation-time" class="stat-value">0 地球日</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">帧率</span>
+        <span id="fps-counter" class="stat-value">-- FPS</span>
+      </div>
+    </div>
+
+    <div id="speed-control">
+      <span class="speed-label">时间流速</span>
+      <input type="range" id="speed-slider" min="0" max="3" step="1" value="1" />
+      <div class="speed-labels">
+        <span>0.5x</span>
+        <span>1x</span>
+        <span>2x</span>
+        <span>4x</span>
+      </div>
+    </div>
+
+    <div id="planet-info" class="hidden">
+      <button id="close-info" aria-label="关闭">&times;</button>
+      <h2 id="planet-name"></h2>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">公转周期</span>
+          <span id="planet-period" class="info-value"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">直径</span>
+          <span id="planet-diameter" class="info-value"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">距太阳</span>
+          <span id="planet-distance" class="info-value"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">卫星数量</span>
+          <span id="planet-moons" class="info-value"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
