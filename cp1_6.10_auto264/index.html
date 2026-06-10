@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光棱战车 - Prism Tower Defense</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Segoe UI', 'Consolas', monospace;
+      user-select: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+    }
+
+    #game-canvas {
+      display: block;
+      background: #0b0d17;
+      image-rendering: pixelated;
+    }
+
+    #ui-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 16px 20px;
+      background: rgba(11, 13, 23, 0.8);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      border: 1px solid rgba(74, 144, 255, 0.3);
+      color: #c8d6e5;
+      font-size: 14px;
+      min-width: 180px;
+      z-index: 10;
+    }
+
+    .panel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(74, 144, 255, 0.1);
+    }
+
+    .panel-row:last-child {
+      border-bottom: none;
+    }
+
+    .panel-label {
+      color: #8395a7;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-value {
+      color: #4a90ff;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .panel-value.energy {
+      color: #7b61ff;
+    }
+
+    .panel-value.kills {
+      color: #ff6b6b;
+    }
+
+    #tower-menu {
+      position: absolute;
+      display: none;
+      padding: 8px;
+      background: rgba(11, 13, 23, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      border: 1px solid #4a90ff;
+      z-index: 20;
+    }
+
+    .tower-option {
+      display: flex;
+      align-items: center;
+      padding: 10px 14px;
+      margin: 4px 0;
+      background: rgba(74, 144, 255, 0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      color: #c8d6e5;
+      font-size: 13px;
+      min-width: 160px;
+    }
+
+    .tower-option:hover {
+      background: rgba(74, 144, 255, 0.25);
+      transform: translateX(2px);
+    }
+
+    .tower-option.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .tower-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+
+    .tower-icon.refract {
+      background: linear-gradient(135deg, #4a90ff, #74b9ff);
+    }
+
+    .tower-icon.focus {
+      background: linear-gradient(135deg, #7b61ff, #a29bfe);
+    }
+
+    .tower-icon.split {
+      background: linear-gradient(135deg, #fd79a8, #e84393);
+    }
+
+    .tower-cost {
+      margin-left: auto;
+      color: #7b61ff;
+      font-weight: bold;
+    }
+
+    #tower-tooltip {
+      position: absolute;
+      display: none;
+      padding: 12px 16px;
+      background: rgba(11, 13, 23, 0.9);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      border: 1px solid #4a90ff;
+      color: #c8d6e5;
+      font-size: 13px;
+      z-index: 15;
+      min-width: 180px;
+    }
+
+    .tooltip-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #4a90ff;
+      margin-bottom: 8px;
+    }
+
+    .tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 3px 0;
+    }
+
+    .tooltip-label {
+      color: #8395a7;
+    }
+
+    .tooltip-value {
+      color: #c8d6e5;
+    }
+
+    .tooltip-upgrade {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #4a90ff, #7b61ff);
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s ease;
+    }
+
+    .tooltip-upgrade:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 15px rgba(74, 144, 255, 0.5);
+    }
+
+    .tooltip-upgrade.maxed {
+      background: #2d3436;
+      cursor: default;
+    }
+
+    .tooltip-upgrade.maxed:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    #wave-announcement {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 48px;
+      font-weight: bold;
+      color: #4a90ff;
+      text-shadow: 0 0 30px rgba(74, 144, 255, 0.8);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 30;
+      letter-spacing: 4px;
+    }
+
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      padding: 12px 16px;
+      background: rgba(11, 13, 23, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      border: 1px solid rgba(74, 144, 255, 0.2);
+      color: #8395a7;
+      font-size: 12px;
+      line-height: 1.8;
+      z-index: 10;
+    }
+
+    #instructions b {
+      color: #4a90ff;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="ui-panel">
+      <div class="panel-row">
+        <span class="panel-label">波次</span>
+        <span class="panel-value" id="wave-value">1</span>
+      </div>
+      <div class="panel-row">
+        <span class="panel-label">能量</span>
+        <span class="panel-value energy" id="energy-value">100</span>
+      </div>
+      <div class="panel-row">
+        <span class="panel-label">击杀</span>
+        <span class="panel-value kills" id="kills-value">0</span>
+      </div>
+    </div>
+
+    <div id="tower-menu">
+      <div class="tower-option" data-type="refract">
+        <div class="tower-icon refract"></div>
+        <span>折射塔</span>
+        <span class="tower-cost">50</span>
+      </div>
+      <div class="tower-option" data-type="focus">
+        <div class="tower-icon focus"></div>
+        <span>聚焦塔</span>
+        <span class="tower-cost">80</span>
+      </div>
+      <div class="tower-option" data-type="split">
+        <div class="tower-icon split"></div>
+        <span>分裂塔</span>
+        <span class="tower-cost">100</span>
+      </div>
+    </div>
+
+    <div id="tower-tooltip"></div>
+
+    <div id="wave-announcement"></div>
+
+    <div id="instructions">
+      <b>操作说明：</b><br>
+      • 点击空地部署棱镜塔<br>
+      • 鼠标悬停查看塔信息<br>
+      • 点击塔信息浮窗升级<br>
+      • 消灭敌人获得能量点数
+    </div>
+  </div>
+
+  <script type="module" src="/src/core.ts"></script>
+</body>
+</html>
