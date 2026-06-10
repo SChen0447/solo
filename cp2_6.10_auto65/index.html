@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0, user-scalable=no" />
+    <title>3D暴风雨场景可视化</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background-color: #1a1a2e;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      }
+
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+
+      #canvas-container {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      #canvas-container canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      #flash-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0);
+        pointer-events: none;
+        transition: background-color 0.05s ease-out;
+        z-index: 10;
+      }
+
+      #ui-container {
+        position: absolute;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        display: flex;
+        gap: 12px;
+        padding: 16px 24px;
+        background: rgba(26, 26, 46, 0.85);
+        border-radius: 16px;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .control-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        color: #ffffff;
+        background: linear-gradient(135deg, #3a3a5c 0%, #2a2a4c 100%);
+        transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        position: relative;
+        overflow: hidden;
+        min-width: 120px;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .control-btn:hover {
+        background: linear-gradient(135deg, #5a5a8c 0%, #4a4a7c 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+      }
+
+      .control-btn:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease-out;
+      }
+
+      .control-btn.primary {
+        background: linear-gradient(135deg, #ffcc66 0%, #ff9933 100%);
+        color: #1a1a2e;
+      }
+
+      .control-btn.primary:hover {
+        background: linear-gradient(135deg, #ffdd88 0%, #ffaa44 100%);
+      }
+
+      .control-btn.active {
+        background: linear-gradient(135deg, #66aaff 0%, #3377dd 100%);
+      }
+
+      .control-btn.active:hover {
+        background: linear-gradient(135deg, #88bbff 0%, #5599ee 100%);
+      }
+
+      .shake {
+        animation: screenShake 0.2s ease-out;
+      }
+
+      @keyframes screenShake {
+        0% { transform: translate(0, 0); }
+        25% { transform: translate(-2px, 1px); }
+        50% { transform: translate(2px, -1px); }
+        75% { transform: translate(-1px, 2px); }
+        100% { transform: translate(0, 0); }
+      }
+
+      #title {
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      }
+
+      #hint {
+        position: absolute;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+
+      @media (max-width: 768px) {
+        #ui-container {
+          flex-direction: column;
+          width: calc(100% - 32px);
+          padding: 16px;
+          gap: 10px;
+          bottom: 16px;
+        }
+
+        .control-btn {
+          width: 100%;
+          min-width: auto;
+          padding: 14px 20px;
+          font-size: 15px;
+        }
+
+        #title {
+          font-size: 16px;
+          top: 16px;
+        }
+
+        #hint {
+          font-size: 11px;
+          top: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-container"></div>
+      <div id="flash-overlay"></div>
+      <div id="title">⚡ 暴风雨场景可视化</div>
+      <div id="hint">拖拽旋转视角 · 滚轮缩放</div>
+      <div id="ui-container">
+        <button id="btn-storm" class="control-btn primary">生成雷暴</button>
+        <button id="btn-reset" class="control-btn">重置视角</button>
+        <button id="btn-mode" class="control-btn">安静模式</button>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
