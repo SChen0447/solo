@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>河流流域动态模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d1b2a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .toolbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(45, 45, 68, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid #4a4e69;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 100;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-left: auto;
+    }
+
+    .btn-generate {
+      background: #00b4d8;
+      color: #ffffff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-generate:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 180, 216, 0.4);
+    }
+
+    .slider-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .slider-label {
+      font-size: 12px;
+      color: #c9d6e3;
+      min-width: 48px;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: #48cae4;
+      min-width: 36px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      width: 100px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+
+    .slider-track {
+      position: absolute;
+      width: 100%;
+      height: 4px;
+      background: #3a3d5c;
+      border-radius: 2px;
+    }
+
+    .slider-progress {
+      position: absolute;
+      height: 4px;
+      background: #48cae4;
+      border-radius: 2px;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .slider-input {
+      position: absolute;
+      width: 100%;
+      height: 20px;
+      opacity: 0;
+      cursor: pointer;
+      z-index: 2;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #48cae4;
+      border-radius: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider-wrapper.active .slider-thumb {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(72, 202, 228, 0.6); }
+      100% { box-shadow: 0 0 0 12px rgba(72, 202, 228, 0); }
+    }
+
+    .info-card {
+      position: absolute;
+      background: rgba(27, 27, 50, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid #4a4e69;
+      border-radius: 8px;
+      padding: 14px 16px;
+      min-width: 200px;
+      z-index: 200;
+      transform-origin: top center;
+      animation: expandDown 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: auto;
+    }
+
+    @keyframes expandDown {
+      0% {
+        opacity: 0;
+        transform: scaleY(0) translateY(-10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scaleY(1) translateY(0);
+      }
+    }
+
+    .info-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #4a4e69;
+    }
+
+    .info-card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .btn-lock {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: transparent;
+      border: 1px solid #4a4e69;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      color: #c9d6e3;
+    }
+
+    .btn-lock:hover {
+      transform: scale(1.05);
+      border-color: #48cae4;
+      color: #48cae4;
+    }
+
+    .btn-lock.locked {
+      background: #48cae4;
+      border-color: #48cae4;
+      color: #1b1b32;
+    }
+
+    .info-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .info-label {
+      color: #8d99ae;
+    }
+
+    .info-value {
+      color: #48cae4;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-export {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      background: #2d6a4f;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .btn-export:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(45, 106, 79, 0.5);
+    }
+
+    .toast {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      background: #2d6a4f;
+      color: #ffffff;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      z-index: 300;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="btn-generate" id="btn-generate">生成流域</button>
+      </div>
+      <div class="toolbar-right">
+        <div class="slider-group" data-param="flowSpeed">
+          <span class="slider-label">流速</span>
+          <div class="slider-wrapper">
+            <div class="slider-track"></div>
+            <div class="slider-progress"></div>
+            <div class="slider-thumb"></div>
+            <input type="range" class="slider-input" min="0.1" max="3.0" step="0.1" value="1.0" />
+          </div>
+          <span class="slider-value">1.0</span>
+        </div>
+        <div class="slider-group" data-param="meander">
+          <span class="slider-label">蜿蜒度</span>
+          <div class="slider-wrapper">
+            <div class="slider-track"></div>
+            <div class="slider-progress"></div>
+            <div class="slider-thumb"></div>
+            <input type="range" class="slider-input" min="0" max="1" step="0.05" value="0.5" />
+          </div>
+          <span class="slider-value">0.50</span>
+        </div>
+        <div class="slider-group" data-param="tributaryCount">
+          <span class="slider-label">支流数</span>
+          <div class="slider-wrapper">
+            <div class="slider-track"></div>
+            <div class="slider-progress"></div>
+            <div class="slider-thumb"></div>
+            <input type="range" class="slider-input" min="0" max="5" step="1" value="2" />
+          </div>
+          <span class="slider-value">2</span>
+        </div>
+        <div class="slider-group" data-param="waterLevel">
+          <span class="slider-label">水位</span>
+          <div class="slider-wrapper">
+            <div class="slider-track"></div>
+            <div class="slider-progress"></div>
+            <div class="slider-thumb"></div>
+            <input type="range" class="slider-input" min="-0.5" max="0.5" step="0.05" value="0" />
+          </div>
+          <span class="slider-value">0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-export" id="btn-export">导出为JSON</button>
+
+    <div class="toast" id="toast">已导出流域数据</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
