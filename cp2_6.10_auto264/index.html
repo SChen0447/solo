@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>昆虫访花3D模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0d1b2a 0%, #1b263b 100%);
+      color: #ffffff;
+    }
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: #ffffff;
+      animation: fadeInOut 2s ease-in-out infinite;
+      z-index: 1000;
+    }
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 1; }
+    }
+    #title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      z-index: 100;
+      letter-spacing: 2px;
+    }
+    .panel {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
+      animation: fadeIn 0.3s ease-out;
+      z-index: 50;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    #left-panel {
+      top: 70px;
+      left: 20px;
+      width: 240px;
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+    #right-panel {
+      top: 70px;
+      right: 20px;
+      width: 220px;
+      max-height: calc(100vh - 180px);
+      overflow-y: auto;
+    }
+    #env-panel {
+      top: 70px;
+      right: 260px;
+      width: 180px;
+    }
+    #bottom-panel {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      padding: 12px 20px;
+    }
+    .panel-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+    }
+    .label {
+      font-size: 12px;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 4px;
+    }
+    .data {
+      font-size: 14px;
+      color: #ffffff;
+    }
+    .btn {
+      display: inline-block;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 12px;
+      background: #3a86ff;
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+    .btn:hover {
+      background: #4361ee;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(58, 134, 255, 0.4);
+    }
+    .btn:active {
+      transform: translateY(0);
+    }
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .btn-small {
+      padding: 6px 12px;
+      font-size: 12px;
+      flex: 1;
+    }
+    .btn.active {
+      background: #4361ee;
+      box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+    }
+    .slider-row {
+      margin-bottom: 12px;
+    }
+    .slider-row label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slider-row .value {
+      font-size: 12px;
+      color: #3a86ff;
+      font-weight: bold;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      margin-top: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      outline: none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #3a86ff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: #4361ee;
+      transform: scale(1.2);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: #3a86ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+    .flower-item {
+      padding: 8px;
+      margin-bottom: 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .flower-item:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    .flower-item.selected {
+      background: rgba(58, 134, 255, 0.25);
+      box-shadow: 0 0 0 1px rgba(58, 134, 255, 0.5);
+    }
+    .flower-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px;
+      margin-top: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .progress-fill.high { background: #2ecc71; }
+    .progress-fill.low { background: #e74c3c; }
+    .color-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .chart-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      height: 60px;
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+    .chart-bar-item {
+      flex: 1;
+      background: #3a86ff;
+      border-radius: 3px 3px 0 0;
+      min-height: 2px;
+      position: relative;
+      transition: height 0.3s ease;
+    }
+    .chart-bar-label {
+      position: absolute;
+      bottom: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: rgba(255,255,255,0.6);
+    }
+    .chart-bar-value {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: #ffffff;
+      font-weight: bold;
+    }
+    .hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.5);
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    #left-panel::-webkit-scrollbar,
+    #right-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+    #left-panel::-webkit-scrollbar-thumb,
+    #right-panel::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading">加载中...</div>
+    <div id="title">昆虫访花 3D 模拟</div>
+    <div id="canvas-container"></div>
+
+    <div id="left-panel" class="panel">
+      <div class="panel-title">昆虫控制</div>
+      <div class="label">选择昆虫类型</div>
+      <div class="btn-group">
+        <button class="btn btn-small active" data-insect="bee">蜜蜂</button>
+        <button class="btn btn-small" data-insect="butterfly">蝴蝶</button>
+        <button class="btn btn-small" data-insect="beetle">甲虫</button>
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-small" id="release-btn">释放昆虫</button>
+        <button class="btn btn-small" id="clear-insects-btn">清除昆虫</button>
+      </div>
+      <div class="slider-row">
+        <label>
+          <span>飞行速度</span>
+          <span class="value" id="speed-value">1.0x</span>
+        </label>
+        <input type="range" id="speed-slider" min="0.5" max="3" step="0.1" value="1" />
+      </div>
+      <div class="slider-row">
+        <label>
+          <span>直行概率</span>
+          <span class="value" id="straight-value">50%</span>
+        </label>
+        <input type="range" id="straight-slider" min="0" max="100" step="1" value="50" />
+      </div>
+      <div class="slider-row">
+        <label>
+          <span>转向灵敏度</span>
+          <span class="value" id="turn-value">0.5</span>
+        </label>
+        <input type="range" id="turn-slider" min="0.1" max="1" step="0.05" value="0.5" />
+      </div>
+      <div class="hint">提示：可同时释放最多5只同类型昆虫</div>
+    </div>
+
+    <div id="env-panel" class="panel">
+      <div class="panel-title">环境参数</div>
+      <div class="slider-row">
+        <label>
+          <span>花粉密度</span>
+          <span class="value" id="pollen-value">1.0x</span>
+        </label>
+        <input type="range" id="pollen-slider" min="0.5" max="2" step="0.1" value="1" />
+      </div>
+      <div class="slider-row">
+        <label>
+          <span>花朵数量</span>
+          <span class="value" id="flower-count-value">12</span>
+        </label>
+        <input type="range" id="flower-count-slider" min="6" max="20" step="1" value="12" />
+      </div>
+      <div class="slider-row">
+        <label>
+          <span>风力强度</span>
+          <span class="value" id="wind-value">1级</span>
+        </label>
+        <input type="range" id="wind-slider" min="0" max="5" step="1" value="1" />
+      </div>
+      <button class="btn" id="reset-btn" style="width:100%; margin-top:8px;">重置场景</button>
+    </div>
+
+    <div id="right-panel" class="panel">
+      <div class="panel-title">花朵吸引力分析</div>
+      <div class="label" style="margin-bottom:8px;">颜色分布</div>
+      <div class="chart-bar" id="color-chart">
+        <div class="chart-bar-item" style="height:20%; background:#e74c3c;"><span class="chart-bar-label">红</span><span class="chart-bar-value">0</span></div>
+        <div class="chart-bar-item" style="height:40%; background:#f1c40f;"><span class="chart-bar-label">黄</span><span class="chart-bar-value">0</span></div>
+        <div class="chart-bar-item" style="height:60%; background:#9b59b6;"><span class="chart-bar-label">紫</span><span class="chart-bar-value">0</span></div>
+        <div class="chart-bar-item" style="height:30%; background:#3498db;"><span class="chart-bar-label">蓝</span><span class="chart-bar-value">0</span></div>
+      </div>
+      <div style="height: 24px;"></div>
+      <div class="label" style="margin-top:12px; margin-bottom:6px;">
+        <span>花朵访问统计</span>
+        <button class="btn btn-small" id="sort-btn" style="float:right; padding:3px 8px; font-size:10px;">按次数↓</button>
+      </div>
+      <div id="flower-list" style="margin-top:30px;"></div>
+      <div class="hint">点击花朵可设置高/低吸引力</div>
+    </div>
+
+    <div id="bottom-panel" class="panel">
+      <button class="btn" id="replay-btn">轨迹回放</button>
+      <button class="btn" id="snapshot-btn">截取快照 (S)</button>
+      <button class="btn" id="export-btn">导出轨迹 (E)</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
