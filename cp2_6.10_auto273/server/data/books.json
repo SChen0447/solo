@@ -1,0 +1,57 @@
+[
+  {
+    "id": "book-1",
+    "title": "百年孤独",
+    "author": "加西亚·马尔克斯",
+    "year": "1967",
+    "isbn": "9787544253994",
+    "status": "available",
+    "coverUrl": "",
+    "notes": "经典魔幻现实主义小说，书脊微损，内页干净",
+    "createdAt": "2024-12-01 10:00"
+  },
+  {
+    "id": "book-2",
+    "title": "活着",
+    "author": "余华",
+    "year": "1993",
+    "isbn": "9787506365437",
+    "status": "borrowed",
+    "coverUrl": "",
+    "notes": "品相良好，有少量阅读痕迹",
+    "createdAt": "2024-12-02 14:30"
+  },
+  {
+    "id": "book-3",
+    "title": "三体",
+    "author": "刘慈欣",
+    "year": "2008",
+    "isbn": "9787536692930",
+    "status": "available",
+    "coverUrl": "",
+    "notes": "科幻巨著，全新未拆封",
+    "createdAt": "2024-12-03 09:15"
+  },
+  {
+    "id": "book-4",
+    "title": "围城",
+    "author": "钱钟书",
+    "year": "1947",
+    "isbn": "9787020024759",
+    "status": "exchanged",
+    "coverUrl": "",
+    "notes": "已交换，1980年版",
+    "createdAt": "2024-12-04 16:20"
+  },
+  {
+    "id": "book-5",
+    "title": "平凡的世界",
+    "author": "路遥",
+    "year": "1986",
+    "isbn": "9787530212004",
+    "status": "available",
+    "coverUrl": "",
+    "notes": "茅盾文学奖获奖作品",
+    "createdAt": "2024-12-05 11:45"
+  }
+]

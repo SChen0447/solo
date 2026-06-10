@@ -1,0 +1,277 @@
+.app-container {
+  min-height: 100vh;
+  background-color: #f5f0e8;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #d7ccc8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3e2723;
+  letter-spacing: 1px;
+}
+
+.navbar-links-desktop {
+  display: flex;
+  gap: 32px;
+}
+
+.nav-link {
+  font-size: 15px;
+  color: #6d4c41;
+  text-decoration: none;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #3e2723;
+}
+
+.nav-link.active {
+  color: #3e2723;
+  font-weight: 600;
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #8d6e63;
+  border-radius: 2px;
+  animation: underline-in 0.3s ease;
+}
+
+@keyframes underline-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+}
+
+.hamburger-btn span {
+  width: 24px;
+  height: 2px;
+  background-color: #6d4c41;
+  border-radius: 1px;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  background-color: #ffffff;
+  border-bottom: 1px solid #d7ccc8;
+  z-index: 99;
+  overflow: hidden;
+}
+
+.mobile-nav-link {
+  display: block;
+  padding: 16px 24px;
+  color: #6d4c41;
+  text-decoration: none;
+  font-size: 16px;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+.mobile-nav-link.active {
+  color: #3e2723;
+  font-weight: 600;
+  background-color: #f5f0e8;
+}
+
+.main-content {
+  padding: 88px 24px 32px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0 16px;
+  }
+
+  .navbar-links-desktop {
+    display: none;
+  }
+
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .main-content {
+    padding: 88px 16px 24px 16px;
+  }
+}
+
+.btn {
+  padding: 10px 20px;
+  background-color: #8d6e63;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background-color: #6d4c41;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+.btn-success {
+  background-color: #27ae60;
+}
+
+.btn-success:hover {
+  background-color: #1e8449;
+}
+
+.btn-warning {
+  background-color: #f39c12;
+}
+
+.btn-warning:hover {
+  background-color: #d68910;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #3e2723;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  color: #5d4037;
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d7ccc8;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #3e2723;
+  background-color: #fffdfb;
+  transition: border-color 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #8d6e63;
+  background-color: #ffffff;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.btn-secondary {
+  background-color: #d7ccc8;
+  color: #5d4037;
+}
+
+.btn-secondary:hover {
+  background-color: #bcaaa4;
+}
+
+.status-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-tag.available {
+  background-color: #e8f8f0;
+  color: #27ae60;
+}
+
+.status-tag.borrowed {
+  background-color: #fef5e7;
+  color: #f39c12;
+}
+
+.status-tag.exchanged {
+  background-color: #f0f0f0;
+  color: #7f8c8d;
+}

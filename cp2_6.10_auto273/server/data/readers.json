@@ -1,0 +1,42 @@
+[
+  {
+    "id": "reader-1",
+    "name": "张小明",
+    "phone": "13800138001",
+    "registerDate": "2024-10-15",
+    "avatarUrl": "",
+    "points": 45,
+    "credit": 95,
+    "exchangeCredit": 20
+  },
+  {
+    "id": "reader-2",
+    "name": "李雪",
+    "phone": "13800138002",
+    "registerDate": "2024-11-01",
+    "avatarUrl": "",
+    "points": 120,
+    "credit": 88,
+    "exchangeCredit": 30
+  },
+  {
+    "id": "reader-3",
+    "name": "王大伟",
+    "phone": "13800138003",
+    "registerDate": "2024-09-20",
+    "avatarUrl": "",
+    "points": 30,
+    "credit": 55,
+    "exchangeCredit": 0
+  },
+  {
+    "id": "reader-4",
+    "name": "陈思雨",
+    "phone": "13800138004",
+    "registerDate": "2024-11-15",
+    "avatarUrl": "",
+    "points": 75,
+    "credit": 72,
+    "exchangeCredit": 10
+  }
+]

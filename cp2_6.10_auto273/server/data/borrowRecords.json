@@ -1,0 +1,20 @@
+[
+  {
+    "id": "borrow-1",
+    "bookId": "book-2",
+    "readerId": "reader-1",
+    "borrowDate": "2024-12-10 14:30",
+    "expectedReturnDate": "2024-12-24",
+    "returnDate": null,
+    "status": "borrowed"
+  },
+  {
+    "id": "borrow-2",
+    "bookId": "book-1",
+    "readerId": "reader-2",
+    "borrowDate": "2024-12-01 10:00",
+    "expectedReturnDate": "2024-12-15",
+    "returnDate": "2024-12-14 16:20",
+    "status": "returned"
+  }
+]
