@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>深蓝秘境</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(180deg, #000814 0%, #001d3d 100%);
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .app-title {
+      position: absolute;
+      top: 24px;
+      left: 28px;
+      font-size: 28px;
+      font-weight: 200;
+      letter-spacing: 6px;
+      color: #ffffff;
+      text-shadow: 0 0 8px #00aaff;
+      z-index: 10;
+      user-select: none;
+    }
+
+    .info-panel {
+      position: absolute;
+      top: 24px;
+      right: 28px;
+      width: 320px;
+      padding: 20px 24px;
+      background: rgba(0, 0, 0, 0.3);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(136, 192, 208, 0.2);
+      border-radius: 12px;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .info-panel.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .info-panel h2 {
+      font-size: 20px;
+      font-weight: 500;
+      color: #88c0d0;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+    }
+
+    .info-panel .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .info-panel .meta-item {
+      font-size: 13px;
+      color: #88c0d0;
+      opacity: 0.9;
+    }
+
+    .info-panel .meta-item span {
+      color: #ffffff;
+      margin-left: 8px;
+    }
+
+    .info-panel .desc {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #ffffff;
+      opacity: 0.85;
+    }
+
+    .info-panel .cross-fade {
+      animation: crossFade 0.4s ease;
+    }
+
+    @keyframes crossFade {
+      0% { opacity: 0; transform: translateX(8px); }
+      100% { opacity: 1; transform: translateX(0); }
+    }
+
+    .controls {
+      position: absolute;
+      bottom: 28px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 10px 22px;
+      font-size: 14px;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(136, 192, 208, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      letter-spacing: 1px;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      border-color: rgba(136, 192, 208, 0.6);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+      .app-title {
+        font-size: 22px;
+        top: 16px;
+        left: 16px;
+        letter-spacing: 4px;
+      }
+
+      .info-panel {
+        width: calc(100% - 32px);
+        top: 60px;
+        right: 16px;
+        left: 16px;
+        padding: 16px 18px;
+      }
+
+      .info-panel h2 {
+        font-size: 16px;
+      }
+
+      .info-panel .meta-item {
+        margin-bottom: 10px;
+      }
+
+      .controls {
+        bottom: 16px;
+        right: 16px;
+        gap: 8px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div class="app-title">深蓝秘境</div>
+    <div id="info-panel" class="info-panel"></div>
+    <div class="controls">
+      <button id="btn-roam" class="btn">自动漫游</button>
+      <button id="btn-reset" class="btn">重置视角</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
