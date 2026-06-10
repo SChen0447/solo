@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI 调色板生成器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>🎨 AI 调色板生成器</h1>
+      <p class="subtitle">输入场景描述，生成专属配色方案</p>
+      <nav class="nav-tabs">
+        <button class="nav-tab active" data-view="main">主应用</button>
+        <button class="nav-tab" data-view="favorites">收藏夹</button>
+      </nav>
+    </header>
+
+    <main id="main-view" class="view active">
+      <section class="input-section">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="prompt-input"
+            class="prompt-input"
+            placeholder="输入场景描述，如：日落下的沙滩、极光、未来城市夜景..."
+            autocomplete="off"
+          />
+          <button id="generate-btn" class="generate-btn">生成</button>
+        </div>
+        <p class="hint">支持中英文，按回车或点击按钮生成</p>
+      </section>
+
+      <section class="preview-section">
+        <div class="preview-container">
+          <div id="preview-area" class="preview-area">
+            <button id="favorite-btn" class="favorite-btn" title="收藏此配色">
+              <span class="heart-icon">♡</span>
+            </button>
+          </div>
+          <div class="css-panel">
+            <h3>CSS 渐变代码</h3>
+            <div id="css-code" class="css-code">
+              background: linear-gradient(45deg, #1a1a2e, #16213e, #0f3460, #533483, #e94560);
+            </div>
+            <button id="copy-btn" class="copy-btn">复制代码</button>
+            <span id="copy-feedback" class="copy-feedback">已复制！</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="palette-section">
+        <h3>调色板 <span class="hint-small">（点击卡片可替换颜色）</span></h3>
+        <div id="palette-container" class="palette-container">
+        </div>
+      </section>
+
+      <div id="color-picker-modal" class="modal hidden">
+        <div class="modal-content">
+          <h4>选择替换颜色</h4>
+          <div id="color-picker-grid" class="color-picker-grid"></div>
+          <button id="close-picker" class="close-btn">取消</button>
+        </div>
+      </div>
+    </main>
+
+    <main id="favorites-view" class="view">
+      <section class="favorites-section">
+        <h2>我的收藏 <span id="favorites-count" class="count-badge">0</span></h2>
+        <p class="hint">最多保存 20 套配色方案</p>
+        <div id="favorites-grid" class="favorites-grid">
+        </div>
+        <div id="empty-favorites" class="empty-state hidden">
+          <p>暂无收藏，快去主应用生成一些配色吧！</p>
+        </div>
+      </section>
+    </main>
+
+    <div id="error-toast" class="error-toast hidden"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
