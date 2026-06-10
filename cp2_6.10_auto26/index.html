@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 星云粒子生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0a0a1a;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      position: relative;
+    }
+
+    #canvas-container {
+      flex: 1;
+      width: 80%;
+      height: 100%;
+      position: relative;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    #controls-panel {
+      width: 20%;
+      min-width: 280px;
+      height: 100%;
+      background: rgba(15, 20, 40, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(74, 158, 255, 0.2);
+      padding: 20px 16px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    #controls-panel h1 {
+      font-size: 18px;
+      color: #4a9eff;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(74, 158, 255, 0.3);
+      letter-spacing: 1px;
+    }
+
+    #controls-panel h2 {
+      font-size: 13px;
+      color: #4a9eff;
+      margin: 16px 0 10px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .control-group {
+      margin-bottom: 12px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 12px;
+      color: #a0b0d0;
+      margin-bottom: 6px;
+    }
+
+    .control-group input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #4a9eff, #a855f7, #ec4899);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(74, 158, 255, 0.6);
+    }
+
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(74, 158, 255, 0.6);
+    }
+
+    .control-group select {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(30, 40, 70, 0.8);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .control-group select:hover {
+      border-color: rgba(74, 158, 255, 0.6);
+    }
+
+    .control-group .value-display {
+      display: inline-block;
+      float: right;
+      color: #4a9eff;
+      font-weight: 600;
+      font-size: 12px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #4a9eff, #a855f7);
+      border: none;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(74, 158, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    #stats-panel {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(15, 20, 40, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(74, 158, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      z-index: 20;
+      min-width: 180px;
+    }
+
+    #stats-panel .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+    }
+
+    #stats-panel .stat-label {
+      color: #a0b0d0;
+    }
+
+    #stats-panel .stat-value {
+      color: #4a9eff;
+      font-weight: 600;
+    }
+
+    #stats-panel .stat-value.fps-warning {
+      color: #ff6b6b;
+    }
+
+    #fps-warning {
+      display: none;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: rgba(255, 107, 107, 0.15);
+      border: 1px solid rgba(255, 107, 107, 0.4);
+      border-radius: 4px;
+      color: #ff9999;
+      font-size: 11px;
+      text-align: center;
+    }
+
+    #fps-warning.visible {
+      display: block;
+    }
+
+    #toggle-controls {
+      display: none;
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      z-index: 30;
+      width: 40px;
+      height: 40px;
+      background: rgba(15, 20, 40, 0.85);
+      border: 1px solid rgba(74, 158, 255, 0.4);
+      border-radius: 8px;
+      color: #4a9eff;
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      #canvas-container {
+        width: 100%;
+        height: calc(100% - 60px);
+        order: 2;
+      }
+
+      #controls-panel {
+        width: 100%;
+        height: 60px;
+        min-width: 0;
+        padding: 0 16px;
+        border-right: none;
+        border-bottom: 1px solid rgba(74, 158, 255, 0.2);
+        overflow-x: auto;
+        overflow-y: hidden;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        order: 1;
+      }
+
+      #controls-panel.hidden-mobile {
+        display: none;
+      }
+
+      #controls-panel h1 {
+        font-size: 14px;
+        margin: 0 10px 0 0;
+        padding: 0;
+        border: none;
+        white-space: nowrap;
+      }
+
+      #controls-panel h2 {
+        display: none;
+      }
+
+      .control-group {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        white-space: nowrap;
+      }
+
+      .control-group label {
+        margin: 0;
+        font-size: 11px;
+      }
+
+      .control-group input[type="range"] {
+        width: 100px;
+      }
+
+      .control-group select {
+        width: auto;
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .control-group .value-display {
+        font-size: 11px;
+      }
+
+      .btn {
+        width: auto;
+        padding: 6px 12px;
+        margin: 0;
+        font-size: 11px;
+      }
+
+      #toggle-controls {
+        display: flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <button id="toggle-controls" title="切换控制面板">☰</button>
+    <div id="controls-panel">
+      <h1>✨ 星云粒子生成器</h1>
+
+      <h2>基本参数</h2>
+      <div class="control-group">
+        <label>
+          粒子数量
+          <span class="value-display" id="particle-count-value">10000</span>
+        </label>
+        <input type="range" id="particle-count" min="1000" max="50000" step="1000" value="10000" />
+      </div>
+
+      <div class="control-group">
+        <label>
+          扩散半径
+          <span class="value-display" id="spread-value">5.0</span>
+        </label>
+        <input type="range" id="spread" min="1.0" max="15.0" step="0.1" value="5.0" />
+      </div>
+
+      <h2>形态设置</h2>
+      <div class="control-group">
+        <label>星云形态</label>
+        <select id="nebula-shape">
+          <option value="sphere">球状</option>
+          <option value="spiral">螺旋</option>
+          <option value="ring">环状</option>
+        </select>
+      </div>
+
+      <h2>颜色设置</h2>
+      <div class="control-group">
+        <label>颜色方案</label>
+        <select id="color-scheme">
+          <option value="nebulaA">星云 A (紫-蓝-粉)</option>
+          <option value="nebulaB">星云 B (青-绿-黄)</option>
+          <option value="nebulaC">星云 C (橙-红-紫)</option>
+        </select>
+      </div>
+
+      <h2>动画参数</h2>
+      <div class="control-group">
+        <label>
+          旋转速度
+          <span class="value-display" id="rotation-value">0.50</span>
+        </label>
+        <input type="range" id="rotation-speed" min="0" max="2" step="0.01" value="0.5" />
+      </div>
+
+      <h2>粒子大小</h2>
+      <div class="control-group">
+        <label>
+          基础大小
+          <span class="value-display" id="size-value">0.05</span>
+        </label>
+        <input type="range" id="particle-size" min="0.01" max="0.5" step="0.01" value="0.05" />
+      </div>
+
+      <div class="control-group">
+        <label>大小衰减模式</label>
+        <select id="size-decay">
+          <option value="linear">线性衰减</option>
+          <option value="exponential">指数衰减</option>
+          <option value="random">随机</option>
+        </select>
+      </div>
+
+      <button class="btn" id="reset-btn">重置参数</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="stats-panel">
+      <div class="stat-row">
+        <span class="stat-label">粒子数:</span>
+        <span class="stat-value" id="stat-particles">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">帧率 (FPS):</span>
+        <span class="stat-value" id="stat-fps">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">更新耗时:</span>
+        <span class="stat-value" id="stat-update">0.00 ms</span>
+      </div>
+      <div id="fps-warning">⚠ 帧率过低，建议减少粒子数量</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
