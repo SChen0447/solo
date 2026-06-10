@@ -1,0 +1,14 @@
+{
+  "name": "pulse-audio-track",
+  "version": "1.0.0",
+  "description": "脉冲音轨 - 节奏模拟游戏",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

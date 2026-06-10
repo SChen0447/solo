@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>脉冲音轨 - Pulse Audio Track</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Courier New', monospace;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #scoreBoard {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 30px;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 20px;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 1px;
+      transition: background-color 0.2s ease;
+      z-index: 10;
+      user-select: none;
+    }
+
+    #instructions {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 20px;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      font-family: 'Courier New', monospace;
+      z-index: 10;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="scoreBoard">得分：0 | 连击：0</div>
+  <div id="instructions">按 空格键 或 鼠标点击 命中音符</div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
