@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>节奏跑酷 Rhythm Runner</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="hud">
+      <div id="score">0</div>
+      <div id="beat-indicator">
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+        <span class="beat-dot"></span>
+      </div>
+      <div id="lives">
+        <span class="heart"></span>
+        <span class="heart"></span>
+        <span class="heart"></span>
+      </div>
+    </div>
+
+    <div id="perfect-text">PERFECT!</div>
+
+    <div id="start-screen">
+      <h1>节奏跑酷</h1>
+      <p class="subtitle">Rhythm Runner</p>
+      <div class="instructions">
+        <p><kbd>空格</kbd> / <kbd>↑</kbd> / 点击屏幕：跳跃 / 二段跳</p>
+        <p><kbd>↓</kbd> / 下滑：滑铲</p>
+        <p>跟随节拍，完美通过障碍获得高分！</p>
+      </div>
+      <button id="start-btn">开始游戏</button>
+    </div>
+
+    <div id="game-over-screen" class="hidden">
+      <div id="result-panel">
+        <h2>游戏结束</h2>
+        <div class="result-grid">
+          <div class="result-item">
+            <span class="label">本次得分</span>
+            <span id="final-score" class="value">0</span>
+          </div>
+          <div class="result-item">
+            <span class="label">最高分</span>
+            <span id="high-score" class="value">0</span>
+          </div>
+          <div class="result-item">
+            <span class="label">完美节拍</span>
+            <span id="perfect-count" class="value">0</span>
+          </div>
+          <div class="result-item">
+            <span class="label">通过障碍</span>
+            <span id="obstacle-count" class="value">0</span>
+          </div>
+        </div>
+        <button id="restart-btn">重新开始</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
