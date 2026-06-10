@@ -1,181 +1,206 @@
-import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import { MolecularSimulation } from './simulation'
-import { StatsPanel } from './statsPanel'
-
-const DEFAULT_PARTICLE_COUNT = 100
-const DEFAULT_SPEED_FACTOR = 1.0
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { Jellyfish } from './Jellyfish';
+import { HydrothermalVent, createDebrisParticles, updateDebrisParticles } from './HydrothermalVent';
+import { UI } from './UI';
 
 class App {
-  private scene: THREE.Scene
-  private camera: THREE.PerspectiveCamera
-  private renderer: THREE.WebGLRenderer
-  private controls: OrbitControls
-  private simulation: MolecularSimulation
-  private statsPanel: StatsPanel
-  private clock: THREE.Clock
-  private particleSlider: HTMLInputElement
-  private speedSlider: HTMLInputElement
-  private particleValue: HTMLSpanElement
-  private speedValue: HTMLSpanElement
-  private resetButton: HTMLButtonElement
-  private fpsFrames: number = 0
-  private fpsTime: number = 0
-  private currentFps: number = 60
-  private statsUpdateTimer: number = 0
+  private scene: THREE.Scene;
+  private camera: THREE.PerspectiveCamera;
+  private renderer: THREE.WebGLRenderer;
+  private controls: OrbitControls;
+  private clock: THREE.Clock;
+  private jellyfish: Jellyfish[];
+  private vent: HydrothermalVent;
+  private debris: THREE.Points;
+  private ui: UI;
+  private trackedJellyfish: Jellyfish | null;
+  private speedMultiplier: number;
+  private raycaster: THREE.Raycaster;
+  private mouse: THREE.Vector2;
+  private jellyfishMeshes: THREE.Object3D[];
+  private meshToJellyfish: Map<THREE.Object3D, Jellyfish>;
 
   constructor() {
-    this.scene = new THREE.Scene()
-    this.scene.background = this.createGradientBackground()
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x000005);
 
     this.camera = new THREE.PerspectiveCamera(
       60,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
-    )
-    this.camera.position.set(25, 20, 30)
-    this.camera.lookAt(0, 0, 0)
+    );
+    this.camera.position.set(0, 5, 15);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true })
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
-    this.renderer.domElement.id = 'three-canvas'
-    document.body.appendChild(this.renderer.domElement)
+    this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.domElement.style.display = 'block';
 
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement)
-    this.controls.enableDamping = true
-    this.controls.dampingFactor = 0.08
-    this.controls.enablePan = false
-    this.controls.minDistance = 15
-    this.controls.maxDistance = 80
-    this.controls.maxPolarAngle = Math.PI * 0.9
+    const container = document.getElementById('app');
+    if (container) {
+      container.appendChild(this.renderer.domElement);
+    } else {
+      document.body.appendChild(this.renderer.domElement);
+    }
 
-    this.setupLights()
-    this.setupBoundingBox()
+    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
+    this.controls.target.set(0, 0, 0);
+    this.controls.minDistance = 5;
+    this.controls.maxDistance = 40;
 
-    this.simulation = new MolecularSimulation(this.scene)
-    this.simulation.setParticleCount(DEFAULT_PARTICLE_COUNT)
-    this.simulation.setSpeedFactor(DEFAULT_SPEED_FACTOR)
+    this.clock = new THREE.Clock();
+    this.jellyfish = [];
+    this.trackedJellyfish = null;
+    this.speedMultiplier = 1.0;
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+    this.jellyfishMeshes = [];
+    this.meshToJellyfish = new Map();
 
-    this.statsPanel = new StatsPanel()
-    this.clock = new THREE.Clock()
+    this.vent = new HydrothermalVent();
+    this.scene.add(this.vent.group);
 
-    this.particleSlider = document.getElementById('particle-slider') as HTMLInputElement
-    this.speedSlider = document.getElementById('speed-slider') as HTMLInputElement
-    this.particleValue = document.getElementById('particle-value') as HTMLSpanElement
-    this.speedValue = document.getElementById('speed-value') as HTMLSpanElement
-    this.resetButton = document.getElementById('reset-btn') as HTMLButtonElement
+    this.debris = createDebrisParticles();
+    this.scene.add(this.debris);
 
-    this.bindEvents()
-    this.updateSliderLabels()
-    window.addEventListener('resize', () => this.onResize())
+    this.createJellyfish();
 
-    this.animate = this.animate.bind(this)
-    this.animate()
+    this.ui = new UI();
+    this.setupUICallbacks();
+
+    this.addLights();
+
+    window.addEventListener('resize', this.onResize.bind(this));
   }
 
-  private createGradientBackground(): THREE.Texture {
-    const canvas = document.createElement('canvas')
-    canvas.width = 2
-    canvas.height = 512
-    const ctx = canvas.getContext('2d')!
-    const gradient = ctx.createLinearGradient(0, 0, 0, 512)
-    gradient.addColorStop(0, '#0a0a2e')
-    gradient.addColorStop(1, '#000000')
-    ctx.fillStyle = gradient
-    ctx.fillRect(0, 0, 2, 512)
-    const texture = new THREE.CanvasTexture(canvas)
-    texture.colorSpace = THREE.SRGBColorSpace
-    return texture
+  private addLights(): void {
+    const ambient = new THREE.AmbientLight(0x111122, 0.3);
+    this.scene.add(ambient);
   }
 
-  private setupLights(): void {
-    const ambient = new THREE.AmbientLight(0x404060, 0.6)
-    this.scene.add(ambient)
+  private createJellyfish(): void {
+    const count = 10;
 
-    const pointLight1 = new THREE.PointLight(0xffffff, 1.2, 80)
-    pointLight1.position.set(15, 15, 15)
-    this.scene.add(pointLight1)
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 5 + Math.random() * 3;
+      const x = Math.cos(angle) * radius;
+      const y = -2 + Math.random() * 4;
+      const z = Math.sin(angle) * radius;
 
-    const pointLight2 = new THREE.PointLight(0x6688ff, 0.8, 80)
-    pointLight2.position.set(-15, -10, -15)
-    this.scene.add(pointLight2)
+      const config = {
+        position: new THREE.Vector3(x, y, z),
+        contractionFrequency: 2 + Math.random() * 2,
+        opacity: 0.3 + Math.random() * 0.3,
+        hueOffset: Math.random() * Math.PI * 2
+      };
+
+      const jf = new Jellyfish(config);
+      this.jellyfish.push(jf);
+      this.scene.add(jf.group);
+
+      const meshes = jf.getAllMeshes();
+      for (const mesh of meshes) {
+        this.jellyfishMeshes.push(mesh);
+        this.meshToJellyfish.set(mesh, jf);
+      }
+    }
   }
 
-  private setupBoundingBox(): void {
-    const size = 20
-    const geometry = new THREE.BoxGeometry(size, size, size)
-    const edges = new THREE.EdgesGeometry(geometry)
-    const material = new THREE.LineBasicMaterial({
-      color: 0x555577,
-      transparent: true,
-      opacity: 0.5,
-    })
-    const wireframe = new THREE.LineSegments(edges, material)
-    this.scene.add(wireframe)
+  private setupUICallbacks(): void {
+    this.ui.onSpeedChange((delta: number) => {
+      this.speedMultiplier = THREE.MathUtils.clamp(
+        this.speedMultiplier + delta,
+        0.5,
+        2.0
+      );
+      if (this.trackedJellyfish) {
+        this.ui.updateSpeedOnly(this.speedMultiplier);
+      }
+    });
+
+    this.ui.onClick((event: MouseEvent) => {
+      this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      const intersects = this.raycaster.intersectObjects(this.jellyfishMeshes, false);
+
+      if (intersects.length > 0) {
+        const hit = intersects[0].object;
+        const jf = this.meshToJellyfish.get(hit);
+        
+        if (jf) {
+          if (this.trackedJellyfish && this.trackedJellyfish !== jf) {
+            this.trackedJellyfish.setTracked(false);
+          }
+          
+          jf.setTracked(true);
+          this.trackedJellyfish = jf;
+          this.ui.setPanelVisible(true);
+        }
+      }
+    });
   }
 
-  private bindEvents(): void {
-    this.particleSlider.addEventListener('input', () => {
-      const count = parseInt(this.particleSlider.value, 10)
-      this.simulation.setParticleCount(count)
-      this.updateSliderLabels()
-    })
-
-    this.speedSlider.addEventListener('input', () => {
-      const factor = parseFloat(this.speedSlider.value)
-      this.simulation.setSpeedFactor(factor)
-      this.updateSliderLabels()
-    })
-
-    this.resetButton.addEventListener('click', () => {
-      this.simulation.clearAll()
-      this.simulation.setParticleCount(DEFAULT_PARTICLE_COUNT)
-      this.simulation.setSpeedFactor(DEFAULT_SPEED_FACTOR)
-      this.particleSlider.value = DEFAULT_PARTICLE_COUNT.toString()
-      this.speedSlider.value = DEFAULT_SPEED_FACTOR.toString()
-      this.updateSliderLabels()
-    })
+  private checkJellyfishInteractions(): void {
+    for (let i = 0; i < this.jellyfish.length; i++) {
+      for (let j = i + 1; j < this.jellyfish.length; j++) {
+        const dist = this.jellyfish[i].getPosition().distanceTo(this.jellyfish[j].getPosition());
+        if (dist < 2) {
+          this.jellyfish[i].triggerResponse();
+          this.jellyfish[j].triggerResponse();
+        }
+      }
+    }
   }
 
-  private updateSliderLabels(): void {
-    this.particleValue.textContent = this.particleSlider.value
-    this.speedValue.textContent = parseFloat(this.speedSlider.value).toFixed(1)
+  private updatePanel(): void {
+    if (this.trackedJellyfish) {
+      const pos = this.trackedJellyfish.getPosition();
+      this.ui.updateTrackedData({
+        glowState: this.trackedJellyfish.getGlowStateText(),
+        glowColor: '#' + this.trackedJellyfish.glowColor.getHexString(),
+        speedMultiplier: this.speedMultiplier,
+        position: { x: pos.x, y: pos.y, z: pos.z }
+      });
+    }
   }
 
   private onResize(): void {
-    this.camera.aspect = window.innerWidth / window.innerHeight
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(window.innerWidth, window.innerHeight)
+    this.camera.aspect = window.innerWidth / window.innerHeight;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  private animate(): void {
-    requestAnimationFrame(this.animate)
+  public animate(): void {
+    requestAnimationFrame(this.animate.bind(this));
 
-    const delta = this.clock.getDelta()
-    this.fpsFrames++
-    this.fpsTime += delta
-    this.statsUpdateTimer += delta
+    const delta = this.clock.getDelta();
+    const time = this.clock.getElapsedTime();
 
-    if (this.fpsTime >= 0.5) {
-      this.currentFps = this.fpsFrames / this.fpsTime
-      this.fpsFrames = 0
-      this.fpsTime = 0
+    this.controls.update();
+    this.vent.update(delta, time);
+    updateDebrisParticles(this.debris, time);
+
+    for (const jf of this.jellyfish) {
+      jf.update(delta, time, this.speedMultiplier);
     }
 
-    this.simulation.update(delta)
+    this.checkJellyfishInteractions();
+    this.updatePanel();
 
-    if (this.statsUpdateTimer >= 1.0) {
-      const stats = this.simulation.getStats()
-      this.statsPanel.update(stats, this.currentFps)
-      this.simulation.resetSpeedSampling()
-      this.statsUpdateTimer = 0
-    }
+    this.renderer.render(this.scene, this.camera);
+  }
 
-    this.controls.update()
-    this.renderer.render(this.scene, this.camera)
+  public start(): void {
+    this.animate();
   }
 }
 
-new App()
+const app = new App();
+app.start();

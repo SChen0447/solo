@@ -1,18 +1,334 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>城市交通信号灯调度看板</title>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-      crossorigin=""
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>宇宙演化 3D 时间线</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 40px;
+      z-index: 10;
+      background: linear-gradient(to bottom, rgba(10, 10, 26, 0.9), transparent);
+      pointer-events: none;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00BFFF, #9370DB, #FF4500);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    .info-card {
+      position: absolute;
+      top: 100px;
+      right: -420px;
+      width: 380px;
+      padding: 28px;
+      background: rgba(10, 10, 30, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 149, 237, 0.3);
+      border-radius: 16px;
+      z-index: 20;
+      transition: right 0.3s ease-out;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .info-card.visible {
+      right: 30px;
+    }
+
+    .info-card .event-name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .info-card .event-era {
+      font-size: 14px;
+      color: #87CEEB;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(100, 149, 237, 0.2);
+    }
+
+    .info-card .event-description {
+      font-size: 12px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .info-card .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .info-card .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+    }
+
+    .timeline-container {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .timeline-bar {
+      position: relative;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: visible;
+    }
+
+    .timeline-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #FF4500, #FF8C00, #9370DB, #00BFFF);
+      border-radius: 3px;
+      transition: width 0.5s ease-out;
+    }
+
+    .timeline-cursor {
+      position: absolute;
+      top: -8px;
+      left: 0%;
+      width: 0;
+      height: 0;
+      border-left: 10px solid transparent;
+      border-right: 10px solid transparent;
+      border-bottom: 12px solid #00BFFF;
+      transform: translateX(-50%);
+      transition: left 0.5s ease-out;
+      filter: drop-shadow(0 0 6px rgba(0, 191, 255, 0.6));
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spiral {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      animation: spin 4s linear infinite;
+    }
+
+    .loading-spiral::before,
+    .loading-spiral::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .loading-spiral::before {
+      width: 100%;
+      height: 100%;
+      background: conic-gradient(from 0deg, transparent, #9370DB, #00BFFF, transparent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .loading-spiral::after {
+      width: 70%;
+      height: 70%;
+      background: conic-gradient(from 180deg, transparent, #FF4500, #FF8C00, transparent);
+      animation: pulse 2s ease-in-out infinite 0.5s;
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 3px;
+      animation: fadeInOut 2s ease-in-out infinite;
+    }
+
+    .instructions {
+      position: absolute;
+      bottom: 80px;
+      left: 30px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      z-index: 10;
+      line-height: 1.8;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 14px 20px;
+      }
+      .header h1 {
+        font-size: 18px;
+      }
+      .info-card {
+        width: calc(100% - 40px);
+        right: -100%;
+        top: auto;
+        bottom: 90px;
+      }
+      .info-card.visible {
+        right: 20px;
+      }
+      .instructions {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <header class="header">
+      <h1>宇宙演化 3D 时间线</h1>
+      <p>从大爆炸到现代文明 · 探索 15 个关键天文事件</p>
+    </header>
+
+    <div class="info-card" id="info-card">
+      <button class="close-btn" id="close-card">&times;</button>
+      <div class="event-name" id="event-name"></div>
+      <div class="event-era" id="event-era"></div>
+      <div class="event-description" id="event-description"></div>
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-bar">
+        <div class="timeline-progress" id="timeline-progress"></div>
+        <div class="timeline-cursor" id="timeline-cursor"></div>
+      </div>
+      <div class="timeline-labels">
+        <span>138 亿年前</span>
+        <span>现代</span>
+      </div>
+    </div>
+
+    <div class="instructions">
+      鼠标拖拽：旋转视角<br/>
+      滚轮：缩放场景<br/>
+      右键拖拽：平移场景<br/>
+      点击节点：查看详情<br/>
+      ESC：退出聚焦
+    </div>
+
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-spiral"></div>
+      <div class="loading-text">正在加载宇宙...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

@@ -1,0 +1,84 @@
+{
+  "materials": [
+    {
+      "id": "moonflower",
+      "name": "月光花",
+      "icon": "🌸",
+      "rarity": "uncommon",
+      "color": "#c0c0ff",
+      "rarityColor": "#1eff00"
+    },
+    {
+      "id": "dragonscale",
+      "name": "龙鳞粉",
+      "icon": "🐉",
+      "rarity": "epic",
+      "color": "#ff4444",
+      "rarityColor": "#a335ee"
+    },
+    {
+      "id": "nightdew",
+      "name": "夜露",
+      "icon": "💧",
+      "rarity": "common",
+      "color": "#66ccff",
+      "rarityColor": "#9d9d9d"
+    },
+    {
+      "id": "phoenixfeather",
+      "name": "凤凰羽",
+      "icon": "🔥",
+      "rarity": "legendary",
+      "color": "#ff8800",
+      "rarityColor": "#ff8000"
+    },
+    {
+      "id": "shadowroot",
+      "name": "暗影根",
+      "icon": "🌿",
+      "rarity": "rare",
+      "color": "#663399",
+      "rarityColor": "#0070dd"
+    },
+    {
+      "id": "crystalshard",
+      "name": "水晶碎片",
+      "icon": "💎",
+      "rarity": "rare",
+      "color": "#88ffff",
+      "rarityColor": "#0070dd"
+    },
+    {
+      "id": "wolfsbane",
+      "name": "附子草",
+      "icon": "☠️",
+      "rarity": "uncommon",
+      "color": "#88aa44",
+      "rarityColor": "#1eff00"
+    },
+    {
+      "id": "stardust",
+      "name": "星尘",
+      "icon": "✨",
+      "rarity": "epic",
+      "color": "#ffee88",
+      "rarityColor": "#a335ee"
+    },
+    {
+      "id": "mandrake",
+      "name": "曼德拉草",
+      "icon": "🌱",
+      "rarity": "common",
+      "color": "#55aa55",
+      "rarityColor": "#9d9d9d"
+    },
+    {
+      "id": "dragontear",
+      "name": "龙之泪",
+      "icon": "💎",
+      "rarity": "legendary",
+      "color": "#ff3366",
+      "rarityColor": "#ff8000"
+    }
+  ]
+}

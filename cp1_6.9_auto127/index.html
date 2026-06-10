@@ -1,27 +1,101 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Collab DAW - 在线协作数字音频工作站</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html, body, #root {
-        width: 100%;
-        height: 100%;
-        background: #121212;
-        color: #e0e0e0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>量子纠缠星云</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(136, 51, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(136, 51, 255, 0.3);
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: #ffffff;
+      font-size: 16px;
+      z-index: 10;
+      user-select: none;
+    }
+    #info-panel .label {
+      opacity: 0.7;
+      font-size: 12px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    #info-panel .value {
+      font-size: 24px;
+      font-weight: 600;
+      transition: transform 0.1s ease;
+    }
+    #info-panel .value.pulse {
+      transform: scale(1.15);
+    }
+    #reset-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(136, 51, 255, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(170, 85, 255, 0.5);
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+    #reset-btn:hover {
+      background: rgba(170, 85, 255, 0.7);
+      transform: scale(1.1);
+    }
+    #reset-btn:active {
+      transform: scale(0.95);
+    }
+    #reset-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffffff;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="info-panel">
+      <div class="label">纠缠对数</div>
+      <div class="value" id="pair-count">0</div>
+    </div>
+    <button id="reset-btn" title="重置星云">
+      <svg viewBox="0 0 24 24">
+        <path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

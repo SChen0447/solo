@@ -1,15 +1,20 @@
 {
-  "name": "sand-painting",
+  "name": "lava-lamp-simulator",
   "version": "1.0.0",
-  "description": "Browser-based sand painting simulation",
+  "description": "A browser-based virtual lava lamp with fluid motion and color blending",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0",
+    "@types/three": "0.160.0"
+  },
   "devDependencies": {
-    "typescript": "^5.4.0",
-    "vite": "^5.2.0"
+    "typescript": "5.4.5",
+    "vite": "5.4.0"
   }
 }

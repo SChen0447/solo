@@ -1,18 +1,281 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#1a1a2e" />
-    <title>协作思维导图</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body, #root { width: 100%; height: 100%; overflow: hidden; }
-      body { background: #1a1a2e; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蒸汽朋克齿轮传动模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
+      background: #1a1a1a;
+      color: #e0c080;
+      user-select: none;
+    }
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 240px;
+      right: 0;
+      bottom: 0;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 240px;
+      height: 100%;
+      background: linear-gradient(180deg, #2a2218 0%, #1a1410 100%);
+      border-right: 2px solid #5a4a30;
+      padding: 16px;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    #sidebar h2 {
+      font-size: 18px;
+      color: #ffd700;
+      text-align: center;
+      margin-bottom: 12px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      letter-spacing: 2px;
+    }
+    #sidebar .subtitle {
+      font-size: 11px;
+      color: #a08060;
+      text-align: center;
+      margin-bottom: 16px;
+      font-style: italic;
+    }
+    .gear-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #3a2e20 0%, #2a2018 100%);
+      border: 1px solid #5a4a30;
+      border-radius: 8px;
+      cursor: grab;
+      transition: all 0.2s ease;
+    }
+    .gear-item:hover {
+      border-color: #ffd700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+      transform: translateX(4px);
+    }
+    .gear-item:active {
+      cursor: grabbing;
+    }
+    .gear-preview {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      margin-right: 12px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .gear-preview::before {
+      content: "⚙";
+      font-size: 30px;
+      line-height: 1;
+    }
+    .gear-info {
+      flex: 1;
+    }
+    .gear-info .name {
+      font-size: 13px;
+      color: #ffd700;
+      font-weight: bold;
+      margin-bottom: 3px;
+    }
+    .gear-info .spec {
+      font-size: 11px;
+      color: #a08060;
+    }
+    #instructions {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(26, 20, 16, 0.9);
+      border: 1px solid #5a4a30;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12px;
+      line-height: 1.8;
+      z-index: 10;
+      max-width: 260px;
+    }
+    #instructions h3 {
+      color: #ffd700;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    #instructions p {
+      color: #c0a080;
+    }
+    #settings-panel {
+      display: none;
+      position: absolute;
+      background: linear-gradient(135deg, #2a2218 0%, #1a1410 100%);
+      border: 2px solid #ffd700;
+      border-radius: 10px;
+      padding: 16px;
+      min-width: 280px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+      z-index: 100;
+    }
+    #settings-panel.active {
+      display: block;
+    }
+    #settings-panel h3 {
+      color: #ffd700;
+      font-size: 16px;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    #settings-panel .close-btn {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #a08060;
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    #settings-panel .close-btn:hover {
+      color: #ffd700;
+    }
+    .setting-row {
+      margin-bottom: 12px;
+    }
+    .setting-row label {
+      display: block;
+      font-size: 12px;
+      color: #c0a080;
+      margin-bottom: 6px;
+    }
+    .setting-row .value {
+      color: #ffd700;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+    .setting-row input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: #3a2e20;
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .setting-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ffd700, #cd7f32);
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+    .direction-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .direction-btn {
+      flex: 1;
+      padding: 8px;
+      background: #3a2e20;
+      border: 1px solid #5a4a30;
+      border-radius: 6px;
+      color: #c0a080;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .direction-btn.active {
+      background: linear-gradient(135deg, #ffd700, #cd7f32);
+      color: #1a1410;
+      border-color: #ffd700;
+      font-weight: bold;
+    }
+    .gear-status {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+    .gear-status .info-line {
+      color: #a08060;
+    }
+    .gear-status .info-line strong {
+      color: #ffd700;
+    }
+    .gear-status .mesh-info {
+      color: #80c080;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="sidebar">
+      <h2>⚙ 齿轮库 ⚙</h2>
+      <div class="subtitle">—— 拖拽齿轮到工作台 ——</div>
+      <div id="gear-list"></div>
+    </div>
+    <div id="canvas-container"></div>
+    <div id="instructions">
+      <h3>操作说明</h3>
+      <p>• 从左侧拖拽齿轮到工作台</p>
+      <p>• 齿轮会自动吸附到网格点</p>
+      <p>• 双击齿轮打开设置面板</p>
+      <p>• 拖动齿轮可重新定位</p>
+      <p>• 右键删除齿轮</p>
+    </div>
+    <div id="settings-panel">
+      <button class="close-btn" id="close-settings">×</button>
+      <h3>齿轮设置</h3>
+      <div class="gear-status">
+        <div class="info-line">齿轮编号: <strong id="gear-id">-</strong></div>
+        <div class="info-line">齿&nbsp;&nbsp;&nbsp;&nbsp;数: <strong id="gear-teeth">-</strong></div>
+        <div class="info-line">直&nbsp;&nbsp;&nbsp;&nbsp;径: <strong id="gear-diameter">-</strong> px</div>
+        <div id="mesh-status" class="mesh-info">未与任何齿轮啮合</div>
+      </div>
+      <div style="height: 12px;"></div>
+      <div class="setting-row">
+        <label>初始转速: <span class="value" id="rpm-value">0</span> RPM</label>
+        <input type="range" id="rpm-slider" min="0" max="100" step="1" value="0" />
+      </div>
+      <div class="setting-row">
+        <label>旋转方向:</label>
+        <div class="direction-buttons">
+          <button class="direction-btn" data-direction="cw">顺时针 ↻</button>
+          <button class="direction-btn" data-direction="ccw">逆时针 ↺</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

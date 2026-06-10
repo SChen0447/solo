@@ -1,213 +1,69 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>深空生命体探索 | Nebula & Organism Explorer</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #000000;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-      color: #e0e0e0;
-    }
-
-    #canvas-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    #canvas-container canvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    #control-panel {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      width: 200px;
-      padding: 18px 16px;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      z-index: 10;
-      user-select: none;
-    }
-
-    .panel-title {
-      font-size: 12px;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-      color: #e0e0e0;
-      margin-bottom: 12px;
-      opacity: 0.9;
-      font-weight: 500;
-    }
-
-    .color-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-
-    .color-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-      outline: none;
-      padding: 0;
-    }
-
-    .color-btn:hover {
-      transform: scale(1.1);
-      border-color: #ffffff;
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
-    }
-
-    .color-btn.purple {
-      background: linear-gradient(135deg, #8a2be2 0%, #da70d6 100%);
-    }
-
-    .color-btn.blue {
-      background: linear-gradient(135deg, #1e90ff 0%, #00bfff 100%);
-    }
-
-    .color-btn.red {
-      background: linear-gradient(135deg, #ff4500 0%, #ff6347 100%);
-    }
-
-    .color-btn.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 16px rgba(255, 255, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.3);
-      transform: scale(1.05);
-    }
-
-    .slider-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .slider-label {
-      font-size: 11px;
-      color: #e0e0e0;
-      margin-bottom: 6px;
-      opacity: 0.8;
-      display: flex;
-      justify-content: space-between;
-      width: 150px;
-    }
-
-    .slider-label span {
-      font-variant-numeric: tabular-nums;
-    }
-
-    .slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 150px;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #ffffff;
-      cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s ease;
-    }
-
-    .slider::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-    }
-
-    .slider::-moz-range-thumb {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: #ffffff;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s ease;
-    }
-
-    .slider::-moz-range-thumb:hover {
-      transform: scale(1.15);
-    }
-
-    .hint-text {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      font-size: 11px;
-      color: rgba(224, 224, 224, 0.5);
-      line-height: 1.6;
-      z-index: 10;
-      user-select: none;
-    }
-
-    .hint-text kbd {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 1px 5px;
-      border-radius: 3px;
-      font-size: 10px;
-      margin: 0 1px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-  </style>
-</head>
-<body>
-  <div id="canvas-container"></div>
-
-  <div class="hint-text">
-    <div>拖拽旋转 · 滚轮缩放</div>
-    <div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> 切换主题 · 点击生命体</div>
-  </div>
-
-  <div id="control-panel">
-    <div class="panel-title">星云主题</div>
-    <div class="color-buttons">
-      <button class="color-btn purple active" data-theme="purple" title="紫色星云"></button>
-      <button class="color-btn blue" data-theme="blue" title="蓝色星云"></button>
-      <button class="color-btn red" data-theme="red" title="红色星云"></button>
-    </div>
-    <div class="slider-section">
-      <div class="slider-label">
-        <span>脉动强度</span>
-        <span id="pulse-value">1.0</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>符文森林 · 能量连线</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0a1a0a;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+      }
+      #canvas-container {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+      }
+      #ui-hint {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        color: rgba(255, 204, 102, 0.6);
+        font-size: 16px;
+        text-align: center;
+        opacity: 1;
+        transition: opacity 1s ease;
+        z-index: 10;
+        user-select: none;
+      }
+      #ui-hint.hidden {
+        opacity: 0;
+      }
+      #ui-hint .title {
+        font-size: 28px;
+        margin-bottom: 12px;
+        letter-spacing: 4px;
+        color: rgba(255, 204, 102, 0.85);
+        text-shadow: 0 0 20px rgba(255, 204, 102, 0.5);
+      }
+      #ui-hint .sub {
+        line-height: 1.8;
+        color: rgba(200, 200, 200, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvas-container"></div>
+    <div id="ui-hint">
+      <div class="title">符文森林</div>
+      <div class="sub">
+        按住鼠标左键，在符文碎片之间绘制能量连线<br />
+        连接出正确的图腾图案，解锁远古能量
       </div>
-      <input type="range" class="slider" id="pulse-slider" min="0.5" max="2" step="0.1" value="1" />
     </div>
-  </div>
-
-  <script type="module" src="/src/main.ts"></script>
-</body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

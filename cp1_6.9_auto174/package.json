@@ -1,0 +1,19 @@
+{
+  "name": "particle-line-canvas",
+  "version": "1.0.0",
+  "description": "流光粒子线画板 - 数字艺术工坊粒子线条绘制工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "p5": "1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "5.4.5",
+    "vite": "5.4.0",
+    "@types/p5": "1.7.6"
+  }
+}

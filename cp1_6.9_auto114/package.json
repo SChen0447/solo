@@ -1,7 +1,6 @@
 {
-  "name": "nebula-organism-explorer",
+  "name": "rune-forest",
   "version": "1.0.0",
-  "description": "Dynamic nebula and organic lifeform symbiosis visualization exploration app",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,11 +8,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.160.0"
+    "p5": "1.9.0"
   },
   "devDependencies": {
-    "typescript": "5.5.0",
-    "vite": "5.4.0",
-    "@types/three": "0.160.0"
+    "@types/p5": "^1.7.6",
+    "typescript": "^5.4.0",
+    "vite": "^5.4.0"
   }
 }

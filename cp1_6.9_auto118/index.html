@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>虚拟声波海洋生物圈</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      background: #000;
+    }
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+    #control-panel {
+      width: 50%;
+      background: #0f0f2a;
+      border: 1px solid #2a2a4a;
+      border-radius: 12px;
+      padding: 24px;
+      color: #aabbff;
+      margin: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+    }
+    #control-panel h2 {
+      color: #88aaff;
+      font-size: 20px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #2a2a4a;
+      padding-bottom: 10px;
+    }
+    .control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .freq-display {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: rgba(42, 42, 74, 0.5);
+      border-radius: 8px;
+    }
+    .color-preview {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+    .freq-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .freq-label {
+      font-size: 12px;
+      color: #6677aa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .freq-value {
+      font-size: 28px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+    .freq-key {
+      font-size: 18px;
+      color: #88ddff;
+    }
+    .key-hint {
+      padding: 16px;
+      background: rgba(42, 42, 74, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #7788bb;
+    }
+    .key-hint strong {
+      color: #aabbff;
+    }
+    .legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+    #energy-bar-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+    }
+    #energy-bar {
+      width: 200px;
+      height: 20px;
+      background: #222244;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #3a3a6a;
+      position: relative;
+    }
+    #energy-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4466ff, #ffdd44);
+      border-radius: 10px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+    #energy-bar.flashing #energy-fill {
+      animation: flash 0.3s ease-in-out infinite;
+    }
+    #energy-bar.glowing {
+      box-shadow: 0 0 20px #ffdd44, 0 0 40px #4466ff;
+      animation: glow 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes flash {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 10px #ffdd44, 0 0 20px #4466ff; }
+      to { box-shadow: 0 0 30px #ffdd44, 0 0 60px #4466ff; }
+    }
+    #energy-label {
+      text-align: center;
+      color: #aabbff;
+      font-size: 11px;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+      #control-panel {
+        width: calc(100% - 24px);
+        height: 180px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: 12px;
+        padding: 16px;
+      }
+      #control-panel h2 {
+        width: 100%;
+        font-size: 16px;
+      }
+      .control-section {
+        flex: 1;
+        min-width: 180px;
+      }
+      .freq-display {
+        padding: 10px;
+      }
+      .color-preview {
+        width: 40px;
+        height: 40px;
+      }
+      .freq-value {
+        font-size: 20px;
+      }
+      #energy-bar-container {
+        top: 10px;
+        right: 10px;
+      }
+      #energy-bar {
+        width: 140px;
+        height: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="control-panel">
+      <h2>🌊 声波控制面板</h2>
+      <div class="control-section">
+        <div class="freq-display">
+          <div class="color-preview" id="color-preview" style="background: #4466ff;"></div>
+          <div class="freq-info">
+            <span class="freq-label">当前频率</span>
+            <span class="freq-value" id="freq-value">220 Hz</span>
+            <span class="freq-key" id="freq-key">按键 A</span>
+          </div>
+        </div>
+      </div>
+      <div class="control-section">
+        <div class="key-hint">
+          <strong>操作说明：</strong><br>
+          按下键盘 <strong>A-Z</strong> 发射不同频率的声波脉冲<br>
+          <strong>A-F</strong>：低频（蓝色系）<br>
+          <strong>G-O</strong>：中频（绿色系）<br>
+          <strong>P-Z</strong>：高频（红色系）
+        </div>
+      </div>
+      <div class="control-section">
+        <div class="key-hint">
+          <strong>生物图鉴：</strong>
+          <div class="legend" style="margin-top: 10px;">
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #88ddff;"></div>
+              <span>水母 - 分裂变色</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #ffaa66;"></div>
+              <span>小鱼 - 受惊逃窜</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background: #66dd88;"></div>
+              <span>海龟 - 反射声波</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="canvas-container">
+      <div id="energy-bar-container">
+        <div id="energy-bar">
+          <div id="energy-fill"></div>
+        </div>
+        <div id="energy-label">能量</div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

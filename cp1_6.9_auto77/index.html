@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星尘彩烟喷泉</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #app {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #canvas-container {
+      position: relative;
+      width: 80vmin;
+      height: 80vmin;
+      border-radius: 50%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #0a0a1e 0%, #050510 70%, #000000 100%);
+      box-shadow:
+        0 0 60px rgba(68, 68, 170, 0.4),
+        0 0 120px rgba(170, 68, 255, 0.25),
+        inset 0 0 80px rgba(0, 0, 0, 0.6);
+      animation: borderPulse 3s ease-in-out infinite;
+    }
+    #canvas-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      padding: 2px;
+      background: linear-gradient(135deg, #4444aa, #aa44ff, #4444aa);
+      -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      animation: gradientRotate 6s linear infinite;
+      opacity: 0.8;
+      pointer-events: none;
+      z-index: 2;
+    }
+    @keyframes borderPulse {
+      0%, 100% {
+        box-shadow:
+          0 0 60px rgba(68, 68, 170, 0.4),
+          0 0 120px rgba(170, 68, 255, 0.25),
+          inset 0 0 80px rgba(0, 0, 0, 0.6);
+      }
+      50% {
+        box-shadow:
+          0 0 90px rgba(68, 68, 170, 0.6),
+          0 0 180px rgba(170, 68, 255, 0.4),
+          inset 0 0 80px rgba(0, 0, 0, 0.6);
+      }
+    }
+    @keyframes gradientRotate {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    #scene-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #info {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(200, 200, 255, 0.5);
+      font-size: 12px;
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #rate-display {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(200, 200, 255, 0.7);
+      font-size: 14px;
+      letter-spacing: 1px;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="scene-canvas"></canvas>
+    </div>
+  </div>
+  <div id="rate-display">粒子速率: 100/秒</div>
+  <div id="info">按住鼠标拖拽制造漩涡 · 滚轮调节粒子速率</div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

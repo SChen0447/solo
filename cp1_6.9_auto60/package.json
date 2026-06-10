@@ -1,7 +1,7 @@
 {
-  "name": "collaborative-whiteboard",
-  "private": true,
-  "version": "0.1.0",
+  "name": "polar-iceberg-simulation",
+  "version": "1.0.0",
+  "description": "3D interactive visualization of iceberg calving and floe drifting",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,17 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "express": "4.18.2",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "socket.io": "4.7.2",
-    "socket.io-client": "4.7.2"
+    "three": "0.160.0"
   },
   "devDependencies": {
-    "@types/react": "18.2.0",
-    "@types/react-dom": "18.2.0",
-    "@vitejs/plugin-react": "4.0.0",
-    "typescript": "5.0.2",
-    "vite": "4.4.5"
+    "@types/three": "0.160.0",
+    "typescript": "5.4.5",
+    "vite": "5.4.0"
   }
 }

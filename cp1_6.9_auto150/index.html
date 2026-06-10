@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>幻光涂鸦 - Glow Graffiti</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #05060b;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+    }
+
+    #p5-canvas {
+      display: block;
+    }
+
+    #toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px;
+      background: rgba(15, 17, 26, 0.7);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      height: 38px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e0e0ff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 12px rgba(100, 150, 255, 0.2);
+    }
+
+    .tool-btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tool-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .stroke-count {
+      color: #8888aa;
+      font-size: 13px;
+      margin-left: 4px;
+      min-width: 60px;
+    }
+
+    #color-indicator {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid #ffffff;
+      background: rgba(15, 17, 26, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+      transition: all 0.15s ease;
+    }
+
+    #width-hint {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      font-size: 12px;
+      color: #8888aa;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #confirm-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 6, 11, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    #confirm-modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(15, 17, 26, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 28px 32px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      text-align: center;
+    }
+
+    .modal-content p {
+      color: #e0e0ff;
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .modal-btn {
+      height: 36px;
+      padding: 0 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .modal-btn.cancel {
+      background: rgba(255, 255, 255, 0.08);
+      color: #e0e0ff;
+    }
+
+    .modal-btn.cancel:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .modal-btn.confirm {
+      background: rgba(255, 80, 100, 0.25);
+      color: #ff8899;
+    }
+
+    .modal-btn.confirm:hover {
+      background: rgba(255, 80, 100, 0.4);
+    }
+
+    @media (max-width: 768px) {
+      .tool-btn {
+        padding: 0 12px;
+        font-size: 0;
+      }
+
+      .tool-btn span {
+        font-size: 18px;
+      }
+
+      #color-indicator {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="toolbar">
+      <button class="tool-btn" id="btn-undo" title="撤销 (Ctrl+Z)">
+        <span>↶</span><span class="btn-text">撤销</span>
+      </button>
+      <span class="stroke-count" id="stroke-count">0 笔画</span>
+      <button class="tool-btn" id="btn-redo" title="重做 (Ctrl+Y)">
+        <span>↷</span><span class="btn-text">重做</span>
+      </button>
+      <div style="flex:1"></div>
+      <button class="tool-btn" id="btn-clear" title="清空画布">
+        <span>🗑</span><span class="btn-text">清空</span>
+      </button>
+      <button class="tool-btn" id="btn-gif" title="保存为GIF">
+        <span>🎬</span><span class="btn-text">保存GIF</span>
+      </button>
+      <button class="tool-btn" id="btn-png" title="导出为PNG">
+        <span>🖼</span><span class="btn-text">导出PNG</span>
+      </button>
+    </div>
+
+    <div id="color-indicator"></div>
+    <div id="width-hint">宽度: 12px | 模糊: 8px</div>
+
+    <div id="confirm-modal">
+      <div class="modal-content">
+        <p>确定要清空所有笔画吗？此操作不可撤销。</p>
+        <div class="modal-buttons">
+          <button class="modal-btn cancel" id="modal-cancel">取消</button>
+          <button class="modal-btn confirm" id="modal-confirm">确认清空</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

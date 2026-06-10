@@ -1,15 +1,20 @@
 {
-  "name": "aurora-projection",
+  "name": "forest-melody-stones",
   "version": "1.0.0",
-  "description": "动态极光投影效果 - 沉浸式夜空极光视觉体验",
+  "description": "森林旋律石碑符文触碰与共鸣曲生成游戏",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
+  },
   "devDependencies": {
-    "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "typescript": "5.4.5",
+    "vite": "5.4.0",
+    "@types/three": "^0.160.0"
   }
 }

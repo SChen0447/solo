@@ -1,19 +1,20 @@
 {
-  "name": "molecular-collision-sim",
-  "private": true,
-  "version": "0.1.0",
+  "name": "deep-sea-jellyfish",
+  "version": "1.0.0",
+  "description": "深海荧光水母交互模拟器",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
   },
-  "devDependencies": {
-    "@types/three": "^0.160.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.8"
-  },
   "dependencies": {
-    "three": "^0.160.0"
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "5.5.0",
+    "vite": "5.4.0",
+    "@types/three": "0.160.0"
   }
 }

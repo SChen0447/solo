@@ -1,7 +1,7 @@
 {
-  "name": "frozen-city-simulator",
-  "version": "1.0.0",
-  "description": "冰封古城末日模拟器 - 基于Three.js的冰河期场景可视化",
+  "name": "bubble-shooter",
+  "private": true,
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,12 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.160.0",
-    "simplex-noise": "3.0.0"
+    "p5": "1.9.0"
   },
   "devDependencies": {
-    "typescript": "5.4.5",
-    "vite": "5.4.0",
-    "@types/three": "0.160.0"
+    "@types/p5": "^1.7.6",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
   }
 }

@@ -1,0 +1,39 @@
+{
+  "capsules": [
+    {
+      "id": "sample1",
+      "emotionColor": "#e74c3c",
+      "text": "今天阳光明媚，希望未来的你还记得这份温暖。",
+      "drawing": [],
+      "unlockAt": 0,
+      "createdAt": 1717000000000,
+      "author": "时光旅人",
+      "likes": 3,
+      "replies": [
+        { "id": "r1", "text": "温暖的文字！", "createdAt": 1717000100000 }
+      ]
+    },
+    {
+      "id": "sample2",
+      "emotionColor": "#3498db",
+      "text": "深夜的思考，希望一周后的你已经找到答案。",
+      "drawing": [],
+      "unlockAt": 0,
+      "createdAt": 1717086400000,
+      "author": "星尘收集者",
+      "likes": 5,
+      "replies": []
+    },
+    {
+      "id": "sample3",
+      "emotionColor": "#2ecc71",
+      "text": "种下一颗种子，等待它发芽的那天。",
+      "drawing": [],
+      "unlockAt": 0,
+      "createdAt": 1717172800000,
+      "author": "森林守望者",
+      "likes": 2,
+      "replies": []
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "star-rune-resonance",
+  "version": "1.0.0",
+  "description": "A virtual star rune resonance game",
+  "scripts": {
+    "dev": "vite"
+  },
+  "dependencies": {
+    "p5": "1.9.0"
+  },
+  "devDependencies": {
+    "typescript": "5.5.4",
+    "vite": "5.4.10",
+    "@types/p5": "^1.7.6"
+  }
+}

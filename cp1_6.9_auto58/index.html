@@ -2,309 +2,55 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>地质构造运动3D可视化模拟器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>符文精灵图书馆</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
-    
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #1a1a2e;
-      font-family: 'Courier New', monospace;
-      color: #ffffff;
+      background: linear-gradient(180deg, #0a0a24 0%, #020210 100%);
     }
-    
     #app {
-      width: 100%;
-      height: 100%;
-      display: flex;
-    }
-    
-    #canvas-container {
-      flex: 1;
+      width: 100vw;
+      height: 100vh;
       position: relative;
-      background: #1a1a2e;
     }
-    
-    #canvas-container canvas {
+    canvas {
       display: block;
       width: 100%;
       height: 100%;
     }
-    
-    #control-panel {
-      width: 180px;
-      background: rgba(30, 30, 50, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      padding: 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      z-index: 10;
-    }
-    
-    .panel-title {
-      font-size: 14px;
-      font-weight: bold;
-      color: #ffffff;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      padding-bottom: 8px;
-      margin-bottom: 8px;
-    }
-    
-    .control-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    
-    .control-label {
-      font-size: 14px;
-      color: #ffffff;
-    }
-    
-    .control-value {
-      font-size: 12px;
-      color: #88aaff;
-      text-align: right;
-    }
-    
-    .slider-container {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    
-    .slider-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    
-    input[type="range"] {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      outline: none;
-      -webkit-appearance: none;
-      appearance: none;
-    }
-    
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #4a9eff;
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.1s;
-    }
-    
-    input[type="range"]::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-    
-    input[type="range"]::-moz-range-thumb {
-      width: 14px;
-      height: 14px;
-      background: #4a9eff;
-      border-radius: 50%;
-      cursor: pointer;
-      border: none;
-    }
-    
-    .btn {
-      background: transparent;
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      transition: all 0.1s ease;
-    }
-    
-    .btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .btn:active {
-      transform: scale(0.95);
-    }
-    
-    .btn.active {
-      background: rgba(74, 158, 255, 0.3);
-      border-color: #4a9eff;
-    }
-    
-    #tool-buttons {
-      position: absolute;
-      top: 20px;
+    #counter {
+      position: fixed;
       left: 20px;
-      display: flex;
-      gap: 12px;
-      z-index: 5;
-    }
-    
-    .tool-btn {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(30, 30, 50, 0.7);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      color: #ffffff;
+      bottom: 20px;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
       font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.1s ease;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .tool-btn:hover {
-      background: rgba(255, 255, 255, 0.15);
-    }
-    
-    .tool-btn:active {
-      transform: scale(0.95);
-    }
-    
-    .tool-btn.active {
-      background: rgba(74, 158, 255, 0.3);
-      border-color: #4a9eff;
-    }
-    
-    #status-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 36px;
-      background: rgba(30, 30, 50, 0.85);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      padding: 0 20px;
-      gap: 30px;
-      font-size: 14px;
-      z-index: 5;
-    }
-    
-    .status-item {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-    
-    .status-label {
-      color: #88aaff;
-    }
-    
-    .status-value {
       color: #ffffff;
-    }
-    
-    #measurement-labels {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      background: rgba(0, 0, 0, 0.47);
+      padding: 12px 20px;
+      border-radius: 8px;
+      letter-spacing: 1px;
+      z-index: 100;
+      user-select: none;
       pointer-events: none;
-      z-index: 4;
+      transition: color 0.3s ease;
     }
-    
-    .measurement-label {
-      position: absolute;
-      background: rgba(30, 30, 50, 0.85);
-      border: 1px solid rgba(74, 158, 255, 0.5);
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 12px;
-      color: #ffffff;
-      white-space: nowrap;
-      transform: translate(-50%, -100%);
+    #counter.golden {
+      color: #ffcc00;
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <div id="canvas-container">
-      <div id="tool-buttons">
-        <button class="tool-btn" id="btn-distance" title="距离测量">📏</button>
-        <button class="tool-btn" id="btn-angle" title="角度测量">📐</button>
-        <button class="tool-btn" id="btn-height" title="高度测量">📊</button>
-        <button class="tool-btn" id="btn-reset" title="重置视角">🔄</button>
-      </div>
-      <div id="measurement-labels"></div>
-      <div id="status-bar">
-        <div class="status-item">
-          <span class="status-label">时间:</span>
-          <span class="status-value" id="status-time">0 百万年前</span>
-        </div>
-        <div class="status-item">
-          <span class="status-label">状态:</span>
-          <span class="status-value" id="status-mode">正常</span>
-        </div>
-        <div class="status-item">
-          <span class="status-label">测量:</span>
-          <span class="status-value" id="status-measurement">--</span>
-        </div>
-        <div class="status-item">
-          <span class="status-label">FPS:</span>
-          <span class="status-value" id="status-fps">60</span>
-        </div>
-      </div>
-    </div>
-    <div id="control-panel">
-      <div class="panel-title">控制面板</div>
-      
-      <div class="control-group">
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="control-label">时间轴</span>
-            <span class="control-value" id="time-value">0 百万年</span>
-          </div>
-          <input type="range" id="time-slider" min="0" max="200" step="10" value="0" />
-        </div>
-      </div>
-      
-      <div class="control-group">
-        <div class="slider-container">
-          <div class="slider-header">
-            <span class="control-label">模拟速度</span>
-            <span class="control-value" id="speed-value">1.0x</span>
-          </div>
-          <input type="range" id="speed-slider" min="0.5" max="5" step="0.1" value="1" />
-        </div>
-      </div>
-      
-      <div class="control-group">
-        <button class="btn" id="btn-play">▶ 播放</button>
-      </div>
-      
-      <div class="control-group">
-        <button class="btn" id="btn-reset-time">⟲ 重置时间</button>
-      </div>
-      
-      <div class="control-group">
-        <button class="btn" id="btn-trigger-magma">🔥 触发岩浆</button>
-      </div>
-    </div>
+    <div id="counter">已唤醒精灵: 0 / 30</div>
   </div>
-  
-  <script type="module" src="/src/main.ts"></script>
+  <script type="module" src="/src/game.ts"></script>
 </body>
 </html>

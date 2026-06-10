@@ -1,27 +1,166 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>光流视听觉体验</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      html, body, #root {
-        width: 100%;
-        height: 100%;
-        background: #0b0e1a;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        color: #e0e4f0;
-        overflow: hidden;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>熔岩管道能量潮汐</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1a0000 0%, #000000 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #app::before,
+    #app::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      animation: vignette-fade 8s ease-in-out infinite;
+    }
+
+    #app::before {
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
+    }
+
+    @keyframes vignette-fade {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.9; }
+    }
+
+    #energy-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    #energy-label {
+      font-size: 14px;
+      color: #aa8888;
+      white-space: nowrap;
+    }
+
+    #energy-bar {
+      width: 200px;
+      height: 20px;
+      background-color: #333333;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    #energy-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4488ff 0%, #aa44ff 100%);
+      border-radius: 8px;
+      transition: width 0.3s ease;
+      box-shadow: 0 0 8px rgba(100, 100, 255, 0.6);
+    }
+
+    #energy-percent {
+      font-size: 16px;
+      color: #ffffff;
+      min-width: 45px;
+      text-align: right;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
+    }
+
+    #reset-btn {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #660000;
+      border: 2px solid #aa2222;
+      cursor: pointer;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+
+    #reset-btn:hover {
+      background-color: #ff2222;
+      border-color: #ff6666;
+      box-shadow: 0 0 25px rgba(255, 50, 50, 0.7);
+    }
+
+    #reset-btn:active {
+      transform: translateX(-50%) scale(0.85);
+    }
+
+    #reset-btn.bounce {
+      animation: reset-bounce 0.15s ease;
+    }
+
+    @keyframes reset-bounce {
+      0% { transform: translateX(-50%) scale(0.85); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+
+    #reset-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #ffaaaa;
+      transition: fill 0.2s ease;
+    }
+
+    #reset-btn:hover svg {
+      fill: #ffffff;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="energy-container">
+      <span id="energy-label">能量潮汐</span>
+      <div id="energy-bar">
+        <div id="energy-fill"></div>
+      </div>
+      <span id="energy-percent">0%</span>
+    </div>
+    <button id="reset-btn" title="重置">
+      <svg viewBox="0 0 24 24">
+        <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+      </svg>
+    </button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

@@ -1,85 +1,308 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐋</text></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>深海生物图鉴 - Deep Sea Bio Atlas</title>
-    <style>
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-      #loading-screen {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: #0a1628;
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>矿物晶体生长模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #0a0a2a 0%, #1a0033 100%);
+      color: #e0e0ff;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 260px;
+      padding: 20px;
+      background: rgba(10, 10, 30, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 255, 0.15);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 10;
+    }
+
+    .control-panel:hover {
+      border-color: rgba(0, 255, 255, 0.3);
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #00ffff;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    .control-group {
+      margin-bottom: 12px;
+    }
+
+    .control-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #a0a0cc;
+      margin-bottom: 8px;
+    }
+
+    .control-value {
+      font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", monospace;
+      color: #00ffff;
+      font-size: 13px;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #1a1a4a 0%, #0044aa 100%);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+
+    input[type="range"]:hover {
+      opacity: 0.9;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: #00ffff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
+    }
+
+    .bottom-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      background: rgba(10, 10, 30, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #e0e0ff;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: rgba(0, 255, 255, 0.1);
+      border-color: rgba(0, 255, 255, 0.5);
+      color: #00ffff;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-icon {
+      font-size: 14px;
+    }
+
+    .tooltip {
+      position: fixed;
+      padding: 10px 14px;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 6px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      color: #e0e0ff;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      z-index: 100;
+      white-space: nowrap;
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 4px;
+    }
+
+    .tooltip-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .tooltip-label {
+      color: #a0a0cc;
+    }
+
+    .tooltip-value {
+      color: #00ffff;
+      font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", monospace;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: auto;
+        right: auto;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 40px);
+        max-width: 500px;
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        transition: opacity 0.5s ease;
       }
-      #loading-screen.hidden {
-        opacity: 0;
-        pointer-events: none;
+
+      .control-panel .controls-row {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
       }
-      .loading-title {
-        color: #c8e6f5;
-        font-size: 24px;
-        margin-bottom: 24px;
-        font-family: system-ui, -apple-system, sans-serif;
-        letter-spacing: 4px;
+
+      .control-panel .controls-row .control-group {
+        flex: 1;
+        margin-bottom: 0;
       }
-      .loading-bar-container {
-        width: 300px;
-        height: 6px;
-        background: rgba(0, 60, 100, 0.4);
-        border-radius: 3px;
-        overflow: hidden;
+
+      .bottom-controls {
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
       }
-      .loading-bar {
-        width: 0%;
-        height: 100%;
-        background: linear-gradient(90deg, #00d4ff, #0099cc, #00d4ff);
-        border-radius: 3px;
-        animation: loading 2s ease-in-out forwards;
-        background-size: 200% 100%;
-      }
-      @keyframes loading {
-        0% { width: 0%; background-position: 200% 0; }
-        100% { width: 100%; background-position: -200% 0; }
-      }
-      .loading-text {
-        color: #6ea8c4;
-        margin-top: 16px;
-        font-size: 14px;
-        font-family: system-ui, -apple-system, sans-serif;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="loading-screen">
-      <div class="loading-title">🌊 深海生物图鉴</div>
-      <div class="loading-bar-container">
-        <div class="loading-bar"></div>
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="control-panel">
+      <div class="panel-title">晶体生长参数</div>
+      <div class="controls-row">
+        <div class="control-group">
+          <div class="control-label">
+            <span>冷却速率</span>
+            <span class="control-value" id="cooling-value">0.50</span>
+          </div>
+          <input type="range" id="cooling-slider" min="0.1" max="1.0" step="0.05" value="0.5" />
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>溶液浓度</span>
+            <span class="control-value" id="concentration-value">0.06</span>
+          </div>
+          <input type="range" id="concentration-slider" min="0.02" max="0.1" step="0.01" value="0.06" />
+        </div>
       </div>
-      <div class="loading-text">正在潜入深海...</div>
     </div>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-    <script>
-      window.addEventListener('load', () => {
-        setTimeout(() => {
-          const loading = document.getElementById('loading-screen');
-          if (loading) loading.classList.add('hidden');
-        }, 2000);
-      });
-    </script>
-  </body>
+
+    <div class="bottom-controls">
+      <button class="btn" id="replay-btn">
+        <span class="btn-icon">↻</span>
+        <span>回放</span>
+      </button>
+      <button class="btn" id="reset-btn">
+        <span class="btn-icon">⟲</span>
+        <span>重置</span>
+      </button>
+    </div>
+
+    <div class="tooltip" id="tooltip">
+      <div class="tooltip-row">
+        <span class="tooltip-label">体积</span>
+        <span class="tooltip-value" id="tooltip-volume">—</span>
+      </div>
+      <div class="tooltip-row">
+        <span class="tooltip-label">形状</span>
+        <span class="tooltip-value" id="tooltip-shape">—</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

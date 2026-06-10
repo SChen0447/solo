@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T10:35:38.150Z",
+  "task_name": "auto134",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个叫\"虚拟记忆回声瓶\"的全栈项目，想法是让用户像一位记忆装瓶师一样，可以把一段文字、一张图片（或一个emoji）和一种心情标签组合成一个\"记忆内容\"，然后选择一个漂流瓶的外观（颜色和纹理），投入虚拟大海中。其他用户可以像拾荒者一样，每隔10秒从列表中捞起一个随机漂流瓶，打开后可以看到瓶中的记忆内容，并选择是否用一段新的文字+心情标签来回复，回复内容会作为新的记忆追加到瓶子里。每个漂流瓶最多容纳5层回复，当达到上限时会自动沉入海底（标记为已封存不可再回复），并触发一次全屏的海浪闪光动画。希望能做到：第一，首页要有一个深蓝#0a1a3a到墨蓝#061225的径向渐变背景，中央是一个动态的缩微海洋区域（占页面高度的60%），海洋表面有随机生成的白色浪尖线条（波浪线使用贝塞尔曲线绘制，透明度0.3-0.6，每秒更新波峰位置），洋面上每隔一小会儿就随机漂过一个半透明的漂流瓶图标（大小30-40px，随机左右移动），最上方有一个\"投递记忆\"按钮和一个\"捞取漂流瓶\"按钮。第二，投递页面（点击\"投递记忆\"进入）需要包含：一个文本编辑框（字数限制10-200字）、一个emoji选择器（从预设的50个emoji中选一个，展示方式为网格）、一个心情标签下拉框（快乐、悲伤、平静、兴奋、忧郁、温暖），以及漂流瓶外观选择——有5种瓶身颜色（#66ccff天空蓝、#88dd88森林绿、#ffaa66夕阳橙、#ff66aa樱花粉、#aa88ff星光紫）和4种纹理（透明圆点、细条纹、波浪纹、雪花纹），外观选择后实时预览一个3D风格的漂流瓶图标（使用CSS 3D变换，半透明玻璃质感，带高光）。提交时，数据通过POST /api/bottles发送到后端，后端返回成功后在页面上显示一个持续3秒的\"瓶入海\"动画：瓶子从屏幕上方落入海洋区域，溅起一圈白色水花粒子（粒子数量50个，大小4-8px，透明度从1到0衰减）。第三，捞取页面（点击\"捞取漂流瓶\"进入）会立即POST /api/bottles/random请求随机漂流瓶数据，返回后展示一个放大版的漂流瓶（直径300px），瓶身透明可看到内部有一张折叠的泛黄信纸（背景色#f5e6c8，带纸张纹理），信纸上显示记忆文字、emoji图片和心情标签（心情标签用对应颜色的小圆点表示：快乐#ffcc00、悲伤#6688cc、平静#88cc88、兴奋#ff6688、忧郁#9966cc、温暖#ffaa44）。用户可以在下方输入框填写回复（字数10-100字）+选择心情标签，点击\"投入瓶\"后PATCH /api/bottles/:id/reply更新瓶子数据，更新成功后信纸上的文字区域会向下滚动展开新内容，同时瓶子周围出现一圈彩色光晕（颜色随回复心情变化，持续2秒后消散）。第四，当漂流瓶回复层数达到5层时，在下一次有人尝试回复时会拒绝并返回一条提示消息，同时在后端自动更新bottle.status为'sealed'，前端收到后触发一次全屏蓝色海浪闪光动画（持续1.5秒），之后返回首页。第五，界面布局上，页面宽度小于768px时漂流瓶预览会缩小为200px，投递和捞取按钮变成底部固定悬浮的圆形按钮（直径60px，带图标）。所有页面切换使用淡入淡出过渡动画（持续0.3秒）。性能上要求投递和捞取的API响应时间在200ms以内（本地测试），海洋区域的帧率不低于50fps，如果帧率低于阈值则自动减少浪尖线条数量（从20条减到10条）。实现用TypeScript、React和Express.js，前端用Vite构建，后端用Express提供RESTful API，把代码拆成以下文件：\n - package.json（含依赖：react@18.2.0、react-dom@18.2.0、express@4.18.0、typescript@5.5.0、vite@5.4.0、@vitejs/plugin-react@4.0.0、cors@2.8.5、uuid@9.0.0，启动脚本：npm run dev（后端+前端同时启动或用concurrently））\n - vite.config.ts（构建配置，代理/api到后端端口3001）\n - tsconfig.json（严格模式）\n - tsconfig.node.json（Node端配置）\n - index.html（入口，带meta viewport）\n - server/tsconfig.json（后端严格模式）\n - server/src/index.ts（Express应用，启动端口3001，提供/api/bottles的GET、POST、PATCH路由，数据用内存存储）\n - server/src/routes.ts（路由处理函数，包括/bottles、/bottles/random、/bottles/:id/reply）\n - server/src/types.ts（定义Bottle接口：id, content, emoji, mood, appearance{color, texture}, replies: Reply[], status:'active'|'sealed', createdAt）\n - src/main.tsx（React入口）\n - src/App.tsx（路由管理，三个页面切换，用useState管理当前页面）\n - src/OceanScene.tsx（海洋场景组件，使用Canvas绘制动态浪尖和漂流瓶，实现帧率控制和自适应，接收帧率回调）\n - src/DepositPage.tsx（投递页面组件，包含表单验证、emoji选择器、外观预览和提交逻辑）\n - src/RetrievePage.tsx（捞取页面组件，展示漂流瓶内容，支持回复，处理封印状态）\n - src/styles.css（全局样式，深色背景、渐变、动画、响应式布局）\n\n跑 npm install && npm run dev 就能直接看到效果，后端API在localhost:3001，前端在localhost:5173。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:f67bcae446e589b4512ed2de4038beb6_6a27eb8ad4f3ad29edf830a9.6a27ec5dd4f3ad29edf8316c.6a27ec5da6da55318983c867:Trae CN.T(2026/6/9 18:35:09)",
+    "user_id": "3986207660317399",
+    "trace_id": "f67bcae446e589b4512ed2de4038beb6",
+    "session_id": "6a27eb8ad4f3ad29edf830a9",
+    "task_id": "6a27ec5dd4f3ad29edf8316c",
+    "message_id": "6a27ec5da6da55318983c867",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/9 18:35:09",
+    "format": "full"
+  },
+  "trace": "null"
+}

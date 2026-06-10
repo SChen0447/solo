@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数字艺术馆 - 光影策展</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2a 100%);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      canvas {
+        display: block;
+      }
+      #info-panel {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 20px;
+        color: #fff;
+        min-width: 220px;
+        display: none;
+        z-index: 10;
+      }
+      #info-panel h3 {
+        margin-bottom: 12px;
+        font-size: 16px;
+        color: #fff;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        padding-bottom: 8px;
+      }
+      #info-panel .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        font-size: 13px;
+      }
+      #info-panel .info-label {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      #info-panel .info-value {
+        color: #fff;
+        font-weight: 500;
+      }
+      #count-display {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        z-index: 10;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="info-panel">
+        <h3>几何体属性</h3>
+        <div class="info-row">
+          <span class="info-label">形状</span>
+          <span class="info-value" id="info-shape">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">颜色</span>
+          <span class="info-value" id="info-color">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">尺寸</span>
+          <span class="info-value" id="info-size">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">透明度</span>
+          <span class="info-value" id="info-alpha">-</span>
+        </div>
+      </div>
+      <div id="count-display">几何体数量: <span id="geo-count">0</span> / 30</div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

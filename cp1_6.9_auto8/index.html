@@ -1,13 +1,294 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>美食食谱管理平台</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古生物化石3D虚拟展厅</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-size: 16px;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #ui-layer > * {
+      pointer-events: auto;
+    }
+
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+    }
+
+    #selected-label {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      display: none;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+    }
+
+    #selected-label.visible {
+      display: flex;
+    }
+
+    #selected-label .category-chip {
+      background: rgba(79, 195, 247, 0.25);
+      color: #4fc3f7;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    #category-filter {
+      position: absolute;
+      top: 1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.5rem;
+    }
+
+    .category-btn {
+      min-width: 44px;
+      min-height: 44px;
+      padding: 0.5rem 1.4rem;
+      background: transparent;
+      color: #e0e0e0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .category-btn:hover {
+      background: rgba(79, 195, 247, 0.15);
+      border-color: rgba(79, 195, 247, 0.5);
+      box-shadow: 0 4px 12px rgba(79, 195, 247, 0.2);
+    }
+
+    .category-btn.active {
+      background: rgba(79, 195, 247, 0.25);
+      border-color: #4fc3f7;
+      color: #4fc3f7;
+      box-shadow: 0 4px 16px rgba(79, 195, 247, 0.3);
+    }
+
+    #info-card {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      width: 22rem;
+      max-width: 28vw;
+      padding: 1.5rem;
+      display: none;
+      flex-direction: column;
+      gap: 0.9rem;
+    }
+
+    #info-card.visible {
+      display: flex;
+    }
+
+    #info-card h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #4fc3f7;
+      letter-spacing: 0.02em;
+    }
+
+    #info-card .meta-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.5rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    #info-card .meta-label {
+      color: #888;
+      font-weight: 500;
+    }
+
+    #info-card .meta-value {
+      color: #e0e0e0;
+    }
+
+    #info-card .description {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: #c0c0c0;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #speed-control {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      padding: 0.9rem 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 14rem;
+    }
+
+    #speed-control label {
+      font-size: 0.8rem;
+      color: #a0a0a0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    #speed-control label span {
+      color: #4fc3f7;
+      font-weight: 600;
+    }
+
+    #speed-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    #speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #4fc3f7;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    #speed-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    #speed-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #4fc3f7;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+    }
+
+    #backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #backdrop.active {
+      pointer-events: auto;
+    }
+
+    @media (max-width: 1440px) {
+      html, body { font-size: 15px; }
+    }
+
+    @media (max-width: 1366px) {
+      html, body { font-size: 14px; }
+      #info-card { width: 20rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="backdrop"></div>
+    <div id="ui-layer">
+      <div id="selected-label" class="glass">
+        <span id="label-name"></span>
+        <span class="category-chip" id="label-category"></span>
+      </div>
+
+      <div id="category-filter" class="glass">
+        <button class="category-btn active" data-category="all">全部</button>
+        <button class="category-btn" data-category="invertebrate">古无脊椎动物</button>
+        <button class="category-btn" data-category="vertebrate">古脊椎动物</button>
+        <button class="category-btn" data-category="plant">古植物</button>
+      </div>
+
+      <div id="info-card" class="glass">
+        <h2 id="info-name"></h2>
+        <div class="meta-grid">
+          <span class="meta-label">地质年代</span>
+          <span class="meta-value" id="info-period"></span>
+          <span class="meta-label">发现地点</span>
+          <span class="meta-value" id="info-location"></span>
+          <span class="meta-label">所属类别</span>
+          <span class="meta-value" id="info-category"></span>
+        </div>
+        <p class="description" id="info-description"></p>
+      </div>
+
+      <div id="speed-control" class="glass">
+        <label>旋转速度 <span id="speed-value">1.0x</span></label>
+        <input type="range" id="speed-slider" min="0" max="3" step="0.1" value="1" />
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

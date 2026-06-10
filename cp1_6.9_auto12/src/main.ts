@@ -1,315 +1,334 @@
 import * as THREE from 'three';
-import { DataManager } from './DataManager';
-import { BuildingSystem } from './BuildingSystem';
-import { UIController } from './UIController';
+import { OrigamiPaper, FoldLine, CornerInfo, EdgeInfo } from './origami';
+import { GoldParticles, ShowcaseAnimation, BackgroundTransition, AudioManager } from './effects';
+import './styles.css';
 
-class App {
+class OrigamiStudio {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
   private renderer: THREE.WebGLRenderer;
+  private paper: OrigamiPaper;
+  private raycaster: THREE.Raycaster;
+  private mouse: THREE.Vector2;
   private container: HTMLElement;
+  private canvas: HTMLCanvasElement;
 
-  private dataManager: DataManager;
-  private buildingSystem: BuildingSystem;
-  private uiController: UIController;
-
-  private isPointerLocked = false;
-  private yaw = 0;
-  private pitch = -0.35;
-  private cameraOrbitRadius = 140;
-  private orbitTarget = new THREE.Vector3(0, 15, 0);
-
+  private hoveredCorner: CornerInfo | null = null;
+  private hoveredEdge: EdgeInfo | null = null;
   private isDragging = false;
-  private lastMouseX = 0;
-  private lastMouseY = 0;
+  private dragStartPos = new THREE.Vector2();
+  private currentFoldLine: FoldLine | null = null;
+  private creasePreviewActive = false;
+  private showcaseActive = false;
 
-  private keys: Record<string, boolean> = {};
-  private velocity = new THREE.Vector3();
-  private forward = new THREE.Vector3();
-  private right = new THREE.Vector3();
+  private goldParticles: GoldParticles;
+  private showcaseAnimation: ShowcaseAnimation;
+  private backgroundTransition: BackgroundTransition;
+  private audioManager: AudioManager;
 
-  private firstPersonMode = false;
-  private fpCameraPos = new THREE.Vector3(0, 8, 120);
-  private fpYaw = Math.PI;
-  private fpPitch = -0.15;
-  private readonly MOVE_SPEED = 60;
-  private readonly CAMERA_HEIGHT = 6;
-  private readonly COLLISION_RADIUS = 2;
-
-  private buildingBoxes: { id: string; box: THREE.Box3 }[] = [];
-  private prevTime = 0;
+  private progressBar: HTMLElement;
+  private appElement: HTMLElement;
 
   constructor() {
-    this.container = document.getElementById('canvas-container')!;
+    this.container = document.getElementById('workbench-container')!;
+    this.canvas = document.getElementById('workbench-canvas') as HTMLCanvasElement;
+    this.progressBar = document.getElementById('progress-bar')!;
+    this.appElement = document.getElementById('app')!;
+
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0a0e1a);
-    this.scene.fog = new THREE.Fog(0x0a0e1a, 150, 400);
+    this.scene.background = new THREE.Color(0xf0f0f0);
 
     this.camera = new THREE.PerspectiveCamera(
-      55,
-      window.innerWidth / window.innerHeight,
+      45,
+      this.container.clientWidth / this.container.clientHeight,
       0.1,
-      1000
+      2000
     );
+    this.camera.position.set(0, 200, 500);
+    this.camera.lookAt(0, 0, 0);
 
     this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
       antialias: true,
-      alpha: false,
-      powerPreference: 'high-performance'
+      alpha: true
     });
+    this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.1;
-    this.container.appendChild(this.renderer.domElement);
 
-    this.dataManager = new DataManager();
-    this.buildingSystem = new BuildingSystem(this.scene, this.camera, this.renderer);
-    this.uiController = new UIController({
-      dataManager: this.dataManager,
-      buildingSystem: this.buildingSystem
-    });
+    this.paper = new OrigamiPaper();
+    this.scene.add(this.paper.getGroup());
 
-    this.initLights();
-    this.initGround();
-    this.setupEvents();
-    this.updateOrbitCamera();
+    this.setupLights();
 
-    this.init().catch(err => console.error('[App] init failed:', err));
+    this.raycaster = new THREE.Raycaster();
+    this.mouse = new THREE.Vector2();
+
+    this.goldParticles = new GoldParticles(10);
+    this.scene.add(this.goldParticles.group);
+
+    this.showcaseAnimation = new ShowcaseAnimation(this.paper.getGroup());
+    this.backgroundTransition = new BackgroundTransition(this.renderer);
+    this.audioManager = new AudioManager();
+
+    this.setupEventListeners();
+    this.updateProgress();
+    this.animate();
   }
 
-  private initLights(): void {
-    const ambient = new THREE.AmbientLight(0x3a4a7a, 0.55);
-    this.scene.add(ambient);
+  private setupLights(): void {
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    this.scene.add(ambientLight);
 
-    const hemi = new THREE.HemisphereLight(0x6a8aff, 0x1a2040, 0.35);
-    this.scene.add(hemi);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(200, 300, 200);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.camera.near = 0.5;
+    directionalLight.shadow.camera.far = 1000;
+    directionalLight.shadow.camera.left = -300;
+    directionalLight.shadow.camera.right = 300;
+    directionalLight.shadow.camera.top = 300;
+    directionalLight.shadow.camera.bottom = -300;
+    this.scene.add(directionalLight);
 
-    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
-    dir.position.set(60, 90, 50);
-    dir.castShadow = true;
-    dir.shadow.mapSize.set(2048, 2048);
-    dir.shadow.camera.left = -150;
-    dir.shadow.camera.right = 150;
-    dir.shadow.camera.top = 150;
-    dir.shadow.camera.bottom = -150;
-    dir.shadow.camera.near = 0.5;
-    dir.shadow.camera.far = 350;
-    dir.shadow.bias = -0.0005;
-    this.scene.add(dir);
-
-    const point1 = new THREE.PointLight(0x00d4ff, 0.5, 200);
-    point1.position.set(-80, 30, -80);
-    this.scene.add(point1);
-
-    const point2 = new THREE.PointLight(0x7b61ff, 0.4, 200);
-    point2.position.set(80, 30, 80);
-    this.scene.add(point2);
+    const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+    fillLight.position.set(-200, 100, -200);
+    this.scene.add(fillLight);
   }
 
-  private initGround(): void {
-    const groundGeo = new THREE.PlaneGeometry(500, 500);
-    const groundMat = new THREE.MeshStandardMaterial({
-      color: 0x0a0e1a,
-      metalness: 0.1,
-      roughness: 0.9,
-      transparent: true,
-      opacity: 0.98
-    });
-    const ground = new THREE.Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.receiveShadow = true;
-    this.scene.add(ground);
+  private setupEventListeners(): void {
+    this.canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+    this.canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+    this.canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+    this.canvas.addEventListener('mouseleave', this.onMouseUp.bind(this));
 
-    const gridSize = 500;
-    const gridDivisions = 80;
-    const grid = new THREE.GridHelper(gridSize, gridDivisions, 0x1a2a4a, 0x142040);
-    (grid.material as THREE.Material).transparent = true;
-    (grid.material as THREE.Material).opacity = 0.55;
-    grid.position.y = 0.02;
-    this.scene.add(grid);
+    this.canvas.addEventListener('touchstart', this.onTouchStart.bind(this), { passive: false });
+    this.canvas.addEventListener('touchmove', this.onTouchMove.bind(this), { passive: false });
+    this.canvas.addEventListener('touchend', this.onTouchEnd.bind(this));
 
-    const strongGrid = new THREE.GridHelper(gridSize, 10, 0x2a4a8a, 0x1a3060);
-    (strongGrid.material as THREE.Material).transparent = true;
-    (strongGrid.material as THREE.Material).opacity = 0.35;
-    strongGrid.position.y = 0.03;
-    this.scene.add(strongGrid);
-  }
-
-  private async init(): Promise<void> {
-    await this.dataManager.loadData();
-    const data = this.dataManager.getProcessedData();
-    this.buildingSystem.buildScene(data);
-    this.buildingBoxes = this.buildingSystem.getBuildingAABBs();
-
-    this.buildingSystem.setOnBuildingClick((id, pos) => {
-      this.uiController.showInfoCard(id, pos);
+    document.getElementById('undo-btn')!.addEventListener('click', () => {
+      this.audioManager.resume();
+      this.paper.undo(this.scene).then(() => this.updateProgress());
     });
 
-    this.dataManager.onDataUpdate((processed) => {
-      this.buildingSystem.updateData(processed);
+    document.getElementById('preview-btn')!.addEventListener('click', () => {
+      this.audioManager.resume();
+      this.creasePreviewActive = !this.creasePreviewActive;
+      this.paper.toggleCreasePreview(this.creasePreviewActive);
+      const btn = document.getElementById('preview-btn')!;
+      if (this.creasePreviewActive) {
+        btn.classList.add('preview-active');
+      } else {
+        btn.classList.remove('preview-active');
+      }
     });
 
-    this.animate(performance.now());
-  }
+    document.getElementById('reset-btn')!.addEventListener('click', () => {
+      this.audioManager.resume();
+      this.paper.reset();
+      this.updateProgress();
+      if (this.showcaseActive) {
+        this.exitShowcase();
+      }
+    });
 
-  private setupEvents(): void {
+    document.getElementById('showcase-btn')!.addEventListener('click', () => {
+      this.audioManager.resume();
+      if (this.showcaseActive) {
+        this.exitShowcase();
+      } else {
+        this.enterShowcase();
+      }
+    });
+
     window.addEventListener('resize', this.onResize.bind(this));
+  }
 
-    const dom = this.renderer.domElement;
+  private getMousePosition(clientX: number, clientY: number): void {
+    const rect = this.canvas.getBoundingClientRect();
+    this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+  }
 
-    dom.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0) return;
+  private getIntersectionPoint(): THREE.Vector3 | null {
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObject(this.paper.mesh);
+    if (intersects.length > 0) {
+      return intersects[0].point.clone();
+    }
+    return null;
+  }
+
+  private onMouseDown(event: MouseEvent): void {
+    this.audioManager.resume();
+    if (this.paper.isAnimating || this.showcaseActive) return;
+
+    this.getMousePosition(event.clientX, event.clientY);
+    const point = this.getIntersectionPoint();
+    if (!point) return;
+
+    this.dragStartPos.set(event.clientX, event.clientY);
+
+    const corner = this.paper.findNearestCorner(point);
+    const edge = this.paper.findNearestEdge(point);
+
+    if (corner) {
       this.isDragging = true;
-      this.lastMouseX = e.clientX;
-      this.lastMouseY = e.clientY;
-      dom.setPointerCapture(e.pointerId);
-    });
+      this.currentFoldLine = this.paper.getFoldLineFromCorner(corner);
+      this.paper.showPreviewFoldLine(this.currentFoldLine, this.scene);
+    } else if (edge) {
+      this.isDragging = true;
+      this.currentFoldLine = this.paper.getMidlineFromEdge(edge);
+      this.paper.showPreviewFoldLine(this.currentFoldLine, this.scene);
+    }
+  }
 
-    dom.addEventListener('pointermove', (e) => {
-      if (this.isDragging && !this.firstPersonMode) {
-        const dx = e.clientX - this.lastMouseX;
-        const dy = e.clientY - this.lastMouseY;
-        this.lastMouseX = e.clientX;
-        this.lastMouseY = e.clientY;
-        this.yaw -= dx * 0.005;
-        this.pitch = Math.max(-1.2, Math.min(0.2, this.pitch - dy * 0.004));
-        this.updateOrbitCamera();
+  private onMouseMove(event: MouseEvent): void {
+    if (this.showcaseActive) return;
+
+    this.getMousePosition(event.clientX, event.clientY);
+    const point = this.getIntersectionPoint();
+
+    if (!this.isDragging && point) {
+      const corner = this.paper.findNearestCorner(point);
+      const edge = this.paper.findNearestEdge(point);
+
+      if (corner && corner !== this.hoveredCorner) {
+        this.hoveredCorner = corner;
+        this.hoveredEdge = null;
+        const foldLine = this.paper.getFoldLineFromCorner(corner);
+        this.paper.showPreviewFoldLine(foldLine, this.scene);
+        this.canvas.style.cursor = 'pointer';
+      } else if (edge && edge !== this.hoveredEdge) {
+        this.hoveredEdge = edge;
+        this.hoveredCorner = null;
+        const foldLine = this.paper.getMidlineFromEdge(edge);
+        this.paper.showPreviewFoldLine(foldLine, this.scene);
+        this.canvas.style.cursor = 'pointer';
+      } else if (!corner && !edge && (this.hoveredCorner || this.hoveredEdge)) {
+        this.hoveredCorner = null;
+        this.hoveredEdge = null;
+        this.paper.clearPreviewLines(this.scene);
+        this.canvas.style.cursor = 'default';
       }
-    });
+    }
+  }
 
-    dom.addEventListener('pointerup', (e) => {
+  private onMouseUp(event: MouseEvent): void {
+    if (!this.isDragging || !this.currentFoldLine) {
       this.isDragging = false;
-      try { dom.releasePointerCapture(e.pointerId); } catch {}
-    });
+      return;
+    }
 
-    dom.addEventListener('wheel', (e) => {
-      if (this.firstPersonMode) return;
-      e.preventDefault();
-      const factor = e.deltaY > 0 ? 1.1 : 0.9;
-      this.cameraOrbitRadius = Math.max(40, Math.min(350, this.cameraOrbitRadius * factor));
-      this.updateOrbitCamera();
-    }, { passive: false });
+    const dx = event.clientX - this.dragStartPos.x;
+    const dy = event.clientY - this.dragStartPos.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
 
-    window.addEventListener('keydown', (e) => {
-      this.keys[e.code] = true;
-      if (e.code === 'KeyV') {
-        this.toggleFirstPerson();
-      }
-    });
-    window.addEventListener('keyup', (e) => {
-      this.keys[e.code] = false;
-    });
-  }
-
-  private toggleFirstPerson(): void {
-    this.firstPersonMode = !this.firstPersonMode;
-    if (this.firstPersonMode) {
-      this.fpCameraPos.copy(this.camera.position);
-      this.fpCameraPos.y = this.CAMERA_HEIGHT;
-      this.fpYaw = this.yaw + Math.PI;
-      this.fpPitch = -this.pitch;
+    if (distance > 30 && this.currentFoldLine) {
+      this.audioManager.playFoldSound();
+      this.paper.performFold(this.currentFoldLine, 800).then(() => {
+        this.updateProgress();
+      });
     } else {
-      this.updateOrbitCamera();
-    }
-  }
-
-  private updateOrbitCamera(): void {
-    const x = this.orbitTarget.x + this.cameraOrbitRadius * Math.cos(this.pitch) * Math.sin(this.yaw);
-    const y = this.orbitTarget.y + this.cameraOrbitRadius * Math.sin(this.pitch);
-    const z = this.orbitTarget.z + this.cameraOrbitRadius * Math.cos(this.pitch) * Math.cos(this.yaw);
-    this.camera.position.set(x, Math.max(5, y), z);
-    this.camera.lookAt(this.orbitTarget);
-  }
-
-  private updateFirstPerson(dt: number): void {
-    const forward = new THREE.Vector3(
-      -Math.sin(this.fpYaw) * Math.cos(this.fpPitch),
-      Math.sin(this.fpPitch),
-      -Math.cos(this.fpYaw) * Math.cos(this.fpPitch)
-    );
-    forward.y = 0;
-    forward.normalize();
-
-    const right = new THREE.Vector3().crossVectors(forward, new THREE.Vector3(0, 1, 0)).normalize();
-
-    const move = new THREE.Vector3();
-    if (this.keys['KeyW']) move.add(forward);
-    if (this.keys['KeyS']) move.sub(forward);
-    if (this.keys['KeyD']) move.add(right);
-    if (this.keys['KeyA']) move.sub(right);
-
-    if (move.lengthSq() > 0) {
-      move.normalize().multiplyScalar(this.MOVE_SPEED * dt);
-      const testPos = this.fpCameraPos.clone();
-
-      testPos.x += move.x;
-      if (!this.checkCollision(testPos)) {
-        this.fpCameraPos.x = testPos.x;
-      }
-
-      testPos.copy(this.fpCameraPos);
-      testPos.z += move.z;
-      if (!this.checkCollision(testPos)) {
-        this.fpCameraPos.z = testPos.z;
-      }
+      this.paper.clearPreviewLines(this.scene);
     }
 
-    this.fpCameraPos.y = this.CAMERA_HEIGHT;
-    this.fpCameraPos.x = Math.max(-240, Math.min(240, this.fpCameraPos.x));
-    this.fpCameraPos.z = Math.max(-240, Math.min(240, this.fpCameraPos.z));
-
-    this.camera.position.copy(this.fpCameraPos);
-    const lookTarget = this.fpCameraPos.clone().add(
-      new THREE.Vector3(
-        -Math.sin(this.fpYaw) * Math.cos(this.fpPitch),
-        Math.sin(this.fpPitch),
-        -Math.cos(this.fpYaw) * Math.cos(this.fpPitch)
-      )
-    );
-    this.camera.lookAt(lookTarget);
+    this.isDragging = false;
+    this.currentFoldLine = null;
   }
 
-  private checkCollision(pos: THREE.Vector3): boolean {
-    for (const { box } of this.buildingBoxes) {
-      const expanded = box.clone().expandByScalar(this.COLLISION_RADIUS);
-      expanded.max.y = Infinity;
-      if (expanded.containsPoint(new THREE.Vector3(pos.x, this.CAMERA_HEIGHT / 2, pos.z))) {
-        return true;
-      }
-    }
-    return false;
+  private onTouchStart(event: TouchEvent): void {
+    event.preventDefault();
+    if (event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    const mouseEvent = new MouseEvent('mousedown', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.onMouseDown(mouseEvent);
+  }
+
+  private onTouchMove(event: TouchEvent): void {
+    event.preventDefault();
+    if (event.touches.length !== 1) return;
+
+    const touch = event.touches[0];
+    const mouseEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.onMouseMove(mouseEvent);
+  }
+
+  private onTouchEnd(event: TouchEvent): void {
+    if (event.changedTouches.length !== 1) return;
+
+    const touch = event.changedTouches[0];
+    const mouseEvent = new MouseEvent('mouseup', {
+      clientX: touch.clientX,
+      clientY: touch.clientY
+    });
+    this.onMouseUp(mouseEvent);
   }
 
   private onResize(): void {
-    const w = window.innerWidth;
-    const h = window.innerHeight;
-    this.camera.aspect = w / h;
-    const baseFov = 55;
-    const aspectFactor = Math.max(0.8, Math.min(1.1, w / h / 1.777));
-    this.camera.fov = baseFov / aspectFactor;
+    const width = this.container.clientWidth;
+    const height = this.container.clientHeight;
+
+    this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
-    this.renderer.setSize(w, h);
-    this.uiController.handleResize();
+    this.renderer.setSize(width, height);
   }
 
-  private animate = (now: number): void => {
-    requestAnimationFrame(this.animate);
-    const dt = Math.min(0.05, (now - this.prevTime) / 1000);
-    this.prevTime = now;
+  private updateProgress(): void {
+    const progress = this.paper.getProgress();
+    this.progressBar.style.width = `${progress}%`;
+  }
 
-    if (this.firstPersonMode) {
-      this.updateFirstPerson(dt);
+  private enterShowcase(): void {
+    this.showcaseActive = true;
+    this.appElement.classList.add('showcase-mode');
+    this.paper.clearPreviewLines(this.scene);
+
+    this.backgroundTransition.start(true);
+    this.showcaseAnimation.start();
+    this.goldParticles.start();
+
+    this.camera.position.set(0, 150, 550);
+    this.camera.lookAt(0, 0, 0);
+  }
+
+  private exitShowcase(): void {
+    this.showcaseActive = false;
+    this.appElement.classList.remove('showcase-mode');
+    this.backgroundTransition.start(false);
+    this.paper.getGroup().rotation.y = 0;
+
+    this.camera.position.set(0, 200, 500);
+    this.camera.lookAt(0, 0, 0);
+  }
+
+  private animate(): void {
+    requestAnimationFrame(() => this.animate());
+
+    this.showcaseAnimation.update();
+    this.backgroundTransition.update();
+    this.goldParticles.update();
+
+    if (!this.showcaseActive) {
+      const time = Date.now() * 0.0005;
+      this.camera.position.x = Math.sin(time) * 20;
+      this.camera.lookAt(0, 0, 0);
     }
 
-    this.buildingSystem.animate(now);
-    this.uiController.animate(now);
     this.renderer.render(this.scene, this.camera);
-  };
+  }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  new App();
+  new OrigamiStudio();
 });

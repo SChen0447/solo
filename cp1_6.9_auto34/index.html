@@ -2,373 +2,167 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0" />
-  <title>魔法元素融合实验台</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>魔法蘑菇孢子共鸣</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      user-select: none;
     }
 
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #0a0a1a;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      color: #e0e0e0;
+      background: #000510;
+      font-family: 'JetBrains Mono', monospace;
+      color: #ffffff;
+      min-width: 800px;
     }
 
     #app {
       position: relative;
-      width: 100%;
-      height: 100%;
-    }
-
-    #canvas-container {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
+      min-width: 800px;
     }
 
     canvas {
       display: block;
-    }
-
-    .ui-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      z-index: 10;
     }
 
-    .energy-panel {
+    .hud-panel {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 8px;
+      padding: 14px 28px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(170, 0, 255, 0.3);
+      display: flex;
+      gap: 40px;
+      z-index: 10;
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);
+    }
+
+    .hud-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hud-label {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 700;
+    }
+
+    .hud-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 22px;
+      font-weight: 300;
+      background: linear-gradient(135deg, #00ff88, #aa00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hud-value.bold {
+      font-weight: 900;
+    }
+
+    .minimap {
       position: absolute;
       top: 20px;
       left: 20px;
-      width: 220px;
-      pointer-events: auto;
-    }
-
-    .energy-bar-container {
-      position: relative;
-      width: 200px;
-      height: 24px;
-      background: rgba(20, 20, 40, 0.8);
-      border: 1px solid rgba(128, 100, 255, 0.5);
-      border-radius: 12px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 136, 255, 0.3);
       overflow: hidden;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 0 20px rgba(255, 136, 255, 0.2);
     }
 
-    .energy-bar {
+    .minimap-canvas {
+      width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, #8b5cf6, #3b82f6);
-      border-radius: 12px;
-      transition: width 0.3s ease;
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
-
-    .energy-bar.warning {
-      animation: flashRed 0.5s infinite alternate;
-    }
-
-    @keyframes flashRed {
-      from { background: linear-gradient(90deg, #ef4444, #dc2626); }
-      to { background: linear-gradient(90deg, #f87171, #ef4444); }
-    }
-
-    .energy-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 12px;
-      font-weight: 600;
-      color: #fff;
-      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
-    }
-
-    .cooldown-timer {
-      position: absolute;
-      top: -8px;
-      right: 0;
-      width: 40px;
-      height: 40px;
-      display: none;
-    }
-
-    .cooldown-timer.active {
       display: block;
     }
 
-    .cooldown-ring {
-      transform: rotate(-90deg);
-      width: 40px;
-      height: 40px;
-    }
-
-    .cooldown-ring circle {
-      fill: none;
-      stroke-width: 3;
-    }
-
-    .cooldown-ring .bg {
-      stroke: rgba(255, 255, 255, 0.1);
-    }
-
-    .cooldown-ring .progress {
-      stroke: #ef4444;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 1s linear;
-    }
-
-    .cooldown-text {
+    .instructions {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 11px;
-      font-weight: 700;
-      color: #ef4444;
-    }
-
-    .recipe-panel {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      width: 220px;
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
-      pointer-events: auto;
-      padding-right: 4px;
-    }
-
-    .recipe-panel::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    .recipe-panel::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .recipe-panel::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.5);
-      border-radius: 2px;
-    }
-
-    .recipe-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      color: #e0e0e0;
-      text-align: center;
-      text-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-    }
-
-    .recipe-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .recipe-card {
-      background: rgba(30, 30, 60, 0.7);
-      border: 1px solid rgba(128, 100, 255, 0.3);
-      border-radius: 8px;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      opacity: 0;
-      transform: translateX(40px);
-      animation: slideIn 0.3s ease forwards;
-      backdrop-filter: blur(8px);
-    }
-
-    @keyframes slideIn {
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
-    }
-
-    .recipe-card:hover {
-      transform: scale(1.05);
-      border-color: rgba(139, 92, 246, 0.8);
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-    }
-
-    .recipe-card:active {
-      transform: scale(0.95);
-    }
-
-    .recipe-card.disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    .recipe-card.disabled:hover {
-      transform: none;
-      box-shadow: none;
-    }
-
-    .element-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: bold;
-      color: #fff;
-      text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      flex-shrink: 0;
-    }
-
-    .element-icon.fire {
-      background: linear-gradient(135deg, #ff6b35, #ff4500, #cc3300);
-      box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);
-    }
-
-    .element-icon.water {
-      background: linear-gradient(135deg, #4db8ff, #1e90ff, #0066cc);
-      box-shadow: 0 0 8px rgba(30, 144, 255, 0.6);
-    }
-
-    .element-icon.wind {
-      background: linear-gradient(135deg, #90ee90, #32cd32, #228b22);
-      box-shadow: 0 0 8px rgba(50, 205, 50, 0.6);
-    }
-
-    .element-icon.earth {
-      background: linear-gradient(135deg, #a0522d, #8b4513, #5d2e0c);
-      box-shadow: 0 0 8px rgba(139, 69, 19, 0.6);
-    }
-
-    .element-icon.steam {
-      background: linear-gradient(135deg, #e0e0e0, #b0b0b0, #808080);
-      box-shadow: 0 0 8px rgba(200, 200, 200, 0.6);
-    }
-
-    .element-icon.firestorm {
-      background: linear-gradient(135deg, #ff4500, #ff8c00, #32cd32);
-      box-shadow: 0 0 8px rgba(255, 140, 0, 0.6);
-    }
-
-    .element-icon.mud {
-      background: linear-gradient(135deg, #8b4513, #654321, #2f4f4f);
-      box-shadow: 0 0 8px rgba(101, 67, 33, 0.6);
-    }
-
-    .element-icon.lightning {
-      background: linear-gradient(135deg, #9400d3, #8b5cf6, #1e90ff);
-      box-shadow: 0 0 8px rgba(148, 0, 211, 0.6);
-    }
-
-    .element-icon.lava {
-      background: linear-gradient(135deg, #ff4500, #ff0000, #8b4513);
-      box-shadow: 0 0 8px rgba(255, 69, 0, 0.6);
-    }
-
-    .element-icon.ice {
-      background: linear-gradient(135deg, #87ceeb, #b0e0e6, #e0ffff);
-      box-shadow: 0 0 8px rgba(135, 206, 235, 0.6);
-    }
-
-    .element-icon.sand {
-      background: linear-gradient(135deg, #f4a460, #daa520, #8b4513);
-      box-shadow: 0 0 8px rgba(244, 164, 96, 0.6);
-    }
-
-    .element-icon.storm {
-      background: linear-gradient(135deg, #4b0082, #8b5cf6, #32cd32);
-      box-shadow: 0 0 8px rgba(75, 0, 130, 0.6);
-    }
-
-    .arrow-icon {
-      font-size: 18px;
-      color: #e0e0e0;
-      flex-shrink: 0;
-    }
-
-    .combo-indicator {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      margin-top: -180px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 20;
-    }
-
-    .combo-indicator.visible {
-      opacity: 1;
-    }
-
-    .combo-result {
-      font-size: 16px;
-      font-weight: 600;
-      color: #fff;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-    }
-
-    .hint-text {
-      position: absolute;
-      bottom: 30px;
+      bottom: 20px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 13px;
-      color: rgba(224, 224, 224, 0.6);
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.5);
       text-align: center;
-      pointer-events: none;
+      z-index: 10;
+      line-height: 1.8;
+    }
+
+    .instructions span {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(170, 0, 255, 0.2);
+      border-radius: 4px;
+      margin: 0 4px;
+      color: #ff88ff;
+      font-weight: 700;
+    }
+
+    @media (max-width: 800px) {
+      #app {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="app">
-    <div id="canvas-container"></div>
-    <div class="ui-overlay">
-      <div class="energy-panel">
-        <div class="cooldown-timer" id="cooldown-timer">
-          <svg class="cooldown-ring" viewBox="0 0 40 40">
-            <circle class="bg" cx="20" cy="20" r="17"></circle>
-            <circle class="progress" cx="20" cy="20" r="17" stroke-dasharray="106.81" stroke-dashoffset="0"></circle>
-          </svg>
-          <span class="cooldown-text" id="cooldown-text">60</span>
-        </div>
-        <div class="energy-bar-container">
-          <div class="energy-bar" id="energy-bar" style="width: 100%"></div>
-          <span class="energy-text" id="energy-text">100 / 100</span>
-        </div>
+    <div class="hud-panel">
+      <div class="hud-item">
+        <span class="hud-label">菌群数量</span>
+        <span class="hud-value bold" id="mushroomCount">0</span>
       </div>
-      <div class="recipe-panel">
-        <div class="recipe-title">✨ 合成配方记录</div>
-        <div class="recipe-list" id="recipe-list"></div>
+      <div class="hud-item">
+        <span class="hud-label">共鸣频率</span>
+        <span class="hud-value" id="avgFreq">0.00</span>
       </div>
-      <div class="combo-indicator" id="combo-indicator">
-        <div class="element-icon" id="combo-icon"></div>
-        <span class="combo-result" id="combo-text"></span>
+      <div class="hud-item">
+        <span class="hud-label">孢子释放</span>
+        <span class="hud-value" id="sporeCount">0</span>
       </div>
-      <div class="hint-text">拖拽四元素晶石到魔法阵中进行融合 · 点击配方卡可重放效果（消耗1点能量）</div>
+    </div>
+    <div class="minimap">
+      <canvas class="minimap-canvas" id="minimap" width="120" height="120"></canvas>
+    </div>
+    <div class="instructions">
+      <span>点击空白处</span> 播撒孢子
+      &nbsp;&nbsp;
+      <span>点击蘑菇</span> 设为主导频率
+      &nbsp;&nbsp;
+      <span>空格键</span> 释放孢子爆裂
     </div>
   </div>
-  <script type="module" src="/src/main.ts"></script>
+  <script type="module" src="/src/controller.ts"></script>
 </body>
 </html>

@@ -1,0 +1,205 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f0f0f0;
+}
+
+#app {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  background-color: #f0f0f0;
+  transition: background-color 1.5s ease;
+}
+
+#app.showcase-mode {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+#workbench-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+  transition: background-color 1.5s ease;
+}
+
+#app.showcase-mode #workbench-container {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+#workbench-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#toolbar {
+  width: 80px;
+  background-color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 0;
+  gap: 20px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.05);
+  transition: background-color 1.5s ease;
+}
+
+#app.showcase-mode #toolbar {
+  background-color: rgba(30, 30, 50, 0.8);
+}
+
+.tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease;
+  color: #555;
+}
+
+#app.showcase-mode .tool-btn {
+  color: #ccc;
+}
+
+.showcase-btn {
+  width: 64px;
+  height: 40px;
+  border-radius: 8px;
+  background-color: #2196f3;
+  color: white !important;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
+  padding: 4px 8px;
+}
+
+.showcase-btn:hover {
+  background-color: #1976d2;
+  box-shadow: 0 3px 10px rgba(33, 150, 243, 0.4);
+  transform: translateY(-1px);
+}
+
+.showcase-btn svg {
+  flex-shrink: 0;
+}
+
+.circle-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #e0e0e0;
+}
+
+.circle-btn:hover {
+  background-color: #ccc;
+  transform: scale(1.05);
+}
+
+#app.showcase-mode .circle-btn {
+  background-color: rgba(100, 100, 120, 0.6);
+}
+
+#app.showcase-mode .circle-btn:hover {
+  background-color: rgba(120, 120, 140, 0.8);
+}
+
+.reset-btn {
+  background-color: #ff6b6b !important;
+  color: white !important;
+}
+
+.reset-btn:hover {
+  background-color: #ff5252 !important;
+}
+
+.preview-active {
+  background-color: #4ecdc4 !important;
+  color: white !important;
+}
+
+.preview-active:hover {
+  background-color: #3dbdb5 !important;
+}
+
+#progress-container {
+  width: 180px;
+  height: 6px;
+  background-color: #ddd;
+  border-radius: 3px;
+  overflow: hidden;
+  transform: rotate(90deg);
+  transform-origin: center;
+  margin: 60px 0;
+}
+
+#progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #4ecdc4, #ff6b35);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  #app {
+    flex-direction: column;
+  }
+
+  #workbench-container {
+    width: 100%;
+    height: 60vh;
+  }
+
+  #toolbar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: center;
+    padding: 12px;
+    gap: 12px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .showcase-btn {
+    width: auto;
+    height: 36px;
+    flex-direction: row;
+    padding: 0 14px;
+    font-size: 13px;
+    gap: 4px;
+  }
+
+  .circle-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .circle-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  #progress-container {
+    width: 120px;
+    height: 5px;
+    transform: none;
+    margin: 0;
+  }
+}

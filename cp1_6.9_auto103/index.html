@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>浮空岛屿能量结晶共鸣</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: linear-gradient(to bottom, #0a0a2a 0%, #1a1a4a 100%);
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      }
+      #app {
+        width: 100vw;
+        height: 100vh;
+      }
+      #stats-panel {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 8px;
+        padding: 14px 18px;
+        color: #88ccff;
+        font-size: 14px;
+        text-shadow: 0 0 2px rgba(136, 204, 255, 0.8);
+        z-index: 100;
+        min-width: 200px;
+        backdrop-filter: blur(4px);
+      }
+      #stats-panel .stat-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 6px 0;
+      }
+      #stats-panel .stat-label {
+        color: #6699cc;
+      }
+      #stats-panel .stat-value {
+        color: #aaddff;
+        font-weight: 600;
+      }
+      #stats-panel h3 {
+        color: #88ccff;
+        font-size: 15px;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(136, 204, 255, 0.3);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="stats-panel">
+      <h3>浮空岛守护面板</h3>
+      <div class="stat-row">
+        <span class="stat-label">活跃能量波:</span>
+        <span class="stat-value" id="active-waves">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">共鸣次数:</span>
+        <span class="stat-value" id="resonance-count">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">脉冲频率:</span>
+        <span class="stat-value" id="pulse-rate">0.0/s</span>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

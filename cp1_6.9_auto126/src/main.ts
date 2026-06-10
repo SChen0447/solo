@@ -1,333 +1,215 @@
-import * as THREE from 'three';
-import { RootSimulator } from './rootSimulator';
-import { RootRenderer } from './rootRenderer';
-import { UIController } from './uiController';
+import p5 from 'p5';
+import {
+  LightString,
+  Resonance,
+  Particle,
+  segmentsIntersect,
+  Point
+} from './string';
 
-interface CameraState {
-  position: THREE.Vector3;
-  target: THREE.Vector3;
+interface StarDot {
+  x: number;
+  y: number;
+  alpha: number;
 }
 
-const CAMERA_PRESETS: Record<number, CameraState> = {
-  1: { position: new THREE.Vector3(0, 8, 0.01), target: new THREE.Vector3(0, -1.5, 0) },
-  2: { position: new THREE.Vector3(5, 3, 5), target: new THREE.Vector3(0, -1.5, 0) },
-  3: { position: new THREE.Vector3(6, -1, 0), target: new THREE.Vector3(0, -1.5, 0) },
-  4: { position: new THREE.Vector3(2, -1, 2), target: new THREE.Vector3(0, -1.5, 0) }
+const MAX_STRINGS = 10;
+
+const sketch = (p: p5): void => {
+  let strings: LightString[] = [];
+  let currentString: LightString | null = null;
+  let isDrawing: boolean = false;
+  let stars: StarDot[] = [];
+  let resonances: Resonance[] = [];
+  let particles: Particle[] = [];
+  let checkedIntersections: Set<string> = new Set();
+  let mouseXPos: number = 0;
+  let mouseYPos: number = 0;
+
+  const generateStars = (): void => {
+    stars = [];
+    for (let i = 0; i < 200; i++) {
+      stars.push({
+        x: Math.random() * p.windowWidth,
+        y: Math.random() * p.windowHeight,
+        alpha: 0.3 + Math.random() * 0.3
+      });
+    }
+  };
+
+  const drawBackground = (): void => {
+    const top = p.color('#0a0a1a');
+    const bottom = p.color('#1a0a2a');
+    p.noFill();
+    for (let y = 0; y < p.height; y++) {
+      const inter = p.map(y, 0, p.height, 0, 1);
+      const c = p.lerpColor(top, bottom, inter);
+      p.stroke(c);
+      p.line(0, y, p.width, y);
+    }
+  };
+
+  const drawStars = (): void => {
+    p.noStroke();
+    for (const star of stars) {
+      p.fill(255, 255, 255, Math.floor(star.alpha * 255));
+      p.circle(star.x, star.y, 1);
+    }
+  };
+
+  const drawCrosshair = (): void => {
+    if (!isDrawing) return;
+    p.push();
+    p.stroke(255, 255, 255, 128);
+    p.strokeWeight(1);
+    p.noFill();
+    p.line(mouseXPos - 10, mouseYPos, mouseXPos + 10, mouseYPos);
+    p.line(mouseXPos, mouseYPos - 10, mouseXPos, mouseYPos + 10);
+    p.pop();
+  };
+
+  const checkIntersections = (): void => {
+    for (let i = 0; i < strings.length; i++) {
+      for (let j = i + 1; j < strings.length; j++) {
+        const s1 = strings[i];
+        const s2 = strings[j];
+        if (s1.isDrawing || s2.isDrawing) continue;
+
+        const key = `${Math.min(s1.id, s2.id)}-${Math.max(s1.id, s2.id)}`;
+        if (checkedIntersections.has(key)) continue;
+
+        const segs1 = s1.getSegments();
+        const segs2 = s2.getSegments();
+
+        for (const seg1 of segs1) {
+          for (const seg2 of segs2) {
+            const pt = segmentsIntersect(seg1.a, seg1.b, seg2.a, seg2.b);
+            if (pt) {
+              createResonance(pt, s1.currentColor, s2.currentColor);
+              checkedIntersections.add(key);
+              break;
+            }
+          }
+          if (checkedIntersections.has(key)) break;
+        }
+      }
+    }
+  };
+
+  const createResonance = (pt: Point, c1: string, c2: string): void => {
+    const mixed = LightString.mixColors(c1, c2);
+    resonances.push(new Resonance(pt.x, pt.y, mixed));
+
+    const count = 4 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count; i++) {
+      particles.push(new Particle(pt.x, pt.y, mixed));
+    }
+  };
+
+  const drawResonances = (): void => {
+    for (const r of resonances) {
+      p.push();
+      const ctx = p.drawingContext as CanvasRenderingContext2D;
+      ctx.shadowBlur = 12;
+      ctx.shadowColor = r.color;
+      p.noFill();
+      const rgb = LightString.hexToRgb(r.color);
+      p.stroke(rgb.r, rgb.g, rgb.b, Math.floor(r.alpha * 255));
+      p.strokeWeight(2);
+      p.circle(r.x, r.y, r.radius * 2);
+      p.pop();
+    }
+  };
+
+  const drawParticles = (): void => {
+    for (const particle of particles) {
+      p.push();
+      const ctx = p.drawingContext as CanvasRenderingContext2D;
+      ctx.shadowBlur = 8;
+      ctx.shadowColor = particle.color;
+      p.noStroke();
+      const rgb = LightString.hexToRgb(particle.color);
+      p.fill(rgb.r, rgb.g, rgb.b, Math.floor(particle.alpha * 255));
+      p.circle(particle.x, particle.y, particle.size * 2);
+      p.pop();
+    }
+  };
+
+  p.setup = (): void => {
+    const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+    canvas.parent('app');
+    generateStars();
+    p.frameRate(60);
+  };
+
+  p.draw = (): void => {
+    drawBackground();
+    drawStars();
+
+    for (const s of strings) {
+      s.update();
+      s.draw(p);
+    }
+
+    checkIntersections();
+
+    for (const r of resonances) {
+      r.update();
+    }
+    resonances = resonances.filter(r => r.alive);
+    drawResonances();
+
+    for (const particle of particles) {
+      particle.update();
+    }
+    particles = particles.filter(pt => pt.alive);
+    drawParticles();
+
+    drawCrosshair();
+  };
+
+  p.mousePressed = (): void => {
+    if (p.mouseButton !== p.LEFT) return;
+    if (strings.length >= MAX_STRINGS) return;
+
+    mouseXPos = p.mouseX;
+    mouseYPos = p.mouseY;
+    isDrawing = true;
+    const newId = Date.now() + Math.random();
+    currentString = new LightString(newId, p.mouseX, p.mouseY);
+    strings.push(currentString);
+  };
+
+  p.mouseDragged = (): void => {
+    mouseXPos = p.mouseX;
+    mouseYPos = p.mouseY;
+    if (currentString && currentString.isDrawing) {
+      currentString.addNode(p.mouseX, p.mouseY);
+    }
+  };
+
+  p.mouseMoved = (): void => {
+    mouseXPos = p.mouseX;
+    mouseYPos = p.mouseY;
+  };
+
+  p.mouseReleased = (): void => {
+    if (p.mouseButton !== p.LEFT) return;
+    if (currentString) {
+      currentString.finish();
+
+      if (currentString.nodes.length < 2) {
+        strings = strings.filter(s => s !== currentString);
+      }
+      currentString = null;
+    }
+    isDrawing = false;
+  };
+
+  p.windowResized = (): void => {
+    p.resizeCanvas(p.windowWidth, p.windowHeight);
+    generateStars();
+  };
 };
 
-class App {
-  private rootSimulator: RootSimulator;
-  private rootRenderer: RootRenderer;
-  private uiController: UIController;
-  private humidity: number = 50;
-  private temperature: number = 22;
-  private soilOpacity: number = 0.6;
-
-  private isDragging: boolean = false;
-  private isPanning: boolean = false;
-  private lastMouseX: number = 0;
-  private lastMouseY: number = 0;
-  private cameraTheta: number = Math.PI / 4;
-  private cameraPhi: number = Math.PI / 3;
-  private cameraRadius: number = 7;
-  private cameraTarget: THREE.Vector3 = new THREE.Vector3(0, -1.5, 0);
-  private minRadius: number = 2;
-  private maxRadius: number = 15;
-
-  private animatingCamera: boolean = false;
-  private cameraAnimStart: { position: THREE.Vector3; target: THREE.Vector3; time: number } | null = null;
-  private cameraAnimEnd: { position: THREE.Vector3; target: THREE.Vector3 } | null = null;
-  private readonly CAMERA_ANIM_DURATION: number = 1000;
-
-  private lastFrameTime: number = 0;
-  private animationId: number = 0;
-
-  private hoverTimeout: number | null = null;
-
-  constructor() {
-    const canvasContainer = document.getElementById('canvas-container')!;
-    const uiPanel = document.getElementById('ui-panel')!;
-
-    this.rootSimulator = new RootSimulator();
-    this.rootRenderer = new RootRenderer(canvasContainer);
-    this.uiController = new UIController(uiPanel, {
-      onHumidityChange: this.handleHumidityChange.bind(this),
-      onTemperatureChange: this.handleTemperatureChange.bind(this),
-      onSoilOpacityChange: this.handleSoilOpacityChange.bind(this),
-      onReset: this.handleReset.bind(this)
-    });
-
-    this.rootRenderer.setSoilOpacity(this.soilOpacity);
-    this.updateCameraFromSpherical();
-    this.setupEventListeners();
-    this.startAnimationLoop();
-  }
-
-  private setupEventListeners(): void {
-    const canvas = this.rootRenderer.getRenderer().domElement;
-
-    canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
-    window.addEventListener('mousemove', this.onMouseMove.bind(this));
-    window.addEventListener('mouseup', this.onMouseUp.bind(this));
-    canvas.addEventListener('wheel', this.onWheel.bind(this), { passive: false });
-    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-
-    window.addEventListener('keydown', this.onKeyDown.bind(this));
-    canvas.addEventListener('click', this.onClick.bind(this));
-    canvas.addEventListener('dblclick', this.onDoubleClick.bind(this));
-
-    canvas.addEventListener('mouseleave', () => {
-      this.rootRenderer.updateHoverHalo(null);
-    });
-  }
-
-  private handleHumidityChange(value: number): void {
-    this.humidity = value;
-  }
-
-  private handleTemperatureChange(value: number): void {
-    this.temperature = value;
-  }
-
-  private handleSoilOpacityChange(value: number): void {
-    this.soilOpacity = value;
-    this.rootRenderer.setSoilOpacity(value);
-  }
-
-  private handleReset(): void {
-    this.rootSimulator.reset();
-    this.uiController.setHumidity(50);
-    this.uiController.setTemperature(22);
-    this.uiController.setSoilOpacity(0.6);
-    this.humidity = 50;
-    this.temperature = 22;
-    this.soilOpacity = 0.6;
-    this.rootRenderer.setSoilOpacity(0.6);
-  }
-
-  private onMouseDown(e: MouseEvent): void {
-    if (e.button === 0) {
-      this.isDragging = true;
-    } else if (e.button === 2) {
-      this.isPanning = true;
-    }
-    this.lastMouseX = e.clientX;
-    this.lastMouseY = e.clientY;
-  }
-
-  private onMouseMove(e: MouseEvent): void {
-    if (this.isDragging) {
-      const deltaX = e.clientX - this.lastMouseX;
-      const deltaY = e.clientY - this.lastMouseY;
-      this.cameraTheta -= deltaX * 0.005;
-      this.cameraPhi = Math.max(0.1, Math.min(Math.PI - 0.1, this.cameraPhi - deltaY * 0.005));
-      this.updateCameraFromSpherical();
-      this.animatingCamera = false;
-      this.lastMouseX = e.clientX;
-      this.lastMouseY = e.clientY;
-    } else if (this.isPanning) {
-      const deltaX = e.clientX - this.lastMouseX;
-      const deltaY = e.clientY - this.lastMouseY;
-      const camera = this.rootRenderer.getCamera();
-      const right = new THREE.Vector3();
-      const up = new THREE.Vector3(0, 1, 0);
-      camera.getWorldDirection(right);
-      right.cross(up).normalize();
-      const panSpeed = this.cameraRadius * 0.001;
-      this.cameraTarget.addScaledVector(right, -deltaX * panSpeed);
-      this.cameraTarget.y += deltaY * panSpeed;
-      this.updateCameraFromSpherical();
-      this.animatingCamera = false;
-      this.lastMouseX = e.clientX;
-      this.lastMouseY = e.clientY;
-    }
-
-    if (!this.isDragging && !this.isPanning) {
-      this.handleHover(e.clientX, e.clientY);
-    }
-  }
-
-  private onMouseUp(e: MouseEvent): void {
-    if (e.button === 0) this.isDragging = false;
-    if (e.button === 2) this.isPanning = false;
-  }
-
-  private onWheel(e: WheelEvent): void {
-    e.preventDefault();
-    const zoomSpeed = 0.001;
-    this.cameraRadius = Math.max(
-      this.minRadius,
-      Math.min(this.maxRadius, this.cameraRadius + e.deltaY * zoomSpeed)
-    );
-    this.updateCameraFromSpherical();
-    this.animatingCamera = false;
-    this.adjustFogForCamera();
-  }
-
-  private onKeyDown(e: KeyboardEvent): void {
-    if (e.code === 'Space') {
-      e.preventDefault();
-      const paused = this.rootSimulator.togglePause();
-      const nodes = this.rootSimulator.getBranchingNodes();
-      this.rootRenderer.updateBranchMarkers(nodes, paused);
-      return;
-    }
-
-    const keyNum = parseInt(e.key);
-    if (keyNum >= 1 && keyNum <= 4) {
-      this.switchCameraView(keyNum);
-    }
-  }
-
-  private switchCameraView(presetNum: number): void {
-    const preset = CAMERA_PRESETS[presetNum];
-    if (!preset) return;
-
-    let endPosition = preset.position.clone();
-    let endTarget = preset.target.clone();
-
-    if (presetNum === 4) {
-      const closest = this.rootSimulator.getClosestRootPoint(endTarget);
-      const dir = endPosition.clone().sub(closest).normalize();
-      endPosition = closest.clone().add(dir.multiplyScalar(2));
-      endTarget = closest.clone();
-    }
-
-    const camera = this.rootRenderer.getCamera();
-    this.cameraAnimStart = {
-      position: camera.position.clone(),
-      target: this.cameraTarget.clone(),
-      time: performance.now()
-    };
-    this.cameraAnimEnd = {
-      position: endPosition,
-      target: endTarget
-    };
-    this.animatingCamera = true;
-  }
-
-  private updateCameraAnimation(): void {
-    if (!this.animatingCamera || !this.cameraAnimStart || !this.cameraAnimEnd) return;
-
-    const now = performance.now();
-    const elapsed = now - this.cameraAnimStart.time;
-    const t = Math.min(1, elapsed / this.CAMERA_ANIM_DURATION);
-    const easeT = 1 - Math.pow(1 - t, 3);
-
-    const camera = this.rootRenderer.getCamera();
-    camera.position.lerpVectors(this.cameraAnimStart.position, this.cameraAnimEnd.position, easeT);
-    this.cameraTarget.lerpVectors(this.cameraAnimStart.target, this.cameraAnimEnd.target, easeT);
-    camera.lookAt(this.cameraTarget);
-
-    this.cameraRadius = camera.position.distanceTo(this.cameraTarget);
-    const dir = camera.position.clone().sub(this.cameraTarget);
-    this.cameraTheta = Math.atan2(dir.x, dir.z);
-    this.cameraPhi = Math.acos(Math.max(-1, Math.min(1, dir.y / this.cameraRadius)));
-
-    this.adjustFogForCamera();
-
-    if (t >= 1) {
-      this.animatingCamera = false;
-      this.cameraAnimStart = null;
-      this.cameraAnimEnd = null;
-    }
-  }
-
-  private updateCameraFromSpherical(): void {
-    const camera = this.rootRenderer.getCamera();
-    camera.position.x = this.cameraTarget.x + this.cameraRadius * Math.sin(this.cameraPhi) * Math.sin(this.cameraTheta);
-    camera.position.y = this.cameraTarget.y + this.cameraRadius * Math.cos(this.cameraPhi);
-    camera.position.z = this.cameraTarget.z + this.cameraRadius * Math.sin(this.cameraPhi) * Math.cos(this.cameraTheta);
-    camera.lookAt(this.cameraTarget);
-  }
-
-  private adjustFogForCamera(): void {
-    const baseFar = 10;
-    const farDistance = THREE.MathUtils.lerp(5, 18, (this.cameraRadius - this.minRadius) / (this.maxRadius - this.minRadius));
-    this.rootRenderer.setFogDensity(farDistance);
-  }
-
-  private onClick(e: MouseEvent): void {
-    const soilInfo = this.rootRenderer.pickSoilLayer(e.clientX, e.clientY);
-    if (soilInfo) {
-      this.uiController.showSoilLabel(
-        e.clientX,
-        e.clientY,
-        soilInfo.layer.name,
-        soilInfo.layer.thickness,
-        soilInfo.layer.nutrientValue
-      );
-    }
-  }
-
-  private onDoubleClick(e: MouseEvent): void {
-    if (!this.rootSimulator.isPaused()) return;
-
-    const markerInfo = this.rootRenderer.pickBranchMarker(e.clientX, e.clientY);
-    if (markerInfo) {
-      const stats = this.rootSimulator.getBranchStats(markerInfo.nodeId);
-      this.uiController.showTooltip(
-        e.clientX,
-        e.clientY,
-        '侧根分支统计',
-        [
-          { label: '分支数：', value: `${stats.branchCount}` },
-          { label: '总长度：', value: `${stats.totalLength.toFixed(2)} 单位` },
-          { label: '最大深度：', value: `${stats.maxDepth.toFixed(2)} 单位` }
-        ],
-        2000
-      );
-    }
-  }
-
-  private handleHover(x: number, y: number): void {
-    if (this.hoverTimeout !== null) {
-      clearTimeout(this.hoverTimeout);
-    }
-    this.hoverTimeout = window.setTimeout(() => {
-      const hitPoint = this.rootRenderer.pickHoverObject(x, y);
-      if (hitPoint) {
-        this.rootRenderer.updateHoverHalo(hitPoint);
-        this.uiController.showHoverHalo(x, y);
-      } else {
-        this.rootRenderer.updateHoverHalo(null);
-      }
-    }, 16);
-  }
-
-  private startAnimationLoop(): void {
-    const animate = (time: number) => {
-      this.animationId = requestAnimationFrame(animate);
-
-      const deltaTime = Math.min(33, time - this.lastFrameTime);
-      this.lastFrameTime = time;
-
-      this.rootSimulator.update(this.humidity, this.temperature);
-
-      const nodes = this.rootSimulator.getNodes();
-      this.rootRenderer.updateRoots(nodes);
-
-      const particles = this.rootSimulator.getVibrationParticles();
-      this.rootRenderer.updateParticles(particles);
-
-      if (this.rootSimulator.isPaused()) {
-        const branchingNodes = this.rootSimulator.getBranchingNodes();
-        this.rootRenderer.updateBranchMarkers(branchingNodes, true);
-      }
-
-      this.updateCameraAnimation();
-      this.rootRenderer.render();
-    };
-
-    this.animationId = requestAnimationFrame(animate);
-  }
-
-  public dispose(): void {
-    cancelAnimationFrame(this.animationId);
-    this.rootRenderer.dispose();
-  }
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-  new App();
-});
+new p5(sketch);

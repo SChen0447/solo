@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>像素地牢探险</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: 'Courier New', monospace;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #canvas-wrapper {
+      position: relative;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+    }
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    #ui-root {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    #hud {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: none;
+    }
+    .hud-item {
+      background: rgba(15, 15, 35, 0.85);
+      border: 2px solid #4a4a7a;
+      border-radius: 4px;
+      padding: 8px 14px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+      min-width: 110px;
+    }
+    .hud-item.gold {
+      border-color: #ffd700;
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+    }
+    .hud-item.key {
+      border-color: #c0c0c0;
+      box-shadow: 0 0 16px rgba(192, 192, 192, 0.3);
+    }
+    .hud-item.life {
+      border-color: #ff4d4d;
+      box-shadow: 0 0 16px rgba(255, 77, 77, 0.4);
+    }
+    .hud-item.time {
+      border-color: #66aaff;
+      box-shadow: 0 0 16px rgba(102, 170, 255, 0.3);
+    }
+    .hud-icon {
+      width: 20px;
+      height: 20px;
+      display: inline-block;
+    }
+    .hud-value {
+      display: inline-block;
+      min-width: 24px;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+    .hud-value.bump {
+      animation: valueBump 0.3s ease;
+    }
+    @keyframes valueBump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); color: #ffd700; }
+      100% { transform: scale(1); }
+    }
+    #damage-flash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 0, 0, 0);
+      pointer-events: none;
+      transition: background-color 0.1s;
+    }
+    #damage-flash.active {
+      animation: damageFlash 0.4s ease;
+    }
+    @keyframes damageFlash {
+      0% { background: rgba(255, 0, 0, 0); }
+      20% { background: rgba(255, 0, 0, 0.6); }
+      100% { background: rgba(255, 0, 0, 0); }
+    }
+    #victory-overlay, #gameover-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      z-index: 100;
+    }
+    #victory-overlay.active, #gameover-overlay.active {
+      display: flex;
+      animation: fadeIn 0.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .result-panel {
+      background: #1a1a2e;
+      border: 3px solid #ffd700;
+      border-radius: 8px;
+      padding: 36px 48px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.5);
+      min-width: 320px;
+    }
+    #gameover-overlay .result-panel {
+      border-color: #ff4d4d;
+      box-shadow: 0 0 40px rgba(255, 77, 77, 0.5);
+    }
+    .result-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #ffd700;
+      margin-bottom: 24px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+      letter-spacing: 4px;
+    }
+    #gameover-overlay .result-title {
+      color: #ff4d4d;
+      text-shadow: 0 0 20px rgba(255, 77, 77, 0.8);
+    }
+    .result-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .result-stat {
+      color: #ccc;
+      font-size: 18px;
+    }
+    .result-stat span {
+      color: #ffd700;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .restart-btn {
+      background: linear-gradient(180deg, #ffd700 0%, #ffaa00 100%);
+      color: #1a1a2e;
+      border: none;
+      border-radius: 6px;
+      padding: 14px 36px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      transition: transform 0.1s ease;
+      letter-spacing: 2px;
+    }
+    .restart-btn:active {
+      transform: scale(0.95);
+    }
+    #mobile-controls {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      display: none;
+      pointer-events: auto;
+      z-index: 50;
+    }
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      grid-template-rows: repeat(3, 60px);
+      gap: 4px;
+    }
+    .dpad-btn {
+      background: rgba(74, 74, 122, 0.6);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      transition: background 0.1s;
+    }
+    .dpad-btn:active {
+      background: rgba(255, 215, 0, 0.5);
+      border-color: #ffd700;
+    }
+    .dpad-btn.up { grid-column: 2; grid-row: 1; }
+    .dpad-btn.left { grid-column: 1; grid-row: 2; }
+    .dpad-btn.right { grid-column: 3; grid-row: 2; }
+    .dpad-btn.down { grid-column: 2; grid-row: 3; }
+    @media (max-width: 768px), (pointer: coarse) {
+      #mobile-controls {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div id="canvas-wrapper">
+      <div id="ui-root">
+        <div id="hud">
+          <div class="hud-item gold">
+            <span class="hud-icon">🪙</span>
+            <span>金币:</span>
+            <span id="hud-gold" class="hud-value">0</span>
+            <span>/10</span>
+          </div>
+          <div class="hud-item key">
+            <span class="hud-icon">🗝️</span>
+            <span>钥匙:</span>
+            <span id="hud-keys" class="hud-value">0</span>
+          </div>
+          <div class="hud-item life">
+            <span class="hud-icon">❤️</span>
+            <span>生命:</span>
+            <span id="hud-life" class="hud-value">3</span>
+          </div>
+          <div class="hud-item time">
+            <span class="hud-icon">⏱️</span>
+            <span>时间:</span>
+            <span id="hud-time" class="hud-value">0</span>
+            <span>ms</span>
+          </div>
+        </div>
+        <div id="damage-flash"></div>
+        <div id="victory-overlay">
+          <div class="result-panel">
+            <div class="result-title">🏆 通关成功 🏆</div>
+            <div class="result-stats">
+              <div class="result-stat">通关时间:<span id="victory-time">0</span>ms</div>
+              <div class="result-stat">收集金币:<span id="victory-gold">0</span>/10</div>
+              <div class="result-stat">剩余生命:<span id="victory-life">0</span></div>
+            </div>
+            <button class="restart-btn" id="victory-restart">再来一局</button>
+          </div>
+        </div>
+        <div id="gameover-overlay">
+          <div class="result-panel">
+            <div class="result-title">💀 游戏结束 💀</div>
+            <div class="result-stats">
+              <div class="result-stat">生存时间:<span id="gameover-time">0</span>ms</div>
+              <div class="result-stat">收集金币:<span id="gameover-gold">0</span>/10</div>
+            </div>
+            <button class="restart-btn" id="gameover-restart">再来一局</button>
+          </div>
+        </div>
+        <div id="mobile-controls">
+          <div class="dpad">
+            <button class="dpad-btn up" data-dir="up">▲</button>
+            <button class="dpad-btn left" data-dir="left">◀</button>
+            <button class="dpad-btn right" data-dir="right">▶</button>
+            <button class="dpad-btn down" data-dir="down">▼</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

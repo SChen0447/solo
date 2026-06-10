@@ -1,28 +1,19 @@
 {
-  "name": "danmaku-song-request",
+  "name": "digital-waterfall-poem",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview",
-    "start": "node src/server/server.js"
+    "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "express": "^4.18.2",
-    "socket.io": "^4.7.2",
-    "uuid": "^9.0.0",
-    "cors": "^2.8.5",
-    "socket.io-client": "^4.7.2"
+    "p5": "1.9.0"
   },
   "devDependencies": {
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "@vitejs/plugin-react": "^4.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0"
+    "typescript": "^5.5.4",
+    "vite": "^5.4.10",
+    "@types/p5": "^1.7.6"
   }
 }

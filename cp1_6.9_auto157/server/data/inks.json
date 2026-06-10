@@ -1,0 +1,224 @@
+{
+  "inks": [
+    {
+      "id": "ink-001",
+      "name": "深秋雾霾蓝",
+      "color": "#4A6FA5",
+      "textureType": "matte",
+      "glossiness": 25,
+      "viscosity": 60,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "适合古典插画，沉稳优雅",
+      "createdAt": "2024-01-15T10:30:00Z"
+    },
+    {
+      "id": "ink-002",
+      "name": "玫瑰豆沙粉",
+      "color": "#C08081",
+      "textureType": "velvet",
+      "glossiness": 45,
+      "viscosity": 55,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "温暖的玫瑰色调，适合人物肖像",
+      "createdAt": "2024-01-20T14:20:00Z"
+    },
+    {
+      "id": "ink-003",
+      "name": "橄榄苔藓绿",
+      "color": "#6B8E23",
+      "textureType": "matte",
+      "glossiness": 20,
+      "viscosity": 70,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "自然清新，适合风景画",
+      "createdAt": "2024-02-01T09:15:00Z"
+    },
+    {
+      "id": "ink-004",
+      "name": "琥珀焦糖棕",
+      "color": "#8B4513",
+      "textureType": "metallic",
+      "glossiness": 75,
+      "viscosity": 80,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "金属质感，复古风必备",
+      "createdAt": "2024-02-10T16:45:00Z"
+    },
+    {
+      "id": "ink-005",
+      "name": "薰衣草紫",
+      "color": "#9B7EBD",
+      "textureType": "pearl",
+      "glossiness": 55,
+      "viscosity": 45,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "梦幻珍珠光泽，少女心满满",
+      "createdAt": "2024-02-15T11:00:00Z"
+    },
+    {
+      "id": "ink-006",
+      "name": "落日橙红",
+      "color": "#D35400",
+      "textureType": "metallic",
+      "glossiness": 85,
+      "viscosity": 65,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "热情洋溢，夕阳般温暖",
+      "createdAt": "2024-02-20T13:30:00Z"
+    },
+    {
+      "id": "ink-007",
+      "name": "雾霾灰",
+      "color": "#708090",
+      "textureType": "matte",
+      "glossiness": 15,
+      "viscosity": 50,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "高级灰，百搭基础色",
+      "createdAt": "2024-02-25T10:00:00Z"
+    },
+    {
+      "id": "ink-008",
+      "name": "樱花粉",
+      "color": "#FFB7C5",
+      "textureType": "velvet",
+      "glossiness": 40,
+      "viscosity": 35,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "温柔粉嫩，春日限定",
+      "createdAt": "2024-03-01T08:30:00Z"
+    },
+    {
+      "id": "ink-009",
+      "name": "深海藏青",
+      "color": "#1A365D",
+      "textureType": "matte",
+      "glossiness": 30,
+      "viscosity": 75,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "深邃沉稳，适合商务插画",
+      "createdAt": "2024-03-05T15:20:00Z"
+    },
+    {
+      "id": "ink-010",
+      "name": "金黄麦穗",
+      "color": "#DAA520",
+      "textureType": "metallic",
+      "glossiness": 90,
+      "viscosity": 70,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "耀眼金光，丰收季节",
+      "createdAt": "2024-03-10T12:00:00Z"
+    },
+    {
+      "id": "ink-011",
+      "name": "薄荷绿",
+      "color": "#98D8C8",
+      "textureType": "pearl",
+      "glossiness": 50,
+      "viscosity": 40,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "清凉夏日，清新可人",
+      "createdAt": "2024-03-15T09:45:00Z"
+    },
+    {
+      "id": "ink-012",
+      "name": "勃艮第红",
+      "color": "#722F37",
+      "textureType": "velvet",
+      "glossiness": 60,
+      "viscosity": 85,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "丝绒质感，高贵典雅",
+      "createdAt": "2024-03-20T14:10:00Z"
+    },
+    {
+      "id": "ink-013",
+      "name": "晴空天蓝",
+      "color": "#87CEEB",
+      "textureType": "matte",
+      "glossiness": 35,
+      "viscosity": 45,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "明亮清新，适合儿童插画",
+      "createdAt": "2024-03-25T11:30:00Z"
+    },
+    {
+      "id": "ink-014",
+      "name": "墨玉黑",
+      "color": "#1C1C1C",
+      "textureType": "metallic",
+      "glossiness": 95,
+      "viscosity": 90,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "纯黑金属光泽，高端质感",
+      "createdAt": "2024-04-01T10:15:00Z"
+    },
+    {
+      "id": "ink-015",
+      "name": "奶油杏色",
+      "color": "#F5DEB3",
+      "textureType": "velvet",
+      "glossiness": 25,
+      "viscosity": 30,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "温柔底色，百搭打底色",
+      "createdAt": "2024-04-05T13:40:00Z"
+    },
+    {
+      "id": "ink-016",
+      "name": "祖母绿",
+      "color": "#046307",
+      "textureType": "pearl",
+      "glossiness": 65,
+      "viscosity": 75,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "珠宝级光泽，奢华典雅",
+      "createdAt": "2024-04-10T15:55:00Z"
+    },
+    {
+      "id": "ink-017",
+      "name": "珊瑚橘",
+      "color": "#FF7F50",
+      "textureType": "matte",
+      "glossiness": 30,
+      "viscosity": 50,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "活力四射，热带风情",
+      "createdAt": "2024-04-15T09:25:00Z"
+    },
+    {
+      "id": "ink-018",
+      "name": "紫藤花紫",
+      "color": "#A57BC9",
+      "textureType": "velvet",
+      "glossiness": 50,
+      "viscosity": 55,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "浪漫紫色，梦幻氛围",
+      "createdAt": "2024-04-20T12:50:00Z"
+    },
+    {
+      "id": "ink-019",
+      "name": "柠檬黄",
+      "color": "#FFF44F",
+      "textureType": "pearl",
+      "glossiness": 70,
+      "viscosity": 40,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "明亮活力，点缀色首选",
+      "createdAt": "2024-04-25T14:20:00Z"
+    },
+    {
+      "id": "ink-020",
+      "name": "咖啡棕",
+      "color": "#6F4E37",
+      "textureType": "matte",
+      "glossiness": 20,
+      "viscosity": 80,
+      "signature": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMCA0MCBRNDAgMTAgNzAgMzAgVDEzMCAyMCBUMjAwIDM1IiBzdHJva2U9IiMxZTI5M2IiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PC9zdmc+",
+      "notes": "醇厚咖啡色调，温暖安心",
+      "createdAt": "2024-05-01T10:00:00Z"
+    }
+  ]
+}

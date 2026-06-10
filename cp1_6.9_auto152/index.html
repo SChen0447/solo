@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚空经纬仪 | Void Theodolite</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0a1a;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      cursor: crosshair;
+    }
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .info-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: rgba(26, 15, 37, 0.53);
+      border-radius: 12px;
+      padding: 16px 20px;
+      color: #ddeeff;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(136, 170, 255, 0.15);
+      min-width: 200px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .info-panel .title {
+      font-size: 12px;
+      color: #88aaff;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .info-panel .row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+    }
+    .info-panel .label {
+      opacity: 0.7;
+    }
+    .info-panel .value {
+      font-weight: 600;
+      color: #88bbff;
+    }
+    .reset-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .reset-btn:hover {
+      background: rgba(255, 255, 255, 0.4);
+      transform: scale(1.1);
+    }
+    .reset-btn:active {
+      transform: scale(0.95);
+    }
+    .reset-icon {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #ddeeff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      position: relative;
+      animation: spin 2s linear infinite;
+    }
+    .reset-icon::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      right: -2px;
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 7px solid #ddeeff;
+      transform: rotate(45deg);
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .hint {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      color: rgba(221, 238, 255, 0.5);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div class="info-panel" id="info-panel">
+      <div class="title">虚空经纬仪</div>
+      <div class="row">
+        <span class="label">信标数量</span>
+        <span class="value" id="beacon-count">0</span>
+      </div>
+      <div class="row">
+        <span class="label">曲线长度</span>
+        <span class="value" id="curve-length">0.00</span>
+      </div>
+    </div>
+    <button class="reset-btn" id="reset-btn" title="重置">
+      <div class="reset-icon"></div>
+    </button>
+    <div class="hint">
+      左键点击放置信标点 · 拖拽中间控制点调整曲线 · 4个点自动生成贝塞尔曲线
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

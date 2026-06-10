@@ -1,18 +1,16 @@
 {
-  "name": "calligraphy-brush-tool",
+  "name": "flowing-particles",
   "version": "1.0.0",
-  "description": "Dynamic calligraphy splash and brush stroke playback tool",
+  "description": "Neon glowing particle river with physics and flow field",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "vite"
   },
   "dependencies": {
     "p5": "1.9.0"
   },
   "devDependencies": {
-    "@types/p5": "1.7.6",
+    "@types/p5": "^1.7.6",
     "typescript": "5.4.5",
-    "vite": "5.3.1"
+    "vite": "5.4.0"
   }
 }

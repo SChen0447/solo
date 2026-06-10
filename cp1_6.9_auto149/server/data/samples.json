@@ -1,0 +1,100 @@
+[
+  {
+    "id": 1,
+    "name": "紫晶星尘",
+    "story": "这束星尘来自猎户座深处的紫晶星云，每一颗粒子都承载着亿万年前恒星诞生时的光芒。传说中，它能让持有者在梦中窥见宇宙的终极奥秘。当你凝视它时，仿佛能听到远古星辰的低语。",
+    "ownerId": 2,
+    "colors": ["#8b5cf6", "#a78bfa", "#c4b5fd"],
+    "startPrice": 100,
+    "currentPrice": 280,
+    "endTime": "2026-06-20T18:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 280, "time": "2026-06-08T10:30:00Z" },
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 200, "time": "2026-06-07T15:20:00Z" },
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 150, "time": "2026-06-06T09:10:00Z" }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "玫瑰星云核",
+    "story": "从麒麟座玫瑰星云中提取的珍贵样本，粒子呈现出温柔的玫瑰金色调。它蕴含着新生恒星的热量，触之微温，据说能为孤独的旅人带来心灵的慰藉与对美好事物的向往。",
+    "ownerId": 1,
+    "colors": ["#fb7185", "#fda4af", "#fecdd3"],
+    "startPrice": 150,
+    "currentPrice": 420,
+    "endTime": "2026-06-18T12:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 420, "time": "2026-06-08T14:00:00Z" },
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 350, "time": "2026-06-07T20:45:00Z" }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "翡翠银河",
+    "story": "来自遥远仙女座星系边缘的翡翠色光尘，是银河碰撞时迸溅出的碎屑。这些粒子经历了漫长的星际旅行，携带着外星文明的残响，在黑暗中泛着神秘的翡翠光泽。",
+    "ownerId": 2,
+    "colors": ["#10b981", "#34d399", "#6ee7b7"],
+    "startPrice": 80,
+    "currentPrice": 190,
+    "endTime": "2026-06-22T08:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 190, "time": "2026-06-08T08:15:00Z" }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "暮光蓝焰",
+    "story": "这是濒死恒星最后一次呼吸凝结而成的星尘。蓝焰色的粒子在寂静中缓慢律动，象征着结束与新生的轮回。拥有它的人，据说能在最黑暗的时刻找到前行的方向。",
+    "ownerId": 1,
+    "colors": ["#3b82f6", "#60a5fa", "#93c5fd"],
+    "startPrice": 200,
+    "currentPrice": 560,
+    "endTime": "2026-06-15T20:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 560, "time": "2026-06-08T16:30:00Z" },
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 480, "time": "2026-06-07T11:00:00Z" },
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 350, "time": "2026-06-06T22:30:00Z" }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "琥珀余晖",
+    "story": "源自银河系中心的古老星尘，呈现出温暖的琥珀色调。这些粒子比地球还要古老，见证了无数文明的兴衰。据说将它置于床头，能带来穿越时空的美梦。",
+    "ownerId": 2,
+    "colors": ["#f59e0b", "#fbbf24", "#fcd34d"],
+    "startPrice": 120,
+    "currentPrice": 310,
+    "endTime": "2026-06-25T14:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 310, "time": "2026-06-08T12:45:00Z" },
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 220, "time": "2026-06-06T18:20:00Z" }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "幽冥幻紫",
+    "story": "从黑洞边缘采集的奇异星尘，在光与暗的交界处诞生。它的粒子会随心情变换颜色，有时深邃如夜空，有时绚烂如极光，是宇宙间最神秘的存在之一。",
+    "ownerId": 1,
+    "colors": ["#a855f7", "#d946ef", "#f0abfc"],
+    "startPrice": 300,
+    "currentPrice": 720,
+    "endTime": "2026-06-12T10:00:00Z",
+    "thumbnail": null,
+    "status": "auctioning",
+    "bidHistory": [
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 720, "time": "2026-06-08T19:00:00Z" },
+      { "userId": 1, "username": "nebula_collector", "avatar": "NC", "price": 600, "time": "2026-06-07T23:15:00Z" },
+      { "userId": 2, "username": "cosmic_dreamer", "avatar": "CD", "price": 450, "time": "2026-06-06T14:40:00Z" }
+    ]
+  }
+]

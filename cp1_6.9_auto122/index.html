@@ -1,12 +1,117 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>花语轩 - 在线鲜花订购</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/client.tsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光之园丁 - Light Gardener</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a2a;
+      font-family: Arial, sans-serif;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas {
+      display: block;
+    }
+    .ui-top-left {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .plant-count {
+      color: #ffffff;
+      font-size: 20px;
+      font-family: Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(136, 221, 255, 0.6);
+      letter-spacing: 1px;
+    }
+    .plant-count span {
+      font-weight: bold;
+      color: #88ddff;
+    }
+    .sow-btn {
+      background: rgba(34, 68, 102, 0.6);
+      border: 1px solid rgba(136, 170, 204, 0.4);
+      color: #cceeff;
+      padding: 10px 24px;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      backdrop-filter: blur(4px);
+    }
+    .sow-btn:hover {
+      background: rgba(68, 102, 136, 0.8);
+      border-color: rgba(170, 204, 238, 0.7);
+      box-shadow: 0 0 16px rgba(136, 204, 255, 0.3);
+    }
+    .sow-btn:active {
+      transform: scale(0.98);
+    }
+    .ui-bottom-right {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      color: #ffffff;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+      text-shadow: 0 0 10px rgba(170, 102, 255, 0.6);
+      background: rgba(26, 10, 26, 0.5);
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: 1px solid rgba(170, 102, 255, 0.3);
+      backdrop-filter: blur(4px);
+    }
+    .ui-bottom-right span {
+      color: #ff66aa;
+      font-weight: bold;
+    }
+    .hint {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: rgba(200, 220, 255, 0.5);
+      font-size: 18px;
+      font-family: Arial, sans-serif;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      text-align: center;
+    }
+    .hint.hidden {
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="ui-top-left">
+      <div class="plant-count">植物数量: <span id="plantCount">0</span></div>
+      <button class="sow-btn" id="sowBtn">播种</button>
+    </div>
+    <div class="ui-bottom-right">
+      连接数: <span id="connectionCount">0</span>
+    </div>
+    <div class="hint" id="hint">点击地面播种 · 拖拽植物移动 · 鼠标右键旋转视角</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
 </html>

@@ -1,10 +1,16 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react()],
+  root: '.',
+  base: './',
   server: {
     port: 5173,
-    open: true
-  }
-})
+    open: false
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+    target: 'es2020'
+  },
+  assetsInclude: ['**/*.gltf', '**/*.glb', '**/*.hdr']
+});

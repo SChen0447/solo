@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>重力弹弓竞技</title>
+  <title>水墨画卷</title>
   <style>
     * {
       margin: 0;
@@ -12,36 +12,208 @@
     }
     html, body {
       width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: radial-gradient(ellipse at center, #1a1a3e 0%, #0d0d2b 50%, #050510 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      background: #e8e0cc;
+      font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+      overflow-x: hidden;
     }
-    #game-container {
-      width: 100vw;
-      height: 100vh;
+    #app {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .title {
+      font-size: 24px;
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+      letter-spacing: 8px;
+      font-weight: normal;
+    }
+    .main-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 0 80px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .canvas-wrapper {
+      position: relative;
+      width: 600px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .control-panel {
+      position: sticky;
+      top: 40px;
+      width: 80px;
+      margin-left: 20px;
+      background: #2c2c2ccc;
+      border-radius: 12px;
+      padding: 16px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+    }
+    .slider-label {
+      color: #ffffff;
+      font-size: 11px;
+      font-family: 'Microsoft YaHei', sans-serif;
+      text-align: center;
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+    }
+    .slider-wrapper {
+      position: relative;
+      height: 140px;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    h1 {
-      position: absolute;
-      top: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 140px;
+      height: 6px;
+      border-radius: 3px;
+      background: #555555;
+      outline: none;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      cursor: pointer;
+      transition: transform 0.15s ease-out;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s ease-out;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: transform 0.15s ease-out;
+    }
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+    }
+    .slider-humidity::-webkit-slider-thumb {
+      background: #3498db;
+      box-shadow: 0 0 8px #3498db88;
+    }
+    .slider-humidity::-moz-range-thumb {
+      background: #3498db;
+      box-shadow: 0 0 8px #3498db88;
+    }
+    .slider-density::-webkit-slider-thumb {
+      background: #2c3e50;
+      box-shadow: 0 0 8px #2c3e5088;
+      border: 2px solid #888;
+    }
+    .slider-density::-moz-range-thumb {
+      background: #2c3e50;
+      box-shadow: 0 0 8px #2c3e5088;
+      border: 2px solid #888;
+    }
+    .slider-diffusion::-webkit-slider-thumb {
+      background: #e74c3c;
+      box-shadow: 0 0 8px #e74c3c88;
+    }
+    .slider-diffusion::-moz-range-thumb {
+      background: #e74c3c;
+      box-shadow: 0 0 8px #e74c3c88;
+    }
+    .slider-value {
       color: #ffffff;
-      font-size: 28px;
-      font-weight: bold;
-      text-shadow: 0 0 10px rgba(100, 150, 255, 0.8), 0 0 20px rgba(100, 150, 255, 0.5);
-      letter-spacing: 4px;
-      z-index: 10;
-      pointer-events: none;
+      font-size: 12px;
+      font-family: 'Microsoft YaHei', sans-serif;
+      text-align: center;
+      min-width: 30px;
+    }
+    .reset-btn {
+      width: 60px;
+      height: 36px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: 'Microsoft YaHei', sans-serif;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+      letter-spacing: 2px;
+    }
+    .reset-btn:hover {
+      background: #ff6b6b;
+      transform: scale(1.05);
+    }
+    .reset-btn:active {
+      transform: scale(0.95);
+    }
+    #canvas-container {
+      cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M6 28 L10 8 L14 28 Z M10 8 Q12 4 16 4 Q20 4 22 8 L22 28 Z" fill="%231a1a1a" stroke="%23000" stroke-width="0.5"/></svg>') 8 28, auto;
     }
   </style>
 </head>
 <body>
-  <h1>重力弹弓竞技</h1>
-  <div id="game-container"></div>
-  <script type="module" src="/src/main.ts"></script>
+  <div id="app">
+    <h1 class="title">水 墨 画 卷</h1>
+    <div class="main-container">
+      <div class="canvas-wrapper">
+        <div id="canvas-container"></div>
+      </div>
+      <div class="control-panel">
+        <div class="slider-group">
+          <span class="slider-label">湿度</span>
+          <div class="slider-wrapper">
+            <input type="range" id="humidity" class="slider-humidity" min="0" max="100" value="60" />
+          </div>
+          <span class="slider-value" id="humidity-value">60</span>
+        </div>
+        <div class="slider-group">
+          <span class="slider-label">浓度</span>
+          <div class="slider-wrapper">
+            <input type="range" id="density" class="slider-density" min="0" max="100" value="50" />
+          </div>
+          <span class="slider-value" id="density-value">50</span>
+        </div>
+        <div class="slider-group">
+          <span class="slider-label">扩散</span>
+          <div class="slider-wrapper">
+            <input type="range" id="diffusion" class="slider-diffusion" min="0" max="100" value="50" />
+          </div>
+          <span class="slider-value" id="diffusion-value">50</span>
+        </div>
+        <button class="reset-btn" id="reset-btn">重置</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/sketch.ts"></script>
 </body>
 </html>

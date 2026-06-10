@@ -1,0 +1,151 @@
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #ffffff;
+  color: #333;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.app-body {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 30%;
+  min-width: 280px;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  width: 70%;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  overflow: auto;
+}
+
+.detail-panel {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: opacity 200ms ease;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.detail-panel.fade {
+  opacity: 0;
+}
+
+.detail-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #333;
+}
+
+.detail-section-title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+}
+
+.detail-todos {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-empty {
+  color: #888;
+  font-size: 14px;
+  padding: 8px 0;
+}
+
+.detail-todo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f9f9fb;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.detail-todo-item.done {
+  text-decoration: line-through;
+  color: #aaa;
+}
+
+.detail-todo-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #667eea;
+  flex-shrink: 0;
+}
+
+.detail-todo-item.done .detail-todo-dot {
+  background: #aaa;
+}
+
+@media (max-width: 768px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    max-height: 50vh;
+  }
+
+  .main-content {
+    width: 100%;
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .detail-panel {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .detail-title {
+    font-size: 18px;
+  }
+}

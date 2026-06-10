@@ -1,7 +1,7 @@
 {
-  "name": "global-aurora-visualization",
+  "name": "desert-dune-ecosystem",
+  "private": true,
   "version": "1.0.0",
-  "description": "Global Aurora Distribution 3D Visualization Application",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,11 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "three": "0.160.0"
+    "three": "0.160.0",
+    "simplex-noise": "3.0.0"
   },
   "devDependencies": {
-    "@types/three": "^0.160.0",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.10"
+    "typescript": "5.5.0",
+    "vite": "5.4.0",
+    "@types/three": "0.160.0"
   }
 }

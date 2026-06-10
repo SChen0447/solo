@@ -1,211 +1,37 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>冰封古城末日模拟器</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>幻彩泡泡弹射消除</title>
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: Arial, Helvetica, sans-serif;
     }
-
     html, body {
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: linear-gradient(to bottom, #1a1a2e 0%, #0a0a1a 100%);
+      background: linear-gradient(180deg, #0a0a2a 0%, #1a0a1a 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-
-    #scene-container {
-      position: fixed;
-      top: 0;
-      left: 0;
+    #app {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       width: 100%;
       height: 100%;
-      z-index: 1;
     }
-
-    .ui-layer {
-      position: fixed;
-      z-index: 10;
-      color: #ffffff;
-      pointer-events: none;
-    }
-
-    .ui-layer > * {
-      pointer-events: auto;
-    }
-
-    #thermometer-panel {
-      position: fixed;
-      bottom: 24px;
-      left: 24px;
-      z-index: 10;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 20px;
-      color: #ffffff;
-      min-width: 180px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .temperature-label {
-      font-size: 14px;
-      opacity: 0.85;
-      margin-bottom: 8px;
-      letter-spacing: 0.5px;
-    }
-
-    .temperature-value {
-      font-size: 36px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      font-variant-numeric: tabular-nums;
-      text-shadow: 0 0 20px rgba(138, 180, 248, 0.5);
-    }
-
-    .temperature-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 6px;
+    canvas {
+      display: block;
       border-radius: 8px;
-      background: linear-gradient(to right, #4a6a8a, #8ab4f8, #ffffff);
-      outline: none;
-      cursor: pointer;
-    }
-
-    .temperature-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #8ab4f8 0%, #ffffff 100%);
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 12px rgba(138, 180, 248, 0.8);
-      transition: transform 0.15s ease;
-    }
-
-    .temperature-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
-    }
-
-    .temperature-slider::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #8ab4f8 0%, #ffffff 100%);
-      cursor: pointer;
-      border: 2px solid rgba(255, 255, 255, 0.8);
-      box-shadow: 0 0 12px rgba(138, 180, 248, 0.8);
-    }
-
-    .temperature-scale {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 8px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
-
-    #theme-buttons {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 10;
-      display: flex;
-      gap: 10px;
-    }
-
-    .theme-btn {
-      width: 60px;
-      height: 30px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      font-size: 12px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    .theme-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-      transform: translateY(-1px);
-    }
-
-    .theme-btn:active {
-      animation: btn-press 0.1s ease;
-    }
-
-    @keyframes btn-press {
-      0% { transform: scale(1); }
-      50% { transform: scale(0.95); }
-      100% { transform: scale(1); }
-    }
-
-    .theme-btn.warm.active {
-      background: rgba(196, 164, 106, 0.4);
-      border-color: rgba(196, 164, 106, 0.6);
-    }
-
-    .theme-btn.cold.active {
-      background: rgba(138, 180, 248, 0.4);
-      border-color: rgba(138, 180, 248, 0.6);
-    }
-
-    @media (max-width: 768px) {
-      #thermometer-panel {
-        top: 16px;
-        bottom: auto;
-        left: 16px;
-        right: 16px;
-        min-width: unset;
-      }
-
-      #theme-buttons {
-        top: auto;
-        bottom: 16px;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-      }
     }
   </style>
 </head>
 <body>
-  <div id="scene-container"></div>
-
-  <div id="thermometer-panel">
-    <div class="temperature-label">环境温度</div>
-    <div class="temperature-value" id="temp-display">-10°C</div>
-    <input
-      type="range"
-      id="temp-slider"
-      class="temperature-slider"
-      min="-30"
-      max="0"
-      value="-10"
-      step="1"
-    />
-    <div class="temperature-scale">
-      <span>-30°C</span>
-      <span>0°C</span>
-    </div>
-  </div>
-
-  <div id="theme-buttons">
-    <button class="theme-btn warm" id="btn-warm" title="复古暖色">暖色</button>
-    <button class="theme-btn cold active" id="btn-cold" title="寒冰冷色">冷色</button>
-  </div>
-
+  <div id="app"></div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

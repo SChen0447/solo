@@ -1,13 +1,23 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [react()],
-  css: {
-    preprocessorOptions: {
-      less: {
-        javascriptEnabled: true
+  server: {
+    port: 5173,
+    open: true
+  },
+  build: {
+    target: 'es2020',
+    minify: 'esbuild',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          three: ['three']
+        }
       }
     }
+  },
+  optimizeDeps: {
+    include: ['three']
   }
-})
+});
