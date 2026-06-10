@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSS饼图与环形图配置生成器</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <aside id="controls-container" class="controls-panel"></aside>
+    <main class="chart-area">
+      <div class="chart-header">
+        <h1>百分比饼图/环形图生成器</h1>
+        <button id="export-btn" class="export-btn">导出PNG</button>
+      </div>
+      <div class="canvas-wrapper">
+        <canvas id="chart-canvas"></canvas>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
