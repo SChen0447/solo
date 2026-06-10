@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>全球气候数据3D可视化系统</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles/main.css" />
+</head>
+<body>
+  <div id="container">
+    <canvas id="scene-canvas"></canvas>
+    <div id="ui-panel" class="ui-panel collapsed">
+      <button id="panel-toggle" class="panel-toggle" aria-label="切换面板">
+        <span class="toggle-icon">≡</span>
+      </button>
+      <div class="panel-content">
+        <div class="panel-header">
+          <h1 class="panel-title">CLIMATE<span>3D</span></h1>
+          <p class="panel-subtitle">全球气候数据可视化</p>
+        </div>
+
+        <div class="panel-section">
+          <label class="section-label">数据集</label>
+          <div class="select-wrapper">
+            <select id="dataset-select" class="styled-select">
+              <option value="temperature">🌡️  全球温度</option>
+              <option value="precipitation">🌧️  全球降水</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="timeline-header">
+            <label class="section-label">时间轴</label>
+            <span id="year-display" class="year-display">2010</span>
+          </div>
+          <input type="range" id="year-slider" class="styled-slider" min="2000" max="2020" value="2010" step="1" />
+          <div class="timeline-labels">
+            <span>2000</span>
+            <span>2010</span>
+            <span>2020</span>
+          </div>
+          <div class="play-controls">
+            <button id="play-btn" class="control-btn play-btn" aria-label="播放">
+              <span class="btn-icon">▶</span>
+              <span class="btn-text">播放</span>
+            </button>
+            <button id="reset-btn" class="control-btn" aria-label="重置">
+              <span class="btn-icon">⟲</span>
+              <span class="btn-text">重置</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="speed-header">
+            <label class="section-label">自转速度</label>
+            <span id="speed-value" class="speed-value">0.5x</span>
+          </div>
+          <input type="range" id="speed-slider" class="styled-slider" min="0" max="2" value="0.5" step="0.1" />
+        </div>
+
+        <div class="panel-section legend-section">
+          <label class="section-label">图例</label>
+          <div id="legend-bar" class="legend-bar temperature-legend">
+            <div class="legend-gradient"></div>
+            <div class="legend-labels">
+              <span id="legend-min">低</span>
+              <span id="legend-max">高</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <div class="fps-counter">
+            <span class="fps-label">FPS</span>
+            <span id="fps-value">60</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="data-popup" class="data-popup hidden">
+      <div class="popup-header">
+        <span id="popup-year">2010</span>
+        <button id="popup-close" class="popup-close">×</button>
+      </div>
+      <div class="popup-body">
+        <div class="popup-row">
+          <span class="popup-label">纬度</span>
+          <span id="popup-lat" class="popup-value">0.00°</span>
+        </div>
+        <div class="popup-row">
+          <span class="popup-label">经度</span>
+          <span id="popup-lng" class="popup-value">0.00°</span>
+        </div>
+        <div class="popup-row">
+          <span id="popup-type-label" class="popup-label">温度</span>
+          <span id="popup-value" class="popup-value highlight">0.00°C</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
