@@ -1,0 +1,23 @@
+{
+  "name": "3d-indoor-lighting-studio",
+  "version": "1.0.0",
+  "description": "3D室内光源布局与阴影质量实时评估应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "dat.gui": "0.7.9",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "^0.160.0",
+    "@types/dat.gui": "^0.7.12",
+    "@types/lodash": "^4.14.202"
+  }
+}
