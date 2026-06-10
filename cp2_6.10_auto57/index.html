@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Typography Playground - 字体排印微调预览</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    body.theme-light {
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    body.theme-dark {
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    .app-container {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .preview-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 40px;
+      position: relative;
+      transition: all 0.3s ease;
+      overflow: hidden;
+    }
+
+    .theme-light .preview-section {
+      background-color: #f9f9f9;
+      background-image:
+        linear-gradient(#ddd 1px, transparent 1px),
+        linear-gradient(90deg, #ddd 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .theme-dark .preview-section {
+      background-color: #1a1a2e;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    .textarea-wrapper {
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .textarea-wrapper::before,
+    .textarea-wrapper::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .theme-light .textarea-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, #f9f9f9, transparent);
+    }
+
+    .theme-light .textarea-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, #f9f9f9, transparent);
+    }
+
+    .theme-dark .textarea-wrapper::before {
+      left: 0;
+      background: linear-gradient(to right, #1a1a2e, transparent);
+    }
+
+    .theme-dark .textarea-wrapper::after {
+      right: 0;
+      background: linear-gradient(to left, #1a1a2e, transparent);
+    }
+
+    .text-input {
+      width: 100%;
+      min-height: 80px;
+      padding: 16px 70px;
+      font-size: 16px;
+      line-height: 1.5;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      resize: none;
+      outline: none;
+      overflow-x: auto;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+      scrollbar-width: thin;
+    }
+
+    .theme-light .text-input {
+      background: #ffffff;
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .theme-dark .text-input {
+      background: #16213e;
+      color: #e0e0e0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .text-input:focus {
+      border-color: #4A90D9;
+    }
+
+    .char-count {
+      position: absolute;
+      bottom: 8px;
+      right: 20px;
+      font-size: 12px;
+      opacity: 0.6;
+      z-index: 3;
+    }
+
+    .preview-content-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: auto;
+    }
+
+    #preview-text {
+      max-width: 100%;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .controls-panel {
+      width: 320px;
+      min-width: 320px;
+      padding: 30px 24px;
+      overflow-y: auto;
+      border-left: 1px solid;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .controls-panel {
+      background: #ffffff;
+      border-left-color: #e0e0e0;
+    }
+
+    .theme-dark .controls-panel {
+      background: #16213e;
+      border-left-color: #0f3460;
+    }
+
+    .panel-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 28px;
+    }
+
+    .control-group {
+      margin-bottom: 24px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .control-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #4A90D9;
+      background: rgba(74, 144, 217, 0.1);
+      padding: 2px 10px;
+      border-radius: 8px;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .slider {
+      background: linear-gradient(to right, #4A90D9 0%, #4A90D9 50%, #e0e0e0 50%, #e0e0e0 100%);
+    }
+
+    .theme-dark .slider {
+      background: linear-gradient(to right, #4A90D9 0%, #4A90D9 50%, #2a2a4a 50%, #2a2a4a 100%);
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #4A90D9;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .slider::-webkit-slider-thumb:active {
+      transform: scale(1.1);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 3px solid #4A90D9;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s ease, box-shadow 0.3s ease;
+    }
+
+    .slider::-moz-range-thumb:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .align-buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .align-btn {
+      padding: 10px 0;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .align-btn {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .theme-dark .align-btn {
+      background: #0f3460;
+      color: #e0e0e0;
+    }
+
+    .align-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .align-btn.active {
+      background: #4A90D9;
+      color: #ffffff;
+    }
+
+    .font-select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: 2px solid transparent;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .font-select {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .theme-dark .font-select {
+      background: #0f3460;
+      color: #e0e0e0;
+    }
+
+    .font-select:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .font-select:focus {
+      border-color: #4A90D9;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .action-btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .reset-btn {
+      background: linear-gradient(135deg, #e0e0e0, #c0c0c0);
+      color: #333;
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .reset-btn .btn-text {
+      display: inline-block;
+      animation: fadeInRight 0.4s ease;
+    }
+
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .export-btn {
+      background: linear-gradient(135deg, #4A90D9, #357ABD);
+      color: #ffffff;
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(74, 144, 217, 0.4);
+    }
+
+    .theme-switch {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid;
+    }
+
+    .theme-light .theme-switch {
+      border-top-color: #e0e0e0;
+    }
+
+    .theme-dark .theme-switch {
+      border-top-color: #0f3460;
+    }
+
+    .theme-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .theme-btn {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .theme-dark .theme-btn {
+      background: #0f3460;
+      color: #e0e0e0;
+    }
+
+    .theme-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .theme-btn.active {
+      border-color: #4A90D9;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.3s ease;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .modal {
+      background: #ffffff;
+      color: #333;
+    }
+
+    .theme-dark .modal {
+      background: #16213e;
+      color: #e0e0e0;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid;
+    }
+
+    .theme-light .modal-header {
+      border-bottom-color: #e0e0e0;
+    }
+
+    .theme-dark .modal-header {
+      border-bottom-color: #0f3460;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .theme-light .modal-close {
+      color: #333;
+    }
+
+    .theme-dark .modal-close {
+      color: #e0e0e0;
+    }
+
+    .modal-close:hover {
+      background: rgba(74, 144, 217, 0.1);
+    }
+
+    .modal-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .code-block {
+      padding: 20px;
+      border-radius: 12px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .theme-light .code-block {
+      background: #f5f5f5;
+      color: #333;
+    }
+
+    .theme-dark .code-block {
+      background: #0f3460;
+      color: #e0e0e0;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid;
+    }
+
+    .theme-light .modal-footer {
+      border-top-color: #e0e0e0;
+    }
+
+    .theme-dark .modal-footer {
+      border-top-color: #0f3460;
+    }
+
+    .copy-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #4A90D9, #357ABD);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(74, 144, 217, 0.4);
+    }
+
+    .copy-btn.copied {
+      background: linear-gradient(135deg, #27ae60, #229954);
+    }
+
+    .copy-status {
+      display: none;
+      align-items: center;
+      font-size: 13px;
+      color: #27ae60;
+      margin-right: auto;
+    }
+
+    .copy-status.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+  </style>
+</head>
+<body class="theme-light">
+  <div class="app-container">
+    <div class="preview-section" id="preview-section">
+      <div class="textarea-wrapper">
+        <textarea
+          id="text-input"
+          class="text-input"
+          maxlength="200"
+          placeholder="输入或粘贴您的文本内容（最多200字符）..."
+        >Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed.</textarea>
+        <div class="char-count" id="char-count">0 / 200</div>
+      </div>
+      <div class="preview-content-wrapper">
+        <div id="preview-text"></div>
+      </div>
+    </div>
+
+    <aside class="controls-panel" id="controls-panel">
+      <h1 class="panel-title">排版控制面板</h1>
+      <div id="controls-container"></div>
+    </aside>
+  </div>
+
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">导出的 CSS 代码</span>
+        <button class="modal-close" id="modal-close">×</button>
+      </div>
+      <div class="modal-body">
+        <pre class="code-block" id="css-code"></pre>
+      </div>
+      <div class="modal-footer">
+        <span class="copy-status" id="copy-status">✓ 已复制到剪贴板</span>
+        <button class="copy-btn" id="copy-btn">复制代码</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
