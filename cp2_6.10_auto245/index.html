@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光谱混音台</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app-header {
+      padding: 24px 32px;
+      text-align: center;
+    }
+
+    .app-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #f0ffff;
+      text-shadow: #0ff 0 0 10px, #0ff 0 0 20px;
+      animation: titlePulse 2s ease-in-out infinite;
+      letter-spacing: 4px;
+    }
+
+    @keyframes titlePulse {
+      0%, 100% {
+        text-shadow: #0ff 0 0 10px, #0ff 0 0 20px;
+      }
+      50% {
+        text-shadow: #0ff 0 0 20px, #0ff 0 0 40px, #0ff 0 0 60px;
+      }
+    }
+
+    .app-container {
+      display: flex;
+      gap: 24px;
+      padding: 0 32px 32px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    .spectrum-section {
+      flex: 0 0 60%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .spectrum-wrapper {
+      width: 100%;
+      max-width: 640px;
+      aspect-ratio: 1;
+      position: relative;
+    }
+
+    #ringCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .info-bubble {
+      position: absolute;
+      background: rgba(22, 33, 62, 0.95);
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #e0e0e0;
+      pointer-events: none;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      z-index: 10;
+      animation: bubbleBounce 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      min-width: 160px;
+    }
+
+    @keyframes bubbleBounce {
+      0% {
+        transform: scale(0.5);
+        opacity: 0;
+      }
+      70% {
+        transform: scale(1.1);
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .bubble-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #0ff;
+      font-size: 14px;
+    }
+
+    .bubble-row {
+      display: flex;
+      justify-content: space-between;
+      margin: 4px 0;
+      gap: 16px;
+    }
+
+    .bubble-label {
+      color: #8892b0;
+    }
+
+    .bubble-value {
+      color: #e0e0e0;
+      font-weight: 500;
+    }
+
+    .side-panel {
+      flex: 0 0 calc(40% - 24px);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel {
+      background: #16213e;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f0ffff;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #0a3d62, #1e6091);
+      color: #f0ffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      transition: all 0.1s ease;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #620a0a, #911e1e);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    .track-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .track-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .track-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .track-list::-webkit-scrollbar-thumb {
+      background: rgba(0, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+
+    .track-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 14px;
+      animation: trackFadeIn 0.3s ease;
+    }
+
+    @keyframes trackFadeIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .track-item.removing {
+      animation: trackSlideOut 0.3s ease forwards;
+    }
+
+    @keyframes trackSlideOut {
+      from {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      to {
+        opacity: 0;
+        transform: translateX(-100%);
+      }
+    }
+
+    .track-item.highlighted {
+      border-color: #0ff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+    }
+
+    .track-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .color-picker-wrapper {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .color-picker-wrapper:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-picker-wrapper input[type="color"] {
+      position: absolute;
+      width: 150%;
+      height: 150%;
+      top: -25%;
+      left: -25%;
+      border: none;
+      cursor: pointer;
+    }
+
+    .track-name {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #e0e0e0;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .track-name:focus {
+      border-color: #0ff;
+    }
+
+    .track-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #8892b0;
+      width: 50px;
+      flex-shrink: 0;
+    }
+
+    .slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0ff;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0ff;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: #8892b0;
+      width: 50px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .conflict-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .conflict-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .conflict-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .conflict-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 100, 100, 0.3);
+      border-radius: 3px;
+    }
+
+    .conflict-card {
+      background: rgba(255, 71, 87, 0.08);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-left: 4px solid #ff4757;
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      animation: conflictSlideIn 0.4s ease;
+    }
+
+    @keyframes conflictSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .conflict-card:hover {
+      background: rgba(255, 71, 87, 0.15);
+      transform: scale(1.02);
+      box-shadow: 0 4px 15px rgba(255, 71, 87, 0.2);
+    }
+
+    .conflict-card:active {
+      transform: scale(0.98);
+      transition: all 0.1s ease;
+    }
+
+    .conflict-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ff6b7a;
+      margin-bottom: 6px;
+    }
+
+    .conflict-suggestion {
+      font-size: 12px;
+      color: #e0e0e0;
+      line-height: 1.5;
+    }
+
+    .no-conflict {
+      color: #8892b0;
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+      font-style: italic;
+    }
+
+    @media (max-width: 768px) {
+      .app-container {
+        flex-direction: column;
+        padding: 0 16px 24px;
+      }
+
+      .spectrum-section {
+        flex: none;
+        width: 100%;
+      }
+
+      .spectrum-wrapper {
+        width: 80%;
+        margin: 0 auto;
+      }
+
+      .side-panel {
+        flex: none;
+        width: 100%;
+      }
+
+      .app-title {
+        font-size: 24px;
+        letter-spacing: 2px;
+      }
+
+      .track-list {
+        max-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="app-title">光谱混音台</h1>
+  </header>
+
+  <main class="app-container">
+    <section class="spectrum-section">
+      <div class="spectrum-wrapper" id="spectrumWrapper">
+        <canvas id="ringCanvas"></canvas>
+        <div id="infoBubble" class="info-bubble" style="display: none;"></div>
+      </div>
+    </section>
+
+    <aside class="side-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">音轨管理</span>
+          <button id="addTrackBtn" class="btn">+ 添加音轨</button>
+        </div>
+        <div id="trackList" class="track-list"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">冲突检测</span>
+        </div>
+        <div id="conflictList" class="conflict-list">
+          <div class="no-conflict">暂无频率冲突 ✓</div>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="/src/App.ts"></script>
+</body>
+</html>
