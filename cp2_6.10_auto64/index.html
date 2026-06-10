@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>音频波形可视化与效果器预览</title>
+  <link rel="stylesheet" href="./src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1>🎵 实时音频波形可视化与效果器预览</h1>
+    </header>
+
+    <div class="main-container" id="mainContainer">
+      <section class="waveform-section" id="waveformSection">
+        <div class="section-header">
+          <h2>波形显示</h2>
+          <div class="audio-controls">
+            <label class="upload-btn">
+              <input type="file" id="audioFile" accept="audio/*" hidden />
+              <span>📁 上传音频</span>
+            </label>
+            <button id="micBtn" class="control-btn">🎤 麦克风</button>
+            <button id="playBtn" class="control-btn primary" disabled>▶ 播放</button>
+            <button id="pauseBtn" class="control-btn" disabled>⏸ 暂停</button>
+            <button id="stopBtn" class="control-btn" disabled>⏹ 停止</button>
+          </div>
+        </div>
+        <div class="canvas-wrapper">
+          <canvas id="waveformCanvas"></canvas>
+        </div>
+        <div class="waveform-info">
+          <span id="timeDisplay">00:00.000 / 00:00.000</span>
+        </div>
+      </section>
+
+      <div class="divider" id="divider"></div>
+
+      <aside class="control-panel" id="controlPanel">
+        <h2>效果控制</h2>
+
+        <div class="effect-card" data-effect="lowpass">
+          <div class="effect-header">
+            <h3>低通滤波</h3>
+            <span class="toggle-btn" data-toggle="lowpass">ON</span>
+          </div>
+          <div class="slider-container">
+            <div class="slider-value-display" id="lowpassValue">10000 Hz</div>
+            <div class="ripple-indicator" id="lowpassRipple"></div>
+            <input type="range" id="lowpassSlider" min="200" max="20000" step="10" value="10000" />
+            <div class="slider-labels">
+              <span>200 Hz</span>
+              <span>20 kHz</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="effect-card" data-effect="reverb">
+          <div class="effect-header">
+            <h3>混响</h3>
+            <span class="toggle-btn" data-toggle="reverb">ON</span>
+          </div>
+          <div class="slider-container">
+            <div class="slider-value-display" id="reverbValue">50%</div>
+            <div class="ripple-indicator" id="reverbRipple"></div>
+            <input type="range" id="reverbSlider" min="0" max="100" step="1" value="50" />
+            <div class="wet-dry-bar">
+              <div class="wet-fill" id="reverbWetFill"></div>
+              <span class="dry-label">干</span>
+              <span class="wet-label">湿</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="effect-card" data-effect="delay">
+          <div class="effect-header">
+            <h3>延迟反馈</h3>
+            <span class="toggle-btn" data-toggle="delay">ON</span>
+          </div>
+          <div class="slider-container">
+            <div class="slider-value-display" id="delayValue">40%</div>
+            <div class="ripple-indicator" id="delayRipple"></div>
+            <input type="range" id="delaySlider" min="0" max="100" step="1" value="40" />
+            <div class="sync-buttons">
+              <button class="sync-btn active" data-sync="quarter">1/4拍</button>
+              <button class="sync-btn" data-sync="eighth">1/8拍</button>
+              <button class="sync-btn" data-sync="off">关闭</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="record-section">
+          <button id="recordBtn" class="record-btn">
+            <span class="record-icon"></span>
+            <span class="record-text">录制 (30s)</span>
+          </button>
+          <div id="downloadSection" class="download-section hidden"></div>
+          <div id="recordTimer" class="record-timer">00:00</div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
