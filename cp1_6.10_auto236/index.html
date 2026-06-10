@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>分形探索器 - Fractal Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0e1a;
+      color: #e0e0ff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      user-select: none;
+    }
+
+    #fractal-canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      cursor: grab;
+    }
+
+    #fractal-canvas:active {
+      cursor: grabbing;
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 280px;
+      background: rgba(30, 30, 50, 0.85);
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    #control-panel.dragging {
+      cursor: grabbing;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(108, 99, 255, 0.3);
+      cursor: grab;
+    }
+
+    .panel-header:active {
+      cursor: grabbing;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #e0e0ff;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-drag-hint {
+      font-size: 11px;
+      color: rgba(224, 224, 255, 0.5);
+    }
+
+    .control-section {
+      margin-bottom: 20px;
+    }
+
+    .control-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(224, 224, 255, 0.7);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .color-schemes {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .color-scheme-btn {
+      position: relative;
+      height: 40px;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+    }
+
+    .color-scheme-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-scheme-btn.active {
+      border-color: #6c63ff;
+      box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.3);
+    }
+
+    .color-scheme-preview {
+      position: absolute;
+      inset: 0;
+    }
+
+    .color-scheme-name {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 2px 4px;
+      font-size: 9px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.6);
+      color: #e0e0ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .slider-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #6c63ff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: rgba(108, 99, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #6c63ff;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.5);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #8a82ff;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: #6c63ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.5);
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      background: #8a82ff;
+    }
+
+    .fractal-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .fractal-btn {
+      flex: 1;
+      padding: 10px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #e0e0ff;
+      background: #2a2a3e;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .fractal-btn:hover {
+      background: #3a3a55;
+      transform: translateY(-1px);
+    }
+
+    .fractal-btn.active {
+      background: #6c63ff;
+      box-shadow: 0 2px 12px rgba(108, 99, 255, 0.4);
+    }
+
+    #toolbar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 8px;
+      background: rgba(20, 20, 40, 0.9);
+      border-radius: 8px;
+      padding: 8px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .toolbar-btn {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: #e0e0ff;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+      background: #6c63ff;
+      transform: translateY(-1px);
+    }
+
+    .toolbar-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .ripple-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fractal-canvas"></canvas>
+  <div class="ripple-container" id="ripple-container"></div>
+
+  <div id="toolbar">
+    <button class="toolbar-btn" id="reset-btn" title="重置视图">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <circle cx="12" cy="12" r="6"></circle>
+        <circle cx="12" cy="12" r="2"></circle>
+      </svg>
+    </button>
+    <button class="toolbar-btn" id="export-btn" title="导出PNG">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div id="control-panel">
+    <div class="panel-header" id="panel-header">
+      <span class="panel-title">分形控制面板</span>
+      <span class="panel-drag-hint">拖拽移动</span>
+    </div>
+
+    <div class="control-section">
+      <div class="section-label">颜色方案</div>
+      <div class="color-schemes" id="color-schemes"></div>
+    </div>
+
+    <div class="control-section">
+      <div class="section-label">迭代深度</div>
+      <div class="slider-container">
+        <div class="slider-row">
+          <span style="font-size: 12px; color: rgba(224,224,255,0.6);">精度</span>
+          <span class="slider-value" id="iter-value">50</span>
+        </div>
+        <input type="range" id="iter-slider" min="10" max="200" step="1" value="50" />
+      </div>
+    </div>
+
+    <div class="control-section">
+      <div class="section-label">分形公式</div>
+      <div class="fractal-buttons">
+        <button class="fractal-btn active" data-type="mandelbrot">Mandelbrot</button>
+        <button class="fractal-btn" data-type="julia">Julia</button>
+        <button class="fractal-btn" data-type="burningship">Burning Ship</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

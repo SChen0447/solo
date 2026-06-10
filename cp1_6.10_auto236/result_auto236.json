@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:32:16.964Z",
+  "task_name": "auto236",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中实时生成和交互控制抽象分形图案的交互式Web前端应用，主要解决数字艺术爱好者和设计师在没有专业软件的情况下，如何快速探索和生成不同风格的分形艺术——用户通过拖拽和缩放视口浏览无限延展的分形世界，并通过调整颜色方案、迭代深度和分形公式参数（Julia集常数、Mandelbrot集变体），实时看到分形图案在画布上动态变化，每次参数调整都会触发图案从中心向外平滑过渡的缩放动画，用户还可以点击任意位置放大该区域，并导出当前视图为高清PNG图片。\n\n它应当具备以下能力：\n1) 主画布为一个全屏Canvas元素，背景默认为黑色（#000），所有分形绘制基于像素着色器实现（使用Canvas 2D API逐像素计算），分形图案占满整个画布，确保在1920x1080分辨率下绘制帧率不低于30fps。\n2) 界面右侧有一个半透明叠加面板（背景rgba(30,30,50,0.85)，圆角12px，内边距16px），包含三个控制区域：颜色方案选择器（至少6种预设：火焰红橙、海洋蓝绿、极光紫青、熔岩红黑、星空蓝紫、霓虹彩虹，每种由5个渐变停止点定义）、迭代深度滑块（范围10-200，步长1，初始值50）、分形公式切换按钮组（切换Julia集、Mandelbrot集、BurningShip集，每个按钮选中时背景#6c63ff，非选中#2a2a3e）。\n3) 鼠标拖拽可平移视口（偏移量实时更新，平移时画布自动重新渲染），滚轮缩放（缩放比例在0.1到100倍之间，缩放中心为鼠标位置，缩放时触发从中心向外扩张的过渡动画，动画时长0.3秒，使用缓出函数ease-out），缩放过程中保持分形细节的平滑更新。\n4) 双击画布任意位置，自动以该位置为中心放大2倍，并播放一个半径为50px的涟漪扩散动画（由20个同心圆组成，圆线宽2px，颜色#ffaa44，透明度从0.8渐变为0，动画持续0.5秒），用来提示缩放中心点。\n5) 右上角有一个浮动工具栏（背景rgba(20,20,40,0.9)，圆角8px），包含一个「重置视图」按钮（图标为靶心，悬停时背景#6c63ff）和一个「导出PNG」按钮（点击后生成4倍分辨率（即3840x2160）的离屏Canvas并触发下载，下载文件名为“Fractal_${当前时间戳}.png”）。\n\n界面方面：页面采用深色主题，主色调为#0b0e1a（背景）、#6c63ff（强调色）、#ffaa44（高亮色）、#e0e0ff（文字色），所有界面元素统一圆角（8px或12px），按钮和滑块在悬停时有0.2秒的亮色过渡动画，控制面板支持鼠标拖拽移动位置。性能上需要分形计算使用逐像素循环且避免多余重绘，绘制帧率不低于30fps，缩放和平移动画流畅无卡顿。\n\n实现采用TypeScript和Vite，按以下文件组织代码：\n - package.json（含依赖：typescript, vite；启动脚本：npm run dev）\n - vite.config.js（基础Vite配置，端口5173，开启hmr）\n - tsconfig.json（严格模式，target ES2020，module ESNext）\n - index.html（入口页面，引入main.ts，含完整的HTML骨架和meta viewport标签）\n - src/main.ts（应用入口，初始化UI事件绑定和Canvas，负责调用其他模块）\n - src/fractalEngine.ts（分形计算核心，导出renderFractal函数，接收canvas上下文、视口参数、分形类型、颜色方案、迭代深度，逐像素绘制到画布上）\n - src/uiController.ts（UI控制模块，初始化右侧面板和右上角工具栏的事件监听，导出updateParams函数用于同步参数到fractalEngine）\n - src/types.ts（定义参数类型接口，如FractalParams、ColorScheme）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:c31e621a4b0db0476cd4c43b623f5599_6a28a2003dad42da9ad53b62.6a28a2743dad42da9ad53bd4.6a28a274579905e5bdd8f3af:Trae CN.T(2026/6/10 07:32:04)",
+    "user_id": "3986207660317399",
+    "trace_id": "c31e621a4b0db0476cd4c43b623f5599",
+    "session_id": "6a28a2003dad42da9ad53b62",
+    "task_id": "6a28a2743dad42da9ad53bd4",
+    "message_id": "6a28a274579905e5bdd8f3af",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:32:04",
+    "format": "full"
+  },
+  "trace": "null"
+}
