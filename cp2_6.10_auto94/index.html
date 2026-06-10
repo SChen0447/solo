@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>三维地形切割与剖面查看器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0B0C10;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 280px;
+      background-color: rgba(44, 47, 51, 0.85);
+      padding: 15px;
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    #control-panel h3 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: #F3E5AB;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: #cccccc;
+    }
+
+    .control-value {
+      display: inline-block;
+      float: right;
+      color: #F3E5AB;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #3a3d42;
+      outline: none;
+      transition: all 0.2s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #F3E5AB;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease-out;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #F3E5AB;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease-out;
+    }
+
+    input[type="range"]::-moz-range-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .dial-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      margin: 10px auto;
+    }
+
+    .dial-track {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: #3a3d42;
+    }
+
+    .dial-fill {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#F3E5AB 0deg, transparent 0deg);
+      cursor: pointer;
+      transition: background 0.2s ease-out;
+    }
+
+    .dial-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: #2C2F33;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #F3E5AB;
+      pointer-events: none;
+    }
+
+    .dial-indicator {
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 16px;
+      background: #F3E5AB;
+      border-radius: 2px;
+      pointer-events: none;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      flex: 1;
+      padding: 10px 14px;
+      background: #3a3d42;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+    }
+
+    button:hover {
+      background: #F3E5AB;
+      color: #0B0C10;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #fps-counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      padding: 8px 14px;
+      background: rgba(0, 0, 0, 0.55);
+      border-radius: 6px;
+      font-size: 14px;
+      color: #ffffff;
+      font-family: 'Courier New', monospace;
+      z-index: 100;
+      user-select: none;
+    }
+
+    #tooltip {
+      position: fixed;
+      padding: 8px 12px;
+      background: rgba(255, 248, 200, 0.85);
+      color: #333333;
+      border-radius: 4px;
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    #tooltip.visible {
+      opacity: 1;
+    }
+
+    #tooltip div {
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div id="fps-counter">FPS: 0</div>
+    
+    <div id="tooltip">
+      <div id="tooltip-altitude">海拔：--</div>
+      <div id="tooltip-distance">距离切割面：--</div>
+    </div>
+
+    <div id="control-panel">
+      <h3>切割控制面板</h3>
+      
+      <div class="control-group">
+        <label>
+          切割平面 X 轴位置
+          <span class="control-value" id="slice-value">7.5</span>
+        </label>
+        <input type="range" id="slice-slider" min="0" max="15" step="0.1" value="7.5" />
+      </div>
+
+      <div class="control-group">
+        <label>
+          切割平面旋转角度
+          <span class="control-value" id="angle-value">0°</span>
+        </label>
+        <div class="dial-container" id="dial-container">
+          <div class="dial-track"></div>
+          <div class="dial-fill" id="dial-fill"></div>
+          <div class="dial-indicator" id="dial-indicator"></div>
+          <div class="dial-center" id="dial-center">0°</div>
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button id="reset-btn">重置视角</button>
+        <button id="export-btn">导出剖面</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
