@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>流光烟花贺卡</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at 30% 25%, #1a1d3a 0%, #0b0d17 100%);
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #fireworks-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    #controls {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      height: 60px;
+      background: rgba(30, 30, 36, 0.85);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    .control-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    #theme-select,
+    #clear-btn,
+    #auto-toggle {
+      height: 34px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.5s ease;
+      outline: none;
+    }
+
+    #theme-select {
+      background-color: #FFD700;
+      color: #1e1e24;
+      padding: 0 10px;
+    }
+
+    #theme-select option {
+      background-color: #1e1e24;
+      color: #ffffff;
+    }
+
+    #clear-btn {
+      background-color: #FFD700;
+      color: #1e1e24;
+      padding: 0 16px;
+      font-weight: 500;
+    }
+
+    #clear-btn:hover {
+      filter: brightness(1.1);
+    }
+
+    .toggle-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #auto-toggle {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 46px;
+      height: 24px;
+      border-radius: 12px;
+      background-color: #555;
+      position: relative;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      padding: 0;
+    }
+
+    #auto-toggle::before {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      transition: transform 0.3s ease;
+    }
+
+    #auto-toggle:checked {
+      background-color: #FFD700;
+    }
+
+    #auto-toggle:checked::before {
+      transform: translateX(22px);
+    }
+
+    #theme-select.fade-transition,
+    #clear-btn.fade-transition {
+      transition: background-color 0.5s ease, opacity 0.5s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="fireworks-canvas"></canvas>
+  </div>
+
+  <div id="controls">
+    <div class="control-item">
+      <span>主题:</span>
+      <select id="theme-select">
+        <option value="rainbow">彩虹渐变</option>
+        <option value="ice">冰雪蓝白</option>
+        <option value="sunset">夕阳橙红</option>
+        <option value="aurora">极光绿紫</option>
+      </select>
+    </div>
+    <button id="clear-btn">清除所有</button>
+    <div class="control-item toggle-wrapper">
+      <label for="auto-toggle" style="cursor: pointer;">自动烟花</label>
+      <input type="checkbox" id="auto-toggle" />
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
