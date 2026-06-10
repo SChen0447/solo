@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>岩道路线编辑器</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="toolbar" class="toolbar">
+      <button id="btnAddHold" class="tool-btn" data-mode="hold">
+        <span class="icon">●</span>
+        <span class="label">添加岩点</span>
+      </button>
+      <button id="btnAddAnchor" class="tool-btn" data-mode="anchor">
+        <span class="icon">◆</span>
+        <span class="label">添加锚点</span>
+      </button>
+      <button id="btnSimulate" class="tool-btn simulate">
+        <span class="icon">▶</span>
+        <span class="label">模拟攀爬</span>
+      </button>
+      <button id="btnExport" class="tool-btn">
+        <span class="icon">↓</span>
+        <span class="label">导出路线</span>
+      </button>
+      <button id="btnImport" class="tool-btn">
+        <span class="icon">↑</span>
+        <span class="label">导入路线</span>
+      </button>
+      <input type="file" id="fileInput" accept=".json" hidden />
+    </aside>
+    <main id="canvasContainer" class="canvas-container">
+      <canvas id="gameCanvas"></canvas>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
