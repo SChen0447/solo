@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素建筑调色与夜间灯光模拟</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f1923;
+      color: #ecf0f1;
+      font-family: 'Courier New', monospace;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #0f1923;
+    }
+
+    .toolbox {
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      width: 240px;
+      background: #1a252c;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .toolbox h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #ecf0f1;
+    }
+
+    .toolbox button {
+      display: block;
+      width: 100%;
+      height: 40px;
+      border: none;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      color: white;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: filter 150ms ease;
+    }
+
+    .toolbox button:hover {
+      filter: brightness(1.1);
+    }
+
+    .toolbox button:last-child {
+      margin-bottom: 0;
+    }
+
+    .btn-residential {
+      background: linear-gradient(135deg, #4a90d9, #3b7abf);
+    }
+
+    .btn-commercial {
+      background: linear-gradient(135deg, #e67e22, #d35400);
+    }
+
+    .btn-industrial {
+      background: linear-gradient(135deg, #7f8c8d, #95a5a6);
+    }
+
+    .action-buttons {
+      margin-top: 16px;
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      height: 36px;
+      background: #34495e;
+      font-size: 12px;
+      font-weight: normal;
+    }
+
+    .top-bar {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .top-bar button {
+      height: 36px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 8px;
+      background: #34495e;
+      color: #ecf0f1;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .top-bar button:hover {
+      background: #46607a;
+    }
+
+    .top-bar .btn-export {
+      background: linear-gradient(135deg, #27ae60, #2ecc71);
+    }
+
+    .top-bar .btn-export:hover {
+      filter: brightness(1.1);
+    }
+
+    .stats-panel {
+      position: absolute;
+      right: 16px;
+      top: 68px;
+      background: #1a252c;
+      border-radius: 12px;
+      padding: 16px;
+      z-index: 10;
+      min-width: 160px;
+    }
+
+    .stats-panel h4 {
+      font-size: 12px;
+      margin-bottom: 12px;
+      color: #bdc3c7;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .stat-badge {
+      padding: 2px 8px;
+      border-radius: 4px;
+      color: white;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .stat-badge.residential { background: #4a90d9; }
+    .stat-badge.commercial { background: #e67e22; }
+    .stat-badge.industrial { background: #7f8c8d; }
+    .stat-badge.total { background: #9b59b6; }
+
+    .stat-total {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #34495e;
+    }
+
+    #canvas-container {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #main-canvas {
+      display: block;
+      background: #2c3e50;
+      opacity: 0;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    .lighting-bar {
+      position: absolute;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      height: 60px;
+      background: #1a252c;
+      border-radius: 8px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    .lighting-bar label {
+      font-size: 12px;
+      color: #bdc3c7;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lighting-bar select {
+      background: #34495e;
+      border: none;
+      border-radius: 4px;
+      color: #ecf0f1;
+      padding: 6px 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .lighting-bar input[type="range"] {
+      width: 180px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #34495e;
+      border-radius: 3px;
+      outline: none;
+      transition: all 150ms ease;
+    }
+
+    .lighting-bar input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f1c40f;
+      cursor: pointer;
+      transition: background 150ms ease;
+    }
+
+    .lighting-bar input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f1c40f;
+      border: none;
+      cursor: pointer;
+    }
+
+    .intensity-value {
+      min-width: 32px;
+      text-align: right;
+      font-size: 12px;
+      color: #f1c40f;
+      font-weight: bold;
+    }
+
+    .color-picker-popup {
+      position: fixed;
+      z-index: 100;
+      background: #1a252c;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .color-picker-popup h4 {
+      font-size: 12px;
+      margin-bottom: 8px;
+      color: #bdc3c7;
+    }
+
+    .preset-colors {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .preset-color {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .preset-color:hover {
+      border-color: #ecf0f1;
+    }
+
+    .custom-picker {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .custom-picker input[type="color"] {
+      width: 36px;
+      height: 36px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .custom-picker input[type="text"] {
+      width: 80px;
+      background: #34495e;
+      border: none;
+      border-radius: 4px;
+      color: #ecf0f1;
+      padding: 6px 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    @media (max-width: 768px) {
+      .toolbox {
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 60px;
+        border-radius: 0;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .toolbox h3 {
+        display: none;
+      }
+
+      .toolbox button {
+        flex: 1;
+        height: 44px;
+        margin-bottom: 0;
+        font-size: 11px;
+      }
+
+      .action-buttons {
+        margin-top: 0;
+        flex: 1.5;
+      }
+
+      .top-bar {
+        top: 76px;
+      }
+
+      .stats-panel {
+        top: 128px;
+      }
+
+      #canvas-container {
+        top: calc(50% + 30px);
+      }
+
+      .lighting-bar {
+        padding: 0 12px;
+        gap: 12px;
+      }
+
+      .lighting-bar input[type="range"] {
+        width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="toolbox" id="toolbox">
+      <h3>建筑工具箱</h3>
+      <button class="btn-residential" data-action="add-residential">+ 增加住宅</button>
+      <button class="btn-commercial" data-action="add-commercial">+ 增加商业</button>
+      <button class="btn-industrial" data-action="add-industrial">+ 增加工业</button>
+      <div class="action-buttons">
+        <button data-action="reset">重置</button>
+        <button data-action="random">随机生成</button>
+      </div>
+    </div>
+
+    <div class="top-bar">
+      <button class="btn-export" data-action="export">导出调色板</button>
+    </div>
+
+    <div class="stats-panel" id="stats-panel">
+      <h4>色块统计</h4>
+      <div id="stats-content"></div>
+    </div>
+
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+    </div>
+
+    <div class="lighting-bar" id="lighting-bar">
+      <label>
+        灯光颜色
+        <select id="light-color-select">
+          <option value="#f1c40f">暖黄</option>
+          <option value="#ecf0f1">冷白</option>
+          <option value="#9b59b6">霓虹紫</option>
+        </select>
+      </label>
+      <label>
+        灯光强度
+        <input type="range" id="light-intensity" min="0" max="100" value="40" />
+        <span class="intensity-value" id="intensity-display">40%</span>
+      </label>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
