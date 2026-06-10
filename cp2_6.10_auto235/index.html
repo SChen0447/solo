@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素钓鱼日志</title>
+  <style>
+    :root {
+      --primary: #2a5a5a;
+      --secondary: #6bc47f;
+      --gold: #d4a047;
+      --bg-deep: #0a3d3d;
+      --bg-panel: #1a2a2a;
+      --border-green: #4a8a5a;
+      --btn-bg: #4a7a4a;
+      --btn-hover: #5a9a5a;
+      --text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100vh;
+      font-family: 'Courier New', Courier, monospace;
+      background: var(--bg-deep);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    body {
+      background: linear-gradient(
+        90deg,
+        #0a3d3d 0%,
+        #0e4a4a 25%,
+        #0a3d3d 50%,
+        #0e4a4a 75%,
+        #0a3d3d 100%
+      );
+      background-size: 400% 100%;
+      animation: waveBg 8s ease-in-out infinite;
+    }
+
+    @keyframes waveBg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #app {
+      width: 960px;
+      margin: 0 auto;
+      padding: 20px 0;
+      position: relative;
+    }
+
+    .game-title {
+      text-align: center;
+      font-size: 36px;
+      font-weight: bold;
+      letter-spacing: 4px;
+      color: #fff;
+      text-shadow: var(--text-shadow), 0 0 10px var(--secondary);
+      margin-bottom: 20px;
+      font-family: 'Courier New', monospace;
+      image-rendering: pixelated;
+    }
+
+    .game-layout {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .game-main {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .water-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .pixel-btn {
+      background: var(--btn-bg);
+      color: #fff;
+      border: 3px solid var(--secondary);
+      padding: 8px 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+      letter-spacing: 2px;
+      box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    .pixel-btn:hover {
+      background: var(--btn-hover);
+    }
+
+    .pixel-btn.active {
+      background: var(--secondary);
+      color: #0a1a0a;
+    }
+
+    .pixel-btn:disabled {
+      background: #3a3a3a;
+      border-color: #5a5a5a;
+      color: #888;
+      cursor: not-allowed;
+    }
+
+    #gameCanvas {
+      width: 640px;
+      height: 480px;
+      background: var(--primary);
+      border: 4px solid var(--secondary);
+      box-shadow: 0 0 20px rgba(107, 196, 127, 0.3);
+      display: block;
+      image-rendering: pixelated;
+      transition: background 0.5s ease;
+    }
+
+    .experience-bar-container {
+      width: 80%;
+      height: 20px;
+      background: #2a3a3a;
+      border: 2px solid var(--secondary);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .experience-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--secondary), var(--gold));
+      transition: width 0.3s ease;
+      border-radius: 8px;
+    }
+
+    .experience-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow: var(--text-shadow);
+      letter-spacing: 1px;
+    }
+
+    .collection-panel {
+      width: 240px;
+      background: var(--bg-panel);
+      border: 3px solid var(--border-green);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      max-height: 560px;
+    }
+
+    .collection-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .collection-title {
+      font-size: 14px;
+      font-weight: bold;
+      color: var(--secondary);
+      letter-spacing: 2px;
+    }
+
+    .collection-toggle {
+      background: var(--btn-bg);
+      color: #fff;
+      border: 2px solid var(--secondary);
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .collection-toggle:hover {
+      background: var(--btn-hover);
+    }
+
+    .collection-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .collection-card {
+      width: 64px;
+      height: 64px;
+      background: #2a3a3a;
+      border: 2px solid #4a5a4a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .collection-card:hover {
+      transform: scale(1.05);
+    }
+
+    .collection-card.unlocked {
+      border-color: var(--secondary);
+    }
+
+    .collection-card .fish-icon {
+      font-size: 28px;
+      filter: grayscale(1);
+      opacity: 0.4;
+    }
+
+    .collection-card.unlocked .fish-icon {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+
+    .card-tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-panel);
+      border: 2px solid var(--secondary);
+      padding: 6px 10px;
+      white-space: nowrap;
+      font-size: 12px;
+      z-index: 100;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .collection-card:hover .card-tooltip {
+      display: block;
+    }
+
+    .catch-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-panel);
+      border: 3px solid var(--border-green);
+      border-radius: 8px;
+      padding: 24px 32px;
+      min-width: 320px;
+      text-align: center;
+      z-index: 1000;
+      box-shadow: 0 0 30px rgba(107, 196, 127, 0.4);
+    }
+
+    .popup-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+
+    .popup-fish-name {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .popup-rarity {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .rarity-common {
+      background: #5a6a5a;
+      color: #fff;
+    }
+
+    .rarity-rare {
+      background: #4a7aca;
+      color: #fff;
+    }
+
+    .rarity-legendary {
+      background: linear-gradient(90deg, var(--gold), #ffd700);
+      color: #1a1a0a;
+    }
+
+    .popup-detail {
+      font-size: 14px;
+      margin: 6px 0;
+      color: #b0c0b0;
+    }
+
+    .popup-close {
+      margin-top: 16px;
+      background: var(--btn-bg);
+      color: #fff;
+      border: 2px solid var(--secondary);
+      padding: 8px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      letter-spacing: 2px;
+    }
+
+    .popup-close:hover {
+      background: var(--btn-hover);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    .escaped-bubble {
+      position: fixed;
+      background: var(--bg-panel);
+      border: 2px solid #ca5a5a;
+      color: #ff8080;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 500;
+      animation: bubbleUp 1.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes bubbleUp {
+      0% { opacity: 0; transform: translateY(10px); }
+      20% { opacity: 1; transform: translateY(0); }
+      80% { opacity: 1; transform: translateY(-10px); }
+      100% { opacity: 0; transform: translateY(-30px); }
+    }
+
+    .hint-text {
+      text-align: center;
+      font-size: 12px;
+      color: #8aa08a;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 1000px) {
+      #app {
+        width: 100%;
+        padding: 12px;
+      }
+
+      .game-layout {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .collection-panel {
+        width: 100%;
+        max-width: 640px;
+        max-height: 300px;
+        order: 2;
+      }
+
+      #gameCanvas {
+        width: 100%;
+        max-width: 640px;
+        height: auto;
+        aspect-ratio: 640 / 480;
+      }
+
+      .game-title {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1 class="game-title">像素钓鱼日志</h1>
+    <div class="game-layout">
+      <div class="game-main">
+        <div class="water-buttons">
+          <button class="pixel-btn active" data-water="river">河流</button>
+          <button class="pixel-btn" data-water="lake">湖泊</button>
+          <button class="pixel-btn" data-water="ocean" disabled>海洋 (Lv.5解锁)</button>
+        </div>
+        <canvas id="gameCanvas" width="640" height="480"></canvas>
+        <div class="experience-bar-container">
+          <div class="experience-bar-fill" style="width: 0%"></div>
+          <div class="experience-text">Lv.1  0 / 50 XP</div>
+        </div>
+        <div class="hint-text">按住鼠标左键蓄力 → 松手抛竿 → 咬钩后快速连击空格收线</div>
+      </div>
+      <div class="collection-panel">
+        <div class="collection-header">
+          <span class="collection-title">收藏图鉴</span>
+          <button class="collection-toggle">−</button>
+        </div>
+        <div class="collection-grid" id="collectionGrid"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
