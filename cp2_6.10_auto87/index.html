@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>拱形结构受力分析与形变模拟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <h1>拱形结构分析</h1>
+        <p class="subtitle">Arch Stress Simulator</p>
+      </div>
+
+      <div class="arch-cards" id="archCards">
+        <div class="arch-card" data-type="roman">
+          <div class="card-title">罗马半圆拱</div>
+          <canvas class="card-thumbnail" width="220" height="80"></canvas>
+          <button class="load-btn">加载</button>
+        </div>
+        <div class="arch-card" data-type="gothic">
+          <div class="card-title">哥特尖拱</div>
+          <canvas class="card-thumbnail" width="220" height="80"></canvas>
+          <button class="load-btn">加载</button>
+        </div>
+        <div class="arch-card" data-type="horseshoe">
+          <div class="card-title">伊斯兰马蹄拱</div>
+          <canvas class="card-thumbnail" width="220" height="80"></canvas>
+          <button class="load-btn">加载</button>
+        </div>
+      </div>
+
+      <div class="params-section" id="paramsSection">
+        <h3>参数调节</h3>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span>跨度</span>
+            <span class="param-value" id="spanValue">5.0 m</span>
+          </div>
+          <input type="range" id="spanSlider" class="param-slider" min="2" max="8" step="0.5" value="5" />
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span>拱高</span>
+            <span class="param-value" id="heightValue">2.5 m</span>
+          </div>
+          <input type="range" id="heightSlider" class="param-slider" min="1" max="4" step="0.2" value="2.5" />
+        </div>
+
+        <div class="param-group">
+          <div class="param-label">
+            <span>垂直荷载</span>
+            <span class="param-value" id="loadValue">500 N</span>
+          </div>
+          <input type="range" id="loadSlider" class="param-slider" min="100" max="1000" step="50" value="500" />
+        </div>
+      </div>
+
+      <div class="simulation-section">
+        <button id="simulateBtn" class="simulate-btn">模拟形变</button>
+      </div>
+    </aside>
+
+    <main id="scene-container" class="scene-container">
+      <div id="tooltip" class="tooltip" style="display:none;"></div>
+      <div id="deflection-label" class="deflection-label" style="display:none;"></div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
