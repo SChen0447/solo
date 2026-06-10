@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 生态群落分层可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0b1a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #b0b0b0;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .panel {
+      position: absolute;
+      background: rgba(30, 30, 50, 0.85);
+      border-radius: 16px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #stats-panel {
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 240px;
+    }
+
+    .stats-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64ffda;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    .stat-item {
+      margin-bottom: 14px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stat-bar-bg {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .stat-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s easeOutCubic;
+    }
+
+    #controls-panel {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding: 12px 20px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 11px;
+      color: #b0b0b0;
+      letter-spacing: 0.5px;
+    }
+
+    select, input[type="range"] {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #b0b0b0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    select:focus, input[type="range"]:focus {
+      border-color: #64ffda;
+      color: #64ffda;
+    }
+
+    select:hover {
+      cursor: pointer;
+    }
+
+    #transparency-panel {
+      left: 20px;
+      bottom: 100px;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .transparency-title {
+      font-size: 11px;
+      color: #64ffda;
+      writing-mode: vertical-rl;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .layer-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .layer-label {
+      font-size: 10px;
+      color: #b0b0b0;
+    }
+
+    .transparency-slider {
+      writing-mode: vertical-lr;
+      direction: rtl;
+      width: 24px;
+      height: 80px;
+      cursor: pointer;
+      -webkit-appearance: slider-vertical;
+    }
+
+    #sunlight-panel {
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #sunlight-slider {
+      width: 300px;
+    }
+
+    #sunlight-value {
+      font-size: 12px;
+      color: #64ffda;
+      min-width: 50px;
+      text-align: center;
+    }
+
+    #info-card {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
+      min-width: 200px;
+      display: none;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 10;
+    }
+
+    #info-card.visible {
+      display: block;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #64ffda;
+      margin-bottom: 10px;
+    }
+
+    .info-row {
+      font-size: 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .info-label {
+      color: #888;
+    }
+
+    .info-value {
+      color: #fff;
+    }
+
+    #reset-btn {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #2d2d44;
+      border: none;
+      color: #b0b0b0;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.25s, color 0.25s, transform 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    #reset-btn:hover {
+      background: #7c3aed;
+      color: #fff;
+      transform: scale(1.08);
+    }
+
+    #reset-btn:active {
+      transform: scale(0.96);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="stats-panel" class="panel">
+      <div class="stats-title">物种分布统计</div>
+      <div class="stat-item">
+        <div class="stat-label">
+          <span>乔木层</span>
+          <span id="tree-count">0</span>
+        </div>
+        <div class="stat-bar-bg">
+          <div id="tree-bar" class="stat-bar" style="background: #2d6a4f; width: 0%"></div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">
+          <span>灌木层</span>
+          <span id="shrub-count">0</span>
+        </div>
+        <div class="stat-bar-bg">
+          <div id="shrub-bar" class="stat-bar" style="background: #7cb342; width: 0%"></div>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">
+          <span>草本层</span>
+          <span id="herb-count">0</span>
+        </div>
+        <div class="stat-bar-bg">
+          <div id="herb-bar" class="stat-bar" style="background: #aed581; width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="controls-panel" class="panel">
+      <div class="control-group">
+        <span class="control-label">生态群落</span>
+        <select id="ecosystem-select">
+          <option value="rainforest">热带雨林</option>
+          <option value="desert">沙漠</option>
+          <option value="alpine">高山草甸</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <span class="control-label">密度调节</span>
+        <select id="density-select">
+          <option value="low">低</option>
+          <option value="medium" selected>中</option>
+          <option value="high">高</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="transparency-panel" class="panel">
+      <div class="transparency-title">分层透明</div>
+      <div class="layer-control">
+        <span class="layer-label">乔木</span>
+        <input type="range" id="tree-opacity" class="transparency-slider" min="0.1" max="1" step="0.05" value="1" />
+      </div>
+      <div class="layer-control">
+        <span class="layer-label">灌木</span>
+        <input type="range" id="shrub-opacity" class="transparency-slider" min="0.1" max="1" step="0.05" value="1" />
+      </div>
+      <div class="layer-control">
+        <span class="layer-label">草本</span>
+        <input type="range" id="herb-opacity" class="transparency-slider" min="0.1" max="1" step="0.05" value="1" />
+      </div>
+    </div>
+
+    <div id="sunlight-panel" class="panel">
+      <span class="control-label">日照角度</span>
+      <input type="range" id="sunlight-slider" min="-60" max="60" step="1" value="30" />
+      <span id="sunlight-value">30°</span>
+    </div>
+
+    <div id="info-card">
+      <div class="info-title" id="info-species">物种名称</div>
+      <div class="info-row">
+        <span class="info-label">高度</span>
+        <span class="info-value" id="info-height">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">冠幅直径</span>
+        <span class="info-value" id="info-crown">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">所在层级</span>
+        <span class="info-value" id="info-layer">-</span>
+      </div>
+    </div>
+
+    <button id="reset-btn" title="重置视图">
+      ⟲
+    </button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
