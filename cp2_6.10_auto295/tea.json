@@ -1,0 +1,134 @@
+[
+  {
+    "id": "1",
+    "name": "明前龙井",
+    "type": "龙井",
+    "origin": "浙江杭州",
+    "scores": { "floral": 8, "fruity": 3, "woody": 2, "honey": 4 },
+    "brewTemp": "85°C",
+    "brewTime": "2分钟",
+    "reportUrl": "https://example.com/reports/longjing",
+    "description": "清明前采摘的嫩芽，色泽翠绿，香气清高持久，滋味鲜爽甘醇，叶底嫩匀成朵。典型的豆香与栗香交融，是西湖龙井中的上品。"
+  },
+  {
+    "id": "2",
+    "name": "安溪铁观音",
+    "type": "铁观音",
+    "origin": "福建安溪",
+    "scores": { "floral": 7, "fruity": 6, "woody": 4, "honey": 5 },
+    "brewTemp": "95°C",
+    "brewTime": "1分钟",
+    "reportUrl": "https://example.com/reports/tieguanyin",
+    "description": "半发酵乌龙茶，外形卷曲紧结，色泽砂绿。冲泡后汤色金黄浓艳，兰花香馥郁，滋味醇厚甘鲜，回甘悠长，七泡有余香。"
+  },
+  {
+    "id": "3",
+    "name": "武夷大红袍",
+    "type": "岩茶",
+    "origin": "福建武夷山",
+    "scores": { "floral": 5, "fruity": 3, "woody": 9, "honey": 6 },
+    "brewTemp": "100°C",
+    "brewTime": "30秒",
+    "reportUrl": "https://example.com/reports/dahongpao",
+    "description": "武夷岩茶之王，生长于九龙窠峭壁之上。香气馥郁持久，岩韵明显，滋味醇厚回甘，杯底有余香，被誉为茶中状元。"
+  },
+  {
+    "id": "4",
+    "name": "正山小种",
+    "type": "红茶",
+    "origin": "福建武夷山桐木关",
+    "scores": { "floral": 4, "fruity": 4, "woody": 7, "honey": 9 },
+    "brewTemp": "90°C",
+    "brewTime": "3分钟",
+    "reportUrl": "https://example.com/reports/zhengshan",
+    "description": "世界红茶鼻祖，马尾松烟熏焙制。条索紧结，色泽乌润，汤色红浓明亮，独特的松烟香和桂圆干香，滋味醇厚带蜜味。"
+  },
+  {
+    "id": "5",
+    "name": "云南古树滇红",
+    "type": "红茶",
+    "origin": "云南凤庆",
+    "scores": { "floral": 6, "fruity": 7, "woody": 5, "honey": 8 },
+    "brewTemp": "90°C",
+    "brewTime": "3分钟",
+    "reportUrl": "https://example.com/reports/dianhong",
+    "description": "选用三百年以上古树鲜叶，金毫显露，汤色红艳透亮。蜜香浓郁，伴有花果香，滋味醇厚饱满，回甘生津持久。"
+  },
+  {
+    "id": "6",
+    "name": "福鼎白毫银针",
+    "type": "白茶",
+    "origin": "福建福鼎",
+    "scores": { "floral": 9, "fruity": 4, "woody": 1, "honey": 5 },
+    "brewTemp": "85°C",
+    "brewTime": "5分钟",
+    "reportUrl": "https://example.com/reports/yinzhen",
+    "description": "白茶中的极品，单芽头满披白毫，挺直如针。汤色杏黄明亮，毫香显著，清鲜醇爽，毫味甜香，有一年茶三年药七年宝之说。"
+  },
+  {
+    "id": "7",
+    "name": "云南普洱生茶",
+    "type": "普洱茶",
+    "origin": "云南西双版纳",
+    "scores": { "floral": 5, "fruity": 5, "woody": 8, "honey": 3 },
+    "brewTemp": "100°C",
+    "brewTime": "20秒",
+    "reportUrl": "https://example.com/reports/puer-sheng",
+    "description": "选用云南大叶种晒青毛茶，紧压成饼。汤色黄绿明亮，香气纯正持久，山野气韵明显，滋味浓厚回甘，生津快速。"
+  },
+  {
+    "id": "8",
+    "name": "云南普洱熟茶",
+    "type": "普洱茶",
+    "origin": "云南勐海",
+    "scores": { "floral": 2, "fruity": 2, "woody": 10, "honey": 7 },
+    "brewTemp": "100°C",
+    "brewTime": "30秒",
+    "reportUrl": "https://example.com/reports/puer-shu",
+    "description": "经渥堆发酵工艺制成，陈香显著。汤色红浓透亮，陈香醇正，滋味醇和顺滑，醇厚绵甜，具有暖胃养生之功效。"
+  },
+  {
+    "id": "9",
+    "name": "黄山毛峰",
+    "type": "绿茶",
+    "origin": "安徽黄山",
+    "scores": { "floral": 9, "fruity": 5, "woody": 2, "honey": 3 },
+    "brewTemp": "80°C",
+    "brewTime": "2分钟",
+    "reportUrl": "https://example.com/reports/maofeng",
+    "description": "中国十大名茶之一，形似雀舌，匀齐壮实，锋显毫露。汤色清澈明亮，清香高长，幽兰之气，滋味鲜爽醇和，回甘生津。"
+  },
+  {
+    "id": "10",
+    "name": "洞庭碧螺春",
+    "type": "绿茶",
+    "origin": "江苏苏州洞庭山",
+    "scores": { "floral": 10, "fruity": 8, "woody": 1, "honey": 4 },
+    "brewTemp": "75°C",
+    "brewTime": "2分钟",
+    "reportUrl": "https://example.com/reports/biluochun",
+    "description": "卷曲如螺，满身披毫，银白隐翠。一嫩三鲜著称，花果香浓郁独特，汤色碧绿清澈，滋味鲜爽甘醇，回味绵长。"
+  },
+  {
+    "id": "11",
+    "name": "凤凰单丛蜜兰香",
+    "type": "乌龙茶",
+    "origin": "广东潮州凤凰山",
+    "scores": { "floral": 8, "fruity": 4, "woody": 5, "honey": 10 },
+    "brewTemp": "95°C",
+    "brewTime": "15秒",
+    "reportUrl": "https://example.com/reports/dancong",
+    "description": "凤凰单丛十大香型之首，条索紧结，乌褐油润。蜜香浓郁，兰花香优雅，汤色橙黄明亮，滋味醇厚甘滑，山韵蜜味独特。"
+  },
+  {
+    "id": "12",
+    "name": "台湾高山冻顶乌龙",
+    "type": "乌龙茶",
+    "origin": "台湾南投冻顶山",
+    "scores": { "floral": 7, "fruity": 7, "woody": 4, "honey": 6 },
+    "brewTemp": "95°C",
+    "brewTime": "45秒",
+    "reportUrl": "https://example.com/reports/dongding",
+    "description": "台湾乌龙茶中之圣品，半球形紧结，色泽墨绿带霜。汤色蜜绿金黄，熟果香气优雅，滋味甘醇浓厚，喉韵悠长回甘强。"
+  }
+]
