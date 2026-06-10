@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微尘诗篇</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0a1a 0%, #12122a 100%);
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #particle-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #poem-counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      font-family: "KaiTi", "楷体", "STKaiti", serif;
+      font-size: 16px;
+      color: rgba(240, 240, 232, 0.6);
+      text-shadow: 0 0 8px rgba(240, 240, 232, 0.3),
+                   0 0 16px rgba(212, 168, 75, 0.2);
+      letter-spacing: 2px;
+      user-select: none;
+      pointer-events: none;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="particle-canvas"></canvas>
+  </div>
+  <div id="poem-counter">已集句: 0</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
