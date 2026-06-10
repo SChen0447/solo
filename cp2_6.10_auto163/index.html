@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古琴音阶交互展示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #2b1b0e;
+      font-family: 'SimSun', 'STSong', 'Songti SC', serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    .title {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 24px;
+      color: #d4af37;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+      letter-spacing: 2px;
+      user-select: none;
+    }
+
+    .rotate-btn {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #8B4513;
+      color: #d4af37;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 16px;
+      font-family: inherit;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .rotate-btn:hover {
+      background-color: #A0522D;
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .rotate-btn:active {
+      transform: translateX(-50%) scale(0.98);
+    }
+
+    .tooltip {
+      position: absolute;
+      background-color: #2d2d44;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 16px;
+      pointer-events: none;
+      z-index: 20;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .tooltip.visible {
+      opacity: 1;
+    }
+
+    .tooltip .marker-name {
+      font-weight: bold;
+      color: #d4af37;
+    }
+
+    .tooltip .marker-note {
+      margin-left: 8px;
+      color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      #canvas-container {
+        height: 50vh !important;
+      }
+
+      .title {
+        font-size: 20px;
+        top: 12px;
+        left: 12px;
+      }
+
+      .tooltip {
+        font-size: 14px;
+        padding: 6px 10px;
+      }
+
+      .rotate-btn {
+        bottom: 20px;
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <h1 class="title">古琴音阶交互展示</h1>
+    <button class="rotate-btn" id="rotate-btn">自动旋转</button>
+    <div class="tooltip" id="tooltip">
+      <span class="marker-name"></span>
+      <span class="marker-note"></span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
