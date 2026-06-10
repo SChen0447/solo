@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>潮汐记忆 · Tidal Memory</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      touch-action: none;
+    }
+    #fps-counter {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #ffffff;
+      font-size: 16px;
+      font-family: monospace;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      padding: 6px 12px;
+      pointer-events: none;
+      z-index: 100;
+    }
+    #control-panel {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      width: 260px;
+      background: rgba(1, 22, 39, 0.85);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 24px 20px;
+      z-index: 100;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    #control-panel h2 {
+      color: #7fdbff;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+    .control-item {
+      margin-bottom: 20px;
+    }
+    .control-item:last-child {
+      margin-bottom: 0;
+    }
+    .control-label {
+      color: #ffffff;
+      font-size: 14px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .control-value {
+      color: #ffffff;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    .slider-container {
+      position: relative;
+      width: 200px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .slider-track {
+      position: absolute;
+      width: 200px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .slider-fill {
+      position: absolute;
+      height: 6px;
+      background: #00d2ff;
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    .slider-thumb {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #00d2ff;
+      cursor: grab;
+      transform: translateX(-50%);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      z-index: 2;
+    }
+    .slider-thumb:hover,
+    .slider-thumb.dragging {
+      box-shadow: 0 0 10px 4px rgba(0, 210, 255, 0.4);
+      transform: translateX(-50%) scale(1.1);
+    }
+    #panel-toggle {
+      display: none;
+      position: fixed;
+      left: 20px;
+      top: 20px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(0, 210, 255, 0.8);
+      border: none;
+      cursor: pointer;
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+      transition: opacity 0.3s ease;
+    }
+    #panel-toggle:hover {
+      opacity: 1;
+    }
+    #panel-toggle span {
+      width: 18px;
+      height: 2px;
+      background: #001f3f;
+      border-radius: 2px;
+    }
+    #control-panel.mobile-closed {
+      transform: translateX(calc(-100% - 40px));
+      opacity: 0;
+      pointer-events: none;
+    }
+    @media (max-width: 768px) {
+      #control-panel {
+        left: auto;
+        right: 0;
+        top: 0;
+        width: 220px;
+        height: 100vh;
+        border-radius: 0;
+        transform: translateX(100%);
+      }
+      #control-panel.mobile-open {
+        transform: translateX(0);
+      }
+      #panel-toggle {
+        display: flex;
+      }
+      .slider-container,
+      .slider-track {
+        width: 170px;
+      }
+      #fps-counter {
+        top: 70px;
+        right: 10px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="fps-counter">FPS: 60</div>
+    <button id="panel-toggle" aria-label="切换控制面板">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div id="control-panel">
+      <h2>潮汐记忆</h2>
+      <div class="control-item" data-control="frequency">
+        <div class="control-label">
+          <span>潮汐频率</span>
+          <span class="control-value" data-value="frequency">8</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-track"></div>
+          <div class="slider-fill"></div>
+          <div class="slider-thumb"></div>
+        </div>
+      </div>
+      <div class="control-item" data-control="density">
+        <div class="control-label">
+          <span>粒子密度</span>
+          <span class="control-value" data-value="density">8000</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-track"></div>
+          <div class="slider-fill"></div>
+          <div class="slider-thumb"></div>
+        </div>
+      </div>
+      <div class="control-item" data-control="speed">
+        <div class="control-label">
+          <span>波浪传播速度</span>
+          <span class="control-value" data-value="speed">1.0</span>
+        </div>
+        <div class="slider-container">
+          <div class="slider-track"></div>
+          <div class="slider-fill"></div>
+          <div class="slider-thumb"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "tidal-memory",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "潮汐记忆 - 交互式3D数字海洋可视化",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
