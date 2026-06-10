@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T23:41:56.790Z",
+  "task_name": "auto279",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助小型独立文具设计师或手工本册工作室快速生成个性化笔记本内页模板、预览装订效果并管理客户定制订单的应用，主要解决设计师在手工绘制或拼凑内页模板（如点阵、方格、横线、空白等）时，需要反复调整纸张色值、网格密度和装订边距，且无法直观预览不同装订方式（骑马订、胶装、线圈）对封面和页面展开效果的影响，导致印刷打样多次返工的痛点，让设计师可以像操作一个数字打样沙盘一样在线调节参数并实时看到成品模拟。\n\n它应当具备以下能力：\n1) 内页模板编辑器：左侧提供模板类型选择（点阵、方格、横线、空白），每个模板支持配置颜色（如深灰#444444或浅灰#aaaaaa）、网格密度（5mm至20mm步进）、纸张底色（预设5种：米白#f9f6f0、奶油#fdf5e6、浅灰、纯白、牛皮纸色），右侧画布实时渲染A5比例（595x841px）的内页预览，一行字清晰可见。\n2) 装订模拟功能：点击一个“装订方式”按钮可切换模拟效果（骑马订：中间折痕淡灰虚线+螺旋针脚标识；胶装：左边出现3mm厚书脊阴影；线圈：左侧出现24个小圆孔），切换时画布以0.3秒缓动动画过渡到新状态。\n3) 定制订单管理：底部面板展示客户定制列表，每个订单包含客户名、模板配置摘要（如“奶油底+深灰点阵10mm+胶装”）、订单状态（待确认/生产中/已完成）和操作按钮（接受/拒绝/标记完成）。接受订单时弹出确认动画（对勾弹出+绿色闪光），拒绝订单时抖动输入框要求填写拒绝原因。\n4) 批量导出功能：点击“导出打包”按钮，将当前选中的多个订单的模板预览图（PNG格式，300dpi）以ZIP包形式下载到本地。导出过程中显示进度条（0-100%），完成后出现成功提示浮窗（白色卡片，绿色边框，0.5秒淡入）。\n5) 草稿暂存与历史版本：每次导出或订单状态变更时自动保存当前配置的“快照”至localStorage，列表显示最近10个快照的时间戳和摘要（如“2025-04-05 14:22 奶油+点阵10mm+线圈”），点击快照可一键恢复画布到当时的配置状态，恢复时带有“正在回滚”的加载动画（旋转齿轮图标2.5秒）。\n\n界面方面：整体采用复古印刷工坊风格——主色调为暖棕色#8B4513和米白#F5F0E1，辅色为锈橙色#CC5500和旧金色#B8860B。左侧编辑区为浅色木纹背景板（纯CSS渐变模拟），右侧预览区带一个装饰性的细线边框（2px实线#B8860B），所有按钮采用圆角6px、文字14px圆角无衬线字体（Poppins）。装订方式切换时，画布右侧出现一个微小的“装订模拟标签”（如“骑马订”），从上方滑动进入（滑动距离20px，时间0.3s）。交互反馈：按钮点击时做轻微下压（transform: translateY(1px)），输入框获得焦点时边框变为#CC5500并附带0.1秒的光晕动画（box-shadow膨胀收缩）。整体布局采用flex居中的单栏式，页面最大宽度1200px，最小宽度768px，在宽度低于900px时左侧编辑区折叠为顶部水平条并隐藏部分高级选项。\n\n性能要求：画布渲染响应时间不超过200ms（从调整参数到画布重绘完成），装订动画保持在40-60FPS，拖动滑块调整网格密度时画面无闪烁或卡顿。\n\n实现采用TypeScript（strict模式）、React 18（函数组件和hooks）、Vite 5构建，后端用Node.js + Express处理订单API，所有数据持久化存储于本地JSON文件模拟数据库。按以下文件组织代码：\n - package.json（依赖：react@18、react-dom@18、typescript@5、vite@5、@vitejs/plugin-react、express@4、cors、uuid、date-fns、file-saver、jszip，启动脚本：npm run start 同时启动前端和后端）\n - index.html（入口页面，标题“模版工坊”，引入Poppins字体、reset.css）\n - tsconfig.json（strict模式，target ES2020，moduleResolution bundler）\n - vite.config.js（Vite配置，设置代理/api到后端3007端口）\n - src/App.tsx（主组件，管理全局状态：当前模板类型、网格密度、纸张颜色、装订方式、订单列表，使用useReducer处理状态变迁）\n - src/TemplateEditor.tsx（左侧编辑面板组件，接收模板参数和setter函数，渲染颜色滑块、类型下拉、装订按钮组，所有操作触发onConfigChange回调）\n - src/CanvasPreview.tsx（右侧画布组件，接收完整模板配置，使用原生Canvas API绘制A5内页格子、底色和装订标识，通过useEffect监听配置变化并重绘，保证200ms内完成）\n - src/OrderManager.tsx（底部订单管理面板组件，处理订单列表的增删改，与后端API交互（GET /api/orders、POST /api/orders/accept、POST /api/orders/reject），使用fetch发送请求）\n - src/api.ts（API工具模块，封装所有后端请求函数：fetchOrders、acceptOrder、rejectOrder、exportTemplates，每个函数处理错误状态并返回Promise）\n - server/server.js（Express后端，提供restful接口：GET /api/orders返回JSON数组，POST /api/orders/accept/:id修改订单状态，POST /api/orders/reject/:id记录拒绝原因，POST /api/export生成ZIP文件并返回下载流。数据存储在server/data/orders.json中）\n\n运行方式：npm install && npm run start，启动后前端在localhost:5173，代理到后端localhost:3007。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:85a1eeb8a157bee0dda554276a4c01e7_6a28a3c522bbe62786f448b9.6a28a4b822bbe62786f449a3.6a28a4b7899f10f7e448f3c9:Trae CN.T(2026/6/10 07:41:44)",
+    "user_id": "3986207660317399",
+    "trace_id": "85a1eeb8a157bee0dda554276a4c01e7",
+    "session_id": "6a28a3c522bbe62786f448b9",
+    "task_id": "6a28a4b822bbe62786f449a3",
+    "message_id": "6a28a4b7899f10f7e448f3c9",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 07:41:44",
+    "format": "full"
+  },
+  "trace": "null"
+}
