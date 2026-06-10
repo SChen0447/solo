@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-09T16:50:36.777Z",
+  "task_name": "auto7",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线协作式思维导图编辑器的小项目，想法是让团队成员能实时在同一张脑图上添加节点、连线并附上备注，非常适合头脑风暴或项目规划时使用。希望它能做到：第一，支持右键点击空白区域创建新节点，节点的位置可以自由拖拽移动，节点之间通过拖拽起点到终点生成带箭头的连线，连线可选中删除；第二，节点双击可编辑文本，并支持添加一个文本备注弹窗，备注内容会缩小显示在节点角落，鼠标悬停时展开显示完整信息；第三，网格背景做辅助参考，按住Ctrl同时滚轮缩放画布，缩小到一定程度自动聚合相邻节点（比如连线小于20px的节点合并为一个灰色圆点表示簇，双击簇展开）。界面上希望整体采用深色主题（深灰#2D2D2D背景，亮绿#00E676和浅蓝#00BFA6作为主色搭配），节点圆角矩形带轻微阴影过渡动画（0.3s ease），连线采用贝塞尔曲线平滑流动，新建节点时有弹性弹出效果，右键菜单使用毛玻璃效果（半透明带模糊），整个画布适配从平板到宽屏显示器，布局使用Flex自动居中。性能上希望拖动节点时帧率稳定不低于30fps，节点数量达到200个时依然操作流畅。\n\n实现用TypeScript、原生HTML5 Canvas和Vite构建，把代码拆成以下文件：\n - package.json（含依赖：typescript, vite, @types/node。启动脚本：npm run dev，需要支持直接运行无需额外配置）\n - index.html（入口页面，挂载整个Canvas应用，body深色背景）\n - tsconfig.json（严格模式，开启esModuleInterop，target为ES2020）\n - vite.config.js（最小化配置，只需配好TypeScript和开发服务器）\n - src/main.ts（全局初始化，创建Canvas实例并启动渲染循环，负责协调各模块）\n - src/NodeManager.ts（负责节点的创建、拖拽、编辑、删除、聚合，管理节点数据结构数组）\n - src/EdgeManager.ts（负责连线的创建、拖拽生成、删除，管理连线数组）\n - src/Renderer.ts（负责所有绘制：网格背景、节点、连线、右键菜单、选中高亮，内部调用Canvas API）\n - src/InteractionHandler.ts（负责事件监听：点击、右键、拖拽、双击、Ctrl+滚轮缩放渲染树的变换矩阵，并分发动作给上面两个Manager）\n\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:730e6d56c529516ea5e17a9cd4807c2c_6a284396176de296b08fa2eb.6a284450176de296b08fa384.6a284450fca4f84e5190b818:Trae CN.T(2026/6/10 00:50:24)",
+    "user_id": "3986207660317399",
+    "trace_id": "730e6d56c529516ea5e17a9cd4807c2c",
+    "session_id": "6a284396176de296b08fa2eb",
+    "task_id": "6a284450176de296b08fa384",
+    "message_id": "6a284450fca4f84e5190b818",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/10 00:50:24",
+    "format": "full"
+  },
+  "trace": "null"
+}
