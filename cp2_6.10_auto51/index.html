@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 分子结构可视化工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center,
+        rgb(40, 20, 80) 0%,
+        rgb(10, 10, 40) 100%);
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #controls {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #hamburger {
+      display: none;
+      width: 42px;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(20, 20, 50, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #hamburger:hover {
+      background: rgba(40, 40, 80, 0.7);
+      transform: scale(1.05);
+    }
+
+    #molecule-select {
+      padding: 12px 20px;
+      font-size: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(20, 20, 50, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 16px;
+      padding-right: 40px;
+      min-width: 180px;
+    }
+
+    #molecule-select:hover {
+      background-color: rgba(60, 40, 120, 0.7);
+      border-color: rgba(255, 255, 255, 0.4);
+      filter: hue-rotate(10deg);
+    }
+
+    #molecule-select option {
+      background: rgb(20, 20, 50);
+      color: #fff;
+      padding: 10px;
+    }
+
+    #info-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 320px;
+      padding: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 14px;
+      background: rgba(20, 20, 50, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+
+    #info-panel.panel-hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #info-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: normal;
+      letter-spacing: 0.5px;
+    }
+
+    #info-panel .atom-name {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    #info-panel .atom-symbol {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 14px;
+    }
+
+    #info-panel .coord-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+
+    #info-panel .coord-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    #info-panel .coord-value {
+      color: #00ff88;
+      font-weight: bold;
+    }
+
+    #info-panel .section-title {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+    }
+
+    #info-panel .bond-item {
+      padding: 6px 0;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #info-panel .bond-info {
+      color: #fff;
+    }
+
+    #info-panel .bond-type {
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      background: rgba(100, 150, 255, 0.3);
+      color: #88bbff;
+    }
+
+    #info-panel .bond-type.double {
+      background: rgba(255, 150, 100, 0.3);
+      color: #ffbb88;
+    }
+
+    #info-panel .empty-hint {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    #tooltip {
+      position: fixed;
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.8);
+      color: #fff;
+      border-radius: 6px;
+      font-size: 13px;
+      font-family: 'Consolas', monospace;
+      pointer-events: none;
+      z-index: 200;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+      white-space: nowrap;
+    }
+
+    #tooltip.visible {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      #controls {
+        top: 12px;
+        left: 12px;
+      }
+
+      #hamburger {
+        display: flex;
+      }
+
+      #molecule-select {
+        display: none;
+        position: absolute;
+        top: 52px;
+        left: 0;
+        min-width: 160px;
+      }
+
+      #molecule-select.mobile-open {
+        display: block;
+      }
+
+      #info-panel {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        transition: transform 0.35s ease, opacity 0.3s ease;
+        max-height: 55vh;
+      }
+
+      #info-panel:not(.panel-hidden) {
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="controls">
+    <button id="hamburger" aria-label="菜单">☰</button>
+    <select id="molecule-select">
+      <option value="methane">甲烷 (CH₄)</option>
+      <option value="ethylene">乙烯 (C₂H₄)</option>
+      <option value="benzene">苯 (C₆H₆)</option>
+      <option value="ethanol">乙醇 (C₂H₅OH)</option>
+    </select>
+  </div>
+
+  <div id="info-panel">
+    <div id="panel-content">
+      <p class="empty-hint">点击原子查看详情</p>
+    </div>
+  </div>
+
+  <div id="tooltip"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
