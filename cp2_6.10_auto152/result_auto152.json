@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-09T20:13:05.826Z",
+  "task_name": "auto152",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个帮助前端开发者或UI设计师在浏览器中快速创建和预览自定义渐变色彩主题（线性渐变、径向渐变、圆锥渐变），并能一键导出CSS代码和SVG示例的项目。想法是解决设计师在选配色方案时，需要反复打开Photoshop或在线工具调整色标位置、角度和颜色Stop，但无法实时看到渐变在不同形状（方形、圆形、多边形）上的呈现效果，也难以对比多种渐变模式并保存收藏的问题。希望它能做到：第一，页面中央有一个300x300的预览区域（背景色#1a1a2e，圆角16px，内嵌阴影），用户可通过下拉菜单切换预览形状：方形（默认，边框2px solid #4a4a6a）、圆形（border-radius:50%）、正六边形（clip-path实现），每种形状切换时伴随0.4秒的CSS过渡动画（scale从0.95到1.0，透明度从0.8到1）；第二，左侧控制面板（宽度320px，背景色#16213e，圆角12px，内边距24px）提供三种渐变模式切换按钮（线性、径向、圆锥），每个按钮宽度90px，高度40px，选中时背景色为#e94560并带0.3秒的背景色渐变过渡。线性渐变模式下显示角度滑块（0-360度，步长1，滑块轨道色#0f3460，拇指色#e94560）和两个色标编辑器（每个色标包含颜色拾取器输入框和位置百分比滑块，色标可拖动排序）；径向渐变模式增加圆心偏移X/Y滑块（0-100%）；圆锥渐变模式支持起始角度滑块；第三，页面底部有一行收藏渐变卡片（最大20个，宽120px高60px，圆角8px，鼠标悬停时scale 1.08加阴影0 4px 12px rgba(233,69,96,0.3)），用户点击预览区下方的收藏按钮（心形图标，悬停时填充色从透明渐变为#e94560）即可将当前渐变参数保存到本地localStorage，收藏卡片点击后自动恢复参数到控制面板并预览。性能上希望渐变参数调整后预览区域在16ms内完成重绘（即60FPS），收藏列表的渲染延迟不超过50ms。界面要求整体为深色科幻风格（主色#1a1a2e、辅色#16213e、强调色#e94560、文字色#eaeaea），控制面板所有输入控件统一使用12px圆角、2px边框（#0f3460），焦点时边框色变为#e94560并带0.2秒过渡，响应式设计下预览区域在屏幕宽度小于768px时缩放为240x240并居中显示，控制面板折叠到顶部。实现采用TypeScript、React和Vite，把代码拆成以下文件：\n - package.json（含依赖：react@18、react-dom、typescript、vite@5、@vitejs/plugin-react、lodash、uuid，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，支持React和TypeScript，devServer端口3000）\n - tsconfig.json（严格模式，target ES2020，jsx react-jsx）\n - index.html（入口页面，挂载id为root的div，背景色#1a1a2e）\n - src/types.ts（定义GradientConfig接口：mode: 'linear'|'radial'|'conic'，angle: number，stops: {color:string;position:number;id:string}[]，cx/cy:number起点百分比等）\n - src/components/Preview.tsx（接收GradientConfig和shape属性，返回带过渡动画的渐变预览区域，负责渲染SVG或div背景）\n - src/components/ControlPanel.tsx（管理所有渐变参数输入，回调onChange传递最新GradientConfig给父组件）\n - src/components/FavoritesBar.tsx（从localStorage读取/写入收藏列表，渲染可点击的迷你卡片，点击时回调onSelect恢复配置）\n - src/App.tsx（根组件，维护当前GradientConfig状态和收藏列表，组合Preview、ControlPanel、FavoritesBar，并将Preview的渐变CSS样式实时同步到页面标题栏的favicon元数据）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}
