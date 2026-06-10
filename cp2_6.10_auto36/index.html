@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>像素花园</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Courier New', monospace;
+      background-color: #E8F5E9;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .header {
+      width: 100%;
+      max-width: 900px;
+      padding: 12px 20px;
+      background: linear-gradient(135deg, #4CAF50, #66BB6A);
+      color: white;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .stat-icon {
+      font-size: 20px;
+    }
+
+    .main-container {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      max-width: 900px;
+      width: 100%;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    .tools-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 12px;
+      background: #fff;
+      border: 3px solid #4CAF50;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .tool-btn {
+      width: 56px;
+      height: 56px;
+      font-size: 32px;
+      border: 3px solid #81C784;
+      border-radius: 8px;
+      background: #E8F5E9;
+      cursor: grab;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .tool-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 12px rgba(76,175,80,0.3);
+      background: #C8E6C9;
+    }
+
+    .tool-btn:active {
+      cursor: grabbing;
+    }
+
+    .tool-btn.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .game-wrapper {
+      position: relative;
+      background: #fff;
+      padding: 12px;
+      border: 3px solid #4CAF50;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    #gameCanvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      cursor: pointer;
+    }
+
+    .info-panel {
+      min-width: 160px;
+      padding: 12px;
+      background: #fff;
+      border: 3px solid #4CAF50;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .info-title {
+      font-size: 14px;
+      color: #2E7D32;
+      font-weight: bold;
+      margin-bottom: 8px;
+      border-bottom: 2px solid #81C784;
+      padding-bottom: 4px;
+    }
+
+    .info-row {
+      font-size: 13px;
+      color: #33691E;
+      margin: 6px 0;
+    }
+
+    .info-value {
+      color: #1B5E20;
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: #C8E6C9;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      transition: width 0.3s ease;
+      border-radius: 5px;
+    }
+
+    .progress-fill.stage {
+      background: linear-gradient(90deg, #66BB6A, #4CAF50);
+    }
+
+    .progress-fill.water {
+      background: linear-gradient(90deg, #42A5F5, #1E88E5);
+    }
+
+    .achievement-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .achievement-overlay.active {
+      display: flex;
+    }
+
+    .achievement-box {
+      background: linear-gradient(135deg, #FFF9C4, #FFEB3B);
+      border: 4px solid #FFA000;
+      border-radius: 16px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .achievement-trophy {
+      font-size: 72px;
+      margin-bottom: 16px;
+      animation: bounce 0.6s ease infinite alternate;
+    }
+
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-10px); }
+    }
+
+    .achievement-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #E65100;
+      margin-bottom: 8px;
+    }
+
+    .achievement-subtitle {
+      font-size: 16px;
+      color: #BF360C;
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #558B2F;
+      text-align: center;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        gap: 12px;
+      }
+
+      .tools-panel {
+        flex-direction: row;
+        order: 2;
+      }
+
+      .tool-btn {
+        width: 84px;
+        height: 84px;
+        font-size: 48px;
+      }
+
+      .game-wrapper {
+        order: 1;
+      }
+
+      .info-panel {
+        order: 3;
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .header {
+        padding: 10px;
+      }
+
+      .stat-item {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="stat-item">
+      <span class="stat-icon">🪙</span>
+      <span>金币: <span id="stat-coins">0</span></span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🌱</span>
+      <span>种植: <span id="stat-planted">0</span></span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🌻</span>
+      <span>收获: <span id="stat-harvested">0</span></span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-icon">🌿</span>
+      <span>存活: <span id="stat-alive">0</span></span>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="tools-panel">
+      <div class="tool-btn" id="tool-water" draggable="true" title="浇水（拖拽到植物上）">💧</div>
+      <div class="tool-btn" id="tool-scissors" draggable="true" title="收获（拖拽到开花植物）">✂️</div>
+      <p class="hint-text">拖拽工具<br/>到植物上</p>
+    </div>
+
+    <div class="game-wrapper">
+      <canvas id="gameCanvas"></canvas>
+      <p class="hint-text">点击空地种植种子</p>
+    </div>
+
+    <div class="info-panel">
+      <div class="info-title">植物状态</div>
+      <div id="plant-info">
+        <div class="info-row">点击植物查看详情</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="achievement-overlay" id="achievement-overlay">
+    <div class="achievement-box">
+      <div class="achievement-trophy">🏆</div>
+      <div class="achievement-title">绿色达人</div>
+      <div class="achievement-subtitle">累计收获20棵植物达成！</div>
+      <div class="achievement-subtitle" style="margin-top:12px;opacity:0.7;">点击任意处关闭</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
