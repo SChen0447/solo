@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>魔法药水工坊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a0a2e;
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 960px;
+      height: 720px;
+    }
+
+    #game-canvas {
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+    }
+
+    .title {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 36px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7, 0 0 30px #a855f7;
+      letter-spacing: 4px;
+      pointer-events: none;
+    }
+
+    #recipe-book-btn {
+      position: absolute;
+      left: 20px;
+      top: 180px;
+      width: 80px;
+      height: 32px;
+      background-color: #5a3a2a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    #recipe-book-btn:hover {
+      background-color: #6a4a3a;
+    }
+
+    #recipe-book-overlay {
+      position: absolute;
+      left: 120px;
+      top: 80px;
+      width: 360px;
+      height: 500px;
+      background-color: rgba(58, 42, 26, 0.95);
+      border-radius: 12px;
+      display: none;
+      padding: 20px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #recipe-book-overlay.active {
+      display: block;
+    }
+
+    #recipe-book-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .recipe-book-title {
+      font-size: 20px;
+      color: #e8b830;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+
+    .recipe-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .recipe-card {
+      background-color: #2a1a0a;
+      border-radius: 8px;
+      padding: 10px;
+      border: 2px solid #5a3a2a;
+    }
+
+    .recipe-card.locked {
+      opacity: 0.6;
+    }
+
+    .recipe-potion-name {
+      font-size: 12px;
+      color: #e8b830;
+      margin-bottom: 6px;
+    }
+
+    .recipe-ingredients {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 6px;
+    }
+
+    .recipe-color-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+
+    .recipe-rarity {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .rarity-common {
+      background-color: #666;
+      color: white;
+    }
+
+    .rarity-rare {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .rarity-legendary {
+      background-color: #e8b830;
+      color: #1a0a2e;
+    }
+
+    .lock-icon {
+      font-size: 24px;
+      text-align: center;
+      color: #888;
+    }
+
+    .silhouette {
+      filter: brightness(0) opacity(0.5);
+    }
+
+    #result-modal {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 280px;
+      padding: 24px;
+      background-color: rgba(58, 42, 26, 0.98);
+      border-radius: 12px;
+      display: none;
+      text-align: center;
+      z-index: 200;
+      box-shadow: 0 0 30px rgba(232, 184, 48, 0.3);
+    }
+
+    #result-modal.active {
+      display: block;
+    }
+
+    .result-title {
+      font-size: 22px;
+      margin-bottom: 12px;
+    }
+
+    .result-success {
+      color: #e8b830;
+    }
+
+    .result-fail {
+      color: #888;
+    }
+
+    .result-potion {
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .result-close-btn {
+      margin-top: 16px;
+      padding: 8px 24px;
+      background-color: #5a3a2a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+    }
+
+    .result-close-btn:hover {
+      background-color: #6a4a3a;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div class="title">魔法药水工坊</div>
+    <canvas id="game-canvas" width="960" height="720"></canvas>
+    <button id="recipe-book-btn">配方书</button>
+    
+    <div id="recipe-book-overlay">
+      <button id="recipe-book-close">×</button>
+      <div class="recipe-book-title">配 方 图 鉴</div>
+      <div class="recipe-grid" id="recipe-grid"></div>
+    </div>
+
+    <div id="result-modal">
+      <div class="result-title" id="result-title"></div>
+      <div class="result-potion" id="result-potion"></div>
+      <div id="result-detail"></div>
+      <button class="result-close-btn" id="result-close-btn">确定</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
