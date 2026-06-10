@@ -1,0 +1,21 @@
+{
+  "name": "panel-workshop",
+  "version": "1.0.0",
+  "description": "分镜工坊 - 漫画分镜拼接与切割工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "file-saver": "^2.0.5",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/file-saver": "^2.0.7",
+    "@types/lodash": "^4.17.12",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}
