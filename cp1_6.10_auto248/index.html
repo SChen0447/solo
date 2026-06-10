@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>墨迹延展</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #f5e6d3;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .control-panel {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 24px;
+      background: rgba(255, 248, 235, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(90, 74, 58, 0.15);
+      z-index: 100;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #5a4a3a;
+    }
+
+    .control-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .slider-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 140px;
+      height: 44px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 2px;
+      background: #c4b49a;
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #5a4a3a;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(90, 74, 58, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #5a4a3a;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(90, 74, 58, 0.3);
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 2px;
+      background: #c4b49a;
+      border-radius: 2px;
+    }
+
+    .slider-value {
+      position: absolute;
+      top: -4px;
+      right: 0;
+      font-size: 11px;
+      color: #5a4a3a;
+      font-weight: 500;
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .clear-btn {
+      padding: 10px 20px;
+      background: #8b7355;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.1s ease;
+      white-space: nowrap;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .clear-btn:hover {
+      background: #6b5a42;
+    }
+
+    .clear-btn:active {
+      transform: translateY(1px);
+    }
+
+    @media (max-width: 600px) {
+      .control-panel {
+        bottom: 16px;
+        padding: 16px;
+        gap: 16px;
+        transform: translateX(-50%) scale(0.8);
+        transform-origin: bottom center;
+      }
+
+      .slider-container {
+        width: 112px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 20px;
+        height: 20px;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+      }
+
+      .clear-btn {
+        min-height: 44px;
+        min-width: 44px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+    <div class="control-panel">
+      <div class="control-group">
+        <div class="control-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <circle cx="12" cy="12" r="8" />
+          </svg>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="concentration" min="1" max="10" step="0.5" value="5">
+          <span class="slider-value" id="concentration-value">5</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="3" />
+            <circle cx="12" cy="12" r="6" opacity="0.6" />
+            <circle cx="12" cy="12" r="9" opacity="0.3" />
+          </svg>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="diffusion" min="0.5" max="3" step="0.1" value="1.5">
+          <span class="slider-value" id="diffusion-value">1.5</span>
+        </div>
+      </div>
+      <div class="control-group">
+        <div class="control-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3C12 3 7 10 7 15C7 18.31 9.24 21 12 21C14.76 21 17 18.31 17 15C17 10 12 3 12 3ZM12 17C10.9 17 10 16.1 10 15C10 13.9 10.9 13 12 13C13.1 13 14 13.9 14 15C14 16.1 13.1 17 12 17Z" opacity="0.8"/>
+            <circle cx="18" cy="7" r="1.2" opacity="0.7"/>
+            <circle cx="6" cy="9" r="1" opacity="0.5"/>
+          </svg>
+        </div>
+        <div class="slider-container">
+          <input type="range" id="drying" min="1" max="5" step="0.5" value="2.5">
+          <span class="slider-value" id="drying-value">2.5</span>
+        </div>
+      </div>
+      <button class="clear-btn" id="clear-btn">清空画布</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
