@@ -1,0 +1,272 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-size: 14px;
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: 100vh;
+  background: #1a1a1a;
+}
+
+.app-header {
+  background: #2c2c2c;
+  padding: 16px 24px;
+  border-bottom: 1px solid #3a3a3a;
+  flex-shrink: 0;
+}
+
+.app-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ff8f00;
+  text-shadow: 0 0 10px rgba(255, 143, 0, 0.5), 0 0 20px rgba(255, 143, 0, 0.3);
+  letter-spacing: 2px;
+}
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.control-panel {
+  width: 220px;
+  background: #252525;
+  padding: 20px;
+  border-right: 1px solid #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 13px;
+  color: #aaaaaa;
+  font-weight: 500;
+}
+
+.control-select,
+.control-input {
+  width: 100%;
+  padding: 10px 12px;
+  background: #333333;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.control-select:focus,
+.control-input:focus {
+  border-color: #ff8f00;
+}
+
+.control-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-input::placeholder {
+  color: #666666;
+}
+
+.mode-toggle {
+  width: 100%;
+  padding: 12px;
+  background: #333333;
+  color: #ffffff;
+  border: 1px solid #444444;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.mode-toggle:hover {
+  background: #3a3a3a;
+  border-color: #ff8f00;
+}
+
+.mode-toggle:active {
+  transform: scale(0.95);
+}
+
+.mode-toggle.active {
+  background: #ff8f00;
+  border-color: #ff8f00;
+  color: #1a1a1a;
+}
+
+.legend {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #3a3a3a;
+}
+
+.legend-title {
+  font-size: 14px;
+  color: #cccccc;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  font-size: 13px;
+  color: #aaaaaa;
+}
+
+.legend-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.legend-dot.scale-root {
+  background: #ff6f00;
+  opacity: 0.7;
+}
+
+.legend-dot.scale-note {
+  background: #42a5f5;
+  opacity: 0.7;
+}
+
+.legend-dot.chord-root {
+  background: #66bb6a;
+  opacity: 0.7;
+}
+
+.legend-dot.chord-note {
+  background: #ffee58;
+  opacity: 0.7;
+}
+
+.content-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2c2c2c 100%);
+  overflow: auto;
+}
+
+.fretboard-wrapper {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  justify-content: center;
+}
+
+.info-bar {
+  background: #2c2c2c;
+  padding: 12px 24px;
+  border-top: 1px solid #3a3a3a;
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.info-label {
+  font-size: 13px;
+  color: #888888;
+}
+
+.info-value {
+  font-size: 14px;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.info-value .frequency {
+  font-size: 12px;
+  color: #aaaaaa;
+  margin-left: 4px;
+}
+
+.selected-note .info-value {
+  color: #ff8f00;
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    flex-direction: column;
+  }
+
+  .control-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #3a3a3a;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .control-panel .control-group {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .legend {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .legend-item {
+    padding: 0;
+  }
+
+  .content-area {
+    padding: 12px;
+  }
+
+  .info-bar {
+    padding: 10px 16px;
+    gap: 16px;
+  }
+}
