@@ -1,0 +1,19 @@
+{
+  "name": "heatmap-analyzer",
+  "version": "1.0.0",
+  "description": "无侵入式用户行为监听与事件热图可视化分析应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/lodash": "^4.14.202"
+  }
+}
