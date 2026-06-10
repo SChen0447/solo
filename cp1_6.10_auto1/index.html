@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>咖啡豆产区 3D 可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e8e8f0;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .header {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 28px;
+      background: rgba(45, 45, 68, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      color: #c9a66b;
+    }
+
+    .header p {
+      font-size: 12px;
+      color: #8888a0;
+      margin-top: 4px;
+    }
+
+    .hint {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 10px 16px;
+      background: rgba(45, 45, 68, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      line-height: 1.8;
+      color: #a0a0b8;
+      max-width: 220px;
+    }
+
+    .hint kbd {
+      display: inline-block;
+      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #c9a66b;
+    }
+
+    .label-tag {
+      position: absolute;
+      padding: 6px 14px;
+      background: rgba(45, 45, 68, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 13px;
+      font-weight: 500;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      z-index: 20;
+    }
+
+    .label-tag.visible {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .label-tag::before {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba(45, 45, 68, 0.75);
+    }
+
+    .radar-panel {
+      position: absolute;
+      top: 100px;
+      right: 20px;
+      width: 300px;
+      padding: 20px;
+      background: rgba(45, 45, 68, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: auto;
+      opacity: 0;
+      transform: translateX(30px);
+      transition: all 0.4s ease;
+      z-index: 30;
+    }
+
+    .radar-panel.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .radar-panel .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: #a0a0b8;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .radar-panel .close-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #e8e8f0;
+    }
+
+    .radar-panel h2 {
+      font-size: 16px;
+      margin-bottom: 4px;
+      color: #e8e8f0;
+    }
+
+    .radar-panel .bean-name {
+      font-size: 12px;
+      color: #8888a0;
+      margin-bottom: 16px;
+    }
+
+    .radar-panel .description {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #a0a0b8;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .radar-chart {
+      width: 100%;
+      height: 220px;
+    }
+
+    .center-marker {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 5;
+    }
+
+    .center-marker.visible {
+      opacity: 1;
+    }
+
+    .center-marker .crosshair {
+      width: 40px;
+      height: 40px;
+      position: relative;
+    }
+
+    .center-marker .crosshair::before,
+    .center-marker .crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(201, 166, 107, 0.5);
+    }
+
+    .center-marker .crosshair::before {
+      left: 50%;
+      top: 0;
+      width: 1px;
+      height: 100%;
+      transform: translateX(-50%);
+    }
+
+    .center-marker .crosshair::after {
+      top: 50%;
+      left: 0;
+      height: 1px;
+      width: 100%;
+      transform: translateY(-50%);
+    }
+
+    .center-marker .ring {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(201, 166, 107, 0.4);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .center-marker .region-label {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      background: rgba(201, 166, 107, 0.2);
+      border: 1px solid rgba(201, 166, 107, 0.4);
+      border-radius: 4px;
+      font-size: 11px;
+      color: #c9a66b;
+      white-space: nowrap;
+    }
+
+    .footer-stats {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+      padding: 8px 20px;
+      background: rgba(45, 45, 68, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      color: #a0a0b8;
+    }
+
+    .footer-stats .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .footer-stats .stat-value {
+      color: #c9a66b;
+      font-weight: 600;
+    }
+
+    .footer-stats .stat-label {
+      color: #666680;
+    }
+
+    .auto-rotate-badge {
+      position: absolute;
+      bottom: 16px;
+      right: 20px;
+      padding: 6px 14px;
+      background: rgba(76, 175, 80, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 20px;
+      border: 1px solid rgba(76, 175, 80, 0.4);
+      font-size: 11px;
+      color: #81c784;
+      transition: all 0.3s ease;
+    }
+
+    .auto-rotate-badge.paused {
+      background: rgba(255, 152, 0, 0.2);
+      border-color: rgba(255, 152, 0, 0.4);
+      color: #ffb74d;
+    }
+
+    .auto-rotate-badge .dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: currentColor;
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        top: 12px;
+        padding: 8px 16px;
+      }
+
+      .header h1 {
+        font-size: 14px;
+      }
+
+      .header p {
+        font-size: 10px;
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .radar-panel {
+        top: auto;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        border-radius: 20px 20px 0 0;
+        transform: translateY(100%);
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      .radar-panel.visible {
+        transform: translateY(0);
+      }
+
+      .footer-stats {
+        bottom: 70px;
+        gap: 16px;
+        padding: 6px 14px;
+        font-size: 11px;
+      }
+
+      .auto-rotate-badge {
+        bottom: 16px;
+        right: 16px;
+        font-size: 10px;
+        padding: 5px 12px;
+      }
+
+      .label-tag {
+        font-size: 12px;
+        padding: 5px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="ui-overlay">
+      <div class="header">
+        <h1>咖啡豆产区 3D 沙盘</h1>
+        <p>COFFEE REGIONS TERRAIN</p>
+      </div>
+
+      <div class="hint">
+        <div><kbd>拖拽</kbd> 旋转视角</div>
+        <div><kbd>滚轮</kbd> 缩放</div>
+        <div><kbd>空格</kbd> 暂停/恢复漫游</div>
+        <div><kbd>点击</kbd> 查看风味详情</div>
+      </div>
+
+      <div id="label-tag" class="label-tag"></div>
+
+      <div id="radar-panel" class="radar-panel">
+        <button class="close-btn" id="close-radar">×</button>
+        <h2 id="radar-title">产区名称</h2>
+        <div class="bean-name" id="radar-bean">豆种</div>
+        <svg class="radar-chart" id="radar-chart" viewBox="0 0 260 220"></svg>
+        <div class="description" id="radar-desc"></div>
+      </div>
+
+      <div id="center-marker" class="center-marker">
+        <div class="crosshair"></div>
+        <div class="ring"></div>
+        <div class="region-label" id="center-region">--</div>
+      </div>
+
+      <div class="footer-stats">
+        <div class="stat">
+          <span class="stat-label">FPS</span>
+          <span class="stat-value" id="stat-fps">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">TRIANGLES</span>
+          <span class="stat-value" id="stat-tris">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">REGION</span>
+          <span class="stat-value" id="stat-region">--</span>
+        </div>
+      </div>
+
+      <div id="auto-rotate-badge" class="auto-rotate-badge">
+        <span class="dot"></span><span id="auto-rotate-text">探索模式</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
