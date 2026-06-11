@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="交互式3D水流模拟 - 流体力学教学工具">
+  <title>3D水流模拟演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 50%, #ffffff 100%);
+      color: #1e3a5f;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 280px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+      padding: 20px;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-title::before {
+      content: '';
+      width: 4px;
+      height: 18px;
+      background: linear-gradient(180deg, #3b82f6, #0ea5e9);
+      border-radius: 2px;
+    }
+
+    .panel-toggle {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(59, 130, 246, 0.1);
+      border-radius: 8px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .panel-toggle:hover {
+      background: rgba(59, 130, 246, 0.2);
+      transform: scale(1.05);
+    }
+
+    .panel-toggle:active {
+      transform: scale(0.95);
+    }
+
+    .panel-toggle svg {
+      width: 18px;
+      height: 18px;
+      fill: #3b82f6;
+      transition: transform 0.3s ease;
+    }
+
+    .panel-collapsed .panel-toggle svg {
+      transform: rotate(180deg);
+    }
+
+    .panel-content {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .panel-collapsed .panel-content {
+      display: none;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #475569;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-value {
+      font-weight: 600;
+      color: #2563eb;
+      background: rgba(59, 130, 246, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #93c5fd, #3b82f6);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      cursor: pointer;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      flex: 1;
+      min-width: 80px;
+      padding: 10px 14px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #2563eb;
+      cursor: pointer;
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+    }
+
+    .btn.active {
+      background: linear-gradient(135deg, #3b82f6, #0ea5e9);
+      color: #ffffff;
+      border-color: transparent;
+    }
+
+    .select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      font-size: 13px;
+      color: #1e3a5f;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .select:focus {
+      border-color: #3b82f6;
+    }
+
+    .water-gauge {
+      position: absolute;
+      right: 20px;
+      bottom: 30px;
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      z-index: 90;
+    }
+
+    .gauge-container {
+      width: 32px;
+      height: 160px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 32px rgba(59, 130, 246, 0.15);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .gauge-water {
+      width: 100%;
+      background: linear-gradient(180deg, #0ea5e9, #2563eb);
+      border-radius: 0 0 16px 16px;
+      transition: height 0.5s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gauge-water::before {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      animation: wave 2s ease-in-out infinite;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: translateX(-5px) scaleY(1); }
+      50% { transform: translateX(5px) scaleY(0.8); }
+    }
+
+    .gauge-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1e40af;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 6px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+    }
+
+    .gauge-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2563eb;
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+      padding: 8px 10px;
+      background: rgba(59, 130, 246, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #93c5fd;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        width: auto;
+        padding: 12px 16px;
+      }
+
+      .panel-toggle {
+        display: flex;
+      }
+
+      .water-gauge {
+        right: 10px;
+        bottom: 20px;
+      }
+
+      .gauge-container {
+        height: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div class="control-panel" id="control-panel">
+      <div class="panel-header">
+        <div class="panel-title">水流模拟控制台</div>
+        <button class="panel-toggle" id="panel-toggle" aria-label="折叠面板">
+          <svg viewBox="0 0 24 24">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="panel-content">
+        <div class="control-group">
+          <div class="control-label">
+            <span>水流速度</span>
+            <span class="control-value" id="speed-value">1.0x</span>
+          </div>
+          <input type="range" class="slider" id="speed-slider" min="0.5" max="3.0" step="0.1" value="1.0">
+        </div>
+
+        <div class="control-group">
+          <div class="control-label"><span>添加障碍物</span></div>
+          <div class="btn-group">
+            <button class="btn" id="btn-circle" data-type="circle">
+              <span>●</span> 圆形
+            </button>
+            <button class="btn" id="btn-square" data-type="square">
+              <span>■</span> 方形
+            </button>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label"><span>河流形态</span></div>
+          <select class="select" id="shape-select">
+            <option value="straight">直道</option>
+            <option value="curved">弯道</option>
+            <option value="forked">分叉道</option>
+          </select>
+        </div>
+
+        <div class="hint-text">
+          点击按钮后，在河道中点击鼠标放置障碍物<br>
+          拖拽可调整障碍物位置
+        </div>
+      </div>
+    </div>
+
+    <div class="water-gauge">
+      <div class="gauge-label">
+        <div>水位高度</div>
+        <div class="gauge-value" id="water-level-value">65%</div>
+      </div>
+      <div class="gauge-container">
+        <div class="gauge-water" id="gauge-water" style="height: 65%;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
