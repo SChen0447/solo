@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-10T16:45:21.792Z",
+  "task_name": "auto29",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够通过上传历史战绩截图或手动输入数据，自动生成个性化《星际争霸2》比赛复盘时间线的交互式Web应用，主要解决玩家在赛后复盘时缺乏直观、自动化的对战进程可视化工具的问题。\n\n它应当具备以下能力：\n1) 提供输入界面，用户可手动输入对战时间、双方操作数据（apm、资源采集量、单位击杀数、建筑序列等），或上传一张截图（需模拟OCR读取，可先用预设样图演示），数据输入后自动生成一条带时间轴的对战复盘画布，时间轴上以彩色圆点标记关键事件（如第一次交火、扩张分矿、科技升级完成），点击圆点弹出详细数据面板（时间、双方资源差、单位组成对比）。\n2) 复盘画布支持缩放和平移，用户可拖动时间轴滑块快速跳转到任意时刻（精确到秒），滑块移动时画布上所有图表（资源曲线、兵力价值对比折线图、APM变化折线图）同步更新到对应时间点，折线图上以高亮光晕标记当前时刻位置，整体帧率不低于30fps。\n3) 提供对比模式，用户可在右侧面板同时加载两场或多场复盘的统计摘要（持续时间、总击杀、最大APM等指标），以雷达图或柱状图并列显示，切换对比对时动画平滑过渡（0.5秒淡入淡出）。\n\n界面方面要求：页面采用深色赛博朋克风格配色（主色#0a0e27，辅色#00d4aa，强调色#ff6b6b），时间轴区域背景为磨砂玻璃效果（backdrop-filter: blur(12px)），所有图表进入时从下方弹入并带0.3秒缓动动画，按钮点击时有涟漪扩散动画，整体布局固定宽度1200px但通过flex布局适配1440px以上屏幕，移动端自动折叠为单列。性能上需要：拖动时间轴滑块时所有图表更新在16ms内完成，初始数据渲染（含30个以上事件点和3条曲线）耗时不超过500ms。\n\n实现采用TypeScript和React（Vite构建），按以下文件组织代码：\n - package.json（依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、recharts、uuid、html2canvas，启动脚本：npm run dev）\n - vite.config.js（构建配置，包含React插件和TypeScript支持，设置base为'./'）\n - tsconfig.json（严格模式，目标ES2020，jsx: react-jsx）\n - index.html（入口页面，深色背景，viewport适配）\n - src/main.tsx（React入口，引入全局样式和App组件）\n - src/components/TimeLineReplay.tsx（主体复盘组件，负责时间轴绘制、滑块交互、事件渲染，依赖recharts生成图表和更新）\n - src/components/DataInputPanel.tsx（数据输入与截图上传组件，输出结构化数据传递给时间轴组件）\n - src/utils/dataProcessor.ts（数据预处理模块，接收原始输入，计算资源差、平均APM等指标，输出标准化事件和曲线数据）\n\n运行方式：npm install && npm run dev，浏览器打开后直接使用，无需额外配置。",
+  "session_id": null,
+  "trace": "null"
+}
