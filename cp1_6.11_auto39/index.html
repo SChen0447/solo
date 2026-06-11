@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>光影遗迹 - Light & Shadow Ruins</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+      font-family: 'Lato', sans-serif;
+      color: #D4AF37;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: #1a1a1a;
+    }
+
+    .loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a1a 0%, #0a0a0a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.5s ease-out;
+    }
+
+    .loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 3rem;
+      color: #D4AF37;
+      text-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+      margin-bottom: 2rem;
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    .loading-subtitle {
+      font-size: 1rem;
+      color: #8B7355;
+      margin-bottom: 3rem;
+      letter-spacing: 0.3em;
+    }
+
+    .loading-bar-container {
+      width: 300px;
+      height: 4px;
+      background: rgba(212, 175, 55, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #8B7355, #D4AF37, #FFD700);
+      width: 0%;
+      animation: loadingProgress 1.5s ease-out forwards;
+    }
+
+    .loading-light {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+      border-radius: 50%;
+      animation: lightExpand 1.5s ease-out forwards;
+      pointer-events: none;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { text-shadow: 0 0 30px rgba(212, 175, 55, 0.5); }
+      50% { text-shadow: 0 0 50px rgba(255, 215, 0, 0.8); }
+    }
+
+    @keyframes loadingProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes lightExpand {
+      0% { transform: scale(0); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: scale(3); opacity: 0; }
+    }
+
+    .mobile-controls {
+      display: none;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 180px;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    @media (max-width: 768px) {
+      .mobile-controls {
+        display: block;
+      }
+
+      .loading-title {
+        font-size: 2rem;
+      }
+    }
+
+    .joystick-container {
+      position: absolute;
+      left: 30px;
+      bottom: 30px;
+      width: 120px;
+      height: 120px;
+      pointer-events: auto;
+    }
+
+    .joystick-base {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(212, 175, 55, 0.15);
+      border: 2px solid rgba(212, 175, 55, 0.4);
+      border-radius: 50%;
+      backdrop-filter: blur(4px);
+    }
+
+    .joystick-stick {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.8) 0%, rgba(212, 175, 55, 0.6) 100%);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+      transition: transform 0.1s ease-out;
+    }
+
+    .action-buttons {
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+      display: flex;
+      gap: 20px;
+      pointer-events: auto;
+    }
+
+    .action-btn {
+      width: 70px;
+      height: 70px;
+      background: rgba(212, 175, 55, 0.2);
+      border: 2px solid rgba(212, 175, 55, 0.5);
+      border-radius: 50%;
+      color: #D4AF37;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.2rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+      touch-action: none;
+      transition: all 0.15s ease;
+    }
+
+    .action-btn:active {
+      background: rgba(255, 215, 0, 0.4);
+      transform: scale(0.95);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <div class="loading-screen" id="loading-screen">
+      <div class="loading-light"></div>
+      <h1 class="loading-title">光影遗迹</h1>
+      <p class="loading-subtitle">LIGHT &amp; SHADOW RUINS</p>
+      <div class="loading-bar-container">
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+
+    <canvas id="game-canvas"></canvas>
+
+    <div class="mobile-controls" id="mobile-controls">
+      <div class="joystick-container" id="joystick-container">
+        <div class="joystick-base"></div>
+        <div class="joystick-stick" id="joystick-stick"></div>
+      </div>
+      <div class="action-buttons">
+        <button class="action-btn" id="btn-action">A</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
