@@ -1,0 +1,21 @@
+{
+  "name": "radio-telescope-array",
+  "version": "1.0.0",
+  "description": "虚拟宇宙射电望远镜阵列与星际信号波形解码交互可视化应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "gsap": "^3.12.4",
+    "tweakpane": "^4.0.3"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
