@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #f4e8d1 0%, #e0d4c0 100%);
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.tension-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5d4037, #8d6e63);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(78, 52, 46, 0.4), 0 0 0 3px rgba(141, 110, 99, 0.2);
+  transition: transform 0.2s ease-out;
+}
+
+.tension-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.tension-slider::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+  box-shadow: 0 1px 4px rgba(78, 52, 46, 0.4), 0 0 0 5px rgba(141, 110, 99, 0.3);
+}
+
+.tension-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5d4037, #8d6e63);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(78, 52, 46, 0.4);
+}
+
+.grid-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5d4037, #8d6e63);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(78, 52, 46, 0.4);
+}
+
+.grid-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.grid-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5d4037, #8d6e63);
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(78, 52, 46, 0.4);
+}
+
+.loom-canvas {
+  transition: transform 0.3s ease-out;
+}
+
+.export-png-btn:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(78, 52, 46, 0.4) !important;
+}
+
+.export-png-btn:active {
+  transform: translateY(0);
+}
+
+.color-swatch {
+  transition: all 0.2s ease-out;
+}
+
+.preview-window {
+  transition: all 0.3s ease-out;
+}
+
+@keyframes ripple-expand {
+  0% {
+    transform: scale(0);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  .loom-canvas {
+    max-width: 100%;
+    height: auto;
+  }
+}
