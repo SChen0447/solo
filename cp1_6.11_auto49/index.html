@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D 细胞内部结构探索</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; }
+    body {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1b3e 50%, #060e20 100%);
+    }
+    canvas { display: block; }
+
+    #loading-screen {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+      background: linear-gradient(135deg, #1a0a2e 0%, #0d1b3e 50%, #060e20 100%);
+      transition: opacity 0.8s ease;
+    }
+    #loading-screen.fade-out { opacity: 0; pointer-events: none; }
+    #loading-text {
+      color: rgba(180, 160, 255, 0.6);
+      font-size: 28px; font-weight: 300; letter-spacing: 8px;
+      filter: blur(1px);
+      animation: textPulse 2s ease-in-out infinite;
+    }
+    @keyframes textPulse {
+      0%, 100% { opacity: 0.5; filter: blur(1px); }
+      50% { opacity: 1; filter: blur(0px); }
+    }
+    #particle-canvas {
+      position: absolute; inset: 0; z-index: 0;
+    }
+
+    #canvas-container { position: fixed; inset: 0; z-index: 1; }
+
+    #control-panel {
+      position: fixed; left: 0; top: 0; bottom: 0; z-index: 100;
+      width: 260px; padding: 20px 16px;
+      background: rgba(10, 5, 30, 0.7);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(120, 80, 255, 0.15);
+      border-radius: 0 16px 16px 0;
+      display: flex; flex-direction: column; gap: 18px;
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+    }
+    #control-panel.collapsed { transform: translateX(-260px); }
+    #panel-toggle {
+      position: fixed; left: 260px; top: 50%; z-index: 101;
+      transform: translateY(-50%);
+      width: 32px; height: 64px;
+      background: rgba(10, 5, 30, 0.7);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 80, 255, 0.2);
+      border-left: none;
+      border-radius: 0 10px 10px 0;
+      color: rgba(180, 160, 255, 0.8);
+      font-size: 14px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: left 0.3s ease, background 0.2s;
+    }
+    #panel-toggle:hover { background: rgba(30, 15, 80, 0.8); }
+    #panel-toggle.collapsed { left: 0px; }
+
+    .panel-title {
+      color: rgba(180, 160, 255, 0.9);
+      font-size: 14px; font-weight: 600; letter-spacing: 2px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(120, 80, 255, 0.15);
+      padding-bottom: 8px;
+    }
+    .slider-group { display: flex; flex-direction: column; gap: 6px; }
+    .slider-label {
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(180, 160, 255, 0.7); font-size: 12px;
+    }
+    .slider-value {
+      color: rgba(255, 180, 100, 0.9); font-size: 12px; font-weight: 600;
+      min-width: 40px; text-align: right;
+    }
+    input[type="range"] {
+      -webkit-appearance: none; width: 100%; height: 6px;
+      background: rgba(60, 30, 120, 0.5);
+      border-radius: 3px; outline: none; cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #c0a0ff, #8060dd, #6040bb);
+      box-shadow: 0 0 8px rgba(160, 120, 255, 0.5);
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px; height: 16px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, #c0a0ff, #8060dd, #6040bb);
+      box-shadow: 0 0 8px rgba(160, 120, 255, 0.5);
+      cursor: pointer;
+    }
+
+    #info-panel {
+      position: fixed; right: 24px; top: 50%; z-index: 100;
+      transform: translateY(-50%) scale(0.9);
+      width: 300px; padding: 24px;
+      background: rgba(10, 5, 30, 0.2);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 80, 255, 0.2);
+      border-radius: 16px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    #info-panel.visible {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(-50%) scale(1);
+    }
+    #info-panel .organelle-name {
+      font-size: 20px; font-weight: 700; margin-bottom: 8px;
+    }
+    #info-panel .organelle-desc {
+      color: rgba(200, 190, 240, 0.8); font-size: 13px; line-height: 1.6;
+      margin-bottom: 12px;
+    }
+    #info-panel .organelle-status {
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .status-item {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; color: rgba(180, 160, 255, 0.7);
+    }
+    .status-value {
+      font-weight: 600; font-size: 13px;
+    }
+
+    #toolbar {
+      position: fixed; bottom: 24px; left: 50%; z-index: 100;
+      transform: translateX(-50%);
+      display: flex; gap: 12px; padding: 10px 20px;
+      background: rgba(10, 5, 30, 0.2);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(120, 80, 255, 0.15);
+      border-radius: 16px;
+      box-shadow: 0 0 20px rgba(100, 60, 200, 0.1);
+    }
+    .toolbar-btn {
+      padding: 8px 18px;
+      background: rgba(60, 30, 120, 0.4);
+      border: 1px solid rgba(120, 80, 255, 0.2);
+      border-radius: 10px;
+      color: rgba(180, 160, 255, 0.9);
+      font-size: 13px; cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .toolbar-btn:hover {
+      background: rgba(80, 40, 160, 0.6);
+      box-shadow: 0 0 12px rgba(160, 120, 255, 0.3);
+      border-color: rgba(160, 120, 255, 0.4);
+    }
+    .toolbar-btn.active {
+      background: rgba(120, 60, 220, 0.5);
+      box-shadow: 0 0 16px rgba(160, 120, 255, 0.4);
+      border-color: rgba(180, 140, 255, 0.5);
+    }
+
+    @media (max-width: 1024px) {
+      #control-panel { transform: translateX(-260px); }
+      #control-panel.expanded { transform: translateX(0); }
+      #panel-toggle { left: 0; }
+      #panel-toggle.expanded { left: 260px; }
+      #info-panel { right: 12px; width: 260px; }
+    }
+    @media (max-width: 768px) {
+      #control-panel {
+        top: auto; bottom: 0; left: 0; right: 0;
+        width: 100%; height: auto; max-height: 50vh;
+        border-radius: 16px 16px 0 0;
+        border-right: none;
+        border-top: 1px solid rgba(120, 80, 255, 0.15);
+        transform: translateY(100%);
+        flex-direction: column;
+      }
+      #control-panel.expanded { transform: translateY(0); }
+      #panel-toggle {
+        left: 50%; top: auto; bottom: 0;
+        transform: translateX(-50%) translateY(0);
+        width: 64px; height: 32px;
+        border-radius: 10px 10px 0 0;
+        border: 1px solid rgba(120, 80, 255, 0.2);
+        border-bottom: none;
+      }
+      #panel-toggle.expanded { left: 50%; bottom: auto; top: 0; }
+      #info-panel { right: 8px; left: 8px; width: auto; top: auto; bottom: 80px; transform: scale(0.9); }
+      #info-panel.visible { transform: scale(1); }
+      #toolbar { bottom: 12px; }
+      .toolbar-btn { padding: 6px 12px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <canvas id="particle-canvas"></canvas>
+    <div id="loading-text">探索微观世界</div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div id="control-panel">
+    <div class="panel-title">控制面板</div>
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>细胞膜透明度</span>
+        <span class="slider-value" id="membrane-opacity-val">0.3</span>
+      </div>
+      <input type="range" id="membrane-opacity" min="0.1" max="1.0" step="0.05" value="0.3" />
+    </div>
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>细胞器脉动强度</span>
+        <span class="slider-value" id="pulse-intensity-val">0.05</span>
+      </div>
+      <input type="range" id="pulse-intensity" min="0" max="0.2" step="0.01" value="0.05" />
+    </div>
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>粒子密度</span>
+        <span class="slider-value" id="particle-density-val">1000</span>
+      </div>
+      <input type="range" id="particle-density" min="500" max="2000" step="50" value="1000" />
+    </div>
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>自动旋转速度</span>
+        <span class="slider-value" id="auto-rotate-val">0.01</span>
+      </div>
+      <input type="range" id="auto-rotate" min="0" max="0.05" step="0.005" value="0.01" />
+    </div>
+  </div>
+  <button id="panel-toggle">◀</button>
+
+  <div id="info-panel">
+    <div class="organelle-name" id="info-name"></div>
+    <div class="organelle-desc" id="info-desc"></div>
+    <div class="organelle-status" id="info-status"></div>
+  </div>
+
+  <div id="toolbar">
+    <button class="toolbar-btn" id="btn-reset">重置视角</button>
+    <button class="toolbar-btn" id="btn-screenshot">截图</button>
+    <button class="toolbar-btn" id="btn-tour">自动漫游</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
