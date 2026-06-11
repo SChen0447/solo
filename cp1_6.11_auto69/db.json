@@ -1,0 +1,29 @@
+{
+  "templates": [
+    { "id": "hair-1", "name": "短发", "category": "hair", "style": 1 },
+    { "id": "hair-2", "name": "长发", "category": "hair", "style": 2 },
+    { "id": "hair-3", "name": "卷发", "category": "hair", "style": 3 },
+    { "id": "hair-4", "name": "马尾", "category": "hair", "style": 4 },
+    { "id": "hair-5", "name": "平头", "category": "hair", "style": 5 },
+    { "id": "top-1", "name": "T恤", "category": "top", "style": 1 },
+    { "id": "top-2", "name": "衬衫", "category": "top", "style": 2 },
+    { "id": "top-3", "name": "卫衣", "category": "top", "style": 3 },
+    { "id": "top-4", "name": "夹克", "category": "top", "style": 4 },
+    { "id": "top-5", "name": "背心", "category": "top", "style": 5 },
+    { "id": "bottom-1", "name": "牛仔裤", "category": "bottom", "style": 1 },
+    { "id": "bottom-2", "name": "休闲裤", "category": "bottom", "style": 2 },
+    { "id": "bottom-3", "name": "短裙", "category": "bottom", "style": 3 },
+    { "id": "bottom-4", "name": "运动裤", "category": "bottom", "style": 4 },
+    { "id": "bottom-5", "name": "短裤", "category": "bottom", "style": 5 },
+    { "id": "shoes-1", "name": "运动鞋", "category": "shoes", "style": 1 },
+    { "id": "shoes-2", "name": "皮鞋", "category": "shoes", "style": 2 },
+    { "id": "shoes-3", "name": "凉鞋", "category": "shoes", "style": 3 }
+  ],
+  "default-outfit": {
+    "hair": { "style": 1, "color": "#2D2D2D" },
+    "top": { "style": 1, "color": "#FF8C42" },
+    "bottom": { "style": 1, "color": "#4A90D9" },
+    "shoes": { "style": 1, "color": "#2D2D2D" },
+    "skinColor": "#FDBF6F"
+  }
+}
