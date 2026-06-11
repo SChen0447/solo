@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>全球气候带天气粒子漫游 | Climate Particle Explorer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top-color: #55aaff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      font-size: 14px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #hud {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    #hud .hud-item {
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #hud .hud-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 11px;
+      margin-bottom: 4px;
+    }
+
+    #hud .hud-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    #time-indicator {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #time-indicator .ring {
+      width: 30px;
+      height: 30px;
+      position: relative;
+    }
+
+    #time-indicator .ring svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+
+    #time-indicator .ring-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.2);
+      stroke-width: 3;
+    }
+
+    #time-indicator .ring-progress {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.3s ease, stroke 0.3s ease;
+    }
+
+    #time-indicator .ring-value {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    #time-indicator .label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #minimap {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    #minimap canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    #minimap-label {
+      position: absolute;
+      bottom: 180px;
+      right: 20px;
+      z-index: 100;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      letter-spacing: 1px;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+
+    .tp-dfwv {
+      width: 280px !important;
+    }
+
+    @media (max-width: 1200px) and (min-width: 768px) {
+      .tp-dfwv {
+        width: 240px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #minimap, #minimap-label {
+        display: none;
+      }
+
+      .tp-dfwv {
+        width: 200px !important;
+      }
+
+      #hud .hud-value {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="loading-overlay">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">加载气候数据中...</div>
+    </div>
+
+    <div id="hud">
+      <div class="hud-item" id="hud-tropical" style="display: none;">
+        <div class="hud-label">热带气候带</div>
+        <div class="hud-value" id="tropical-wind">-- km/h</div>
+        <div class="hud-value" id="tropical-rain" style="font-size: 14px; color: #ff6b35;">-- mm/h</div>
+      </div>
+      <div class="hud-item" id="hud-temperate" style="display: none;">
+        <div class="hud-label">温带气候带</div>
+        <div class="hud-value" id="temperate-wind">-- km/h</div>
+        <div class="hud-value" id="temperate-rain" style="font-size: 14px; color: #4caf50;">-- mm/h</div>
+      </div>
+      <div class="hud-item" id="hud-polar" style="display: none;">
+        <div class="hud-label">极地气候带</div>
+        <div class="hud-value" id="polar-wind">-- km/h</div>
+        <div class="hud-value" id="polar-rain" style="font-size: 14px; color: #55aaff;">-- mm/h</div>
+      </div>
+    </div>
+
+    <div id="time-indicator">
+      <div class="ring">
+        <svg viewBox="0 0 30 30">
+          <circle class="ring-bg" cx="15" cy="15" r="12"></circle>
+          <circle class="ring-progress" id="time-ring" cx="15" cy="15" r="12" 
+            stroke-dasharray="75.4" stroke-dashoffset="75.4" stroke="#4caf50"></circle>
+        </svg>
+        <span class="ring-value" id="time-value">1x</span>
+      </div>
+      <span class="label">时间流速</span>
+    </div>
+
+    <div id="minimap-label">全球气候带</div>
+    <div id="minimap">
+      <canvas id="minimap-canvas" width="150" height="150"></canvas>
+    </div>
+
+    <div id="control-panel"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

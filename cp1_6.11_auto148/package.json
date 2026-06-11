@@ -1,0 +1,23 @@
+{
+  "name": "climate-particle-explorer",
+  "version": "1.0.0",
+  "description": "3D global climate zone weather particle exploration and comparison visualization",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "tweakpane": "^4.0.3",
+    "gsap": "^3.12.4",
+    "d3-scale": "^4.0.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "^0.160.0",
+    "@types/d3-scale": "^4.0.8"
+  }
+}
