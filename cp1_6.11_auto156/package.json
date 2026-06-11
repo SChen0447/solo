@@ -1,0 +1,23 @@
+{
+  "name": "hydrothermal-vent-ecosystem",
+  "version": "1.0.0",
+  "description": "虚拟海底热泉生态圈与管状蠕虫群落成长模拟",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "gsap": "^3.12.4",
+    "d3-scale": "^4.0.2",
+    "tweakpane": "^4.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "^0.160.0",
+    "@types/d3-scale": "^4.0.8"
+  }
+}
