@@ -1,0 +1,1143 @@
+:root {
+  --color-primary: #8B5E3C;
+  --color-primary-dark: #6D4C41;
+  --color-primary-light: #A1887F;
+  --color-bg: #F5E6D3;
+  --color-bg-gradient-end: #E8D5B7;
+  --color-surface: #FFF8F0;
+  --color-surface-dark: #EFE5D8;
+  --color-text: #3E2723;
+  --color-text-secondary: #6D4C41;
+  --color-text-light: #8D6E63;
+  --color-accent: #5D4037;
+  --border-radius: 12px;
+  --shadow-sm: 0 2px 8px rgba(109, 76, 65, 0.15);
+  --shadow-md: 0 4px 16px rgba(109, 76, 65, 0.2);
+  --shadow-lg: 0 8px 32px rgba(109, 76, 65, 0.25);
+  --transition: 0.2s ease;
+  --tea-pattern: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238B5E3C' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Noto Serif SC', serif;
+  color: var(--color-text);
+  background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-gradient-end) 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* 顶部导航栏 */
+.top-nav {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 320px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 24px;
+  gap: 12px;
+  z-index: 100;
+  background: rgba(245, 230, 211, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+.nav-btn {
+  padding: 8px 16px;
+  border: 2px solid var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-family: 'Noto Serif SC', serif;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-btn:hover {
+  transform: scale(1.05);
+  background: var(--color-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.nav-btn.primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.nav-btn.primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.batch-tabs {
+  display: flex;
+  gap: 8px;
+  margin-right: auto;
+  overflow-x: auto;
+  max-width: calc(100% - 300px);
+}
+
+.batch-tab {
+  padding: 6px 14px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-light);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: all var(--transition);
+  color: var(--color-text-secondary);
+}
+
+.batch-tab:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+}
+
+.batch-tab.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.batch-tab.add-btn {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  font-weight: bold;
+  border-style: dashed;
+}
+
+/* 左侧茶台区域 */
+.tea-panel {
+  width: 320px;
+  min-height: 100vh;
+  background: var(--color-surface);
+  background-image: var(--tea-pattern);
+  border-right: 3px solid var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  padding: 80px 20px 20px;
+  position: fixed;
+  left: 0;
+  top: 0;
+  overflow-y: auto;
+  z-index: 50;
+}
+
+.panel-section {
+  background: rgba(255, 248, 240, 0.9);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 20px;
+  color: var(--color-primary-dark);
+  margin-bottom: 16px;
+  text-align: center;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed var(--color-primary-light);
+}
+
+/* 茶叶品种选择 */
+.variety-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.variety-card {
+  padding: 12px 14px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.variety-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--color-primary);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.variety-card:hover {
+  transform: scale(1.02);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.variety-card.active {
+  border-color: var(--color-primary);
+  background: linear-gradient(90deg, rgba(139, 94, 60, 0.08) 0%, var(--color-surface) 100%);
+}
+
+.variety-card.active::before {
+  opacity: 1;
+}
+
+.variety-name {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--color-text);
+  margin-bottom: 4px;
+}
+
+.variety-desc {
+  font-size: 12px;
+  color: var(--color-text-light);
+  line-height: 1.4;
+}
+
+.variety-color-preview {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.color-arrow {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+/* 参数滑块 */
+.param-group {
+  margin-bottom: 20px;
+}
+
+.param-group:last-child {
+  margin-bottom: 0;
+}
+
+.param-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.param-value {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  font-size: 16px;
+  min-width: 60px;
+  text-align: right;
+}
+
+.param-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, var(--color-primary-light), var(--color-primary));
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.param-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--color-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+
+.param-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: var(--shadow-md);
+}
+
+.param-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid var(--color-primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+/* 翻堆频率单选按钮 */
+.turn-options {
+  display: flex;
+  gap: 8px;
+}
+
+.turn-option {
+  flex: 1;
+  padding: 10px 8px;
+  text-align: center;
+  background: var(--color-surface);
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all var(--transition);
+  color: var(--color-text-secondary);
+}
+
+.turn-option:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+}
+
+.turn-option.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.turn-option small {
+  display: block;
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
+
+/* 右侧主视窗 */
+.main-view {
+  flex: 1;
+  margin-left: 320px;
+  padding: 80px 40px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* 发酵罐 */
+.fermentation-tank-container {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tank-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 32px;
+  color: var(--color-primary-dark);
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.tank-subtitle {
+  font-size: 14px;
+  color: var(--color-text-light);
+  margin-bottom: 30px;
+}
+
+.tank-svg-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 3/4;
+}
+
+.tank-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 24px rgba(109, 76, 65, 0.3));
+}
+
+.tank-indicators {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  right: -30px;
+  top: 20%;
+}
+
+.indicator {
+  background: var(--color-surface);
+  padding: 8px 12px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+  border: 2px solid var(--color-primary-light);
+  min-width: 90px;
+  text-align: center;
+}
+
+.indicator-label {
+  font-size: 11px;
+  color: var(--color-text-light);
+  margin-bottom: 4px;
+}
+
+.indicator-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+/* 茶汤液滴 */
+.soup-drop-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 248, 240, 0.8);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-primary-light);
+}
+
+.soup-drop {
+  width: 80px;
+  height: 80px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  position: relative;
+  box-shadow: inset -8px -8px 20px rgba(0,0,0,0.1), var(--shadow-md);
+  transition: all 0.5s ease;
+}
+
+.soup-drop::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  left: 25%;
+  width: 30%;
+  height: 25%;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+.soup-info {
+  flex: 1;
+}
+
+.soup-info h4 {
+  font-size: 16px;
+  color: var(--color-text);
+  margin-bottom: 8px;
+}
+
+.soup-progress {
+  height: 8px;
+  background: var(--color-surface-dark);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.soup-progress-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* 香气分子卡片 */
+.aroma-section {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 40px;
+}
+
+.aroma-title {
+  font-size: 20px;
+  color: var(--color-primary-dark);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.aroma-molecules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.molecule-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
+  border: 2px solid;
+  animation: fadeInUp 0.5s ease;
+  transition: transform var(--transition), box-shadow var(--transition);
+  cursor: default;
+}
+
+.molecule-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.molecule-symbol {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+  animation: spin 10s linear infinite;
+  animation-play-state: paused;
+}
+
+.molecule-card:hover .molecule-symbol {
+  animation-play-state: running;
+}
+
+.molecule-info h4 {
+  font-size: 14px;
+  color: var(--color-text);
+  margin-bottom: 2px;
+}
+
+.molecule-info p {
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.molecule-intensity {
+  width: 60px;
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.molecule-intensity-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* 茶叶颜色条 */
+.color-progress-section {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 30px;
+}
+
+.color-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.color-gradient-bar {
+  height: 20px;
+  border-radius: 10px;
+  position: relative;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.color-indicator {
+  position: absolute;
+  top: -6px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 12px solid var(--color-primary-dark);
+  transform: translateX(-50%);
+  transition: left 0.3s ease;
+}
+
+/* 进度条 */
+.progress-section {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 30px;
+}
+
+.progress-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.progress-bar {
+  height: 12px;
+  background: var(--color-surface-dark);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+/* 控制按钮 */
+.control-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.control-btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: var(--border-radius);
+  font-family: 'Noto Serif SC', serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-btn.primary {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 12px rgba(139, 94, 60, 0.3);
+}
+
+.control-btn.primary:hover {
+  transform: scale(1.05);
+  background: var(--color-primary-dark);
+  box-shadow: 0 6px 20px rgba(139, 94, 60, 0.4);
+}
+
+.control-btn.secondary {
+  background: var(--color-surface);
+  color: var(--color-primary-dark);
+  border: 2px solid var(--color-primary-light);
+}
+
+.control-btn.secondary:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+  background: var(--color-bg);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* 速度控制 */
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px 16px;
+  background: rgba(255, 248, 240, 0.8);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-primary-light);
+}
+
+.speed-control label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.speed-select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 2px solid var(--color-primary-light);
+  background: white;
+  color: var(--color-text);
+  font-family: 'Noto Serif SC', serif;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.speed-select:hover {
+  border-color: var(--color-primary);
+}
+
+/* 报告模态框 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(62, 39, 35, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: var(--color-surface);
+  border-radius: 16px;
+  max-width: 900px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.4s ease;
+  background-image: var(--tea-pattern);
+}
+
+.modal-header {
+  padding: 24px 32px;
+  border-bottom: 2px solid var(--color-primary-light);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  background: var(--color-surface);
+  z-index: 1;
+}
+
+.modal-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 28px;
+  color: var(--color-primary-dark);
+}
+
+.modal-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-surface-dark);
+  cursor: pointer;
+  font-size: 20px;
+  color: var(--color-text-secondary);
+  transition: all var(--transition);
+}
+
+.modal-close:hover {
+  background: var(--color-primary);
+  color: white;
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 24px 32px;
+}
+
+.report-section {
+  margin-bottom: 28px;
+}
+
+.report-section h3 {
+  font-size: 18px;
+  color: var(--color-primary-dark);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.report-section h3::before {
+  content: '';
+  width: 4px;
+  height: 20px;
+  background: var(--color-primary);
+  border-radius: 2px;
+}
+
+.score-overview {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.score-badge {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary-light), var(--color-primary-dark));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.score-value {
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 12px;
+  opacity: 0.9;
+  margin-top: 4px;
+}
+
+.score-notes {
+  flex: 1;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.chart-container {
+  background: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  height: 300px;
+  position: relative;
+}
+
+.chart-container canvas {
+  animation: chartFadeIn 0.8s ease;
+}
+
+.taste-bars {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.taste-bar-item {
+  background: white;
+  padding: 16px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+}
+
+.taste-bar-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.taste-bar-value {
+  font-weight: 600;
+  color: var(--color-primary-dark);
+}
+
+.taste-bar-track {
+  height: 10px;
+  background: var(--color-surface-dark);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.taste-bar-fill {
+  height: 100%;
+  border-radius: 5px;
+  background: linear-gradient(90deg, var(--color-primary-light), var(--color-primary));
+  transition: width 0.8s ease;
+}
+
+.aroma-timeline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.aroma-time-point {
+  padding: 8px 12px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  font-size: 12px;
+}
+
+.aroma-time-point .day {
+  color: var(--color-primary-dark);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.aroma-time-point .mols {
+  color: var(--color-text-light);
+  font-size: 11px;
+}
+
+/* 对比页面 */
+.compare-view {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.compare-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(255, 248, 240, 0.8);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-primary-light);
+}
+
+.compare-item {
+  padding: 10px 16px;
+  background: white;
+  border: 2px solid var(--color-primary-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 14px;
+}
+
+.compare-item:hover {
+  transform: scale(1.05);
+  border-color: var(--color-primary);
+}
+
+.compare-item.selected {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+/* 汉堡菜单 */
+.menu-toggle {
+  display: none;
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  border: none;
+  cursor: pointer;
+  z-index: 200;
+  box-shadow: var(--shadow-md);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes chartFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes liquidSway {
+  0%, 100% { transform: translateX(0) skewX(0deg); }
+  25% { transform: translateX(2px) skewX(1deg); }
+  75% { transform: translateX(-2px) skewX(-1deg); }
+}
+
+.liquid-sway .tank-liquid {
+  animation: liquidSway 0.5s ease-in-out;
+}
+
+/* 响应式 - 移动端 */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: flex;
+  }
+
+  .tea-panel {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    width: 280px;
+    padding-top: 70px;
+  }
+
+  .tea-panel.open {
+    transform: translateX(0);
+  }
+
+  .main-view {
+    margin-left: 0;
+    padding: 70px 20px 20px;
+  }
+
+  .top-nav {
+    left: 0;
+    padding: 0 16px 0 70px;
+  }
+
+  .batch-tabs {
+    max-width: calc(100% - 160px);
+  }
+
+  .tank-title {
+    font-size: 24px;
+  }
+
+  .tank-indicators {
+    right: 10px;
+    top: 10%;
+  }
+
+  .indicator {
+    min-width: 70px;
+    padding: 6px 8px;
+  }
+
+  .indicator-value {
+    font-size: 14px;
+  }
+
+  .control-buttons {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .taste-bars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .score-overview {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .modal-content {
+    width: 95%;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .taste-bars {
+    grid-template-columns: 1fr;
+  }
+
+  .aroma-molecules {
+    justify-content: flex-start;
+  }
+
+  .molecule-card {
+    width: 100%;
+  }
+}
