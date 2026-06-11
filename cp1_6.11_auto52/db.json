@@ -1,0 +1,291 @@
+{
+  "coffees": [
+    {
+      "id": 1,
+      "name": "耶加雪菲 科契尔",
+      "origin": "埃塞俄比亚",
+      "region": "耶加雪菲 科契尔",
+      "altitude": 2100,
+      "process": "水洗",
+      "variety": "原生种",
+      "flavorNotes": ["花香", "果酸", "柑橘", "茉莉"],
+      "avgRating": 8.7,
+      "mapPosition": { "x": 68, "y": 42 },
+      "roastLevel": "中浅烘焙",
+      "description": "来自埃塞俄比亚耶加雪菲产区的精品咖啡豆，以其独特的花香和明亮的果酸著称。"
+    },
+    {
+      "id": 2,
+      "name": "西达摩 古吉",
+      "origin": "埃塞俄比亚",
+      "region": "西达摩 古吉",
+      "altitude": 2000,
+      "process": "日晒",
+      "variety": "原生种",
+      "flavorNotes": ["浆果", "酒香", "热带水果", "甜感"],
+      "avgRating": 8.5,
+      "mapPosition": { "x": 70, "y": 45 },
+      "roastLevel": "浅烘焙",
+      "description": "日晒处理的西达摩咖啡豆，带有浓郁的浆果风味和轻微的酒香。"
+    },
+    {
+      "id": 3,
+      "name": "慧兰 纳里尼奥",
+      "origin": "哥伦比亚",
+      "region": "慧兰 纳里尼奥",
+      "altitude": 1900,
+      "process": "水洗",
+      "variety": "卡杜拉、卡斯蒂略",
+      "flavorNotes": ["焦糖", "坚果", "巧克力", "温和果酸"],
+      "avgRating": 8.3,
+      "mapPosition": { "x": 28, "y": 55 },
+      "roastLevel": "中烘焙",
+      "description": "哥伦比亚慧兰产区的经典水洗咖啡豆，口感平衡，带有焦糖和坚果的甜感。"
+    },
+    {
+      "id": 4,
+      "name": "薇拉 薇拉产区精选",
+      "origin": "哥伦比亚",
+      "region": "考卡 薇拉",
+      "altitude": 1800,
+      "process": "蜜处理",
+      "variety": "卡杜艾",
+      "flavorNotes": ["蜂蜜", "橙花", "红苹果", "丝滑"],
+      "avgRating": 8.6,
+      "mapPosition": { "x": 26, "y": 58 },
+      "roastLevel": "中浅烘焙",
+      "description": "蜜处理的薇拉咖啡豆，保留了更多的甜味，带有蜂蜜和橙花的香气。"
+    },
+    {
+      "id": 5,
+      "name": "米纳斯吉拉斯 赛拉多",
+      "origin": "巴西",
+      "region": "米纳斯吉拉斯 赛拉多",
+      "altitude": 1200,
+      "process": "日晒",
+      "variety": "波旁、卡杜艾",
+      "flavorNotes": ["坚果", "可可", "奶油", "低酸"],
+      "avgRating": 8.0,
+      "mapPosition": { "x": 35, "y": 70 },
+      "roastLevel": "中深烘焙",
+      "description": "巴西赛拉多产区的经典日晒咖啡豆，口感醇厚，是意式拼配的理想基底。"
+    },
+    {
+      "id": 6,
+      "name": "喜拉多 半日晒",
+      "origin": "巴西",
+      "region": "圣保罗 喜拉多",
+      "altitude": 1100,
+      "process": "半日晒",
+      "variety": "新世界、卡杜拉",
+      "flavorNotes": ["榛果", "黑糖", "巧克力", "顺滑"],
+      "avgRating": 7.9,
+      "mapPosition": { "x": 38, "y": 72 },
+      "roastLevel": "中烘焙",
+      "description": "半日晒处理的巴西咖啡豆，平衡了干净度和甜感，适合各种冲煮方式。"
+    },
+    {
+      "id": 7,
+      "name": "曼特宁 林东",
+      "origin": "印度尼西亚",
+      "region": "苏门答腊 林东",
+      "altitude": 1500,
+      "process": "湿刨法",
+      "variety": "铁皮卡、波旁",
+      "flavorNotes": ["草本", "泥土", "雪松", "浓郁"],
+      "avgRating": 8.1,
+      "mapPosition": { "x": 82, "y": 65 },
+      "roastLevel": "深烘焙",
+      "description": "苏门答腊曼特宁咖啡豆，以其独特的草本和泥土风味著称，口感浓郁厚实。"
+    },
+    {
+      "id": 8,
+      "name": "瑰夏 翡翠庄园",
+      "origin": "巴拿马",
+      "region": "博克特 翡翠庄园",
+      "altitude": 1700,
+      "process": "水洗",
+      "variety": "瑰夏",
+      "flavorNotes": ["茉莉", "佛手柑", "蜜桃", "茶感"],
+      "avgRating": 9.3,
+      "mapPosition": { "x": 22, "y": 50 },
+      "roastLevel": "极浅烘焙",
+      "description": "巴拿马翡翠庄园的瑰夏咖啡豆，咖啡界的传奇，以其极致的花香和茶感闻名。"
+    }
+  ],
+  "roastingRecords": [
+    {
+      "id": 1,
+      "coffeeId": 1,
+      "date": "2024-01-15",
+      "roaster": "咖啡工坊",
+      "temperatureCurve": [
+        { "time": 0, "temp": 180 },
+        { "time": 60, "temp": 195 },
+        { "time": 120, "temp": 205 },
+        { "time": 180, "temp": 210 },
+        { "time": 240, "temp": 212 },
+        { "time": 300, "temp": 208 },
+        { "time": 360, "temp": 205 },
+        { "time": 420, "temp": 200 },
+        { "time": 480, "temp": 195 },
+        { "time": 540, "temp": 190 }
+      ],
+      "dropTemp": 205,
+      "firstCrack": "7:30",
+      "totalTime": "9:00",
+      "roastLevel": "中浅烘焙"
+    },
+    {
+      "id": 2,
+      "coffeeId": 2,
+      "date": "2024-01-20",
+      "roaster": "精品烘焙实验室",
+      "temperatureCurve": [
+        { "time": 0, "temp": 175 },
+        { "time": 60, "temp": 190 },
+        { "time": 120, "temp": 200 },
+        { "time": 180, "temp": 206 },
+        { "time": 240, "temp": 208 },
+        { "time": 300, "temp": 205 },
+        { "time": 360, "temp": 202 },
+        { "time": 420, "temp": 198 },
+        { "time": 480, "temp": 192 },
+        { "time": 540, "temp": 185 }
+      ],
+      "dropTemp": 208,
+      "firstCrack": "6:45",
+      "totalTime": "8:15",
+      "roastLevel": "浅烘焙"
+    },
+    {
+      "id": 3,
+      "coffeeId": 3,
+      "date": "2024-01-18",
+      "roaster": "咖啡工坊",
+      "temperatureCurve": [
+        { "time": 0, "temp": 185 },
+        { "time": 60, "temp": 200 },
+        { "time": 120, "temp": 212 },
+        { "time": 180, "temp": 218 },
+        { "time": 240, "temp": 220 },
+        { "time": 300, "temp": 218 },
+        { "time": 360, "temp": 215 },
+        { "time": 420, "temp": 212 },
+        { "time": 480, "temp": 208 },
+        { "time": 540, "temp": 205 },
+        { "time": 600, "temp": 200 }
+      ],
+      "dropTemp": 215,
+      "firstCrack": "8:00",
+      "totalTime": "10:00",
+      "roastLevel": "中烘焙"
+    },
+    {
+      "id": 4,
+      "coffeeId": 7,
+      "date": "2024-01-22",
+      "roaster": "深度烘焙工作室",
+      "temperatureCurve": [
+        { "time": 0, "temp": 190 },
+        { "time": 60, "temp": 205 },
+        { "time": 120, "temp": 218 },
+        { "time": 180, "temp": 225 },
+        { "time": 240, "temp": 230 },
+        { "time": 300, "temp": 228 },
+        { "time": 360, "temp": 225 },
+        { "time": 420, "temp": 222 },
+        { "time": 480, "temp": 218 },
+        { "time": 540, "temp": 215 },
+        { "time": 600, "temp": 210 }
+      ],
+      "dropTemp": 225,
+      "firstCrack": "7:15",
+      "secondCrack": "11:30",
+      "totalTime": "12:00",
+      "roastLevel": "深烘焙"
+    }
+  ],
+  "tastingNotes": [
+    {
+      "id": 1,
+      "coffeeId": 1,
+      "rating": 9,
+      "dryAroma": ["花香", "柑橘"],
+      "wetAroma": ["茉莉", "蜂蜜"],
+      "taste": "入口即感受到明亮的柠檬酸和茉莉花香，中段有蜂蜜般的甜感，尾韵干净悠长。",
+      "author": "咖啡爱好者",
+      "createdAt": "2024-01-25T10:30:00Z"
+    },
+    {
+      "id": 2,
+      "coffeeId": 1,
+      "rating": 8,
+      "dryAroma": ["花香", "茶感"],
+      "wetAroma": ["柠檬", "佛手柑"],
+      "taste": "非常干净的一杯，酸度明亮但不刺激，带有淡淡的茶香，适合手冲。",
+      "author": "精品咖啡迷",
+      "createdAt": "2024-01-24T15:20:00Z"
+    },
+    {
+      "id": 3,
+      "coffeeId": 2,
+      "rating": 8.5,
+      "dryAroma": ["浆果", "甜感"],
+      "wetAroma": ["草莓", "蓝莓"],
+      "taste": "浓郁的草莓和蓝莓风味，带有轻微的发酵酒香，甜感十足。",
+      "author": "日晒控",
+      "createdAt": "2024-01-23T09:15:00Z"
+    },
+    {
+      "id": 4,
+      "coffeeId": 3,
+      "rating": 8,
+      "dryAroma": ["坚果", "焦糖"],
+      "wetAroma": ["杏仁", "红糖"],
+      "taste": "经典的哥伦比亚风味，平衡感很好，焦糖甜感明显，适合每天饮用。",
+      "author": "日常咖啡党",
+      "createdAt": "2024-01-22T14:45:00Z"
+    },
+    {
+      "id": 5,
+      "coffeeId": 4,
+      "rating": 9,
+      "dryAroma": ["蜂蜜", "花香"],
+      "wetAroma": ["橙花", "水蜜桃"],
+      "taste": "蜜处理的甜感非常突出，橙花香水蜜桃的风味层层递进，丝滑的口感令人惊艳。",
+      "author": "蜜处理爱好者",
+      "createdAt": "2024-01-26T11:00:00Z"
+    },
+    {
+      "id": 6,
+      "coffeeId": 5,
+      "rating": 7.5,
+      "dryAroma": ["坚果", "可可"],
+      "wetAroma": ["榛果", "黑巧克力"],
+      "taste": "醇厚的口感，坚果和可可的经典搭配，酸度很低，做奶咖也很棒。",
+      "author": "意式咖啡迷",
+      "createdAt": "2024-01-21T08:30:00Z"
+    },
+    {
+      "id": 7,
+      "coffeeId": 8,
+      "rating": 9.5,
+      "dryAroma": ["花香", "茶感"],
+      "wetAroma": ["茉莉", "佛手柑", "蜜桃"],
+      "taste": "不愧是咖啡界的香槟！极致的茉莉花香，佛手柑的清爽，蜜桃的甜感，如同在喝一杯高级花茶。",
+      "author": "瑰夏信徒",
+      "createdAt": "2024-01-27T16:00:00Z"
+    },
+    {
+      "id": 8,
+      "coffeeId": 7,
+      "rating": 8,
+      "dryAroma": ["草本", "泥土"],
+      "wetAroma": ["雪松", "黑巧克力"],
+      "taste": "非常有个性的一支豆子，草本和雪松的风味独特，口感厚实，适合喜欢重口味的朋友。",
+      "author": "曼特宁铁粉",
+      "createdAt": "2024-01-20T13:20:00Z"
+    }
+  ]
+}
