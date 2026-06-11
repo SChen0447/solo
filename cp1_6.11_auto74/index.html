@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>灵感情绪板</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      html, body, #root {
+        height: 100%;
+        width: 100%;
+      }
+      
+      body {
+        background-color: #F9FAFB;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #F9FAFB;
+      }
+      
+      .loading-logo {
+        font-size: 32px;
+        font-weight: 600;
+        color: #374151;
+        opacity: 0;
+        animation: fadeIn 1.2s ease-out forwards;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .loading-logo::before {
+        content: '';
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #DBEAFE, #FCE7F3, #FEF3C7);
+        border-radius: 10px;
+        display: inline-block;
+      }
+      
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading-container">
+        <div class="loading-logo">灵感板</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

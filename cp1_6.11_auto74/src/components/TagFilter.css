@@ -1,0 +1,50 @@
+.tag-filter {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--color-border);
+  background-color: white;
+  flex-wrap: wrap;
+}
+
+.tag-filter-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.tag-filter-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag-filter-item {
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    opacity: 0.8;
+  }
+  
+  &.active {
+    font-weight: 600;
+  }
+}
+
+.tag-filter-clear {
+  padding: 5px 12px;
+  font-size: 13px;
+  color: #6B7280;
+  text-decoration: underline;
+  
+  &:hover {
+    color: #374151;
+  }
+}
