@@ -1,0 +1,21 @@
+{
+  "name": "deep-sea-thermal-vent",
+  "version": "1.0.0",
+  "description": "深海热泉流体与温度场3D可视化应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/three": "^0.160.0",
+    "gsap": "^3.12.5",
+    "three": "^0.160.0",
+    "tweakpane": "^4.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

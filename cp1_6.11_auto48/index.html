@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>深海热泉流体与温度场可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(180deg, #0a1628 0%, #050d18 50%, #020510 100%);
+      color: #e0f7fa;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    /* 加载界面 */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0a1628 0%, #050d18 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sonar-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .sonar-ring {
+      position: absolute;
+      border: 2px solid transparent;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .sonar-ring:nth-child(1) {
+      width: 60px;
+      height: 60px;
+      border-color: #39ff14;
+      animation-delay: 0s;
+      box-shadow: 0 0 15px rgba(57, 255, 20, 0.4), inset 0 0 15px rgba(57, 255, 20, 0.1);
+    }
+
+    .sonar-ring:nth-child(2) {
+      width: 120px;
+      height: 120px;
+      border-color: #1e90ff;
+      animation-delay: 0.3s;
+      box-shadow: 0 0 20px rgba(30, 144, 255, 0.3), inset 0 0 20px rgba(30, 144, 255, 0.1);
+    }
+
+    .sonar-ring:nth-child(3) {
+      width: 180px;
+      height: 180px;
+      border-color: #39ff14;
+      animation-delay: 0.6s;
+      box-shadow: 0 0 25px rgba(57, 255, 20, 0.2), inset 0 0 25px rgba(57, 255, 20, 0.05);
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.05); opacity: 0.9; }
+    }
+
+    .loading-text {
+      margin-top: 40px;
+      font-size: 16px;
+      color: #39ff14;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+    }
+
+    /* Tweakpane 面板样式 */
+    #tweakpane-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(10, 22, 40, 0.7);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(57, 255, 20, 0.1);
+      transform-origin: bottom right;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #tweakpane-container .tp-dfwv {
+      width: 280px;
+      background: transparent !important;
+    }
+
+    #tweakpane-container .tp-rotv {
+      animation: slideIn 0.4s ease-out backwards;
+    }
+
+    #tweakpane-container .tp-rotv:nth-child(1) { animation-delay: 0.15s; }
+    #tweakpane-container .tp-rotv:nth-child(2) { animation-delay: 0.30s; }
+    #tweakpane-container .tp-rotv:nth-child(3) { animation-delay: 0.45s; }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* 移动端折叠按钮 */
+    #tweakpane-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(10, 22, 40, 0.9);
+      border: 2px solid #39ff14;
+      cursor: pointer;
+      z-index: 101;
+      box-shadow: 0 0 20px rgba(57, 255, 20, 0.4);
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s ease;
+    }
+
+    #tweakpane-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    #tweakpane-toggle svg {
+      width: 24px;
+      height: 24px;
+      fill: #39ff14;
+    }
+
+    /* 数据面板 */
+    #data-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: rgba(10, 22, 40, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(57, 255, 20, 0.4);
+      border-radius: 16px;
+      padding: 28px 32px;
+      min-width: 320px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 40px rgba(57, 255, 20, 0.15);
+    }
+
+    #data-panel.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    #data-panel h3 {
+      color: #39ff14;
+      font-size: 18px;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(57, 255, 20, 0.2);
+      letter-spacing: 2px;
+    }
+
+    .data-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .data-row:last-child {
+      border-bottom: none;
+    }
+
+    .data-label {
+      color: #8aacc8;
+      font-size: 14px;
+    }
+
+    .data-value {
+      color: #e0f7fa;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+    }
+
+    .data-value .unit {
+      color: #39ff14;
+      font-size: 12px;
+      margin-left: 4px;
+    }
+
+    #close-panel {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(57, 255, 20, 0.1);
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      color: #39ff14;
+      cursor: pointer;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    #close-panel:hover {
+      background: rgba(57, 255, 20, 0.25);
+      transform: rotate(90deg);
+    }
+
+    /* 提示文字 */
+    #hint {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(57, 255, 20, 0.7);
+      font-size: 13px;
+      letter-spacing: 1px;
+      z-index: 50;
+      text-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+      pointer-events: none;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 768px) {
+      #tweakpane-container {
+        display: none;
+        bottom: 80px;
+        right: 10px;
+        padding: 12px;
+      }
+
+      #tweakpane-container.mobile-visible {
+        display: block;
+        animation: slideUp 0.3s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      #tweakpane-toggle {
+        display: flex;
+      }
+
+      #data-panel {
+        min-width: 280px;
+        padding: 20px 24px;
+      }
+
+      #hint {
+        font-size: 11px;
+        top: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 加载界面 -->
+    <div id="loading-screen">
+      <div class="sonar-container">
+        <div class="sonar-ring"></div>
+        <div class="sonar-ring"></div>
+        <div class="sonar-ring"></div>
+      </div>
+      <div class="loading-text">深海扫描中...</div>
+    </div>
+
+    <!-- 3D画布容器 -->
+    <div id="canvas-container"></div>
+
+    <!-- 提示 -->
+    <div id="hint">拖拽旋转视角 · 滚轮缩放 · 点击热泉口查看数据</div>
+
+    <!-- Tweakpane控制面板 -->
+    <div id="tweakpane-container"></div>
+
+    <!-- 移动端折叠按钮 -->
+    <button id="tweakpane-toggle" title="控制面板">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12 3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5 3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97 0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.22-.08-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1 0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.08.74 1.69.99l.38 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.38-2.65c.61-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66z"/>
+      </svg>
+    </button>
+
+    <!-- 数据面板 -->
+    <div id="data-panel">
+      <button id="close-panel">×</button>
+      <h3>热泉口实时监测数据</h3>
+      <div class="data-row">
+        <span class="data-label">核心温度</span>
+        <span class="data-value" id="data-temp">300<span class="unit">°C</span></span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">流体流速</span>
+        <span class="data-value" id="data-velocity">2.5<span class="unit">m/s</span></span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">扩散半径</span>
+        <span class="data-value" id="data-radius">45.2<span class="unit">m</span></span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">粒子密度</span>
+        <span class="data-value" id="data-density">1,250<span class="unit">个</span></span>
+      </div>
+      <div class="data-row">
+        <span class="data-label">环境压力</span>
+        <span class="data-value" id="data-pressure">25.8<span class="unit">MPa</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
