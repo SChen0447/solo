@@ -1,0 +1,22 @@
+{
+  "name": "crystal-cave-simulator",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "虚拟水晶矿洞与地质脉络生长模拟器",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "gsap": "^3.12.5",
+    "file-saver": "^2.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "0.160.0",
+    "@types/file-saver": "^2.0.7"
+  }
+}
