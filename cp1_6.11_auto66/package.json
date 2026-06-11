@@ -1,0 +1,15 @@
+{
+  "name": "rhythm-bird-game",
+  "version": "1.0.0",
+  "description": "基于音律节奏的幻光飞鸟收集竞技游戏",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

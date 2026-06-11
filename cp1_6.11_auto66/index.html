@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>幻光飞鸟 - 音律节奏收集</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+    body {
+      background: linear-gradient(135deg, #1a0a2e 0%, #16213e 50%, #0f3460 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+    #gameCanvas {
+      display: block;
+      border-radius: 8px;
+      box-shadow: 0 0 60px rgba(138, 43, 226, 0.3);
+    }
+    #startPanel, #gameOverPanel {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      transition: opacity 0.5s ease;
+    }
+    #startPanel.hidden, #gameOverPanel.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .light-orb {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(138,43,226,0.4) 40%, rgba(138,43,226,0.1) 70%, transparent 100%);
+      animation: pulse 1.5s ease-in-out infinite;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 80px rgba(138, 43, 226, 0.6);
+    }
+    .light-orb:hover {
+      box-shadow: 0 0 120px rgba(138, 43, 226, 0.9);
+    }
+    .light-orb span {
+      color: white;
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8);
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .game-title {
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      background: linear-gradient(90deg, #00d4ff, #ff00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.5));
+    }
+    .final-score {
+      font-size: 72px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+      margin: 20px 0;
+    }
+    .game-over-title {
+      color: white;
+      font-size: 42px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(255, 100, 100, 0.6);
+    }
+    .score-label {
+      color: rgba(255,255,255,0.8);
+      font-size: 18px;
+      letter-spacing: 2px;
+    }
+    .restart-btn {
+      margin-top: 40px;
+      padding: 16px 48px;
+      font-size: 20px;
+      font-weight: bold;
+      color: white;
+      background: linear-gradient(135deg, #8a2be2, #00d4ff);
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+    }
+    .restart-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 50px rgba(138, 43, 226, 0.9), 0 0 80px rgba(0, 212, 255, 0.5);
+    }
+    .overlay-mask {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 5;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .overlay-mask.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="900" height="900"></canvas>
+
+  <div class="overlay-mask" id="overlayMask"></div>
+
+  <div id="startPanel">
+    <div class="game-title">幻光飞鸟</div>
+    <div class="light-orb" id="startBtn">
+      <span>点击开始</span>
+    </div>
+    <div style="margin-top:40px;color:rgba(255,255,255,0.6);font-size:14px;letter-spacing:1px;">
+      鼠标点击 / 空格键 切换轨道
+    </div>
+  </div>
+
+  <div id="gameOverPanel" class="hidden">
+    <div class="game-over-title">游戏结束</div>
+    <div class="score-label">最终得分</div>
+    <div class="final-score" id="finalScore">0</div>
+    <button class="restart-btn" id="restartBtn">再次飞行</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
