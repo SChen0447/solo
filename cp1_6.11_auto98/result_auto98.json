@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-10T19:07:53.973Z",
+  "task_name": "auto98",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线虚拟邮局与手写信件漂流的项目，想法是让用户像在数字世界里拥有一家复古风格的邮局一样，可以撰写一封带有手写字体和印章的电子信，然后把它“寄”出去，信件会随机漂流到另一位用户的收件箱里，收件人可以阅读、保存或继续让信漂流到下一个陌生人手中，以此制造一种随机又温暖的陌生人社交体验。希望它能做到：第一，用户进入后看到一个仿木质柜台的主界面，页面主色调采用暖橡木色（#8b5e3c）和奶油白（#fff8e7），背景是浅色木纹纹理（用CSS渐变和box-shadow叠加模拟），顶部横栏是邮局标志性的绿色（#2d6a4f）仿搪瓷招牌，左侧是“写信”区（呈现为一张带有旧信纸暗纹的矩形区域，暗纹用repeating-linear-gradient模拟水印线条，间距4px，透明度0.15），右侧是“收件箱”列表（每封信以小封套图标+发件日期显示，未读封套带红色蜡封圆点，封套悬停时弹起1.2倍并旋转2度）。用户在写信区可以选择信纸底色（至少5种：米黄、浅粉、淡蓝、薄荷绿、灰色），然后用鼠标或触摸在信纸上手写文字（通过Canvas实现，笔触模拟真实毛笔效果，宽度随书写速度快慢变化在3-8px之间，颜色可选深棕或黑色），信纸右上角可放置一枚圆形印章（印章图案有4种主题：花、树、星、风，点击后以0.3秒ease-out缩放动画盖在指定位置，印章采用半透明朱红 #c0392b），写完信点击“寄出”按钮，信件数据通过后台上传并随机分配给另一个在线用户（若收件人在线，实时推送通知；若不在线，信存于服务器，用户下次登录时弹出新信通知）。第二，收件箱中的信件可以点击打开，打开时模拟信封拆封动画（封口蜡封碎裂效果，用CSS clip-path实现碎片飞散，持续0.4秒），信件内容在信纸上以手写字体徐徐显现（字体用Google Fonts中的Caveat或Homemade Apple，文字从左上角逐行滑入，每行动画间隔0.15秒）。第三，每个用户有一个虚拟邮票收集册（邮票通过每日签到或写信数量获得），邮票样式参考各国经典邮戳图案（至少6种，由Canvas绘制，含锯齿边缘和半透明邮戳文字），邮票可拖拽粘贴到信件的指定位置（左上角或右上角），粘贴时邮票先放大1.2倍再回到正常大小，并播放0.2秒的粘贴音效（用Web Audio API生成短促的哒声）。性能上要求页面交互流畅，打开信件动画帧率不低于50fps，投信-收信的全过程延迟不超过2秒（在局域网或本地测试环境下）。实现采用TypeScript、React（前端）和Node.js + Express（后端），加Socket.IO用于实时推送，Vite作为构建工具。把代码拆成以下文件：\n - package.json（前端含依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、socket.io-client、axios、uuid，后端含依赖：express、socket.io、cors、uuid，启动脚本：npm run dev 用concurrently同时运行前后端，或者写成两个独立命令）\n - vite.config.js（构建配置，含React插件和TypeScript支持，base设为'./'）\n - tsconfig.json（严格模式，target ES2020）\n - index.html（入口，全屏奶油白背景，引入Google Fonts）\n - src/client/App.tsx（前端主组件，管理写信、收件箱、邮票册状态，通过Socket.IO接收实时推送）\n - src/client/LetterCanvas.tsx（Canvas信件书写组件，含笔触绘制、信纸背景切换、手写文字渲染）\n - src/server/server.ts（后端入口，管理Socket连接，处理信件投递、存储和随机分配逻辑）\n - src/server/letterStore.ts（内存中存储未读信件和用户列表的简单状态管理）\n\n跑 npm install && npm run dev 就能直接看到效果，在浏览器打开两个标签页模拟用户互寄。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:18d8625cbb85dade5ac560700d290cdc_6a29b5adb9f8af6c2a3975be.6a29b5fdb9f8af6c2a397610.6a29b5fdb475986a0c954462:Trae CN.T(2026/6/11 03:07:41)",
+    "user_id": "3986207660317399",
+    "trace_id": "18d8625cbb85dade5ac560700d290cdc",
+    "session_id": "6a29b5adb9f8af6c2a3975be",
+    "task_id": "6a29b5fdb9f8af6c2a397610",
+    "message_id": "6a29b5fdb475986a0c954462",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 03:07:41",
+    "format": "full"
+  },
+  "trace": "null"
+}
