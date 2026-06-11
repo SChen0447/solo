@@ -1,0 +1,254 @@
+.mixing-bowl-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.selected-ingredients-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  min-height: 40px;
+  max-width: 100%;
+}
+
+.selected-ingredient-tag {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px 6px 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--tag-color);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.tag-icon {
+  font-size: 1rem;
+}
+
+.tag-name {
+  font-weight: 500;
+}
+
+.tag-remove {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1;
+  transition: all var(--transition-fast);
+}
+
+.tag-remove:hover {
+  background: rgba(255, 100, 100, 0.5);
+  color: white;
+  transform: scale(1.1);
+}
+
+.mixing-bowl {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  background: radial-gradient(
+    circle at center,
+    rgba(245, 240, 230, 0.3) 0%,
+    rgba(245, 240, 230, 0.1) 40%,
+    transparent 70%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  box-shadow: 
+    inset 0 -10px 30px rgba(0, 0, 0, 0.3),
+    0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.mixing-bowl.drag-over {
+  border-color: rgba(255, 255, 255, 0.6);
+  box-shadow: 
+    inset 0 -10px 30px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 255, 255, 0.2),
+    0 10px 40px rgba(0, 0, 0, 0.4);
+  transform: scale(1.02);
+}
+
+.bowl-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bowl-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.flash-effect {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0) 70%
+  );
+  pointer-events: none;
+}
+
+.ripple-effect {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.bottle-animation {
+  font-size: 5rem;
+  transform-style: preserve-3d;
+  perspective: 1000px;
+}
+
+.bottle-emoji {
+  display: block;
+}
+
+.blend-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.name-input-wrapper {
+  width: 100%;
+  max-width: 300px;
+}
+
+.perfume-name-input {
+  width: 100%;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 1rem;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-style: italic;
+  transition: all var(--transition-normal);
+}
+
+.perfume-name-input::placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.perfume-name-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 15px var(--gold-shadow);
+}
+
+.blend-button {
+  padding: 14px 48px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 100%);
+  color: var(--bg-primary);
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  box-shadow: 0 4px 15px var(--gold-shadow);
+}
+
+.blend-button.active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--gold-shadow);
+}
+
+.blend-button.disabled {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.blend-hint {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.hint-item {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .mixing-bowl {
+    width: 80vw;
+    max-width: 280px;
+    height: 80vw;
+    max-height: 280px;
+  }
+
+  .selected-ingredients-list {
+    max-width: 90vw;
+  }
+
+  .blend-button {
+    padding: 12px 36px;
+    font-size: 1rem;
+  }
+
+  .placeholder-icon {
+    font-size: 2.5rem;
+  }
+
+  .placeholder-text {
+    font-size: 0.8rem;
+  }
+}

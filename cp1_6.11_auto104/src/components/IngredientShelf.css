@@ -1,0 +1,168 @@
+.shelf-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.shelf-row {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+  background: var(--glass-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--glass-border);
+}
+
+.shelf-top {
+  border-left: 4px solid var(--top-note);
+}
+
+.shelf-middle {
+  border-left: 4px solid var(--middle-note);
+}
+
+.shelf-base {
+  border-left: 4px solid var(--base-note);
+}
+
+.shelf-label {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 80px;
+  padding-right: 16px;
+  border-right: 1px solid var(--glass-border);
+}
+
+.shelf-label-text {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.shelf-label-en {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.shelf-cards {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+  overflow-x: auto;
+  padding: 4px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--glass-border) transparent;
+}
+
+.shelf-cards::-webkit-scrollbar {
+  height: 6px;
+}
+
+.shelf-cards::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.shelf-cards::-webkit-scrollbar-thumb {
+  background: var(--glass-border);
+  border-radius: 3px;
+}
+
+.ingredient-card {
+  flex-shrink: 0;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-md);
+  cursor: grab;
+  transition: all var(--transition-normal);
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.ingredient-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--ingredient-color);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.ingredient-card:active {
+  cursor: grabbing;
+}
+
+.ingredient-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.ingredient-name {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-align: center;
+  font-weight: 500;
+}
+
+.ingredient-color-bar {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--ingredient-color);
+  box-shadow: 0 0 8px var(--ingredient-color);
+}
+
+@media (max-width: 768px) {
+  .shelf-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .shelf-label {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    min-width: auto;
+    padding-right: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 12px;
+  }
+
+  .shelf-top {
+    border-left: none;
+    border-top: 4px solid var(--top-note);
+  }
+
+  .shelf-middle {
+    border-left: none;
+    border-top: 4px solid var(--middle-note);
+  }
+
+  .shelf-base {
+    border-left: none;
+    border-top: 4px solid var(--base-note);
+  }
+
+  .ingredient-card {
+    width: 70px;
+    padding: 10px 6px;
+  }
+
+  .ingredient-icon {
+    font-size: 1.5rem;
+  }
+
+  .ingredient-name {
+    font-size: 0.7rem;
+  }
+}
