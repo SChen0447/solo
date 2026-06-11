@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蒸汽朋克机械心脏 - 交互式可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a0a00;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      color: #cfa144;
+    }
+
+    body {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #2a1a0a 0px,
+          #1a0a00 60px,
+          #2a1a0a 120px,
+          #1a0a00 180px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(207, 161, 68, 0.03) 0px,
+          rgba(207, 161, 68, 0.03) 2px,
+          transparent 2px,
+          transparent 30px
+        );
+      background-blend-mode: multiply;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 4px solid #cfa144;
+      border-radius: 4px;
+      box-shadow:
+        inset 0 0 30px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(207, 161, 68, 0.3);
+    }
+
+    #canvas-container::before,
+    #canvas-container::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #cfa144 20%, #8a6a24 60%, #3a2a1a 100%);
+      border-radius: 50%;
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.5);
+    }
+
+    #canvas-container::before { top: 8px; left: 8px; }
+    #canvas-container::after { top: 8px; right: 8px; }
+
+    .rivet-bottom-left, .rivet-bottom-right {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle, #cfa144 20%, #8a6a24 60%, #3a2a1a 100%);
+      border-radius: 50%;
+      box-shadow: inset -2px -2px 4px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .rivet-bottom-left { bottom: 12px; left: 12px; }
+    .rivet-bottom-right { bottom: 12px; right: 12px; }
+
+    #ui-panel {
+      position: absolute;
+      top: 40px;
+      right: 30px;
+      width: 300px;
+      background: rgba(58, 42, 26, 0.85);
+      border: 2px solid #cfa144;
+      border-radius: 8px;
+      padding: 20px;
+      z-index: 100;
+      box-shadow:
+        0 0 20px rgba(207, 161, 68, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+    }
+
+    #ui-panel h2 {
+      font-size: 16px;
+      color: #cfa144;
+      text-align: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(207, 161, 68, 0.4);
+      text-shadow: 0 0 8px rgba(255, 221, 0, 0.4);
+      letter-spacing: 2px;
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #e0c88a;
+      margin-bottom: 6px;
+    }
+
+    .control-value {
+      font-family: 'Courier New', monospace;
+      color: #ffdd00;
+      text-shadow: 0 0 6px rgba(255, 221, 0, 0.6);
+      font-size: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, #3a2a1a, #cfa144, #3a2a1a);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #ffdd00 10%, #cfa144 60%, #8a6a24 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow:
+        0 0 8px rgba(255, 221, 0, 0.8),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.4);
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #ffdd00 10%, #cfa144 60%, #8a6a24 100%);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(255, 221, 0, 0.8);
+    }
+
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .view-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      padding: 8px 12px;
+      background: linear-gradient(135deg, #5a4020, #3a2a1a);
+      border: 1px solid #cfa144;
+      border-radius: 4px;
+      color: #cfa144;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-shadow: 0 0 4px rgba(255, 221, 0, 0.3);
+    }
+
+    .btn:hover {
+      background: linear-gradient(135deg, #7a5830, #4a3a2a);
+      box-shadow: 0 0 12px rgba(207, 161, 68, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-view {
+      padding: 6px 4px;
+      font-size: 11px;
+    }
+
+    #heart-distortion {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+      opacity: 0;
+      backdrop-filter: blur(0px);
+      transition: opacity 0.1s, backdrop-filter 0.1s;
+    }
+
+    #title {
+      position: absolute;
+      top: 30px;
+      left: 40px;
+      z-index: 50;
+      color: #cfa144;
+      text-shadow: 0 0 15px rgba(255, 221, 0, 0.5), 2px 2px 4px rgba(0,0,0,0.8);
+    }
+
+    #title h1 {
+      font-size: 22px;
+      letter-spacing: 3px;
+      margin-bottom: 4px;
+    }
+
+    #title p {
+      font-size: 12px;
+      color: #8a6a34;
+      letter-spacing: 1px;
+    }
+
+    #info {
+      position: absolute;
+      bottom: 30px;
+      left: 40px;
+      z-index: 50;
+      font-size: 11px;
+      color: #8a6a34;
+      line-height: 1.8;
+    }
+
+    #info span {
+      color: #cfa144;
+    }
+
+    @media (max-width: 768px) {
+      #ui-panel {
+        width: calc(100% - 40px);
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        left: 20px;
+        padding: 12px;
+      }
+
+      #title {
+        top: 16px;
+        left: 20px;
+      }
+
+      #title h1 {
+        font-size: 16px;
+      }
+
+      #info {
+        display: none;
+      }
+
+      .view-buttons {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="title">
+      <h1>⚙ 机械心脏 ⚙</h1>
+      <p>STEAMPUNK MECHANICAL HEART</p>
+    </div>
+
+    <div id="canvas-container">
+      <div id="heart-distortion"></div>
+      <div class="rivet-bottom-left"></div>
+      <div class="rivet-bottom-right"></div>
+    </div>
+
+    <div id="ui-panel">
+      <h2>⚙ 控制面板 ⚙</h2>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>齿轮转速倍率</span>
+          <span class="control-value" id="gear-speed-value">2.00</span>
+        </div>
+        <input type="range" id="gear-speed" min="0.5" max="5.0" step="0.1" value="2.0" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>心脏搏动频率 (BPM)</span>
+          <span class="control-value" id="beat-freq-value">75</span>
+        </div>
+        <input type="range" id="beat-freq" min="30" max="120" step="1" value="75" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>音量</span>
+          <span class="control-value" id="volume-value">50%</span>
+        </div>
+        <input type="range" id="volume" min="0" max="100" step="1" value="50" />
+      </div>
+
+      <div class="button-row">
+        <button class="btn" id="play-pause">⏸ 暂停</button>
+        <button class="btn" id="reset">↻ 重置</button>
+      </div>
+
+      <div class="control-label" style="margin-top: 14px; margin-bottom: 6px;">
+        <span style="font-size:12px;">视角切换</span>
+      </div>
+      <div class="view-buttons">
+        <button class="btn btn-view" data-view="top">俯视</button>
+        <button class="btn btn-view" data-view="side">侧视</button>
+        <button class="btn btn-view" data-view="front">正视</button>
+        <button class="btn btn-view" data-view="default">默认</button>
+      </div>
+    </div>
+
+    <div id="info">
+      <div><span>拖拽</span> 旋转视角 | <span>滚轮</span> 缩放</div>
+      <div>齿轮: <span id="gear-count">0</span> | 粒子: <span id="particle-count">0</span> | FPS: <span id="fps">0</span></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
