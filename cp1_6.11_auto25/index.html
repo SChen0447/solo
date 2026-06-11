@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>黑洞引力场 - 太空飞行模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background: radial-gradient(ellipse at center, #0a0a2a 0%, #000010 50%, #000000 100%);
+    }
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      touch-action: none;
+    }
+    .info-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(100, 200, 255, 0.6);
+      border-radius: 10px;
+      padding: 14px 18px;
+      min-width: 180px;
+      box-shadow: 0 0 20px rgba(100, 200, 255, 0.15), inset 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .info-title {
+      color: #88ddff;
+      font-size: 12px;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(100, 200, 255, 0.3);
+      padding-bottom: 6px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+    .info-label {
+      color: #aaccff;
+      font-size: 12px;
+    }
+    .info-value {
+      font-family: "Courier New", Consolas, monospace;
+      color: #00ff88;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 6px rgba(0, 255, 136, 0.8), 0 0 12px rgba(0, 255, 136, 0.4);
+    }
+    .reset-hint {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: rgba(150, 180, 220, 0.7);
+      font-size: 13px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    .reset-hint kbd {
+      background: rgba(60, 100, 160, 0.4);
+      border: 1px solid rgba(100, 180, 255, 0.6);
+      border-radius: 4px;
+      padding: 2px 8px;
+      margin: 0 3px;
+      color: #aaddff;
+      font-family: "Courier New", monospace;
+      font-size: 12px;
+    }
+    @media (max-width: 600px) {
+      .info-panel {
+        top: 10px;
+        left: 10px;
+        padding: 10px 14px;
+        min-width: 150px;
+      }
+      .info-title {
+        font-size: 10px;
+        letter-spacing: 1px;
+      }
+      .info-label {
+        font-size: 10px;
+      }
+      .info-value {
+        font-size: 12px;
+      }
+      .reset-hint {
+        font-size: 11px;
+        bottom: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div class="info-panel">
+    <div class="info-title">飞行状态</div>
+    <div class="info-row">
+      <span class="info-label">速度</span>
+      <span class="info-value" id="speedVal">0.0</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">星门次数</span>
+      <span class="info-value" id="gateCount">0</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">黑洞数量</span>
+      <span class="info-value" id="holeCount">0</span>
+    </div>
+  </div>
+  <div class="reset-hint">
+    <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / 方向键 控制 &nbsp;&nbsp;·&nbsp;&nbsp; <kbd>R</kbd> 重置位置
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
