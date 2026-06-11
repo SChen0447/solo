@@ -1,0 +1,97 @@
+.flower-panel {
+  width: 100%;
+  height: 100%;
+  background-color: #fdf5e6;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  border-right: 1px solid #e8dcc8;
+}
+
+.panel-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #5a4a3a;
+  margin: 0 0 8px 0;
+}
+
+.panel-subtitle {
+  font-size: 13px;
+  color: #8b7355;
+  margin: 0 0 20px 0;
+}
+
+.flower-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.flower-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: white;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.flower-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.flower-card.selected {
+  border-color: #d4af37;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.flower-color-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flower-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.flower-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #5a4a3a;
+}
+
+.flower-meaning {
+  font-size: 12px;
+  color: #a08060;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.flower-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.flower-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.flower-panel::-webkit-scrollbar-thumb {
+  background: #d4c4a8;
+  border-radius: 3px;
+}
+
+.flower-panel::-webkit-scrollbar-thumb:hover {
+  background: #c4b498;
+}
