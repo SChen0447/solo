@@ -1,0 +1,416 @@
+:root {
+  --bg-deep: #1a0f2e;
+  --bg-panel: #2a1b3d;
+  --gold: #d4af37;
+  --gold-shadow: #8b6914;
+  --gold-glow: rgba(212, 175, 55, 0.5);
+  --rune: #b39ddb;
+  --btn-bg: #4a2c6e;
+  --btn-hover: #6b3fa0;
+  --white: #ffffff;
+  --border: rgba(212, 175, 55, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Cinzel', serif;
+  background-color: var(--bg-deep);
+  color: var(--gold);
+  overflow-x: hidden;
+}
+
+.app-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  gap: 20px;
+}
+
+.app-header {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.app-title {
+  font-family: 'Cinzel', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--gold);
+  text-shadow: 2px 2px 0 var(--gold-shadow), 0 0 20px var(--gold-glow);
+  letter-spacing: 4px;
+  margin: 0;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  flex: 1;
+  align-items: stretch;
+}
+
+.panel {
+  flex: 1;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.panel-title {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gold);
+  text-align: center;
+  margin: 0 0 8px 0;
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 8px;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  background: linear-gradient(145deg, var(--btn-bg), var(--bg-panel));
+  color: var(--gold);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-family: 'Cinzel', serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, var(--btn-hover), var(--btn-bg));
+  box-shadow: 0 0 8px var(--gold);
+  transform: scale(1.05);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(2px) scale(1.03);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(145deg, var(--gold), #b8942d);
+  color: var(--bg-deep);
+  border-color: var(--gold);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(145deg, #e5c158, var(--gold));
+  color: var(--bg-deep);
+}
+
+/* RuneCanvas */
+.rune-canvas-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.rune-canvas {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: radial-gradient(circle at center, #2a1b3d 0%, #1a0f2e 100%);
+  cursor: crosshair;
+  touch-action: none;
+  display: block;
+  box-shadow: 0 0 20px rgba(179, 157, 219, 0.15);
+}
+
+.rune-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.rune-status {
+  font-size: 12px;
+  color: rgba(212, 175, 55, 0.7);
+  letter-spacing: 1px;
+}
+
+/* PotionMixer */
+.potion-mixer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+}
+
+.materials-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.material-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: grab;
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.material-item:hover:not(.disabled) {
+  border-color: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  transform: translateY(-2px);
+}
+
+.material-item.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.material-item.dragging {
+  opacity: 0.5;
+}
+
+.material-icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.material-name {
+  font-size: 10px;
+  color: var(--gold);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.crucible-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed var(--border);
+  border-radius: 50%;
+  margin: 10px auto;
+  width: 180px;
+  height: 180px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.crucible-area.drag-over {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--gold-glow);
+  transform: scale(1.05);
+}
+
+.crucible-liquid {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  transition: background-color 0.6s ease;
+  box-shadow: inset 0 -10px 30px rgba(0, 0, 0, 0.4), 0 0 20px currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.crucible-label {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.selected-materials {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 30px;
+}
+
+.selected-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.selected-chip button {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+}
+
+.selected-chip button:hover {
+  color: #fff;
+}
+
+/* SummonCircle */
+.summon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+}
+
+.summon-canvas-wrap {
+  position: relative;
+  width: 380px;
+  height: 380px;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.summon-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.sprite-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -70%);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.element-badge {
+  font-size: 28px;
+  animation: floatBadge 2s ease-in-out infinite;
+}
+
+@keyframes floatBadge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.sprite-anim {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 80px;
+  animation: spriteFloat 2s ease-in-out infinite;
+}
+
+@keyframes spriteFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.sprite-frames {
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: spriteFrames 1s steps(4) infinite;
+  position: relative;
+}
+
+@keyframes spriteFrames {
+  0%   { transform: rotate(-8deg) scale(1); }
+  25%  { transform: rotate(0deg) scale(1.05); }
+  50%  { transform: rotate(8deg) scale(1); }
+  75%  { transform: rotate(0deg) scale(0.95); }
+  100% { transform: rotate(-8deg) scale(1); }
+}
+
+.summon-status {
+  font-size: 13px;
+  color: rgba(212, 175, 55, 0.7);
+  text-align: center;
+  letter-spacing: 1px;
+  min-height: 20px;
+}
+
+/* StarBackground */
+.star-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
+    gap: 12px;
+  }
+  .app-title {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+  .app-main {
+    flex-direction: column;
+  }
+  .panel {
+    width: 100%;
+  }
+  .summon-canvas-wrap {
+    width: 320px;
+    height: 320px;
+  }
+  .rune-canvas {
+    width: 100%;
+    max-width: 360px;
+    height: auto;
+  }
+  .materials-list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
