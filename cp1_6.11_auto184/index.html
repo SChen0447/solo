@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟风铃 · 声波粒子可视化</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #050510 0%, #0f1a2e 100%);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e8f0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+    #control-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      width: 280px;
+      padding: 20px 22px;
+      background: rgba(20, 28, 48, 0.55);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+      border-radius: 16px;
+      border: 1px solid rgba(120, 160, 220, 0.25);
+      box-shadow: 
+        0 0 0 1px rgba(120, 180, 255, 0.08) inset,
+        0 8px 32px rgba(0, 10, 40, 0.5),
+        0 0 40px rgba(80, 140, 255, 0.08);
+      z-index: 100;
+    }
+    #control-panel h2 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 18px;
+      color: #b8d4ff;
+      text-shadow: 0 0 12px rgba(120, 180, 255, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #control-panel h2::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7eb8ff;
+      box-shadow: 0 0 10px #7eb8ff;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.85); }
+    }
+    .slider-group {
+      margin-bottom: 16px;
+    }
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: #a8c0e0;
+    }
+    .slider-value {
+      font-size: 11px;
+      color: #7eb8ff;
+      font-variant-numeric: tabular-nums;
+      background: rgba(120, 180, 255, 0.1);
+      padding: 2px 8px;
+      border-radius: 6px;
+      min-width: 44px;
+      text-align: center;
+    }
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, rgba(120, 180, 255, 0.3), rgba(180, 140, 255, 0.3));
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #7eb8ff 60%, #4080ff);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      cursor: grab;
+      box-shadow: 
+        0 0 10px rgba(120, 180, 255, 0.8),
+        0 2px 6px rgba(0, 0, 0, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 
+        0 0 16px rgba(120, 180, 255, 1),
+        0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffffff, #7eb8ff 60%, #4080ff);
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      cursor: grab;
+      box-shadow: 0 0 10px rgba(120, 180, 255, 0.8);
+    }
+    #hint {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(180, 200, 240, 0.55);
+      letter-spacing: 1.5px;
+      z-index: 50;
+      pointer-events: none;
+      text-shadow: 0 0 10px rgba(80, 140, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="control-panel">
+      <h2>风铃控制台</h2>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>风强度</span>
+          <span class="slider-value" id="wind-value">5.0</span>
+        </div>
+        <input type="range" id="wind-slider" min="0" max="10" step="0.1" value="5" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>粒子数量</span>
+          <span class="slider-value" id="particle-value">80</span>
+        </div>
+        <input type="range" id="particle-slider" min="50" max="200" step="1" value="80" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>混响时间</span>
+          <span class="slider-value" id="reverb-value">1.0s</span>
+        </div>
+        <input type="range" id="reverb-slider" min="0.1" max="2.0" step="0.05" value="1.0" />
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>环境亮度</span>
+          <span class="slider-value" id="ambient-value">0.5</span>
+        </div>
+        <input type="range" id="ambient-slider" min="0.1" max="1.0" step="0.01" value="0.5" />
+      </div>
+    </div>
+    <div id="hint">点击风铃管触发音效 · 拖拽划过产生共振</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
