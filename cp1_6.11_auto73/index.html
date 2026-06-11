@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微型植物生态箱 - 3D交互观察</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #0b1d28 0%, #0d2b1f 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      padding: 24px;
+      width: 220px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .control-panel:hover {
+      filter: brightness(1.15);
+    }
+
+    .control-panel.left {
+      left: 40px;
+    }
+
+    .control-panel.right {
+      right: 40px;
+    }
+
+    .panel-title {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .slider-group {
+      margin-bottom: 24px;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+    }
+
+    .slider-value {
+      color: #7dd3fc;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, rgba(125, 211, 252, 0.3) 0%, rgba(52, 211, 153, 0.3) 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7dd3fc 0%, #34d399 100%);
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(125, 211, 252, 0.6);
+      transition: transform 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7dd3fc 0%, #34d399 100%);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 12px rgba(125, 211, 252, 0.6);
+    }
+
+    .seed-selector {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 16px;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .seed-selector:hover {
+      filter: brightness(1.15);
+    }
+
+    .seed-btn {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .seed-btn:hover {
+      background: rgba(125, 211, 252, 0.2);
+      border-color: #7dd3fc;
+      transform: translateY(-2px);
+    }
+
+    .seed-btn.active {
+      background: linear-gradient(135deg, rgba(125, 211, 252, 0.4) 0%, rgba(52, 211, 153, 0.4) 100%);
+      border-color: #7dd3fc;
+      box-shadow: 0 0 20px rgba(125, 211, 252, 0.4);
+    }
+
+    .seed-btn .seed-emoji {
+      margin-right: 8px;
+      font-size: 18px;
+    }
+
+    .status-item {
+      margin-bottom: 16px;
+    }
+
+    .status-label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-value {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .status-value.unit {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    .health-bar-container {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    .health-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #34d399 0%, #7dd3fc 100%);
+      border-radius: 5px;
+      transition: width 0.3s ease;
+    }
+
+    .health-bar.warning {
+      background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+    }
+
+    .health-bar.danger {
+      background: linear-gradient(90deg, #f87171 0%, #ef4444 100%);
+    }
+
+    .hint-text {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    .hint-text .key {
+      display: inline-block;
+      padding: 2px 8px;
+      margin: 0 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
+    @media (max-width: 1366px) {
+      .control-panel {
+        width: 180px;
+        padding: 18px;
+      }
+
+      .control-panel.left {
+        left: 20px;
+      }
+
+      .control-panel.right {
+        right: 20px;
+      }
+
+      .panel-title {
+        font-size: 14px;
+        margin-bottom: 16px;
+      }
+
+      .status-value {
+        font-size: 18px;
+      }
+
+      .seed-btn {
+        padding: 10px 18px;
+        font-size: 13px;
+      }
+
+      .seed-selector {
+        bottom: 24px;
+        gap: 12px;
+        padding: 12px 18px;
+      }
+
+      .hint-text {
+        font-size: 12px;
+        top: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="hint-text">
+      <span class="key">拖拽</span> 旋转观察
+      <span class="key">滚轮</span> 缩放
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div class="control-panel left">
+      <div class="panel-title">🌱 环境控制</div>
+      
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>☀️ 光照强度</span>
+          <span class="slider-value" id="light-value">50%</span>
+        </div>
+        <input type="range" class="slider" id="light-slider" min="0" max="100" value="50">
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>💧 浇水量</span>
+          <span class="slider-value" id="water-value">50ml</span>
+        </div>
+        <input type="range" class="slider" id="water-slider" min="0" max="100" value="50">
+      </div>
+    </div>
+
+    <div class="control-panel right">
+      <div class="panel-title">📊 植物状态</div>
+      
+      <div class="status-item">
+        <div class="status-label">植物名称</div>
+        <div class="status-value" id="plant-name">--</div>
+      </div>
+
+      <div class="status-item">
+        <div class="status-label">当前高度</div>
+        <div class="status-value"><span id="plant-height">0</span><span class="status-value unit">cm</span></div>
+      </div>
+
+      <div class="status-item">
+        <div class="status-label">叶片数量</div>
+        <div class="status-value"><span id="leaf-count">0</span><span class="status-value unit">片</span></div>
+      </div>
+
+      <div class="status-item">
+        <div class="status-label">健康度</div>
+        <div class="status-value"><span id="health-value">0</span><span class="status-value unit">%</span></div>
+        <div class="health-bar-container">
+          <div class="health-bar" id="health-bar" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="seed-selector">
+      <button class="seed-btn" data-seed="fern">
+        <span class="seed-emoji">🌿</span>蕨类
+      </button>
+      <button class="seed-btn" data-seed="succulent">
+        <span class="seed-emoji">🪴</span>多肉
+      </button>
+      <button class="seed-btn" data-seed="moss">
+        <span class="seed-emoji">🍀</span>苔藓
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
