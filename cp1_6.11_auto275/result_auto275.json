@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-11T00:50:07.732Z",
+  "task_name": "auto275",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在浏览器中模拟虚拟熔岩通道与矿物结晶的交互可视化项目，想法是让用户像一位火山学家，通过调节熔岩的温度、粘度和冷却速度，观察熔岩在通道中流动时如何逐渐冷却固化，并在不同冷却速率下形成不同尺寸和形状的矿物晶体（如橄榄石、辉石、长石）。希望它能做到：第一，进入后看到一个从熔岩红橙（#e65100）到黑曜石黑（#1a1a1a）渐变的全屏三维场景，中央展示一条弯曲的熔岩通道（宽度约150px，用Three.js的TubeGeometry生成，通道壁半透明且带有发光流动纹理），熔岩流从通道入口涌出，粒子系统模拟高温飞溅的火花（粒子大小3-8px，颜色从亮黄#ffeb3b变化到暗红#b71c1c，透明度0.6-1.0），用户可通过鼠标拖拽旋转视角和滚轮缩放；第二，在通道右侧设置一个控制面板（包含三个滑块：温度从800°C到1200°C、粘度从0.1到1.0、冷却速率从慢速到快速），面板背景为半透明深色玻璃质感，滑块带有荧光描边#ff6f00，调节时实时更新熔岩的流动速度、粒子飞溅高度和晶体生长动画；第三，当熔岩冷却到特定温度区间时，通道壁和底部会随机生长出六棱柱状的矿物晶体（使用CylinderGeometry生成，棱柱高度5-20px，颜色根据矿物类型从绿色#388e3c到棕色#5d4037变化），生长的晶体数量、尺寸和分布密度受冷却速率影响，冷却越快则晶体越小且分布更散。界面上希望整体保持深沉火山主题色调，所有UI控件采用极简扁平风格，按钮和滑块在鼠标悬停时有发光脉冲动画（用CSS keyframes实现，脉动周期1.5秒），熔岩流动粒子采用连续帧动画，晶体生长过程用0.5秒的缩放和旋转淡入动画，交互反馈要求：调节滑块时数值显示在滑块右侧并带有颜色编码（高温段#ff5722、中温段#ff9800、低温段#ffc107），点击场景中任意晶体时，晶体高亮显示并在右上角弹出矿物信息卡片（包含矿物名称、化学式、晶系和莫氏硬度），所有UI元素在全屏缩放时保持合理间距，视口宽度小于768px时控制面板自动折叠为底部可展开的抽屉。性能上需要熔岩粒子数维持在3000个以上且保持60FPS帧率稳定，晶体生长计算在web worker中执行以避免主线程卡顿。实现用TypeScript、React和Three.js（通过@react-three/fiber和@react-three/drei），把代码拆成以下文件：\n - package.json（含依赖：react、react-dom、typescript、vite@5、@vitejs/plugin-react、@react-three/fiber、@react-three/drei、three@0.160.0、uuid、zod，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件并配置路径别名@）\n - tsconfig.json（开启严格模式，设置jsx为react-jsx）\n - index.html（入口页面，引入id为root的div）\n - src/App.tsx（主组件，组装场景、控制面板和UI，管理全局状态如温度、粘度、冷却速率）\n - src/Scene.tsx（Three.js 3D场景组件，负责渲染熔岩通道、熔岩粒子流和矿物晶体，包含粒子系统和晶体生成逻辑）\n - src/Controls.tsx（控制面板组件，包含三个滑块，显示数值和颜色编码，回调更新App中的状态）\n - src/MineralInfoCard.tsx（矿物信息卡片组件，悬浮于场景右上角，展示点击晶体的详细数据，带进入/退出动画）\n - src/types.ts（TypeScript类型定义，定义晶体数据结构、粒子参数和控制状态接口）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:fd22ef59f529c8de103764f481dd03e8_6a2a05d6ecd16407f7016f3a.6a2a0633ecd16407f7016fa7.6a2a0633020ea8798f72f5a9:Trae CN.T(2026/6/11 08:49:55)",
+    "user_id": "3986207660317399",
+    "trace_id": "fd22ef59f529c8de103764f481dd03e8",
+    "session_id": "6a2a05d6ecd16407f7016f3a",
+    "task_id": "6a2a0633ecd16407f7016fa7",
+    "message_id": "6a2a0633020ea8798f72f5a9",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 08:49:55",
+    "format": "full"
+  },
+  "trace": "null"
+}
