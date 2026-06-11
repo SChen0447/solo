@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>赛博朋克霓虹灯牌工具</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 40%, #0a0a1a 100%);
+      font-family: 'Courier New', monospace;
+      color: #e0e0ff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #loading-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0a0a1a 0%, #0d0d2b 40%, #0a0a1a 100%);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease;
+    }
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #loading-text {
+      font-size: 24px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #0088ff;
+      animation: loadingFlicker 1.2s ease-in-out infinite;
+      letter-spacing: 4px;
+    }
+    @keyframes loadingFlicker {
+      0%, 100% { opacity: 1; }
+      20% { opacity: 0.4; }
+      40% { opacity: 0.9; }
+      60% { opacity: 0.3; }
+      80% { opacity: 0.8; }
+    }
+    #app-container {
+      width: 100%; height: 100%;
+      display: flex;
+      position: relative;
+    }
+    canvas#main-canvas {
+      display: block;
+      cursor: crosshair;
+    }
+    #tool-panel {
+      position: absolute;
+      left: 0; top: 0;
+      width: 220px; height: 100%;
+      background: rgba(10, 10, 30, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-right: 1px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1), inset 0 0 15px rgba(0, 255, 255, 0.05);
+      overflow-y: auto;
+      z-index: 100;
+      padding: 16px 12px;
+      transition: transform 0.4s ease;
+    }
+    #tool-panel.collapsed {
+      transform: translateX(-100%);
+    }
+    .panel-title {
+      font-size: 14px;
+      color: #00ffff;
+      text-shadow: 0 0 8px #00ffff;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+      letter-spacing: 2px;
+    }
+    .panel-section {
+      margin-bottom: 16px;
+    }
+    .panel-label {
+      font-size: 11px;
+      color: #8888cc;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .shape-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .shape-btn, .action-btn {
+      background: rgba(0, 255, 255, 0.08);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      color: #00ffff;
+      padding: 8px 4px;
+      font-size: 11px;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .shape-btn:hover, .action-btn:hover {
+      background: rgba(0, 255, 255, 0.15);
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+    }
+    .shape-btn:active, .action-btn:active {
+      background: rgba(0, 255, 255, 0.3);
+    }
+    .shape-btn.active {
+      background: rgba(0, 255, 255, 0.2);
+      border-color: #00ffff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+    }
+    .pulse-effect {
+      animation: electricPulse 0.3s ease-out;
+    }
+    @keyframes electricPulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.6); }
+      50% { box-shadow: 0 0 20px 4px rgba(0, 255, 255, 0.4); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+    }
+    input[type="color"] {
+      width: 100%; height: 32px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 2px;
+    }
+    input[type="color"]:hover {
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    .hex-input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      color: #00ffff;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+    .hex-input:focus {
+      outline: none;
+      border-color: #00ffff;
+      box-shadow: 0 0 8px rgba(0, 255, 255, 0.3);
+    }
+    input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      background: transparent;
+      margin: 8px 0;
+    }
+    input[type="range"]::-webkit-slider-track {
+      height: 4px;
+      background: rgba(0, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px; height: 14px;
+      background: #00ffff;
+      border-radius: 50%;
+      margin-top: -5px;
+      box-shadow: 0 0 8px #00ffff;
+      cursor: pointer;
+    }
+    input[type="range"]::-moz-range-track {
+      height: 4px;
+      background: rgba(0, 255, 255, 0.15);
+      border-radius: 2px;
+      border: none;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px;
+      background: #00ffff;
+      border-radius: 50%;
+      border: none;
+      box-shadow: 0 0 8px #00ffff;
+      cursor: pointer;
+    }
+    select {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(0, 255, 255, 0.25);
+      color: #00ffff;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    select:hover {
+      border-color: rgba(0, 255, 255, 0.6);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+    }
+    select:focus {
+      outline: none;
+      border-color: #00ffff;
+    }
+    select option {
+      background: #0a0a1a;
+      color: #00ffff;
+    }
+    .range-value {
+      font-size: 11px;
+      color: #00ffff;
+      text-align: right;
+    }
+    .action-btn {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .action-btn.export-btn {
+      border-color: rgba(255, 0, 255, 0.4);
+      color: #ff00ff;
+      text-shadow: 0 0 6px #ff00ff;
+    }
+    .action-btn.export-btn:hover {
+      border-color: rgba(255, 0, 255, 0.7);
+      box-shadow: 0 0 12px rgba(255, 0, 255, 0.3);
+    }
+    .action-btn.clear-btn {
+      border-color: rgba(255, 60, 60, 0.4);
+      color: #ff3c3c;
+    }
+    .action-btn.clear-btn:hover {
+      border-color: rgba(255, 60, 60, 0.7);
+      box-shadow: 0 0 12px rgba(255, 60, 60, 0.3);
+    }
+    #property-panel {
+      position: absolute;
+      right: 0; top: 0;
+      width: 220px; height: 100%;
+      background: rgba(10, 10, 30, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-left: 1px solid rgba(255, 0, 255, 0.3);
+      box-shadow: 0 0 15px rgba(255, 0, 255, 0.1), inset 0 0 15px rgba(255, 0, 255, 0.05);
+      overflow-y: auto;
+      z-index: 100;
+      padding: 16px 12px;
+      transform: translateX(100%);
+      transition: transform 0.4s ease;
+    }
+    #property-panel.open {
+      transform: translateX(0);
+    }
+    #property-panel .panel-title {
+      color: #ff00ff;
+      text-shadow: 0 0 8px #ff00ff;
+      border-bottom-color: rgba(255, 0, 255, 0.2);
+    }
+    .prop-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .prop-label {
+      color: #8888cc;
+    }
+    .prop-value {
+      color: #ff00ff;
+      font-family: 'Courier New', monospace;
+    }
+    .prop-input {
+      width: 80px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 0, 255, 0.25);
+      color: #ff00ff;
+      padding: 4px 6px;
+      font-size: 11px;
+      font-family: 'Courier New', monospace;
+      border-radius: 3px;
+    }
+    .prop-input:focus {
+      outline: none;
+      border-color: #ff00ff;
+      box-shadow: 0 0 6px rgba(255, 0, 255, 0.3);
+    }
+    .text-edit-section {
+      display: none;
+    }
+    .text-edit-section.visible {
+      display: block;
+    }
+    #preview-modal {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9998;
+    }
+    #preview-modal.show {
+      display: flex;
+    }
+    #preview-box {
+      background: rgba(10, 10, 30, 0.9);
+      border: 2px solid rgba(0, 255, 255, 0.5);
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3), 0 0 60px rgba(0, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 90vw;
+      max-height: 90vh;
+      text-align: center;
+    }
+    #preview-box img {
+      max-width: 100%;
+      max-height: 60vh;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      border-radius: 4px;
+    }
+    #preview-box .btn-group {
+      margin-top: 16px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    #preview-box .btn-group button {
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      color: #00ffff;
+      padding: 8px 20px;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+    #preview-box .btn-group button:hover {
+      background: rgba(0, 255, 255, 0.2);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+    #preview-box .btn-group button.cancel-btn {
+      border-color: rgba(255, 60, 60, 0.4);
+      color: #ff3c3c;
+    }
+    #preview-box .btn-group button.cancel-btn:hover {
+      background: rgba(255, 60, 60, 0.1);
+      box-shadow: 0 0 10px rgba(255, 60, 60, 0.3);
+    }
+    #mobile-toolbar {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0;
+      width: 100%; height: 60px;
+      background: rgba(10, 10, 30, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(0, 255, 255, 0.3);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+      z-index: 200;
+      padding: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    #mobile-toolbar .mobile-shapes {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      height: 100%;
+    }
+    #mobile-toolbar .shape-btn {
+      padding: 6px 10px;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+    @media (max-width: 767px) {
+      #tool-panel {
+        transform: translateX(-100%);
+      }
+      #tool-panel.mobile-open {
+        transform: translateX(0);
+      }
+      #property-panel {
+        width: 180px;
+      }
+      #mobile-toolbar {
+        display: block;
+      }
+      #mobile-toggle {
+        display: block !important;
+      }
+    }
+    #mobile-toggle {
+      display: none;
+      position: absolute;
+      left: 8px; top: 8px;
+      z-index: 150;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid rgba(0, 255, 255, 0.4);
+      color: #00ffff;
+      width: 36px; height: 36px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 4px;
+      line-height: 36px;
+      text-align: center;
+    }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.2); }
+    ::-webkit-scrollbar-thumb { background: rgba(0, 255, 255, 0.3); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(0, 255, 255, 0.5); }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <span id="loading-text">正在初始化霓虹系统...</span>
+  </div>
+  <div id="app-container">
+    <canvas id="main-canvas"></canvas>
+    <button id="mobile-toggle">☰</button>
+    <div id="tool-panel"></div>
+    <div id="property-panel"></div>
+    <div id="mobile-toolbar">
+      <div class="mobile-shapes"></div>
+    </div>
+  </div>
+  <div id="preview-modal">
+    <div id="preview-box">
+      <img id="preview-image" src="" alt="Preview" />
+      <div class="btn-group">
+        <button id="preview-download">下载 PNG</button>
+        <button id="preview-cancel" class="cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
