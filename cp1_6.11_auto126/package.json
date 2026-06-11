@@ -1,0 +1,17 @@
+{
+  "name": "cave-miner-game",
+  "version": "1.0.0",
+  "description": "A top-down survival exploration game set in a deep cave",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "3.60.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^4.3.0"
+  }
+}
