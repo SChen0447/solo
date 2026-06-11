@@ -1,0 +1,219 @@
+.home-page {
+  min-height: 100vh;
+}
+
+.create-room-section {
+  margin-bottom: 40px;
+  padding: 30px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(233, 69, 96, 0.2));
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  animation: fadeIn 0.5s ease-out;
+}
+
+.create-room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.create-room-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.create-room-desc {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.section-header {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  background: var(--gradient-primary);
+  border-radius: 2px;
+}
+
+.section-desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-left: 14px;
+}
+
+.waterfall-grid {
+  columns: 3;
+  column-gap: 20px;
+}
+
+.waterfall-item {
+  break-inside: avoid;
+  margin-bottom: 20px;
+}
+
+.room-card {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.room-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.room-card-image {
+  height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.room-emoji {
+  font-size: 48px;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.room-card-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.room-card:hover .room-card-overlay {
+  opacity: 1;
+}
+
+.overlay-btn {
+  padding: 10px 24px;
+  background: var(--gradient-primary);
+  color: white;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  transform: translateY(10px);
+  transition: transform var(--transition-normal);
+}
+
+.room-card:hover .overlay-btn {
+  transform: translateY(0);
+}
+
+.room-card-content {
+  padding: 16px;
+}
+
+.room-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.room-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.room-card-preview {
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.8;
+  margin-bottom: 12px;
+}
+
+.preview-line {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-index {
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.room-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.room-card-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.room-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.like-btn {
+  font-size: 16px;
+  padding: 4px;
+  transition: transform var(--transition-fast);
+}
+
+.like-btn:hover {
+  transform: scale(1.2);
+}
+
+.like-btn.liked {
+  animation: pulse 0.3s ease-out;
+}
+
+@media (max-width: 1024px) {
+  .waterfall-grid {
+    columns: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .waterfall-grid {
+    columns: 1;
+  }
+
+  .create-room-section {
+    padding: 20px;
+  }
+
+  .create-room-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-title {
+    font-size: 22px;
+  }
+}

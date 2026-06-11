@@ -1,0 +1,375 @@
+{
+  "rooms": [
+    {
+      "id": "1",
+      "name": "夏日恋歌",
+      "tags": ["爱情", "夏天"],
+      "rules": {
+        "allowHomophone": true,
+        "requireLastChar": true
+      },
+      "lyrics": [
+        {
+          "id": "l1",
+          "text": "蝉鸣声里藏着谁的心事",
+          "userId": "1",
+          "userName": "星尘",
+          "userColor": "#e94560",
+          "timestamp": 1718000000000
+        },
+        {
+          "id": "l2",
+          "text": "事过境迁依然惦记你的名字",
+          "userId": "2",
+          "userName": "月影",
+          "userColor": "#667eea",
+          "timestamp": 1718000100000
+        },
+        {
+          "id": "l3",
+          "text": "字里行间都是未说出口的诗",
+          "userId": "3",
+          "userName": "晨曦",
+          "userColor": "#f59e0b",
+          "timestamp": 1718000200000
+        },
+        {
+          "id": "l4",
+          "text": "诗篇写满了夏夜晚风的心事",
+          "userId": "1",
+          "userName": "星尘",
+          "userColor": "#e94560",
+          "timestamp": 1718000300000
+        }
+      ],
+      "users": ["1", "2", "3"],
+      "onlineUsers": ["1", "2"],
+      "likes": 128,
+      "createdAt": 1717900000000
+    },
+    {
+      "id": "2",
+      "name": "追梦路上",
+      "tags": ["梦想", "励志"],
+      "rules": {
+        "allowHomophone": false,
+        "requireLastChar": true
+      },
+      "lyrics": [
+        {
+          "id": "l1",
+          "text": "远方的星辰在闪烁",
+          "userId": "4",
+          "userName": "流云",
+          "userColor": "#10b981",
+          "timestamp": 1718100000000
+        },
+        {
+          "id": "l2",
+          "text": "烁金岁月里我们一路高歌",
+          "userId": "5",
+          "userName": "风吟",
+          "userColor": "#8b5cf6",
+          "timestamp": 1718100100000
+        },
+        {
+          "id": "l3",
+          "text": "歌声穿过山川和湖泊",
+          "userId": "4",
+          "userName": "流云",
+          "userColor": "#10b981",
+          "timestamp": 1718100200000
+        }
+      ],
+      "users": ["4", "5"],
+      "onlineUsers": ["4", "5"],
+      "likes": 89,
+      "createdAt": 1718000000000
+    },
+    {
+      "id": "3",
+      "name": "自然之声",
+      "tags": ["自然", "宁静"],
+      "rules": {
+        "allowHomophone": true,
+        "requireLastChar": false
+      },
+      "lyrics": [
+        {
+          "id": "l1",
+          "text": "山涧清泉缓缓流淌",
+          "userId": "6",
+          "userName": "森语",
+          "userColor": "#06b6d4",
+          "timestamp": 1718200000000
+        },
+        {
+          "id": "l2",
+          "text": "淌过青苔覆盖的石上",
+          "userId": "2",
+          "userName": "月影",
+          "userColor": "#667eea",
+          "timestamp": 1718200100000
+        },
+        {
+          "id": "l3",
+          "text": "上有飞鸟掠过晨光",
+          "userId": "7",
+          "userName": "露珠",
+          "userColor": "#ec4899",
+          "timestamp": 1718200200000
+        },
+        {
+          "id": "l4",
+          "text": "光影斑驳洒落林中央",
+          "userId": "6",
+          "userName": "森语",
+          "userColor": "#06b6d4",
+          "timestamp": 1718200300000
+        },
+        {
+          "id": "l5",
+          "text": "央央草木皆有灵韵香",
+          "userId": "3",
+          "userName": "晨曦",
+          "userColor": "#f59e0b",
+          "timestamp": 1718200400000
+        }
+      ],
+      "users": ["2", "3", "6", "7"],
+      "onlineUsers": ["3", "6"],
+      "likes": 256,
+      "createdAt": 1717800000000
+    },
+    {
+      "id": "4",
+      "name": "城市夜曲",
+      "tags": ["城市", "夜晚"],
+      "rules": {
+        "allowHomophone": true,
+        "requireLastChar": true
+      },
+      "lyrics": [
+        {
+          "id": "l1",
+          "text": "霓虹点亮不夜的城",
+          "userId": "5",
+          "userName": "风吟",
+          "userColor": "#8b5cf6",
+          "timestamp": 1718300000000
+        },
+        {
+          "id": "l2",
+          "text": "城中小巷传来脚步声",
+          "userId": "1",
+          "userName": "星尘",
+          "userColor": "#e94560",
+          "timestamp": 1718300100000
+        }
+      ],
+      "users": ["1", "5"],
+      "onlineUsers": ["1"],
+      "likes": 67,
+      "createdAt": 1718200000000
+    },
+    {
+      "id": "5",
+      "name": "童年回忆",
+      "tags": ["童年", "回忆"],
+      "rules": {
+        "allowHomophone": false,
+        "requireLastChar": true
+      },
+      "lyrics": [
+        {
+          "id": "l1",
+          "text": "纸飞机划过湛蓝天空",
+          "userId": "7",
+          "userName": "露珠",
+          "userColor": "#ec4899",
+          "timestamp": 1718400000000
+        },
+        {
+          "id": "l2",
+          "text": "空气里飘着棉花糖的梦",
+          "userId": "4",
+          "userName": "流云",
+          "userColor": "#10b981",
+          "timestamp": 1718400100000
+        },
+        {
+          "id": "l3",
+          "text": "梦里有我们纯真笑容",
+          "userId": "6",
+          "userName": "森语",
+          "userColor": "#06b6d4",
+          "timestamp": 1718400200000
+        }
+      ],
+      "users": ["4", "6", "7"],
+      "onlineUsers": [],
+      "likes": 198,
+      "createdAt": 1717700000000
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "星尘",
+      "color": "#e94560",
+      "joinedRooms": ["1", "4"],
+      "likedRooms": ["3", "5"],
+      "avatarInitial": "星"
+    },
+    {
+      "id": "2",
+      "name": "月影",
+      "color": "#667eea",
+      "joinedRooms": ["1", "3"],
+      "likedRooms": ["1", "5"],
+      "avatarInitial": "月"
+    },
+    {
+      "id": "3",
+      "name": "晨曦",
+      "color": "#f59e0b",
+      "joinedRooms": ["1", "3"],
+      "likedRooms": ["2", "3"],
+      "avatarInitial": "晨"
+    },
+    {
+      "id": "4",
+      "name": "流云",
+      "color": "#10b981",
+      "joinedRooms": ["2", "5"],
+      "likedRooms": ["1", "3"],
+      "avatarInitial": "流"
+    },
+    {
+      "id": "5",
+      "name": "风吟",
+      "color": "#8b5cf6",
+      "joinedRooms": ["2", "4"],
+      "likedRooms": ["3"],
+      "avatarInitial": "风"
+    },
+    {
+      "id": "6",
+      "name": "森语",
+      "color": "#06b6d4",
+      "joinedRooms": ["3", "5"],
+      "likedRooms": ["1", "2"],
+      "avatarInitial": "森"
+    },
+    {
+      "id": "7",
+      "name": "露珠",
+      "color": "#ec4899",
+      "joinedRooms": ["3", "5"],
+      "likedRooms": ["4"],
+      "avatarInitial": "露"
+    }
+  ],
+  "inspirations": {
+    "爱情": [
+      "心跳漏了一拍的瞬间",
+      "你是我最温柔的悬念",
+      "爱是永不褪色的诗篇",
+      "在你眼底看见星光",
+      "愿得一人心白首不分离",
+      "思念如影随形",
+      "遇见你是最美的意外",
+      "心动的感觉像夏天的风"
+    ],
+    "梦想": [
+      "追风赶月莫停留",
+      "梦想是黑暗中的光",
+      "不负韶华不负己",
+      "每一步都在靠近远方",
+      "热血难凉初心不忘",
+      "向着光的方向生长",
+      "少年意气挥斥方遒",
+      "星光不问赶路人"
+    ],
+    "自然": [
+      "春风又绿江南岸",
+      "明月松间照清泉",
+      "一花一世界一叶一菩提",
+      "山间雾气氤氲",
+      "流水潺潺心自远",
+      "落霞与孤鹜齐飞",
+      "草木有本心何求美人折",
+      "独坐幽篁里弹琴复长啸"
+    ],
+    "夏天": [
+      "橘子汽水味的风",
+      "蝉鸣是夏的乐章",
+      "西瓜最中间的那一口",
+      "晚风轻轻吹过发梢",
+      "汗水闪着青春的光",
+      "萤火虫点亮夏夜",
+      "盛夏白瓷梅子汤",
+      "树荫下的旧时光"
+    ],
+    "励志": [
+      "逆风的方向更适合飞翔",
+      "黎明前最黑暗",
+      "每一滴泪都有重量",
+      "伤痕是勋章闪闪亮",
+      "勇敢的人先享受世界",
+      "抬头就有一片星光",
+      "越努力越幸运",
+      "风雨后见彩虹"
+    ],
+    "宁静": [
+      "岁月静好现世安稳",
+      "心如止水波澜不惊",
+      "听雨打芭蕉的声音",
+      "时光慢慢走",
+      "一盏清茶一本书",
+      "云淡风轻近午天",
+      "偷得浮生半日闲",
+      "心有猛虎细嗅蔷薇"
+    ],
+    "城市": [
+      "钢铁森林里的梦",
+      "车水马龙的夜晚",
+      "霓虹灯下发着光",
+      "每个窗户都有故事",
+      "地下铁的相遇",
+      "凌晨三点的便利店",
+      "高楼林立间的天空",
+      "喧嚣中的孤单"
+    ],
+    "夜晚": [
+      "月亮代表谁的心",
+      "夜空中最亮的星",
+      "失眠的人数着羊",
+      "星空下的秘密",
+      "晚归的人有盏灯",
+      "夜色温柔如水",
+      "梦中的萤火虫",
+      "午夜的收音机"
+    ],
+    "童年": [
+      "荡秋千的午后",
+      "外婆家的老槐树",
+      "纸飞机飞啊飞",
+      "跳房子的小巷",
+      "动画片的主题曲",
+      "弹珠玻璃球",
+      "蒲公英的约定",
+      "彩虹色的泡泡糖"
+    ],
+    "回忆": [
+      "旧照片里的我们",
+      "时光一去不回头",
+      "那年夏天的雨",
+      "泛黄的日记本",
+      "初见时的微笑",
+      "再也回不去的时光",
+      "回忆里的旧时光",
+      "那些年的小幸运"
+    ]
+  }
+}
