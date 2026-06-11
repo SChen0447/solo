@@ -1,0 +1,70 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: 'Crimson Text', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 100%);
+  color: #ecf0f1;
+  overflow-x: hidden;
+}
+
+button {
+  font-family: 'Crimson Text', Georgia, serif;
+}
+
+.garden-grid {
+  user-select: none;
+}
+
+.plant-icon-wrapper:hover {
+  transform: scale(1.05);
+}
+
+@keyframes bloom {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes net-swing {
+  0% { transform: rotate(-30deg) scale(0.8); }
+  50% { transform: rotate(15deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+@keyframes liquid-mix {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes spiral-out {
+  0% {
+    transform: translate(0, 0) rotate(0deg) scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100px, -80px) rotate(720deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.number-animate {
+  animation: number-pop 0.2s ease-out;
+}
+
+@keyframes number-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
