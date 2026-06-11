@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>太阳系轨道模拟与引力弹弓演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000014;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: block;
+    }
+    #camera-info {
+      position: fixed;
+      right: 16px;
+      bottom: 16px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      line-height: 1.6;
+      z-index: 100;
+      pointer-events: none;
+      backdrop-filter: blur(3px);
+    }
+    #planet-label {
+      position: fixed;
+      background: rgba(26, 26, 46, 0.85);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      pointer-events: none;
+      z-index: 90;
+      display: none;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      white-space: nowrap;
+    }
+    #satellite-label {
+      position: fixed;
+      background: rgba(196, 106, 74, 0.9);
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Consolas', monospace;
+      pointer-events: none;
+      z-index: 90;
+      display: none;
+    }
+    .tp-dfwv {
+      width: 280px !important;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="app"></canvas>
+  <div id="camera-info"></div>
+  <div id="planet-label"></div>
+  <div id="satellite-label"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
