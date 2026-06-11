@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurora Particle Simulation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #010a18;
+    }
+    canvas {
+      display: block;
+    }
+    #fps-counter {
+      position: fixed;
+      top: 12px;
+      left: 16px;
+      color: #7ec8e3;
+      font-family: 'Consolas', monospace;
+      font-size: 14px;
+      z-index: 100;
+      text-shadow: 0 0 6px rgba(126,200,227,0.5);
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="fps-counter">FPS: --</div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
