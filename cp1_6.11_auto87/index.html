@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>折纸艺术 · Origami Fold Simulator</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <aside class="panel panel-left">
+      <div class="panel-header">
+        <h2>工具</h2>
+      </div>
+      <div class="panel-content">
+        <div class="tool-section">
+          <label class="section-label">折痕类型</label>
+          <div class="toggle-group">
+            <button class="toggle-btn active" data-fold-type="mountain">
+              <span class="fold-icon mountain"></span>
+              <span>山折</span>
+            </button>
+            <button class="toggle-btn" data-fold-type="valley">
+              <span class="fold-icon valley"></span>
+              <span>谷折</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="tool-section">
+          <label class="section-label">折叠角度</label>
+          <div class="slider-container">
+            <input type="range" id="angleSlider" min="30" max="150" value="90" step="1">
+            <span class="slider-value" id="angleValue">90°</span>
+          </div>
+        </div>
+
+        <div class="tool-section">
+          <label class="section-label">预设模型</label>
+          <select id="presetSelect" class="preset-select">
+            <option value="">-- 选择预设 --</option>
+            <option value="crane">纸鹤</option>
+            <option value="boat">纸船</option>
+            <option value="plane">纸飞机</option>
+            <option value="pinwheel">纸风车</option>
+            <option value="frog">纸青蛙</option>
+          </select>
+        </div>
+
+        <div class="tool-section action-section">
+          <button id="foldBtn" class="primary-btn">
+            <span>折叠</span>
+          </button>
+          <button id="unfoldBtn" class="secondary-btn">
+            <span>展开</span>
+          </button>
+          <button id="clearBtn" class="ghost-btn">
+            <span>清空</span>
+          </button>
+        </div>
+
+        <div class="tool-section">
+          <button id="undoBtn" class="ghost-btn full-width">
+            <span>撤销</span>
+            <span class="history-count" id="historyCount">0/10</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="canvas-container">
+      <div class="canvas-wrapper">
+        <canvas id="mainCanvas"></canvas>
+        <div class="mode-indicator" id="modeIndicator">2D 绘制模式</div>
+      </div>
+    </main>
+
+    <aside class="panel panel-right">
+      <div class="panel-header">
+        <h2>操作历史</h2>
+      </div>
+      <div class="panel-content">
+        <div class="history-list" id="historyList">
+          <div class="history-empty">暂无操作记录</div>
+        </div>
+      </div>
+
+      <div class="panel-header" style="margin-top: 20px;">
+        <h2>操作说明</h2>
+      </div>
+      <div class="panel-content">
+        <div class="tips-section">
+          <p><strong>2D模式：</strong></p>
+          <ul>
+            <li>拖拽鼠标绘制折痕线</li>
+            <li>端点自动吸附网格交叉点</li>
+            <li>点击折痕可删除</li>
+          </ul>
+          <p><strong>3D模式：</strong></p>
+          <ul>
+            <li>拖拽旋转视角</li>
+            <li>滚轮缩放</li>
+            <li>点击展开返回2D</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+
+    <button class="mobile-toggle" id="mobileToggle">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
