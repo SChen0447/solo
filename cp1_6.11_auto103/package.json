@@ -1,0 +1,17 @@
+{
+  "name": "dungeon-roguelike",
+  "version": "1.0.0",
+  "description": "A dungeon exploration Roguelike game with rune puzzle mechanics",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "3.60.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "vite": "^4.3.0"
+  }
+}
