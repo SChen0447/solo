@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-10T18:39:35.971Z",
+  "task_name": "auto84",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线虚拟陶艺拉坯与烧制展示的项目，想法是让用户在浏览器中体验从揉泥、拉坯成型到上釉烧制的完整陶艺创作流程，最终生成一件可以360度欣赏的虚拟陶器。希望它能做到：第一，提供一个模拟陶轮的控制面板，用户通过鼠标拖拽（从上往下拉为收口，从下往上推为扩口，左右拖动控制器物高度，拖拽时陶坯表面有0.3秒的黏土流动变形动画，影响响应半径为20像素）实时塑造一个由数百个分段圆环组成的黏土模型，陶坯颜色从深灰（#5a4a3a）到浅棕（#c4a882）随厚度渐变，陶轮旋转时模型表面产生细微的环形纹理（用半透明同心圆叠加模拟）；第二，完成拉坯后进入上釉阶段，用户可从色盘（至少8种经典釉色：天青、霁红、秘色、兔毫、油滴、茶叶末、霁蓝、粉彩）中选择釉料，点击模型部位即可局部施釉（点击后釉面以水滴扩散动画（0.5秒ease-out）覆盖约15%面积，釉色半透明叠加在陶体上，厚度不同导致颜色深浅变化），施釉区域边缘做柔光过渡（box-shadow模拟光晕），支持撤销上一步操作；第三，烧制阶段展示一个模拟窑炉的动画界面（背景从常温暗红渐变到高温橙黄（#ff8c00），持续5秒，温度数值从200到1200逐秒递增，达到1200度时陶器表面出现轻微熔融光泽（CSS filter: brightness(1.2) contrast(1.1)），烧制完成后弹出评价卡片，展示陶器三维预览（用户可拖拽旋转查看），并给出基于施釉均匀度（统计釉面覆盖率与标准差）、器形对称性（计算左右轮廓曲线相似度）和色彩搭配（色轮互补度）三项指标的综合评分（0-100分，带雷达图可视化）；第四，用户在首页可浏览所有已完成的陶器作品画廊（网格布局，每个缩略图显示陶器静态截图、烧制日期和评分，缩略图悬停时放大1.05倍并显示淡淡的暖色光晕，点击进入详情页可重新旋转查看和分享链接）；第五，整个应用响应式适配桌面和大屏平板，桌面端主操作区占页面70%宽度（深色渐变背景#1a1a2e到#16213e，辅助区域占30%），平板端则调整为上下分栏布局（上方为操作区，下方为控制面板），所有交互按钮带0.2秒弹性的点击反馈（transform: scale(0.95)再恢复），陶轮旋转动画不低于30fps。实现采用TypeScript、React（前端）、Node.js + Express（后端）、Vite和Canvas 2D绘图，把代码拆成以下文件：\n - package.json（前端含依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、axios、react-router-dom，后端含依赖：express、cors、uuid、multer，启动脚本通过 concurrently 同时启动前后端）\n - index.html（入口页面）\n - vite.config.js（构建配置，含React插件和TypeScript支持，设置base为'./'）\n - tsconfig.json（严格模式，目标ES2020）\n - src/main.tsx（React入口，初始化路由和状态管理）\n - src/App.tsx（主应用组件，管理陶轮/上釉/烧制/画廊四个页面路由切换）\n - src/components/PotteryWheel.tsx（陶轮交互组件，处理鼠标拖拽变形逻辑、Canvas渲染和陶坯分段圆环模型更新）\n - src/components/GlazePanel.tsx（上釉面板组件，显示色盘、釉料选择和点击施釉逻辑，管理撤销栈）\n - src/components/KilnScene.tsx（窑炉烧制动画组件，控制温度动画、陶器最终光泽效果和评分计算）\n - src/pages/Gallery.tsx（作品画廊页面，从后端获取作品列表，网格布局展示缩略图和详情）\n - src/pages/Detail.tsx（作品详情页面，通过canvas展示三维预览和雷达图评分，支持分享）\n - src/utils/shapeGeometry.ts（陶坯分段圆环模型计算工具，生成用于Canvas渲染的顶点和轮廓数据）\n - src/utils/scoreEngine.ts（评分算法工具，计算施釉均匀度、对称性和色彩搭配分）\n - server/index.ts（Express后端，提供作品CRUD API和静态文件服务）\n - server/data.json（初始作品数据文件）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}
