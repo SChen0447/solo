@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>海洋生态缸 · Ocean Ecosystem Tank</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0a1628 0%, #0d2a4a 50%, #0a1628 100%);
+      color: #e0f0ff;
+    }
+    #app {
+      position: fixed;
+      inset: 0;
+    }
+    #stats-panel {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      min-width: 200px;
+      padding: 14px 18px;
+      background: rgba(10, 22, 40, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 107, 53, 0.25);
+      border-radius: 12px;
+      z-index: 10;
+      user-select: none;
+    }
+    #stats-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffd700;
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 13px;
+      color: #a0c8e8;
+    }
+    .stat-row .label {
+      opacity: 0.85;
+    }
+    .stat-row .value {
+      font-weight: 600;
+      color: #ffd700;
+      font-variant-numeric: tabular-nums;
+    }
+    #reset-btn {
+      margin-top: 12px;
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(255, 107, 53, 0.2);
+      border: 1px solid rgba(255, 107, 53, 0.5);
+      border-radius: 8px;
+      color: #ffd700;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    #reset-btn:hover {
+      background: rgba(255, 107, 53, 0.35);
+      border-color: #ff6b35;
+      transform: translateY(-1px);
+    }
+    #reset-btn:active {
+      transform: translateY(0);
+    }
+    #hint-panel {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      padding: 10px 14px;
+      background: rgba(10, 22, 40, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 215, 0, 0.2);
+      border-radius: 12px;
+      z-index: 10;
+      user-select: none;
+      font-size: 12px;
+      color: #a0c8e8;
+      line-height: 1.7;
+    }
+    #hint-panel b {
+      color: #ffd700;
+    }
+    #coral-tooltip {
+      position: fixed;
+      padding: 8px 12px;
+      background: rgba(10, 22, 40, 0.8);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 107, 53, 0.5);
+      border-radius: 8px;
+      z-index: 20;
+      user-select: none;
+      font-size: 12px;
+      color: #e0f0ff;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+    #coral-tooltip .tt-title {
+      color: #ffd700;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    #coral-tooltip .tt-row {
+      display: flex;
+      gap: 8px;
+      color: #a0c8e8;
+    }
+    #coral-tooltip .tt-row span:last-child {
+      color: #ffd700;
+    }
+    @media (max-width: 480px) {
+      #stats-panel {
+        top: 8px;
+        left: 8px;
+        right: 8px;
+        min-width: unset;
+        padding: 10px 12px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 16px;
+      }
+      #stats-panel h3 {
+        width: 100%;
+        margin-bottom: 4px;
+      }
+      .stat-row {
+        padding: 2px 0;
+        gap: 6px;
+        font-size: 12px;
+      }
+      #reset-btn {
+        margin-top: 4px;
+        margin-left: auto;
+        width: auto;
+        padding: 6px 10px;
+      }
+      #hint-panel {
+        bottom: 8px;
+        right: 8px;
+        left: 8px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="stats-panel">
+    <h3>🌊 生态缸数据</h3>
+    <div class="stat-row"><span class="label">🐟 鱼群数量</span><span class="value" id="stat-fish">0</span></div>
+    <div class="stat-row"><span class="label">🪸 珊瑚数量</span><span class="value" id="stat-coral">0</span></div>
+    <div class="stat-row"><span class="label">🎯 投放总数</span><span class="value" id="stat-total">0</span></div>
+    <div class="stat-row"><span class="label">⏱️ 运行时间</span><span class="value" id="stat-time">00:00</span></div>
+    <button id="reset-btn">🔄 重置生态缸</button>
+  </div>
+  <div id="hint-panel">
+    <div><b>点击水面</b> 投放鱼 · <b>长按地面</b> 投放珊瑚</div>
+    <div><b>点击鱼</b> 选中/移除 · <b>点击珊瑚</b> 查看状态</div>
+    <div><b>D 键</b> 切换昼夜模式</div>
+  </div>
+  <div id="coral-tooltip"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
