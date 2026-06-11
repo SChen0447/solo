@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-10T17:48:18.889Z",
+  "task_name": "auto61",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个在线模拟股票交易大赛的项目，想法是让一群朋友可以创建或加入一个虚拟交易房间，每个人获得一笔初始虚拟资金（比如10万美元），然后在模拟的真实市场数据（随机波动生成）中买入卖出股票，最后看谁的收益率最高。希望它能做到：第一，首页是一个暗色主题的仪表盘，顶部是梯度绿色到红色的行情K线图（用Canvas实时绘制，每分钟随机生成一个K线柱，柱体颜色根据涨跌红绿变化，5日均线用白色虚线平滑连接），背景有微弱的网格线纹理，中间区域显示当前大赛排行榜（以银色、铜色、金色渐变的奖牌图标标记前3名，其余选手用灰色圆点，排名变化时行背景有0.5秒的闪烁高亮动画），底部是个人持仓面板（每只股票显示缩略名称、持股数量、当前盈亏百分比，正收益绿色向上箭头+数字跳动效果，负收益红色向下箭头）；第二，点击“加入房间”按钮，弹出模态框输入房间号和昵称，模态框背景用毛玻璃效果（blur 12px, 半透明黑底），表单输入框圆角8px带蓝色边框聚焦发光，加入后进入交易页面，页面左侧是可选股票列表（25只股票，以卡片形式排列，每张卡片显示股票代码、价格、涨跌幅度，卡片默认暗灰色，鼠标悬停时背景转为白色并升3px阴影，点击后右侧弹出交易面板）；第三，交易面板分为买入和卖出两个标签页，买入时输入想购买的数量（整数，不能超过可用资金折算的最大股数），点击“买入”按钮后出现“订单已提交”的绿色toast提示（顶部滑入，2.5秒后自动消失），同时持仓卡片中对应股票数量更新，可用余额数字以0.2秒的数字滚动动画减少；卖出时选择持仓股票，卖出后资金按当前价格即时到账。界面上希望整体采用深蓝黑的背景搭配霓虹蓝和荧光的绿色作为点缀，按钮有0.3秒ease-in-out缩放和颜色过渡反馈，响应式布局在手机宽度（<768px）时排行榜和交易面板堆叠显示卡片排列变为单列，性能上要求所有用户交互响应时间不超过150毫秒，K线图的Canvas渲染帧率不低于30fps。实现用TypeScript、React和Vite，后端用JSON Server模拟API（提供股票列表、价格更新、交易接口），把代码拆成以下文件： - package.json（依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、axios、json-server、@types/react、@types/react-dom，启动脚本：npm run dev用于前端，npm run server用于后端） - vite.config.js（构建配置，包含React插件和TypeScript支持，设置base为'./'） - tsconfig.json（严格模式，目标ES2020，jsx: react-jsx） - index.html（入口页面，深蓝黑纯色背景，引入Google Fonts的'Inter'字体） - src/main.tsx（应用入口，渲染Router，包裹全局ThemeProvider） - src/App.tsx（主应用组件，定义路由：首页/比赛大厅、交易页面/房间ID） - src/components/Dashboard.tsx（首页仪表盘，包含K线Chart组件和排行榜Ranking组件） - src/components/TradePanel.tsx（交易面板，包括股票列表和买入/卖出表单及toast） - src/api/mockApi.ts（模拟API调用，延迟200ms返回数据，用setInterval每5秒更新一次股票价格随机波动） - src/types.ts（定义Stock, Portfolio, Transaction等接口）。跑 npm install && npm run server 启动后端，然后另一个终端跑 npm install && npm run dev 启动前端，就能直接看到效果。",
+  "session_id": null,
+  "trace": "null"
+}

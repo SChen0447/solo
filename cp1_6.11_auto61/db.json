@@ -1,0 +1,58 @@
+{
+  "stocks": [
+    {"id": "1", "code": "AAPL", "name": "苹果", "price": 187.42, "prevClose": 185.50, "change": 1.92, "changePercent": 1.04, "volume": 52340000, "high": 188.90, "low": 184.30, "open": 185.80},
+    {"id": "2", "code": "GOOGL", "name": "谷歌", "price": 141.80, "prevClose": 140.20, "change": 1.60, "changePercent": 1.14, "volume": 21500000, "high": 143.10, "low": 139.80, "open": 140.50},
+    {"id": "3", "code": "MSFT", "name": "微软", "price": 378.91, "prevClose": 375.20, "change": 3.71, "changePercent": 0.99, "volume": 18900000, "high": 380.50, "low": 373.40, "open": 376.00},
+    {"id": "4", "code": "AMZN", "name": "亚马逊", "price": 178.25, "prevClose": 176.80, "change": 1.45, "changePercent": 0.82, "volume": 32100000, "high": 179.60, "low": 175.20, "open": 177.00},
+    {"id": "5", "code": "TSLA", "name": "特斯拉", "price": 248.50, "prevClose": 254.30, "change": -5.80, "changePercent": -2.28, "volume": 98700000, "high": 252.80, "low": 245.10, "open": 253.50},
+    {"id": "6", "code": "META", "name": "Meta", "price": 505.75, "prevClose": 498.40, "change": 7.35, "changePercent": 1.47, "volume": 15600000, "high": 508.90, "low": 496.20, "open": 499.00},
+    {"id": "7", "code": "NVDA", "name": "英伟达", "price": 875.30, "prevClose": 862.10, "change": 13.20, "changePercent": 1.53, "volume": 42300000, "high": 882.60, "low": 858.40, "open": 865.00},
+    {"id": "8", "code": "AMD", "name": "AMD", "price": 162.45, "prevClose": 158.90, "change": 3.55, "changePercent": 2.23, "volume": 38900000, "high": 164.80, "low": 157.20, "open": 159.50},
+    {"id": "9", "code": "JPM", "name": "摩根大通", "price": 198.60, "prevClose": 200.30, "change": -1.70, "changePercent": -0.85, "volume": 8900000, "high": 201.40, "low": 197.20, "open": 200.00},
+    {"id": "10", "code": "BAC", "name": "美国银行", "price": 35.42, "prevClose": 36.10, "change": -0.68, "changePercent": -1.88, "volume": 45200000, "high": 36.30, "low": 35.10, "open": 36.00},
+    {"id": "11", "code": "GS", "name": "高盛", "price": 452.80, "prevClose": 448.50, "change": 4.30, "changePercent": 0.96, "volume": 2300000, "high": 455.60, "low": 446.80, "open": 449.20},
+    {"id": "12", "code": "MS", "name": "摩根士丹利", "price": 92.15, "prevClose": 91.80, "change": 0.35, "changePercent": 0.38, "volume": 5600000, "high": 93.20, "low": 91.40, "open": 92.00},
+    {"id": "13", "code": "WMT", "name": "沃尔玛", "price": 168.70, "prevClose": 167.90, "change": 0.80, "changePercent": 0.48, "volume": 6800000, "high": 169.50, "low": 167.20, "open": 168.00},
+    {"id": "14", "code": "HD", "name": "家得宝", "price": 378.40, "prevClose": 381.20, "change": -2.80, "changePercent": -0.73, "volume": 3400000, "high": 383.50, "low": 376.80, "open": 380.50},
+    {"id": "15", "code": "MCD", "name": "麦当劳", "price": 285.60, "prevClose": 283.40, "change": 2.20, "changePercent": 0.78, "volume": 2800000, "high": 287.30, "low": 282.60, "open": 284.00},
+    {"id": "16", "code": "NKE", "name": "耐克", "price": 98.25, "prevClose": 97.60, "change": 0.65, "changePercent": 0.67, "volume": 7500000, "high": 99.40, "low": 97.10, "open": 97.80},
+    {"id": "17", "code": "JNJ", "name": "强生", "price": 156.80, "prevClose": 155.20, "change": 1.60, "changePercent": 1.03, "volume": 5200000, "high": 158.10, "low": 154.80, "open": 155.50},
+    {"id": "18", "code": "PFE", "name": "辉瑞", "price": 28.45, "prevClose": 28.90, "change": -0.45, "changePercent": -1.56, "volume": 28700000, "high": 29.10, "low": 28.20, "open": 28.80},
+    {"id": "19", "code": "UNH", "name": "联合健康", "price": 524.30, "prevClose": 518.70, "change": 5.60, "changePercent": 1.08, "volume": 3200000, "high": 528.90, "low": 516.40, "open": 520.00},
+    {"id": "20", "code": "ABT", "name": "雅培", "price": 112.50, "prevClose": 111.30, "change": 1.20, "changePercent": 1.08, "volume": 4100000, "high": 113.80, "low": 110.80, "open": 111.50},
+    {"id": "21", "code": "XOM", "name": "埃克森美孚", "price": 118.70, "prevClose": 117.40, "change": 1.30, "changePercent": 1.11, "volume": 12500000, "high": 120.20, "low": 116.80, "open": 117.80},
+    {"id": "22", "code": "CVX", "name": "雪佛龙", "price": 156.20, "prevClose": 154.80, "change": 1.40, "changePercent": 0.90, "volume": 6800000, "high": 158.10, "low": 154.20, "open": 155.00},
+    {"id": "23", "code": "BP", "name": "英国石油", "price": 38.90, "prevClose": 39.50, "change": -0.60, "changePercent": -1.52, "volume": 11200000, "high": 39.80, "low": 38.60, "open": 39.40},
+    {"id": "24", "code": "SHEL", "name": "壳牌", "price": 72.45, "prevClose": 71.80, "change": 0.65, "changePercent": 0.91, "volume": 8900000, "high": 73.60, "low": 71.20, "open": 72.00},
+    {"id": "25", "code": "INTC", "name": "英特尔", "price": 31.25, "prevClose": 30.80, "change": 0.45, "changePercent": 1.46, "volume": 28500000, "high": 32.10, "low": 30.50, "open": 30.90}
+  ],
+  "users": [
+    {"id": "1", "roomId": "DEMO", "nickname": "股神巴菲特", "balance": 42500, "initialBalance": 100000, "portfolio": [{"stockId": "7", "stockCode": "NVDA", "stockName": "英伟达", "quantity": 50, "avgCost": 750.00, "currentPrice": 875.30}, {"stockId": "3", "stockCode": "MSFT", "stockName": "微软", "quantity": 100, "avgCost": 350.00, "currentPrice": 378.91}], "totalAssets": 124270.50, "returnRate": 24.27, "prevRank": 2},
+    {"id": "2", "roomId": "DEMO", "nickname": "量化之王", "balance": 18500, "initialBalance": 100000, "portfolio": [{"stockId": "6", "stockCode": "META", "stockName": "Meta", "quantity": 120, "avgCost": 420.00, "currentPrice": 505.75}, {"stockId": "1", "stockCode": "AAPL", "stockName": "苹果", "quantity": 200, "avgCost": 170.00, "currentPrice": 187.42}], "totalAssets": 116935.00, "returnRate": 16.94, "prevRank": 1},
+    {"id": "3", "roomId": "DEMO", "nickname": "价值投资者", "balance": 35800, "initialBalance": 100000, "portfolio": [{"stockId": "17", "stockCode": "JNJ", "stockName": "强生", "quantity": 150, "avgCost": 148.00, "currentPrice": 156.80}, {"stockId": "13", "stockCode": "WMT", "stockName": "沃尔玛", "quantity": 180, "avgCost": 160.00, "currentPrice": 168.70}], "totalAssets": 89656.00, "returnRate": -10.34, "prevRank": 4},
+    {"id": "4", "roomId": "DEMO", "nickname": "趋势猎手", "balance": 5200, "initialBalance": 100000, "portfolio": [{"stockId": "8", "stockCode": "AMD", "stockName": "AMD", "quantity": 300, "avgCost": 145.00, "currentPrice": 162.45}, {"stockId": "4", "stockCode": "AMZN", "stockName": "亚马逊", "quantity": 250, "avgCost": 165.00, "currentPrice": 178.25}], "totalAssets": 98312.50, "returnRate": -1.69, "prevRank": 3},
+    {"id": "5", "roomId": "DEMO", "nickname": "稳健派", "balance": 65000, "initialBalance": 100000, "portfolio": [{"stockId": "9", "stockCode": "JPM", "stockName": "摩根大通", "quantity": 80, "avgCost": 195.00, "currentPrice": 198.60}, {"stockId": "15", "stockCode": "MCD", "stockName": "麦当劳", "quantity": 60, "avgCost": 278.00, "currentPrice": 285.60}], "totalAssets": 97844.00, "returnRate": -2.16, "prevRank": 5},
+    {"id": "6", "roomId": "DEMO", "nickname": "新手上路", "balance": 85000, "initialBalance": 100000, "portfolio": [{"stockId": "5", "stockCode": "TSLA", "stockName": "特斯拉", "quantity": 50, "avgCost": 280.00, "currentPrice": 248.50}], "totalAssets": 97425.00, "returnRate": -2.58, "prevRank": 6},
+    {"id": "7", "roomId": "DEMO", "nickname": "短线交易员", "balance": 12500, "initialBalance": 100000, "portfolio": [{"stockId": "2", "stockCode": "GOOGL", "stockName": "谷歌", "quantity": 180, "avgCost": 155.00, "currentPrice": 141.80}, {"stockId": "25", "stockCode": "INTC", "stockName": "英特尔", "quantity": 500, "avgCost": 35.50, "currentPrice": 31.25}], "totalAssets": 53751.00, "returnRate": -46.25, "prevRank": 7},
+    {"id": "8", "roomId": "DEMO", "nickname": "长线持有者", "balance": 25000, "initialBalance": 100000, "portfolio": [{"stockId": "19", "stockCode": "UNH", "stockName": "联合健康", "quantity": 80, "avgCost": 500.00, "currentPrice": 524.30}, {"stockId": "21", "stockCode": "XOM", "stockName": "埃克森美孚", "quantity": 250, "avgCost": 125.00, "currentPrice": 118.70}], "totalAssets": 96539.00, "returnRate": -3.46, "prevRank": 8}
+  ],
+  "transactions": [
+    {"id": "1", "userId": "1", "roomId": "DEMO", "stockId": "7", "stockCode": "NVDA", "type": "BUY", "price": 750.00, "quantity": 50, "amount": 37500, "timestamp": 1718000000000},
+    {"id": "2", "userId": "1", "roomId": "DEMO", "stockId": "3", "stockCode": "MSFT", "type": "BUY", "price": 350.00, "quantity": 100, "amount": 35000, "timestamp": 1718001000000},
+    {"id": "3", "userId": "2", "roomId": "DEMO", "stockId": "6", "stockCode": "META", "type": "BUY", "price": 420.00, "quantity": 120, "amount": 50400, "timestamp": 1718002000000}
+  ],
+  "kline": {
+    "7": [
+      {"time": 1718000000000, "open": 840.00, "high": 855.00, "low": 835.00, "close": 852.00, "volume": 35000000},
+      {"time": 1718000060000, "open": 852.00, "high": 860.00, "low": 848.00, "close": 858.00, "volume": 32000000},
+      {"time": 1718000120000, "open": 858.00, "high": 865.00, "low": 850.00, "close": 854.00, "volume": 38000000},
+      {"time": 1718000180000, "open": 854.00, "high": 870.00, "low": 852.00, "close": 868.00, "volume": 41000000},
+      {"time": 1718000240000, "open": 868.00, "high": 878.00, "low": 862.00, "close": 875.00, "volume": 44000000},
+      {"time": 1718000300000, "open": 875.00, "high": 882.00, "low": 858.00, "close": 863.00, "volume": 39000000},
+      {"time": 1718000360000, "open": 863.00, "high": 872.00, "low": 855.00, "close": 870.00, "volume": 36000000},
+      {"time": 1718000420000, "open": 870.00, "high": 878.00, "low": 860.00, "close": 865.00, "volume": 34000000},
+      {"time": 1718000480000, "open": 865.00, "high": 880.00, "low": 860.00, "close": 878.00, "volume": 42000000},
+      {"time": 1718000540000, "open": 878.00, "high": 885.00, "low": 872.00, "close": 875.30, "volume": 45000000}
+    ]
+  }
+}
