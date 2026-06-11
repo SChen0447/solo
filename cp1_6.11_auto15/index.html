@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>城市交通流模拟</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <button id="menuToggle" class="menu-toggle" aria-label="菜单">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    
+    <div id="overlay" class="overlay"></div>
+    
+    <aside id="controlPanel" class="control-panel">
+      <div class="panel-header">
+        <h2>信号灯控制</h2>
+        <button id="closePanel" class="close-btn">&times;</button>
+      </div>
+      <div class="panel-content" id="lightControls"></div>
+    </aside>
+    
+    <main class="main-content">
+      <div class="canvas-wrapper">
+        <canvas id="trafficCanvas"></canvas>
+      </div>
+      
+      <aside id="statsPanel" class="stats-panel">
+        <div class="panel-header">
+          <h2>实时统计</h2>
+        </div>
+        <div class="panel-content">
+          <div class="stat-item">
+            <span class="stat-label">总通过车辆</span>
+            <span class="stat-value" id="totalVehicles">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">东向平均等待</span>
+            <span class="stat-value" id="eastWait">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">南向平均等待</span>
+            <span class="stat-value" id="southWait">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">西向平均等待</span>
+            <span class="stat-value" id="westWait">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">北向平均等待</span>
+            <span class="stat-value" id="northWait">0.0s</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">拥堵指数</span>
+            <span class="stat-value" id="congestionIndex">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">当前帧率</span>
+            <span class="stat-value" id="fps">0 FPS</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
