@@ -1,0 +1,51 @@
+.editorPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #1e1e1e;
+  overflow: hidden;
+}
+
+.tabs {
+  display: flex;
+  background-color: #252526;
+  border-bottom: 1px solid #333;
+}
+
+.tab {
+  padding: 12px 24px;
+  color: #ccc;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+  transition: background-color 0.2s ease;
+}
+
+.tab:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.tab.active {
+  background-color: #0078D4;
+  color: white;
+}
+
+.editorContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.editorPlaceholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  font-family: 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+  pointer-events: none;
+  text-align: center;
+}

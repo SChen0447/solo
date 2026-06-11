@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-10T18:04:41.099Z",
+  "task_name": "auto68",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：在线教育平台希望为编程课程提供一种沉浸式代码编辑与运行预览环境，让学生像在IDE中一样边编写代码边看到交互式UI的实时渲染效果。\n\n构建一个交互式代码实时编辑与预览沙盒应用，使用TypeScript、React和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、monaco-editor，启动脚本：npm run dev）\n - vite.config.js（构建配置，包含React插件和TypeScript支持，设置base为'./'）\n - tsconfig.json（严格模式，目标ES2020，jsx设置为react-jsx）\n - index.html（入口页面，为深灰蓝底色，加载应用容器）\n - src/main.tsx（React入口，渲染App组件，挂载到index.html中的root元素，数据流向：→App）\n - src/components/EditorPanel.tsx（使用monaco-editor创建代码编辑器实例，支持HTML/CSS/JS语法高亮和自动补全，接收用户编写的前端三件套代码字符串，每500毫秒防抖通过回调传递给PreviewPanel，数据流向：用户输入→EditorPanel→App→PreviewPanel）\n - src/components/PreviewPanel.tsx（接收完整前端代码，通过iframe的srcdoc属性渲染预览结果，iframe高度根据内容自适应滚动，并监听iframe内报错信息回传给父组件，数据流向：App→PreviewPanel→iframe渲染）\n\n功能需求：\n1) 提供一个分两栏的界面布局，左侧为代码编辑器区域（占宽50%），右侧为实时预览区域（占宽50%），中间有可拖拽的分隔条调整两栏宽度比例，分隔条宽度6px，拖拽时有明确的鼠标指针变化（col-resize），松开后才稳定新宽度，调整过程帧率不低于30fps。\n2) 代码编辑器需要支持对HTML、CSS、JavaScript三种代码片段的编辑，每个片段之间有明确的功能切换标签（三个标签以水平排列，默认选中'HTML'标签，选中的标签背景色为亮蓝色#0078D4，未选中为透明，标签切换时有0.2秒背景色过渡动画），编辑器中代码字体统一使用'Cascadia Code'（或浏览器默认等宽字体fallback），字号14px，行高1.5。\n3) 每次用户停止输入（防抖500ms）后，自动将三部分代码合并为一个完整的HTML文档，并通过iframe在预览区域渲染，预览区域顶部有一个浅灰色状态栏（显示'预览就绪'或'渲染错误'，错误信息以红色加粗显示），状态栏高度36px，背景色#f5f5f5，文字居左。\n4) 预览区域支持响应式：用户可在预览区右上角点击三个设备图标切换模拟视图尺寸（手机375x667、平板768x1024、桌面1280x720），切换时预览iframe尺寸平滑变化（使用CSS过渡，时长0.3秒，缓动函数'ease-in-out'），当前选中设备图标高亮显示。\n5) 支持用户一键复制当前编辑器中的所有代码（三个片段合并为一个完整的HTML文件），点击右上角复制按钮后，按钮文字短暂变为'已复制!'，持续1.5秒后恢复，并伴随轻微的震动动画（0.1秒三次小幅度水平抖动）。\n\n界面方面：整体采用暗色主题配色，编辑器背景色#1e1e1e，预览区背景色#ffffff，无代码时显示引导文字（灰色，半透明，居中对齐，内容为'// 在左侧编写HTML代码，右侧将自动预览效果'），应用内所有交互元素（按钮、标签、分隔条）鼠标悬停时均显示为手型光标，且带有0.2秒的悬停高亮效果（背景色亮度提升10%）。所有动画时长不超过0.5秒，且不得阻塞用户后续操作。\n\n性能约束：代码编辑器内输入响应延迟不得高于50ms，预览区域在用户停止输入后1秒内完成渲染更新，拖拽分隔条调整布局时帧率不低于30fps。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:6be65e62e0267c4c596292875eb4439f_6a29a6718ee939d7bf7f4567.6a29a71c8ee939d7bf7f4600.6a29a71cdee8d0700a0914ba:Trae CN.T(2026/6/11 02:04:12)",
+    "user_id": "3986207660317399",
+    "trace_id": "6be65e62e0267c4c596292875eb4439f",
+    "session_id": "6a29a6718ee939d7bf7f4567",
+    "task_id": "6a29a71c8ee939d7bf7f4600",
+    "message_id": "6a29a71cdee8d0700a0914ba",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 02:04:12",
+    "format": "full"
+  },
+  "trace": "null"
+}
