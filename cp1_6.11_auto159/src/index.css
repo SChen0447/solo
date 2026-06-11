@@ -1,0 +1,618 @@
+@import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&display=swap');
+
+:root {
+  --bg-start: #efe6d2;
+  --bg-end: #d4c9a8;
+  --wood-color: #c49a6c;
+  --ink-color: #1a1a1a;
+  --seal-red: #c0392b;
+  --bamboo-color: #8b7355;
+  --spine-color: #5c3a21;
+  --paper-color: #faf3e0;
+  --cloud-start: #b8860b;
+  --cloud-end: #daa520;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'ZCOOL XiaoWei', 'KaiTi', 'STKaiti', 'SimKai', serif;
+  background-color: #dad0b6;
+  color: var(--ink-color);
+  overflow-x: hidden;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  position: relative;
+}
+
+.cloud-bar {
+  height: 20px;
+  background: linear-gradient(90deg, var(--cloud-start) 0%, var(--cloud-end) 50%, var(--cloud-start) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.cloud-bar::before,
+.cloud-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(ellipse 30px 10px at 10% 50%, transparent 70%, rgba(255,255,255,0.3) 72%, transparent 74%),
+    radial-gradient(ellipse 40px 12px at 30% 50%, transparent 70%, rgba(255,255,255,0.2) 72%, transparent 74%),
+    radial-gradient(ellipse 35px 10px at 55% 50%, transparent 70%, rgba(255,255,255,0.3) 72%, transparent 74%),
+    radial-gradient(ellipse 45px 14px at 80% 50%, transparent 70%, rgba(255,255,255,0.25) 72%, transparent 74%);
+  animation: cloudDrift 20s linear infinite;
+}
+
+.cloud-bar::after {
+  animation-delay: -10s;
+  opacity: 0.7;
+}
+
+@keyframes cloudDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(200px); }
+}
+
+.fish-tail-footer {
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  border-top: 2px solid var(--spine-color);
+  background: rgba(212, 201, 168, 0.5);
+}
+
+.fish-tail-footer::before,
+.fish-tail-footer::after {
+  content: '❧';
+  font-size: 24px;
+  color: var(--spine-color);
+  margin: 0 20px;
+}
+
+.fish-tail-text {
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--spine-color);
+  font-size: 14px;
+  letter-spacing: 4px;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  gap: 16px;
+  padding: 20px;
+  min-height: calc(100vh - 80px);
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .main-layout {
+    grid-template-columns: 1fr 260px;
+  }
+  .left-panel {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 12px;
+  }
+  .left-panel, .right-panel {
+    order: 2;
+  }
+  .center-panel {
+    order: 1;
+  }
+}
+
+.panel {
+  background: rgba(250, 243, 224, 0.7);
+  border: 2px solid var(--bamboo-color);
+  border-radius: 4px;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+
+.panel-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 20px;
+  color: var(--spine-color);
+  border-bottom: 2px solid var(--bamboo-color);
+  padding-bottom: 8px;
+  margin-bottom: 16px;
+  text-align: center;
+  letter-spacing: 4px;
+}
+
+.seal-btn {
+  width: 120px;
+  height: 48px;
+  background: linear-gradient(145deg, #5a5a5a 0%, #3a3a3a 100%);
+  color: #fff;
+  border: none;
+  border-radius: 2px;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.3), inset 1px 1px 2px rgba(255,255,255,0.1);
+  margin: 4px;
+}
+
+.seal-btn:hover {
+  background: linear-gradient(145deg, #6a6a6a 0%, #4a4a4a 100%);
+  transform: translateY(1px);
+}
+
+.seal-btn:active {
+  transform: translateY(3px);
+  box-shadow: 1px 1px 2px rgba(0,0,0,0.3), inset 2px 2px 4px rgba(192, 57, 43, 0.6);
+  background: linear-gradient(145deg, #c0392b 0%, #922b21 100%);
+}
+
+.seal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-flash {
+  animation: sealFlash 0.15s ease;
+}
+
+@keyframes sealFlash {
+  0% { background-color: #5a5a5a; }
+  50% { background-color: #c0392b; }
+  100% { background-color: #5a5a5a; }
+}
+
+.wood-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 10px;
+  border-radius: 5px;
+  background: repeating-linear-gradient(
+    90deg,
+    #8b7355 0px,
+    #6d4c41 2px,
+    #8b7355 4px
+  );
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.wood-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c49a6c 0%, #8b7355 100%);
+  border: 2px solid #5c3a21;
+  cursor: pointer;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+.wood-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
+}
+
+.wood-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #c49a6c 0%, #8b7355 100%);
+  border: 2px solid #5c3a21;
+  cursor: pointer;
+  box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: var(--spine-color);
+  margin-bottom: 6px;
+  margin-top: 12px;
+}
+
+.letterpress-text {
+  text-shadow:
+    1px 1px 0 rgba(255,255,255,0.8),
+    -1px -1px 0 rgba(100,80,60,0.4),
+    1px 0 0 rgba(255,255,255,0.6);
+  color: #3e2723;
+}
+
+.woodblock {
+  width: 300px;
+  height: 400px;
+  background: linear-gradient(145deg, #d4a76a 0%, #c49a6c 50%, #a67c52 100%);
+  position: relative;
+  border: 4px solid #8b7355;
+  border-radius: 4px;
+  box-shadow:
+    inset 0 0 60px rgba(139, 115, 85, 0.3),
+    4px 4px 12px rgba(0,0,0,0.3),
+    -2px -2px 6px rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.woodblock::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(139, 115, 85, 0.08) 1px,
+      transparent 2px,
+      transparent 8px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      rgba(90, 60, 30, 0.05) 1px,
+      transparent 3px,
+      transparent 20px
+    );
+  pointer-events: none;
+}
+
+.woodblock canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+}
+
+.engraving-canvas {
+  width: 300px;
+  height: 400px;
+}
+
+.inkstone {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #4a4a4a 0%, #1a1a1a 40%, #0a0a0a 100%);
+  box-shadow:
+    inset 2px 2px 8px rgba(255,255,255,0.1),
+    inset -2px -2px 8px rgba(0,0,0,0.5),
+    3px 3px 10px rgba(0,0,0,0.4);
+  position: relative;
+  cursor: grab;
+  margin: 0 auto;
+  transition: transform 0.2s ease;
+}
+
+.inkstone:hover {
+  transform: scale(1.05);
+}
+
+.inkstone:active {
+  cursor: grabbing;
+}
+
+.ink-surface {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1a1a1a 0%, #0a0a0a 100%);
+  opacity: 0.9;
+}
+
+.rice-paper {
+  width: 320px;
+  height: 420px;
+  background: var(--paper-color);
+  position: relative;
+  clip-path: polygon(
+    2% 3%, 8% 1%, 15% 2%, 25% 0%, 35% 2%, 45% 1%, 55% 3%, 65% 0%, 75% 2%, 85% 1%, 95% 3%, 98% 8%,
+    100% 15%, 99% 25%, 100% 35%, 98% 45%, 100% 55%, 99% 65%, 100% 75%, 98% 85%, 99% 92%,
+    97% 97%, 92% 99%, 85% 98%, 75% 100%, 65% 99%, 55% 98%, 45% 100%, 35% 99%, 25% 98%, 15% 100%, 8% 99%, 3% 97%,
+    1% 92%, 0% 85%, 2% 75%, 0% 65%, 1% 55%, 0% 45%, 2% 35%, 0% 25%, 1% 15%, 0% 8%
+  );
+  opacity: 0.92;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.15);
+}
+
+.heatmap-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.step-indicator {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.step-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #8b7355;
+  color: #faf3e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 16px;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+  border: 2px solid #5c3a21;
+}
+
+.step-dot.active {
+  opacity: 1;
+  background: #c0392b;
+  transform: scale(1.1);
+  box-shadow: 0 0 10px rgba(192, 57, 43, 0.5);
+}
+
+.step-dot.done {
+  opacity: 0.8;
+  background: #6d4c41;
+}
+
+.step-label {
+  font-size: 11px;
+  text-align: center;
+  margin-top: 2px;
+  color: var(--spine-color);
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tools-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 12px 0;
+}
+
+.workspace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 20px;
+  min-height: 500px;
+}
+
+.ink-brush {
+  width: 80px;
+  height: 30px;
+  background: linear-gradient(90deg, #5c3a21 0%, #8b7355 30%, #1a1a1a 70%, #0a0a0a 100%);
+  border-radius: 4px 15px 15px 4px;
+  cursor: grab;
+  margin: 16px auto;
+  position: relative;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.ink-brush:hover {
+  transform: scale(1.05);
+}
+
+.ink-brush:active {
+  cursor: grabbing;
+}
+
+.ink-brush::before {
+  content: '';
+  position: absolute;
+  left: 60%;
+  top: -2px;
+  width: 4px;
+  height: 34px;
+  background: #c49a6c;
+  border-radius: 2px;
+}
+
+.coverage-display, .concentration-display {
+  text-align: center;
+  font-family: 'Ma Shan Zheng', cursive;
+  color: var(--spine-color);
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.binding-preview {
+  position: relative;
+  display: inline-block;
+}
+
+.binding-scroll {
+  padding: 30px 0;
+}
+
+.binding-scroll::before,
+.binding-scroll::after {
+  content: '';
+  position: absolute;
+  left: -10px;
+  right: -10px;
+  height: 20px;
+  background: linear-gradient(180deg, #a67c52 0%, #8b7355 50%, #6d4c41 100%);
+  border-radius: 4px;
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+}
+
+.binding-scroll::before {
+  top: 0;
+}
+
+.binding-scroll::after {
+  bottom: 0;
+}
+
+.binding-booklet {
+  padding-left: 25px;
+}
+
+.binding-booklet::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, #5c3a21 0%, #8b7355 50%, #6d4c41 100%);
+  border-radius: 2px 0 0 2px;
+  box-shadow: inset -2px 0 4px rgba(0,0,0,0.3);
+}
+
+.binding-booklet::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  background: repeating-linear-gradient(
+    180deg,
+    #faf3e0 0px,
+    #faf3e0 6px,
+    #5c3a21 6px,
+    #5c3a21 12px
+  );
+  opacity: 0.6;
+}
+
+.binding-mirror {
+  padding: 40px;
+  background: #f5edd6;
+  border: 1px solid #d4c9a8;
+}
+
+.draggable {
+  user-select: none;
+  touch-action: none;
+}
+
+.drop-zone {
+  border: 2px dashed rgba(139, 115, 85, 0.5);
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.drop-zone.drag-over {
+  border-color: var(--seal-red);
+  background: rgba(192, 57, 43, 0.05);
+}
+
+.hint-text {
+  font-size: 13px;
+  color: var(--spine-color);
+  margin: 8px 0;
+  line-height: 1.6;
+}
+
+.tool-section {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px dashed var(--bamboo-color);
+}
+
+.tool-section:last-child {
+  border-bottom: none;
+}
+
+.binding-options {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.binding-option {
+  padding: 8px 12px;
+  background: rgba(139, 115, 85, 0.2);
+  border: 2px solid var(--bamboo-color);
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 14px;
+  color: var(--spine-color);
+  transition: all 0.2s ease;
+}
+
+.binding-option:hover {
+  background: rgba(139, 115, 85, 0.35);
+}
+
+.binding-option.active {
+  background: var(--seal-red);
+  color: #faf3e0;
+  border-color: #922b21;
+}
+
+.canvas-container {
+  position: relative;
+  display: inline-block;
+}
+
+.save-share-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.share-link {
+  display: block;
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid var(--bamboo-color);
+  border-radius: 2px;
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--spine-color);
+  text-align: center;
+}
