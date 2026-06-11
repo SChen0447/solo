@@ -1,0 +1,38 @@
+{
+  "name": "bamboo-slip-carbonization",
+  "version": "1.0.0",
+  "description": "虚拟竹简刻写与碳化断代模拟系统",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "server": "node server.js"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "framer-motion": "^10.16.16",
+    "howler": "^2.2.4",
+    "multer": "^1.4.5-lts.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sharp": "^0.33.1",
+    "typescript": "^5.3.3",
+    "uuid": "^9.0.1",
+    "vite": "^5.0.10",
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/howler": "^2.2.11",
+    "@types/multer": "^1.4.11",
+    "@types/node": "^20.10.6",
+    "@types/react": "^18.2.46",
+    "@types/react-dom": "^18.2.18",
+    "@types/uuid": "^9.0.7"
+  }
+}
