@@ -1,0 +1,21 @@
+{
+  "name": "aurora-strings",
+  "version": "1.0.0",
+  "description": "Virtual Aurora Strings - 3D Interactive Visualization of Cosmic Resonance",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@tweakpane/core": "^2.0.3",
+    "gsap": "^3.12.4",
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
