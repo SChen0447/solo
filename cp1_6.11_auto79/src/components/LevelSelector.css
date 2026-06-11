@@ -1,0 +1,114 @@
+.level-selector {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.level-selector h3 {
+  font-size: 16px;
+  margin-bottom: 12px;
+  color: #f1c40f;
+  font-weight: 600;
+}
+
+.levels-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.level-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.level-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
+}
+
+.level-card.active {
+  border-color: #f1c40f;
+  background: rgba(241, 196, 15, 0.1);
+  box-shadow: 0 0 15px rgba(241, 196, 15, 0.2);
+}
+
+.level-preview {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  padding: 4px;
+}
+
+.mini-maze {
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mini-cell {
+  position: absolute;
+}
+
+.mini-wall {
+  background: #7f8c8d;
+}
+
+.mini-path {
+  background: #ecf0f1;
+}
+
+.mini-start {
+  background: #27ae60;
+}
+
+.mini-end {
+  background: #e74c3c;
+}
+
+.level-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.level-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ecf0f1;
+}
+
+.level-stats {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+@media (max-width: 768px) {
+  .levels-grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .level-card {
+    flex-direction: column;
+    width: calc(50% - 5px);
+    text-align: center;
+  }
+
+  .level-card:hover {
+    transform: translateY(-2px);
+  }
+}
