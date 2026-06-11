@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>北极光粒子画廊 - Aurora Borealis Gallery</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0b0e1a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    .preset-buttons {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+    }
+
+    .preset-btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease-out;
+      position: relative;
+      overflow: hidden;
+      min-width: 140px;
+      text-align: left;
+    }
+
+    .preset-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, var(--btn-color-start), var(--btn-color-end));
+      opacity: 0.6;
+      z-index: -1;
+    }
+
+    .preset-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px var(--btn-glow-color);
+    }
+
+    .preset-btn:active {
+      transform: scale(1.05);
+    }
+
+    .preset-btn.burst {
+      --btn-color-start: #ff00aa;
+      --btn-color-end: #aa00ff;
+      --btn-glow-color: rgba(255, 0, 170, 0.5);
+    }
+
+    .preset-btn.curtain {
+      --btn-color-start: #00ff88;
+      --btn-color-end: #00aa55;
+      --btn-glow-color: rgba(0, 255, 136, 0.5);
+    }
+
+    .preset-btn.arc {
+      --btn-color-start: #00aaff;
+      --btn-color-end: #0066aa;
+      --btn-glow-color: rgba(0, 170, 255, 0.5);
+    }
+
+    .stats-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      z-index: 10;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+      line-height: 1.6;
+    }
+
+    .stats-panel .fps {
+      color: #00ff88;
+    }
+
+    .stats-panel .particles {
+      color: #00aaff;
+    }
+
+    .stats-panel .warning {
+      color: #ffaa00;
+      display: none;
+      margin-top: 4px;
+    }
+
+    .stats-panel .warning.show {
+      display: block;
+    }
+
+    .record-indicator {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .record-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #ff3333;
+      box-shadow: 0 0 10px #ff3333;
+      transition: all 0.3s ease-out;
+    }
+
+    .record-dot.recording {
+      animation: blink 1s ease-in-out infinite;
+    }
+
+    .record-dot:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px #ff3333;
+    }
+
+    .record-text {
+      color: white;
+      font-size: 12px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+
+    @keyframes blink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .tp-dfwv {
+      position: absolute !important;
+      right: 20px !important;
+      bottom: 20px !important;
+      top: auto !important;
+      left: auto !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div class="preset-buttons">
+      <button class="preset-btn burst" data-preset="burst">极光爆发</button>
+      <button class="preset-btn curtain" data-preset="curtain">极光帘幕</button>
+      <button class="preset-btn arc" data-preset="arc">极光弧</button>
+    </div>
+
+    <div class="record-indicator" id="record-btn">
+      <div class="record-dot" id="record-dot"></div>
+      <span class="record-text" id="record-text">录制</span>
+    </div>
+
+    <div class="stats-panel">
+      <div class="fps">FPS: <span id="fps-value">60</span></div>
+      <div class="particles">粒子: <span id="particle-count">0</span></div>
+      <div class="warning" id="performance-warning">性能降级</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
