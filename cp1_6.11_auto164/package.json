@@ -1,0 +1,21 @@
+{
+  "name": "alchemy-furnace",
+  "version": "1.0.0",
+  "description": "Ancient alchemy furnace game with five elements",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "gsap": "^3.12.4",
+    "canvas-confetti": "^1.9.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "@types/three": "^0.160.0",
+    "@types/canvas-confetti": "^1.6.4"
+  }
+}
