@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>水晶占卜 · 星灵召唤</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Cinzel', serif;
+      }
+      body {
+        background: radial-gradient(ellipse at center, #1a0a3e 0%, #0a0a2e 70%, #050515 100%);
+      }
+      .loading-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(ellipse at center, #1a0a3e 0%, #0a0a2e 70%, #050515 100%);
+        z-index: 9999;
+        transition: opacity 0.8s ease;
+      }
+      .loading-screen.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loading-ring {
+        position: relative;
+        width: 80px;
+        height: 80px;
+      }
+      .loading-particle {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #a0d8f1;
+        box-shadow: 0 0 10px #a0d8f1, 0 0 20px #c8a2f6;
+        animation: particleOrbit 1s linear infinite;
+      }
+      @keyframes particleOrbit {
+        from { transform: rotate(0deg) translateX(35px) rotate(0deg); }
+        to { transform: rotate(360deg) translateX(35px) rotate(-360deg); }
+      }
+      .loading-text {
+        margin-top: 30px;
+        color: #e6d5a8;
+        font-size: 16px;
+        letter-spacing: 3px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <div class="loading-screen" id="loading">
+      <div class="loading-ring" id="loadingRing"></div>
+      <div class="loading-text">正在唤醒星灵...</div>
+    </div>
+    <script>
+      const ring = document.getElementById('loadingRing');
+      for (let i = 0; i < 12; i++) {
+        const p = document.createElement('div');
+        p.className = 'loading-particle';
+        p.style.animationDelay = (i * 1000 / 12) + 'ms';
+        p.style.left = '50%';
+        p.style.top = '50%';
+        p.style.marginLeft = '-4px';
+        p.style.marginTop = '-4px';
+        ring.appendChild(p);
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
