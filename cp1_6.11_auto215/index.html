@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟萤石矿洞 · 晶簇光折射交互可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d1b2a;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e0e0;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.8s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-crystal {
+      width: 60px;
+      height: 80px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+
+    .loading-crystal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 25px solid transparent;
+      border-right: 25px solid transparent;
+      border-bottom: 35px solid #8e44ad;
+      filter: drop-shadow(0 0 15px #af7ac5);
+      animation: crystalPulse 1.5s ease-in-out infinite;
+    }
+
+    .loading-crystal::after {
+      content: '';
+      position: absolute;
+      top: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 45px;
+      background: linear-gradient(180deg, #9b59b6 0%, #6c3483 100%);
+      clip-path: polygon(12% 0, 88% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 0 10px #af7ac5);
+      animation: crystalPulse 1.5s ease-in-out infinite 0.1s;
+    }
+
+    @keyframes crystalPulse {
+      0%, 100% { opacity: 0.6; filter: drop-shadow(0 0 10px #af7ac5); }
+      50% { opacity: 1; filter: drop-shadow(0 0 25px #c39bd3); }
+    }
+
+    .loading-text {
+      font-size: 18px;
+      color: #aed6f1;
+      letter-spacing: 4px;
+      animation: textFade 1.5s ease-in-out infinite;
+    }
+
+    @keyframes textFade {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    .loading-bar {
+      width: 200px;
+      height: 3px;
+      background: rgba(93, 173, 226, 0.2);
+      border-radius: 2px;
+      margin-top: 20px;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #5dade2, #af7ac5, #f4d03f);
+      border-radius: 2px;
+      animation: loadingFill 2s ease-in-out forwards;
+    }
+
+    @keyframes loadingFill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    #mineral-panel {
+      position: absolute;
+      top: 50%;
+      right: 24px;
+      transform: translateY(-50%);
+      width: 260px;
+      padding: 20px;
+      background: rgba(26, 37, 54, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(93, 173, 226, 0.2);
+      box-shadow: 0 0 20px rgba(93, 173, 226, 0.15), 2px 2px 0 rgba(244, 208, 63, 0.1);
+      z-index: 100;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    #mineral-panel:hover {
+      transform: translateY(-50%) translate(-2px, -2px);
+      box-shadow: 0 0 30px rgba(93, 173, 226, 0.25), 2px 2px 0 rgba(244, 208, 63, 0.2);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      color: #5dade2;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(93, 173, 226, 0.2);
+      text-transform: uppercase;
+    }
+
+    .mineral-name {
+      font-size: 22px;
+      font-weight: 600;
+      color: #f4d03f;
+      margin-bottom: 8px;
+      text-shadow: 0 0 10px rgba(244, 208, 63, 0.3);
+    }
+
+    .mineral-en {
+      font-size: 12px;
+      color: #85929e;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .property-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px dashed rgba(93, 173, 226, 0.15);
+    }
+
+    .property-row:last-of-type {
+      border-bottom: none;
+    }
+
+    .property-label {
+      font-size: 12px;
+      color: #85929e;
+      letter-spacing: 1px;
+    }
+
+    .property-value {
+      font-size: 13px;
+      color: #aed6f1;
+      font-weight: 500;
+    }
+
+    .fluorescence-color {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+      box-shadow: 0 0 8px currentColor;
+    }
+
+    .slider-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(93, 173, 226, 0.2);
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .slider-label span {
+      font-size: 12px;
+      color: #85929e;
+      letter-spacing: 1px;
+    }
+
+    .slider-label .temp-value {
+      color: #f4d03f;
+      font-weight: 600;
+    }
+
+    .temp-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 200px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #f4d03f 0%, #ffffff 50%, #5dade2 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .temp-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: #f4d03f;
+      cursor: pointer;
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      box-shadow: 0 0 12px rgba(244, 208, 63, 0.6);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .temp-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 20px rgba(244, 208, 63, 0.9);
+    }
+
+    .temp-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: #f4d03f;
+      cursor: pointer;
+      border: none;
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      box-shadow: 0 0 12px rgba(244, 208, 63, 0.6);
+    }
+
+    #spectrum-bar {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 500px;
+      height: 40px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      border-radius: 8px;
+      border: 1px solid rgba(93, 173, 226, 0.2);
+      box-shadow: 0 0 15px rgba(93, 173, 226, 0.1), 2px 2px 0 rgba(175, 122, 197, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 0 15px;
+      z-index: 100;
+      cursor: crosshair;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #spectrum-bar:hover {
+      box-shadow: 0 0 25px rgba(93, 173, 226, 0.2), 2px 2px 0 rgba(175, 122, 197, 0.2);
+    }
+
+    .spectrum-band {
+      width: 25px;
+      height: 35px;
+      border-radius: 3px;
+      opacity: 0.3;
+      transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .spectrum-band:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px currentColor;
+    }
+
+    .spectrum-band.selected {
+      opacity: 1 !important;
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 0 20px currentColor;
+    }
+
+    .spectrum-band.red { background: #e74c3c; color: #e74c3c; }
+    .spectrum-band.orange { background: #e67e22; color: #e67e22; }
+    .spectrum-band.yellow { background: #f1c40f; color: #f1c40f; }
+    .spectrum-band.green { background: #2ecc71; color: #2ecc71; }
+    .spectrum-band.cyan { background: #1abc9c; color: #1abc9c; }
+    .spectrum-band.blue { background: #3498db; color: #3498db; }
+    .spectrum-band.violet { background: #9b59b6; color: #9b59b6; }
+
+    .spectrum-tooltip {
+      position: absolute;
+      bottom: 45px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 10px;
+      background: rgba(26, 37, 54, 0.95);
+      border: 1px solid rgba(93, 173, 226, 0.3);
+      border-radius: 4px;
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .spectrum-band:hover .spectrum-tooltip {
+      opacity: 1;
+    }
+
+    #hint-panel {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      padding: 16px 20px;
+      background: rgba(26, 37, 54, 0.75);
+      backdrop-filter: blur(10px);
+      border-radius: 10px;
+      border: 1px solid rgba(93, 173, 226, 0.15);
+      box-shadow: 0 0 15px rgba(93, 173, 226, 0.1);
+      z-index: 100;
+      font-size: 12px;
+      line-height: 1.8;
+      color: #85929e;
+    }
+
+    #hint-panel .hint-title {
+      color: #5dade2;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    #hint-panel kbd {
+      display: inline-block;
+      padding: 1px 6px;
+      background: rgba(93, 173, 226, 0.2);
+      border: 1px solid rgba(93, 173, 226, 0.3);
+      border-radius: 3px;
+      font-family: monospace;
+      font-size: 11px;
+      color: #aed6f1;
+      margin: 0 2px;
+    }
+
+    .stalactites {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      pointer-events: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    .ground-debris {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      pointer-events: none;
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    @media (max-width: 1440px) {
+      #mineral-panel {
+        width: 220px;
+        padding: 16px;
+        right: 16px;
+      }
+      .mineral-name { font-size: 18px; }
+      .temp-slider { width: 170px; }
+      #spectrum-bar { width: 420px; }
+      .spectrum-band { width: 22px; }
+    }
+
+    @media (min-width: 1920px) {
+      #mineral-panel {
+        width: 300px;
+        padding: 24px;
+        right: 32px;
+      }
+      .mineral-name { font-size: 26px; }
+      #spectrum-bar { width: 600px; height: 48px; }
+      .spectrum-band { width: 30px; height: 40px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <svg class="stalactites" id="stalactites-svg"></svg>
+    <svg class="ground-debris" id="debris-svg"></svg>
+
+    <div id="loading-screen">
+      <div class="loading-crystal"></div>
+      <div class="loading-text">正在加载矿洞数据...</div>
+      <div class="loading-bar">
+        <div class="loading-bar-fill"></div>
+      </div>
+    </div>
+
+    <div id="hint-panel">
+      <div class="hint-title">🔦 矿洞探索指南</div>
+      <div><kbd>鼠标移动</kbd> 手电筒照射晶簇</div>
+      <div><kbd>鼠标悬停</kbd> 扫描线光晕效果</div>
+      <div><kbd>点击晶簇</kbd> 旋转观察生长纹</div>
+      <div><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> 聚焦不同矿物</div>
+      <div><kbd>拖动频谱条</kbd> 选择单色光染色</div>
+    </div>
+
+    <div id="mineral-panel">
+      <div class="panel-title">◆ 矿物属性档案</div>
+      <div class="mineral-name" id="mineral-name">萤石</div>
+      <div class="mineral-en" id="mineral-en">Fluorite</div>
+      
+      <div class="property-row">
+        <span class="property-label">晶系</span>
+        <span class="property-value" id="crystal-system">等轴晶系</span>
+      </div>
+      <div class="property-row">
+        <span class="property-label">莫氏硬度</span>
+        <span class="property-value" id="hardness">4</span>
+      </div>
+      <div class="property-row">
+        <span class="property-label">荧光反应</span>
+        <span class="property-value" id="fluorescence">
+          蓝紫
+          <span class="fluorescence-color" id="fluorescence-color" style="background: #8e44ad; color: #8e44ad;"></span>
+        </span>
+      </div>
+
+      <div class="slider-section">
+        <div class="slider-label">
+          <span>手电筒色温</span>
+          <span><span class="temp-value" id="temp-value">5000</span>K</span>
+        </div>
+        <input type="range" class="temp-slider" id="temp-slider" min="3000" max="7000" value="5000" step="100">
+        <div style="display: flex; justify-content: space-between; margin-top: 6px;">
+          <span style="font-size: 10px; color: #f4d03f;">暖光</span>
+          <span style="font-size: 10px; color: #5dade2;">冷光</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="spectrum-bar">
+      <div class="spectrum-band red" data-wavelength="650" data-color="#e74c3c">
+        <div class="spectrum-tooltip">红光 650nm</div>
+      </div>
+      <div class="spectrum-band orange" data-wavelength="600" data-color="#e67e22">
+        <div class="spectrum-tooltip">橙光 600nm</div>
+      </div>
+      <div class="spectrum-band yellow" data-wavelength="570" data-color="#f1c40f">
+        <div class="spectrum-tooltip">黄光 570nm</div>
+      </div>
+      <div class="spectrum-band green" data-wavelength="530" data-color="#2ecc71">
+        <div class="spectrum-tooltip">绿光 530nm</div>
+      </div>
+      <div class="spectrum-band cyan" data-wavelength="490" data-color="#1abc9c">
+        <div class="spectrum-tooltip">青光 490nm</div>
+      </div>
+      <div class="spectrum-band blue" data-wavelength="450" data-color="#3498db">
+        <div class="spectrum-tooltip">蓝光 450nm</div>
+      </div>
+      <div class="spectrum-band violet" data-wavelength="400" data-color="#9b59b6">
+        <div class="spectrum-tooltip">紫光 400nm</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
