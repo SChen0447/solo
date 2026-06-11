@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>书缘 - 在线书籍交换社区</title>
+    <style>
+      body {
+        margin: 0;
+        background-color: #FAF6F0;
+        font-family: 'Playfair Display', Georgia, serif;
+      }
+      #root:empty ~ .loading-screen,
+      .loading-screen {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background-color: #FAF6F0;
+      }
+      .loading-screen .book-icon {
+        width: 64px;
+        height: 64px;
+        animation: bookBounce 1.2s ease-in-out infinite;
+      }
+      .loading-screen .book-icon svg {
+        fill: #5C4033;
+      }
+      .loading-screen p {
+        margin-top: 16px;
+        color: #5C4033;
+        font-size: 18px;
+        letter-spacing: 2px;
+        animation: fadeInUp 0.8s ease-out;
+      }
+      @keyframes bookBounce {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-12px) rotate(-3deg); }
+        50% { transform: translateY(0) rotate(0deg); }
+        75% { transform: translateY(-6px) rotate(2deg); }
+      }
+      @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <div class="loading-screen">
+      <div class="book-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <line x1="8" y1="7" x2="16" y2="7"/>
+          <line x1="8" y1="11" x2="13" y2="11"/>
+        </svg>
+      </div>
+      <p>书缘 · 加载中</p>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
