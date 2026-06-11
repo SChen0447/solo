@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>赛博朋克转盘抽奖</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      font-family: 'Courier New', 'Consolas', monospace;
+      color: #fff;
+      background: linear-gradient(135deg, #0a0015 0%, #1a0033 30%, #0d0d2b 70%, #05001a 100%);
+    }
+
+    body { position: relative; }
+
+    #scanlines {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 1;
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 255, 255, 0.03) 2px,
+          rgba(0, 255, 255, 0.03) 4px
+        ),
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 3px,
+          rgba(255, 0, 200, 0.02) 3px,
+          rgba(255, 0, 200, 0.02) 6px
+        );
+      animation: scanMove 4s linear infinite;
+    }
+
+    @keyframes scanMove {
+      0% { background-position: 0 0, 0 0; }
+      100% { background-position: 0 8px, 12px 0; }
+    }
+
+    #noise-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 2; opacity: 0.04;
+      animation: noiseFlicker 0.1s steps(3) infinite;
+    }
+
+    @keyframes noiseFlicker {
+      0% { opacity: 0.03; }
+      33% { opacity: 0.05; }
+      66% { opacity: 0.02; }
+      100% { opacity: 0.04; }
+    }
+
+    canvas {
+      position: absolute; top: 0; left: 0;
+      z-index: 3;
+    }
+
+    #ui-layer {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 10;
+    }
+
+    #counter {
+      position: absolute; top: 16px; left: 50%; transform: translateX(-50%);
+      font-size: 18px; letter-spacing: 2px;
+      text-shadow: 0 0 8px #0ff, 0 0 16px #0ff, 0 0 32px #0ff;
+      white-space: nowrap;
+    }
+
+    #counter span { color: #ff00ff; font-size: 24px; font-weight: bold; }
+
+    #no-chances {
+      position: absolute; top: 54px; left: 50%; transform: translateX(-50%);
+      font-size: 14px; color: #ff4466;
+      text-shadow: 0 0 6px #ff4466;
+      animation: breathe 0.8s ease-in-out infinite;
+      display: none; white-space: nowrap;
+    }
+
+    @keyframes breathe {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    #prize-modal {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 300px; max-width: 85vw;
+      padding: 32px 24px; text-align: center;
+      background: rgba(10, 0, 30, 0.75);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      display: none; pointer-events: auto;
+      animation: modalIn 0.3s ease-out;
+    }
+
+    #prize-modal::before {
+      content: ''; position: absolute; top: -2px; left: -2px;
+      right: -2px; bottom: -2px; border-radius: 18px; z-index: -1;
+      background: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff, #ffff00, #ff00ff);
+      background-size: 300% 100%;
+      animation: borderFlow 2s linear infinite;
+    }
+
+    #prize-modal::after {
+      content: ''; position: absolute; top: 0; left: 0;
+      right: 0; bottom: 0; border-radius: 16px; z-index: -1;
+      background: rgba(10, 0, 30, 0.75);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    }
+
+    @keyframes borderFlow {
+      0% { background-position: 0% 0%; }
+      100% { background-position: 300% 0%; }
+    }
+
+    @keyframes modalIn {
+      0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    }
+
+    #prize-modal h2 {
+      font-size: 22px; margin-bottom: 8px;
+      text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;
+    }
+
+    #prize-modal .prize-name {
+      font-size: 28px; margin: 12px 0 20px;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff;
+      color: #0ff;
+    }
+
+    #btn-replay {
+      font-family: 'Courier New', 'Consolas', monospace;
+      font-size: 16px; padding: 10px 28px;
+      background: linear-gradient(135deg, #ff00ff, #8800ff);
+      color: #fff; border: none; border-radius: 8px; cursor: pointer;
+      text-shadow: 0 0 6px #fff;
+      box-shadow: 0 0 12px #ff00ff, 0 0 24px #8800ff;
+      transition: transform 0.15s, box-shadow 0.15s;
+      pointer-events: auto;
+    }
+
+    #btn-replay:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 18px #ff00ff, 0 0 36px #8800ff;
+    }
+
+    #history-panel {
+      position: absolute; bottom: 16px; right: 16px;
+      width: 240px; max-height: 220px;
+      padding: 12px; overflow-y: auto;
+      background: rgba(10, 0, 30, 0.65);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 255, 255, 0.3);
+      pointer-events: auto;
+    }
+
+    #history-panel h3 {
+      font-size: 13px; margin-bottom: 8px;
+      text-shadow: 0 0 6px #0ff, 0 0 12px #0ff;
+      letter-spacing: 2px; color: #0ff;
+    }
+
+    #history-list { list-style: none; }
+
+    #history-list li {
+      font-size: 12px; padding: 4px 0;
+      border-bottom: 1px solid rgba(255, 0, 255, 0.15);
+      text-shadow: 0 0 4px rgba(255, 0, 255, 0.5);
+      opacity: 0; transform: translateX(-20px);
+      animation: slideIn 0.4s ease-out forwards;
+    }
+
+    #history-list li .time {
+      color: rgba(255,255,255,0.4); font-size: 10px; margin-left: 6px;
+    }
+
+    @keyframes slideIn {
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @media (max-width: 600px) {
+      #counter { font-size: 14px; top: 10px; }
+      #counter span { font-size: 18px; }
+      #no-chances { font-size: 12px; top: 38px; }
+      #prize-modal { width: 260px; padding: 24px 16px; }
+      #prize-modal h2 { font-size: 18px; }
+      #prize-modal .prize-name { font-size: 22px; }
+      #history-panel { width: 180px; max-height: 160px; bottom: 8px; right: 8px; padding: 8px; }
+      #history-panel h3 { font-size: 11px; }
+      #history-list li { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="scanlines"></div>
+  <div id="noise-overlay"></div>
+  <canvas id="gameCanvas"></canvas>
+  <div id="ui-layer">
+    <div id="counter">剩余抽奖次数：<span id="count-value">5</span></div>
+    <div id="no-chances">次数已用完，明日再来</div>
+    <div id="prize-modal">
+      <h2>恭喜！</h2>
+      <div class="prize-name" id="prize-name"></div>
+      <button id="btn-replay">再玩一次</button>
+    </div>
+    <div id="history-panel">
+      <h3>⟐ 抽奖记录 ⟐</h3>
+      <ul id="history-list"></ul>
+    </div>
+  </div>
+  <script type="module" src="./src/main.ts"></script>
+</body>
+</html>
