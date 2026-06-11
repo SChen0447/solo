@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Lava Lamp Visualizer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0f;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+      user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: min(80vh, 80vw);
+      height: min(80vh, 80vw);
+      min-width: 400px;
+      min-height: 400px;
+      aspect-ratio: 1 / 1;
+    }
+
+    #canvas-container canvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+    }
+
+    #ui-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      pointer-events: auto;
+    }
+
+    #theme-buttons {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      padding: 16px 24px;
+    }
+
+    .theme-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                  box-shadow 0.3s ease;
+      background-size: 200% 200%;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .theme-btn .tooltip {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-8px);
+      padding: 6px 12px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .theme-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    .theme-btn.active {
+      border-color: #ffd700;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+
+    #heat-slider-container {
+      position: absolute;
+      left: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    #heat-label {
+      font-size: 11px;
+      opacity: 0.7;
+      letter-spacing: 1px;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    #heat-slider {
+      position: relative;
+      width: 6px;
+      height: 200px;
+      border-radius: 3px;
+      cursor: pointer;
+      background: linear-gradient(to top,
+        #1e3a8a 0%,
+        #3b82f6 25%,
+        #f59e0b 60%,
+        #ef4444 85%,
+        #dc2626 100%
+      );
+      overflow: hidden;
+    }
+
+    #heat-slider-track {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to top,
+        rgba(220, 38, 38, 0.4) 0%,
+        rgba(245, 158, 11, 0.4) 50%,
+        rgba(30, 58, 138, 0.4) 100%
+      );
+      pointer-events: none;
+      transition: height 0.1s linear;
+    }
+
+    #heat-slider-thumb {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, 50%);
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffe066, #ffd700, #daa520);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.7),
+                  0 2px 8px rgba(0, 0, 0, 0.4);
+      cursor: grab;
+      transition: transform 0.1s ease;
+      bottom: 0%;
+      pointer-events: none;
+    }
+
+    #heat-slider-thumb:active {
+      cursor: grabbing;
+      transform: translate(-50%, 50%) scale(1.1);
+    }
+
+    #heat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffd700;
+      min-width: 32px;
+      text-align: center;
+    }
+
+    #title {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      letter-spacing: 4px;
+      opacity: 0.4;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="ui-container">
+      <div id="title">LAVA LAMP 3D</div>
+      <div id="heat-slider-container" class="glass-panel">
+        <div id="heat-label">HEAT</div>
+        <div id="heat-slider">
+          <div id="heat-slider-track"></div>
+          <div id="heat-slider-thumb"></div>
+        </div>
+        <div id="heat-value">50</div>
+      </div>
+      <div id="theme-buttons" class="glass-panel"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
