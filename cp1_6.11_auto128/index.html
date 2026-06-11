@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟天文馆 · 星座漫游仪</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a2e; font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    #app { position: relative; width: 100%; height: 100%; }
+    canvas { display: block; }
+
+    .sky-gradient {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(to bottom, #0a0a2e 0%, #1a1a40 100%);
+      pointer-events: none; z-index: 0;
+    }
+
+    .milky-way {
+      position: absolute; top: 0; left: 0; width: 200%; height: 100%;
+      pointer-events: none; z-index: 1;
+      background:
+        radial-gradient(ellipse 30% 60% at 25% 40%, rgba(200,210,255,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 25% 50% at 55% 35%, rgba(180,200,255,0.10) 0%, transparent 65%),
+        radial-gradient(ellipse 35% 55% at 75% 50%, rgba(210,220,255,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 20% 40% at 40% 55%, rgba(190,205,255,0.09) 0%, transparent 60%);
+      filter: blur(20px);
+      animation: milkyRotate 60s linear infinite;
+    }
+    @keyframes milkyRotate {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .mountains {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 18%;
+      background: #1a1a2e;
+      clip-path: polygon(
+        0% 100%, 0% 65%, 3% 55%, 7% 60%, 12% 40%, 16% 48%, 20% 30%, 25% 45%,
+        30% 25%, 34% 38%, 38% 20%, 42% 35%, 46% 28%, 50% 42%, 54% 22%, 58% 35%,
+        62% 18%, 66% 32%, 70% 38%, 74% 25%, 78% 40%, 82% 30%, 86% 45%, 90% 35%,
+        94% 50%, 97% 42%, 100% 55%, 100% 100%
+      );
+      pointer-events: none; z-index: 5;
+    }
+    .mountains-back {
+      position: absolute; bottom: 0; left: 0; width: 100%; height: 14%;
+      background: #141428;
+      clip-path: polygon(
+        0% 100%, 0% 70%, 5% 55%, 10% 65%, 15% 45%, 20% 58%, 25% 35%, 30% 50%,
+        35% 40%, 40% 55%, 45% 30%, 50% 48%, 55% 38%, 60% 52%, 65% 32%, 70% 48%,
+        75% 42%, 80% 55%, 85% 38%, 90% 50%, 95% 60%, 100% 65%, 100% 100%
+      );
+      pointer-events: none; z-index: 4;
+    }
+
+    #three-canvas {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 2;
+    }
+
+    .star-info-card {
+      position: absolute; top: 20px; left: 20px; z-index: 20;
+      background: rgba(10,10,30,0.7);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(160,196,255,0.15);
+      border-radius: 12px; padding: 18px 22px;
+      color: #e0e8ff; min-width: 220px;
+      opacity: 0; transform: translateY(-10px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+      pointer-events: none;
+    }
+    .star-info-card.visible {
+      opacity: 1; transform: translateY(0); pointer-events: auto;
+    }
+    .star-info-card h3 {
+      font-size: 15px; font-weight: 600; color: #a0c4ff;
+      margin-bottom: 10px; letter-spacing: 0.5px;
+    }
+    .star-info-card .info-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; margin-bottom: 6px; color: #c0c8e0;
+    }
+    .star-info-card .info-row .label { color: #8090b0; }
+    .star-info-card .info-row .value { font-family: 'Consolas', 'Courier New', monospace; color: #e8ecff; }
+    .star-info-card .mark-btn {
+      display: block; width: 100%; margin-top: 14px; padding: 8px 0;
+      background: rgba(0,191,255,0.15); border: 1px solid rgba(0,191,255,0.3);
+      border-radius: 6px; color: #00bfff; font-size: 13px; cursor: pointer;
+      transition: background 0.3s ease, border-color 0.3s ease;
+    }
+    .star-info-card .mark-btn:hover {
+      background: rgba(0,191,255,0.25); border-color: rgba(0,191,255,0.5);
+    }
+
+    .control-panel {
+      position: absolute; top: 20px; right: 20px; z-index: 20;
+      width: 180px; background: rgba(10,10,30,0.7);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(160,196,255,0.15);
+      border-radius: 8px; padding: 16px;
+      transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .control-panel h4 {
+      font-size: 13px; font-weight: 600; color: #a0c4ff;
+      margin-bottom: 14px; letter-spacing: 0.5px;
+    }
+    .control-panel .control-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px; font-size: 12px; color: #c0c8e0;
+    }
+    .toggle-switch {
+      position: relative; width: 36px; height: 20px;
+      background: rgba(255,255,255,0.1); border-radius: 10px;
+      cursor: pointer; transition: background 0.3s ease;
+    }
+    .toggle-switch.active { background: rgba(0,191,255,0.4); }
+    .toggle-switch::after {
+      content: ''; position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; transition: transform 0.3s ease;
+    }
+    .toggle-switch.active::after { transform: translateX(16px); }
+    .control-btn {
+      display: block; width: 100%; padding: 8px 0;
+      background: rgba(160,196,255,0.08); border: 1px solid rgba(160,196,255,0.15);
+      border-radius: 6px; color: #a0c4ff; font-size: 12px; cursor: pointer;
+      transition: background 0.3s ease, border-color 0.3s ease;
+      margin-bottom: 8px;
+    }
+    .control-btn:last-child { margin-bottom: 0; }
+    .control-btn:hover {
+      background: rgba(160,196,255,0.15); border-color: rgba(160,196,255,0.3);
+    }
+
+    .panel-toggle {
+      display: none; position: absolute; bottom: 20px; right: 20px; z-index: 25;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(10,10,30,0.7); backdrop-filter: blur(8px);
+      border: 1px solid rgba(160,196,255,0.2);
+      color: #a0c4ff; font-size: 20px; cursor: pointer;
+      align-items: center; justify-content: center;
+    }
+
+    .constellation-text {
+      position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%);
+      z-index: 20; max-width: 500px; text-align: center;
+      opacity: 0; transition: opacity 0.5s ease;
+      pointer-events: none;
+    }
+    .constellation-text.visible { opacity: 1; }
+    .constellation-text .const-name {
+      font-size: 22px; font-weight: 700; color: #d4af37;
+      margin-bottom: 10px; letter-spacing: 2px;
+    }
+    .constellation-text .const-myth {
+      font-size: 14px; line-height: 1.8; color: #d4af37;
+      background: rgba(10,10,30,0.6); border-radius: 8px;
+      padding: 12px 18px; min-height: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        position: absolute; top: auto; bottom: 70px; right: 20px;
+        transform: scale(0.9); opacity: 0; pointer-events: none;
+      }
+      .control-panel.expanded {
+        transform: scale(1); opacity: 1; pointer-events: auto;
+      }
+      .panel-toggle { display: flex; }
+    }
+
+    .loading-overlay {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: #0a0a2e; z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; color: #a0c4ff;
+      transition: opacity 0.8s ease;
+    }
+    .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+    .loading-text { font-size: 16px; letter-spacing: 3px; }
+    .loading-dots::after {
+      content: ''; animation: dots 1.5s steps(4, end) infinite;
+    }
+    @keyframes dots {
+      0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="sky-gradient"></div>
+    <div class="milky-way"></div>
+    <div class="mountains-back"></div>
+    <div class="mountains"></div>
+    <canvas id="three-canvas"></canvas>
+
+    <div class="star-info-card" id="starInfoCard">
+      <h3 id="starName">--</h3>
+      <div class="info-row"><span class="label">视星等</span><span class="value" id="starMagnitude">--</span></div>
+      <div class="info-row"><span class="label">距离</span><span class="value" id="starDistance">--</span></div>
+      <div class="info-row"><span class="label">方位角</span><span class="value" id="starAzimuth">--</span></div>
+      <button class="mark-btn" id="markBtn">标记连线</button>
+    </div>
+
+    <div class="control-panel" id="controlPanel">
+      <h4>控制面板</h4>
+      <div class="control-row">
+        <span>星座模式</span>
+        <div class="toggle-switch" id="constellationToggle"></div>
+      </div>
+      <button class="control-btn" id="resetViewBtn">重置视角</button>
+      <button class="control-btn" id="randomConstBtn">随机星座</button>
+    </div>
+
+    <button class="panel-toggle" id="panelToggle">☰</button>
+
+    <div class="constellation-text" id="constellationText">
+      <div class="const-name" id="constName"></div>
+      <div class="const-myth" id="constMyth"></div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="loading-text">正在构建星空<span class="loading-dots"></span></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
