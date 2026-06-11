@@ -1,0 +1,520 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'ZCOOL XiaoWei', 'Ma Shan Zheng', serif;
+}
+
+body {
+  background: radial-gradient(ellipse at center top, #0a1c3a 0%, #1a3456 40%, #8b7959 80%, #d4c5a9 100%);
+  min-height: 100vh;
+}
+
+.app-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.app-header {
+  text-align: center;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(10, 28, 58, 0.95) 0%, rgba(26, 52, 86, 0.7) 100%);
+  border-bottom: 2px solid #b8860b;
+  z-index: 10;
+}
+
+.app-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 32px;
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 8px;
+}
+
+.app-subtitle {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 14px;
+  color: #c9b896;
+  margin-top: 4px;
+  letter-spacing: 4px;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  padding: 16px;
+  gap: 16px;
+}
+
+.canvas-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  gap: 12px;
+}
+
+.calendar-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: all 0.3s ease;
+}
+
+.calendar-section.collapsed {
+  flex: 0;
+  width: 0;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+}
+
+.star-info-panel {
+  width: 500px;
+  max-width: 100%;
+  background: rgba(245, 230, 211, 0.92);
+  border: 2px solid #8b5e3c;
+  border-radius: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(139, 94, 60, 0.1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(8px);
+}
+
+.star-info-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.info-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 20px;
+  color: #5c3d2e;
+  margin-bottom: 12px;
+  border-bottom: 1px solid #8b5e3c;
+  padding-bottom: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #8b5e3c;
+  letter-spacing: 2px;
+}
+
+.info-value {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 18px;
+  color: #3a2817;
+}
+
+.info-empty {
+  text-align: center;
+  color: #8b7959;
+  font-style: italic;
+  padding: 8px;
+  position: relative;
+  z-index: 1;
+}
+
+.toolbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 24px;
+  background: linear-gradient(0deg, rgba(10, 28, 58, 0.95) 0%, rgba(26, 52, 86, 0.85) 100%);
+  border-top: 2px solid #b8860b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 100;
+}
+
+.tool-btn {
+  padding: 10px 20px;
+  background: #8b5e3c;
+  color: #f5e3c3;
+  border: 2px solid #5c3d2e;
+  border-radius: 8px;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 16px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tool-btn:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.3);
+  transform: translateY(-4px);
+  background: #a06e46;
+}
+
+.tool-btn:active {
+  transform: translateY(-2px);
+}
+
+.tool-btn.active {
+  background: #b8860b;
+  color: #0a1c3a;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.tool-btn.generate-btn {
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%);
+  color: #3a2817;
+}
+
+.tool-btn.generate-btn:hover {
+  background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+}
+
+.tool-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.version-select {
+  padding: 10px 16px;
+  background: #8b5e3c;
+  color: #f5e3c3;
+  border: 2px solid #5c3d2e;
+  border-radius: 8px;
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 14px;
+  cursor: pointer;
+  min-width: 180px;
+}
+
+.year-input {
+  padding: 10px 16px;
+  width: 120px;
+  background: #f5e3c3;
+  color: #3a2817;
+  border: 2px solid #8b5e3c;
+  border-radius: 8px;
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 16px;
+  text-align: center;
+}
+
+.calc-btn {
+  padding: 10px 20px;
+  background: #5c3d2e;
+  color: #f5e3c3;
+  border: 2px solid #3a2817;
+  border-radius: 8px;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 14px;
+  cursor: pointer;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+}
+
+.calc-btn:hover {
+  background: #8b5e3c;
+  transform: translateY(-2px);
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: #c9b896;
+  font-size: 18px;
+}
+
+.calendar-toggle {
+  display: none;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 20;
+  padding: 8px 16px;
+  background: #8b5e3c;
+  color: #f5e3c3;
+  border: 2px solid #5c3d2e;
+  border-radius: 8px;
+  font-family: 'Ma Shan Zheng', cursive;
+  cursor: pointer;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.almanac-preview {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 28, 58, 0.95);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.almanac-close {
+  position: sticky;
+  top: 16px;
+  align-self: flex-end;
+  padding: 10px 24px;
+  background: #8b5e3c;
+  color: #f5e3c3;
+  border: 2px solid #5c3d2e;
+  border-radius: 8px;
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 10;
+  margin-bottom: 16px;
+}
+
+.almanac-pages {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 800px;
+  width: 100%;
+  padding-bottom: 40px;
+}
+
+.almanac-page {
+  background: #f5e3c3;
+  border: 4px double #8b5e3c;
+  border-radius: 4px;
+  padding: 40px;
+  min-height: 1000px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.almanac-page::before {
+  content: '';
+  position: absolute;
+  inset: 8px;
+  border: 2px solid #b8860b;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.almanac-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 1000px;
+}
+
+.almanac-cover-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 72px;
+  color: #8b0000;
+  writing-mode: vertical-rl;
+  letter-spacing: 24px;
+  margin: 40px 0;
+  text-shadow: 2px 2px 0 #b8860b;
+}
+
+.almanac-cover-subtitle {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 32px;
+  color: #3a2817;
+  writing-mode: vertical-rl;
+  letter-spacing: 12px;
+}
+
+.almanac-cover-year {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 24px;
+  color: #5c3d2e;
+  margin-top: 60px;
+  writing-mode: vertical-rl;
+  letter-spacing: 8px;
+}
+
+.almanac-page-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 48px;
+  color: #5c3d2e;
+  text-align: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid #8b5e3c;
+  letter-spacing: 12px;
+}
+
+.almanac-star-map {
+  display: flex;
+  justify-content: center;
+  margin: 24px 0;
+}
+
+.almanac-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 32px 0;
+}
+
+.almanac-stat {
+  background: rgba(184, 134, 11, 0.1);
+  border: 1px solid #b8860b;
+  padding: 16px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.almanac-stat-label {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 14px;
+  color: #8b5e3c;
+  letter-spacing: 4px;
+  margin-bottom: 8px;
+}
+
+.almanac-stat-value {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 28px;
+  color: #3a2817;
+}
+
+.almanac-events {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.almanac-event {
+  display: flex;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.3);
+  border-left: 4px solid #b8860b;
+  border-radius: 0 8px 8px 0;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.almanac-event-date {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 18px;
+  color: #8b0000;
+  min-width: 100px;
+}
+
+.almanac-event-body {
+  flex: 1;
+}
+
+.almanac-event-name {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 22px;
+  color: #3a2817;
+  margin-bottom: 4px;
+}
+
+.almanac-event-desc {
+  font-family: 'ZCOOL XiaoWei', serif;
+  font-size: 14px;
+  color: #5c3d2e;
+  line-height: 1.8;
+  writing-mode: vertical-rl;
+  max-height: 120px;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    flex-direction: column;
+    padding-bottom: 80px;
+  }
+
+  .calendar-section {
+    max-height: 40vh;
+  }
+
+  .calendar-section.collapsed {
+    max-height: 0;
+  }
+
+  .calendar-toggle {
+    display: block;
+  }
+
+  .app-title {
+    font-size: 22px;
+    letter-spacing: 4px;
+  }
+
+  .toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .tool-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+    letter-spacing: 2px;
+  }
+
+  .version-select,
+  .year-input {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .star-info-panel {
+    width: 100%;
+    padding: 12px;
+  }
+}
