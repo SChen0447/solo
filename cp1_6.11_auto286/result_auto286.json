@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-11T01:08:03.959Z",
+  "task_name": "auto286",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个虚拟深海热泉生态系统演替与生物群落动态的交互可视化项目，想法是让用户像一位深海生态学家，通过调节热泉喷口的温度、化学物质浓度和喷发周期，观察热泉口周围微生物席、管虫、贻贝和盲虾等生物群落的演替过程——从最初的化学合成细菌爆发，到管虫幼体附着，再到贻贝床形成和盲虾聚集，最后形成完整的深海热泉生态系统。希望它能做到：第一，进入后看到一个从深海永夜黑（#0a0f1c）到热泉蓝（#1a3a5c）渐变的全屏场景，中央展示一座正在喷发烟柱的热泉喷口（直径80px，用Three.js的ConeGeometry和粒子系统实现，烟柱粒子从喷口中心喷出，颜色从亮白#ffffff变为灰蓝#6a8aae，粒子大小3-6px），喷口周围的地形用Canvas 2D绘制成高低起伏的海底丘陵（深褐#3e2f28到墨绿#2b4a3b，用Perlin噪声生成纹理）；第二，用户可以通过右侧的控制面板（半透明磨砂玻璃质感的浮动面板，背景使用backdrop-filter: blur(8px)）调节三个核心参数——喷口温度（滑块范围50°C-400°C，刻度带渐变热力图色标：蓝-绿-黄-红）、硫化物浓度（滑块0-100%，环形进度条显示当前值）、喷发周期（下拉选择：持续、间歇、脉冲三种模式），每次参数调整后场景中的生物群落会以动画形式在15秒内逐步演替，群落密度和种类组成会根据参数组合动态变化（如高温高硫化物环境下管虫优势，低温低硫化物下贻贝主导）；第三，生物群落的视觉表现需要真实生动——微生物席用半透明绿色斑点纹理（Canvas绘制，直径5-15px随机散布，透明度随温度升高由30%变为60%），管虫用一系列细长弯曲的管道（长度20-60px，颜色从肉粉#ffaa77到深红#aa4422，用Spline曲线生成），贻贝用密集的深色椭圆点（大小8-12px，深蓝#1a3a5c，间隔5-10px随机分布），盲虾用移动的小点（大小3px，颜色橙黄#ff8c00，沿随机路径缓慢移动，速度0.5-2px/帧）；第四，界面要求丰富的交互反馈——参数调整时场景过渡平滑（使用framer-motion的animate函数，缓动函数easeInOut），鼠标悬停喷口时显示温度数值标签（位置跟随鼠标，背景半透明黑底白字），生物群落密度变化时以粒子淡入淡出方式过渡（不透明度在0.2-1.0之间变化，持续2秒），右下角显示一个实时更新的生态系统健康指数仪表盘（环形进度条，颜色从红色（0%）渐变到绿色（100%），数值每两秒更新）；第五，性能上需要保持全程60FPS——粒子总数不超过8000，Canvas重绘使用requestAnimationFrame和离屏渲染，Three.js场景中几何体实例化复用，生物个体使用Sprite或Points批量渲染，组件卸载时清理所有动画帧和定时器。实现使用TypeScript、React和Vite，结合Three.js（3D热泉喷口和地形）和Canvas 2D（生物群落和热力图覆盖层），framer-motion处理UI动画和过渡，lodash实现参数防抖。把代码拆成以下文件： - package.json（含依赖：react、react-dom、typescript、vite@5、@vitejs/plugin-react、three@0.160、@types/three、framer-motion、lodash、@types/lodash，启动脚本：\"dev\": \"vite\"） - index.html（入口页面，设置根容器全屏，meta viewport适配） - tsconfig.json（strict模式，moduleResolution bundler，target ES2020） - vite.config.js（配置resolve alias为src目录，启用glsify支持three.js shader） - src/main.tsx（React渲染入口） - src/App.tsx（主布局组件，管理整体状态和参数传递） - src/components/Scene3D.tsx（Three.js场景管理，创建热泉喷口和海底地形，接收喷口参数props，调用喷发粒子动画） - src/components/BiomeCanvas.tsx（Canvas 2D绘制的生物群落图层，根据参数计算生物密度和分布，绘制微生物席、管虫、贻贝、盲虾） - src/components/ControlPanel.tsx（参数控制面板，滑块和下拉选择，调用lodash throttle节流更新父组件状态） - src/components/HUD.tsx（生态系统健康指数仪表盘，使用SVG绘制环形进度条，接收健康值props） - src/utils/ecosystemLogic.ts（核心模拟逻辑，根据输入参数计算各生物群落的密度、分布模式和健康指数，输出结构化数据给渲染组件） - src/utils/perlin.ts（Perlin噪声生成函数，用于海底地形纹理）。跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:b22dd8c29625a06845e0a9135a79d07b_6a2a097d705c9d9960644381.6a2a0a67705c9d996064445b.6a2a0a67d382c3680ebbd366:Trae CN.T(2026/6/11 09:07:51)",
+    "user_id": "3986207660317399",
+    "trace_id": "b22dd8c29625a06845e0a9135a79d07b",
+    "session_id": "6a2a097d705c9d9960644381",
+    "task_id": "6a2a0a67705c9d996064445b",
+    "message_id": "6a2a0a67d382c3680ebbd366",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 09:07:51",
+    "format": "full"
+  },
+  "trace": "null"
+}
