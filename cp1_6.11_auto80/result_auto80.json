@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-10T18:25:19.980Z",
+  "task_name": "auto80",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个在线团队头脑风暴与投票决策工具应用，让用户创建讨论议题，参与者实时提出创意并投票排序，最终输出最优方案。使用TypeScript、React（前端）、Node.js + Express（后端）、Vite和Socket.IO实现。文件结构如下：\n - package.json（前端含依赖：react、react-dom、typescript、vite、@vitejs/plugin-react、socket.io-client、axios，后端含依赖：express、socket.io、cors、uuid，启动脚本：npm run dev 通过concurrently同时启动前后端）\n - server/src/index.ts（后端入口，初始化Express服务器、Socket.IO事件监听，管理会话与投票逻辑）\n - vite.config.ts（构建配置，包含React插件和TypeScript支持，设置代理到后端）\n - tsconfig.json（严格模式，分别配置前端后端两个tsconfig）\n - index.html（入口页面，深蓝渐变背景，居中加载动画）\n - src/App.tsx（主组件，管理路由和Socket连接状态）\n - src/components/BrainstormSession.tsx（头脑风暴会话组件，包含创意输入、实时列表和投票交互）\n\n具体需求：\n1. 用户进入页面后输入昵称和议题描述（限制10-100字），点击创建或加入按钮进入会话房间，房间以唯一UUID标识，页面Url自动更新为包含房间ID的路径。\n2. 在会话房间中，顶部展示议题标题，下方分为左右两栏：左栏为创意输入区域（输入框+提交按钮，每30秒限提交一次），用户提交的创意以卡片形式实时出现在中央滚动列表中（卡片从左滑入，0.3秒ease-out动画），卡片背景使用柔和渐变从左到右从#e0f2fe到#fce7f3。\n3. 每个创意卡片底部显示投票按钮（点击一次即投一票，同一用户不可重复投票，投票后按钮变为已投票状态并轻微跳动），卡片右侧实时显示票数并以柱状图形式动态增长（柱条从底部升起，宽度随票数平滑过渡，颜色使用从绿到蓝的渐变，长度与最高票数的比例同步）。\n4. 用户可对卡片进行标签分类（例如“可行”、“创新”、“成本低”），点击卡片上的标签按钮弹出标签选择器，选择后标签显示在卡片左上方（小圆角矩形，不同标签用不同颜色区分，可选颜色池预设6种）。\n5. 会话结束时（由创建者点击结束按钮），系统自动按总票数排序所有创意，并以排行榜形式展示：前三名用金色、银色、铜色渐变背景高亮，并带有奖杯图标（用Unicode字符），其余创意按降序排列，行间有0.5秒延迟的逐行淡入动画。\n\n界面方面：主色调用深蓝（#1e3a5f）搭配白色背景，卡片区域背景为极浅灰（#f8fafc），投票柱状图使用渐变色（从#22c55e到#3b82f6），标签颜色从预设6色中自动分配。标题使用#1e293b加粗，卡通风格圆角边框（8px）。输入框获得焦点时外发光，颜色为品牌蓝色（#3b82f6）扩散0.3秒。页面整体采用居中布局，最大宽度1024px，移动端自动调整为全宽并堆叠左右栏。所有动画帧率不低于50fps。\n\n性能要求：创意列表支持虚拟滚动，仅渲染可视区域卡片，平滑滚动性能不因500+卡片而卡顿。Socket.IO连接心跳每30秒一次，断线后3秒内自动重连，重连时显示半透明蒙层提示。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:df079b07cdb94e07f6e9ed3396664bcc_6a29aa682a6f71511a1b51ab.6a29abf22a6f71511a1b531c.6a29abf233f4e88b1c9d7332:Trae CN.T(2026/6/11 02:24:50)",
+    "user_id": "3986207660317399",
+    "trace_id": "df079b07cdb94e07f6e9ed3396664bcc",
+    "session_id": "6a29aa682a6f71511a1b51ab",
+    "task_id": "6a29abf22a6f71511a1b531c",
+    "message_id": "6a29abf233f4e88b1c9d7332",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 02:24:50",
+    "format": "full"
+  },
+  "trace": "null"
+}
