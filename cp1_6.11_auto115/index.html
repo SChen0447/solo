@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Origami Lab - 3D折纸艺术工作台</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #d4b088;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #d4b088;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .origami-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      animation: rotate 2s ease-in-out infinite;
+    }
+
+    .origami-loader::before,
+    .origami-loader::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+    }
+
+    .origami-loader::before {
+      top: 0;
+      left: 0;
+      border-left: 40px solid transparent;
+      border-right: 40px solid transparent;
+      border-bottom: 40px solid #8b5e3c;
+      animation: fold1 2s ease-in-out infinite;
+    }
+
+    .origami-loader::after {
+      bottom: 0;
+      right: 0;
+      border-top: 40px solid transparent;
+      border-bottom: 40px solid transparent;
+      border-left: 40px solid #e67e22;
+      animation: fold2 2s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+      0%, 100% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); }
+    }
+
+    @keyframes fold1 {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(10px); opacity: 0.7; }
+    }
+
+    @keyframes fold2 {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-10px); opacity: 0.7; }
+    }
+
+    .loading-text {
+      margin-top: 24px;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 20px;
+      color: #5a4028;
+      font-weight: 600;
+    }
+
+    .model-panel {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      z-index: 100;
+    }
+
+    .model-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 3px solid #8b5e3c;
+      background: rgba(255, 248, 240, 0.95);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .model-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .model-btn:active {
+      transform: scale(0.95);
+    }
+
+    .model-btn.active {
+      border-color: #e67e22;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.3);
+    }
+
+    .texture-panel {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(2, 50px);
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .texture-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .texture-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .texture-btn:active {
+      transform: scale(0.95);
+    }
+
+    .texture-btn.active {
+      border-color: #e67e22;
+      box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.3);
+    }
+
+    .texture-white {
+      background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+    }
+
+    .texture-kraft {
+      background: linear-gradient(135deg, #c9a66b 0%, #a67c52 100%);
+    }
+
+    .texture-washi {
+      background: linear-gradient(135deg, #f5f0e6 0%, #e8dcc8 100%);
+    }
+
+    .texture-gold {
+      background: linear-gradient(135deg, #ffd700 0%, #daa520 50%, #b8860b 100%);
+    }
+
+    .texture-recycled {
+      background: linear-gradient(135deg, #d4c4a8 0%, #b8a888 100%);
+    }
+
+    .texture-colorful {
+      background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 33%, #45b7d1 66%, #96ceb4 100%);
+    }
+
+    .control-bar {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 28px;
+      background: rgba(139, 94, 60, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .control-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 248, 240, 0.9);
+      color: #5a4028;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.15s ease;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .control-btn:hover {
+      background: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .control-btn:active {
+      transform: scale(0.95);
+    }
+
+    .control-btn.play-btn {
+      width: 52px;
+      height: 52px;
+      background: #e67e22;
+      color: #fff;
+      font-size: 22px;
+    }
+
+    .control-btn.play-btn:hover {
+      background: #f39c12;
+    }
+
+    .speed-control {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .speed-control label {
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .speed-slider {
+      width: 120px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #e67e22;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.15s ease;
+    }
+
+    .speed-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .speed-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #e67e22;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .step-indicator {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 24px;
+      background: rgba(45, 30, 20, 0.85);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .step-indicator .step-number {
+      color: #e67e22;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(139, 94, 60, 0.95);
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .mobile-drawer {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(139, 94, 60, 0.98);
+      border-radius: 20px 20px 0 0;
+      padding: 20px;
+      z-index: 150;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .mobile-drawer.open {
+      transform: translateY(0);
+    }
+
+    .mobile-drawer-section {
+      margin-bottom: 20px;
+    }
+
+    .mobile-drawer-title {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .mobile-model-buttons {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+
+    .mobile-model-buttons .model-btn {
+      flex-shrink: 0;
+    }
+
+    .mobile-texture-buttons {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .app-title {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'Noto Serif SC', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: #5a4028;
+      z-index: 100;
+      text-shadow: 0 2px 4px rgba(255, 255, 255, 0.5);
+      letter-spacing: 4px;
+    }
+
+    .app-title::before,
+    .app-title::after {
+      content: '✧';
+      margin: 0 12px;
+      color: #e67e22;
+      font-size: 18px;
+      vertical-align: middle;
+    }
+
+    @media (max-width: 768px) {
+      .model-panel,
+      .texture-panel {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .mobile-drawer {
+        display: block;
+      }
+
+      .control-bar {
+        bottom: 90px;
+        padding: 12px 16px;
+        gap: 12px;
+      }
+
+      .control-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+
+      .control-btn.play-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+      }
+
+      .speed-control label {
+        display: none;
+      }
+
+      .speed-slider {
+        width: 80px;
+      }
+
+      .step-indicator {
+        bottom: 170px;
+        font-size: 13px;
+        padding: 8px 16px;
+      }
+
+      .app-title {
+        font-size: 22px;
+        top: 16px;
+      }
+
+      .app-title::before,
+      .app-title::after {
+        margin: 0 8px;
+        font-size: 14px;
+      }
+
+      .mobile-texture-buttons {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .mobile-texture-buttons .texture-btn {
+        width: 100%;
+        aspect-ratio: 1;
+        height: auto;
+      }
+    }
+
+    .grain-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      opacity: 0.03;
+      z-index: 50;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="grain-overlay"></div>
+    
+    <div class="loading-overlay" id="loading">
+      <div class="origami-loader"></div>
+      <div class="loading-text">正在加载折纸工作台...</div>
+    </div>
+
+    <h1 class="app-title">折纸实验室</h1>
+
+    <div id="canvas-container"></div>
+
+    <div class="model-panel" id="modelPanel">
+      <button class="model-btn active" data-model="crane" title="纸鹤">🦢</button>
+      <button class="model-btn" data-model="boat" title="纸船">⛵</button>
+      <button class="model-btn" data-model="plane" title="纸飞机">✈️</button>
+      <button class="model-btn" data-model="flower" title="纸花">🌸</button>
+      <button class="model-btn" data-model="box" title="纸盒">📦</button>
+      <button class="model-btn" data-model="frog" title="纸青蛙">🐸</button>
+    </div>
+
+    <div class="texture-panel" id="texturePanel">
+      <button class="texture-btn texture-white active" data-texture="white" title="光面白纸"></button>
+      <button class="texture-btn texture-kraft" data-texture="kraft" title="牛皮纸"></button>
+      <button class="texture-btn texture-washi" data-texture="washi" title="和纸"></button>
+      <button class="texture-btn texture-gold" data-texture="gold" title="金箔纸"></button>
+      <button class="texture-btn texture-recycled" data-texture="recycled" title="再生纸"></button>
+      <button class="texture-btn texture-colorful" data-texture="colorful" title="彩色手工纸"></button>
+    </div>
+
+    <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
+    
+    <div class="mobile-drawer" id="mobileDrawer">
+      <div class="mobile-drawer-section">
+        <div class="mobile-drawer-title">选择模型</div>
+        <div class="mobile-model-buttons" id="mobileModelButtons">
+          <button class="model-btn active" data-model="crane" title="纸鹤">🦢</button>
+          <button class="model-btn" data-model="boat" title="纸船">⛵</button>
+          <button class="model-btn" data-model="plane" title="纸飞机">✈️</button>
+          <button class="model-btn" data-model="flower" title="纸花">🌸</button>
+          <button class="model-btn" data-model="box" title="纸盒">📦</button>
+          <button class="model-btn" data-model="frog" title="纸青蛙">🐸</button>
+        </div>
+      </div>
+      <div class="mobile-drawer-section">
+        <div class="mobile-drawer-title">选择纸张</div>
+        <div class="mobile-texture-buttons" id="mobileTextureButtons">
+          <button class="texture-btn texture-white active" data-texture="white"></button>
+          <button class="texture-btn texture-kraft" data-texture="kraft"></button>
+          <button class="texture-btn texture-washi" data-texture="washi"></button>
+          <button class="texture-btn texture-gold" data-texture="gold"></button>
+          <button class="texture-btn texture-recycled" data-texture="recycled"></button>
+          <button class="texture-btn texture-colorful" data-texture="colorful"></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-indicator" id="stepIndicator">
+      <span class="step-number">第 1 步：</span>准备一张正方形的纸
+    </div>
+
+    <div class="control-bar" id="controlBar">
+      <button class="control-btn" id="prevStepBtn" title="上一步">⏮</button>
+      <button class="control-btn play-btn" id="playBtn" title="播放/暂停">▶</button>
+      <button class="control-btn" id="nextStepBtn" title="下一步">⏭</button>
+      
+      <div class="speed-control">
+        <label>折叠速度</label>
+        <input type="range" class="speed-slider" id="speedSlider" min="0.3" max="0.8" step="0.1" value="0.5">
+      </div>
+
+      <button class="control-btn" id="resetBtn" title="重置视角">⟲</button>
+      <button class="control-btn" id="screenshotBtn" title="截图保存">📷</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
