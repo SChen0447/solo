@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-11T00:38:05.819Z",
+  "task_name": "auto269",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够在浏览器中模拟虚拟磁暴环电流与极区电离层气泡漂移的交互可视化应用，主要解决用户像一位空间物理学家，通过调节行星际磁场Bz分量和太阳风动压，观察地球磁层环电流如何被压缩或膨胀，并追踪电离层中密度空洞（气泡）在电场和中性风作用下的漂移、形变与合并过程的问题。\n\n它应当具备以下能力：\n1) 提供一个从宇宙深空黑（#0a0b1c）到磁层蓝（#1a3f6a）渐变的全屏背景，并以三维透视俯视视角（俯角45度）展示一个球形地球（使用Three.js SphereGeometry绘制，半径80px，表面贴图采用蓝绿色纹理，并带微弱的大气辉光），地球外围半透明环状区域表示环电流带（宽度40px，颜色从洋红#e040fb渐变到青蓝#00e5ff，透明度0.4，随磁场扰动频率闪烁）。\n2) 左边栏放置控制面板（半透明磨砂玻璃面板#1e2a3a），包含三个滑块：Bz分量（范围-10nT到+10nT，默认0）、太阳风动压（范围1-20nPa，默认5）、电场强度（范围0-100mV/m，默认50），拖动时环电流带颜色实时变化（Bz负值时环电流带变亮并扩张，正值时收缩变暗），同时电离层气泡从高纬区域随机生成。\n3) 电离层气泡使用Canvas 2D粒子系统模拟：在极区（纬度60°-80°范围内）实时生成500-1500个半透明气泡粒子（初始大小5-10px，颜色#b0e0e6透明度0.6），气泡受电场和中性风合力驱动漂移（漂移方向随磁场参数变化），粒子间碰撞时产生短暂发光（颜色#ffffff，时长0.3s），气泡之间可合并（距离<15px时大者吞噬小者，大小增加30%）。\n4) 底部悬浮一个时间轴条（宽800px高30px，背景色#263238，使用SVG绘制刻度和箭头），可通过拖动或点击播放/暂停按钮控制模拟时间流速（1x, 2x, 5x, 10x），时间轴上方实时显示磁暴强度Kp指数值（范围0-9，根据Bz和动压自动计算并更新，数值用#ff6f00颜色大号字体显示）。\n5) 右上角固定一个小型热力图缩略图（Canvas 2D绘制，150x150px），根据电离层气泡密度分布实时渲染（颜色映射从蓝#0000ff到红#ff0000，每5秒刷新一次），点击可切换至全屏模式展示热力图细节（全屏时覆盖主场景，带关闭按钮）。\n\n界面方面：整体采用深色科技风主题（深蓝黑#0d1b2a为主色调，辅以亮蓝#00b4d8和紫#7b2d8e作为高亮色），所有控件使用圆角矩形（border-radius: 8px）并带0.3s hover过渡动画（颜色从#1e2a3a变为#2a3a4a），滑块轨道使用细长半透明条（高8px，颜色#37474f），滑块手柄为发光圆点（直径16px，颜色#00e5ff，外发光模糊半径4px）。响应式适配方面：在宽度<768px时，控制面板移至底部变为横向排列且压缩为图标模式，热力图缩略图缩小至80x80px并移至左上角。\n\n性能要求：粒子数上限2000个时保持60fps，单帧渲染时间不超过12ms，粒子位置更新使用双缓冲Canvas 2D。\n\n实现采用TypeScript、React和Vite，结合Three.js（用于地球与环电流带3D渲染）和Canvas 2D（用于电离层气泡粒子系统与热力图）。按以下文件组织代码：\n - package.json（含依赖：react、react-dom、typescript、vite@5、@vitejs/plugin-react、three@0.160.0、@types/three、framer-motion、uuid、zod，启动脚本：npm run dev）\n - vite.config.js（构建配置，启用React插件和路径别名@/）\n - tsconfig.json（严格模式，目标ES2020，模块ESNext）\n - index.html（入口页面，含全屏meta标签和中文标题“磁暴环电流与气泡漂移模拟”）\n - src/types.ts（定义所有数据接口：MagneticFieldParams, BubbleParticle, RingCurrentState, KPIndex, 以及组件间的props类型，export供其他文件使用）\n - src/core/particleSystem.ts（核心粒子引擎，负责气泡生命周期管理、位置更新（基于电场和中性风合力）、碰撞检测与合并逻辑、密度场计算，返回更新后的粒子数组和热力图矩阵）\n - src/components/EarthScene.tsx（Three.js 3D地球和环电流带组件，接收Bz和动压参数，动态更新环电流带颜色与缩放，调用粒子系统的渲染层）\n - src/components/BubbleCanvas.tsx（Canvas 2D组件，负责接收粒子数组并绘制气泡（含发光合并特效），同时绘制底部时间轴，提供全屏热力图切换功能）\n - src/App.tsx（主组件，组合控制面板、3D场景和Canvas画布，管理全局状态与控制逻辑，使用useState和useEffect协调数据流）\n\n运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:cece662c114309e6350dd93a491d6bba_6a2a026d08377be6d3813bfa.6a2a036108377be6d3813cae.6a2a03614e979cf4de7adb9a:Trae CN.T(2026/6/11 08:37:53)",
+    "user_id": "3986207660317399",
+    "trace_id": "cece662c114309e6350dd93a491d6bba",
+    "session_id": "6a2a026d08377be6d3813bfa",
+    "task_id": "6a2a036108377be6d3813cae",
+    "message_id": "6a2a03614e979cf4de7adb9a",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/11 08:37:53",
+    "format": "full"
+  },
+  "trace": "null"
+}
