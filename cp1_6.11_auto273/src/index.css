@@ -1,0 +1,33 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}
+
+body {
+  background: radial-gradient(ellipse at center, #616161 0%, #0d0d0d 100%);
+}
+
+.game-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 768px;
+  max-height: 1080px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
