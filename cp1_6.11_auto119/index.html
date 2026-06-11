@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蜂群协同觅食与信息素标记路径模拟</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: linear-gradient(135deg, #0d2818 0%, #1a3c2a 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #fff;
+    }
+    #app-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 8px 20px;
+      background: linear-gradient(90deg, #0d2818e0 0%, #1a3c2ae0 100%);
+      border-bottom: 1px solid #4caf504d;
+      box-shadow: 0 2px 12px #4caf5030;
+    }
+    #app-header h1 {
+      font-size: 18px; font-weight: 600; letter-spacing: 1px;
+      color: #a5d6a7;
+      text-shadow: 0 0 8px #4caf5050;
+    }
+    #fps-counter {
+      font-size: 14px; color: #81c784; font-variant-numeric: tabular-nums;
+    }
+    canvas { display: block; }
+    #tooltip {
+      position: fixed; z-index: 20; pointer-events: none;
+      display: none; padding: 8px 12px;
+      background: #000000c0; color: #fff;
+      border-radius: 6px; font-size: 13px; line-height: 1.6;
+      box-shadow: 0 0 8px #4caf5030;
+      border: 1px solid #4caf504d;
+      max-width: 240px;
+    }
+    #stats-panel {
+      position: fixed; bottom: 16px; right: 16px; z-index: 10;
+      padding: 14px 18px; min-width: 240px;
+      background: #0d2818b0; border-radius: 8px;
+      border: 1px solid #4caf504d;
+      box-shadow: 0 0 12px #4caf5030;
+      font-size: 13px; line-height: 1.8;
+    }
+    #stats-panel .stat-title {
+      font-size: 14px; font-weight: 600; color: #a5d6a7;
+      margin-bottom: 6px; border-bottom: 1px solid #4caf5030; padding-bottom: 4px;
+    }
+    #stats-panel .stat-row {
+      display: flex; justify-content: space-between;
+    }
+    #stats-panel .stat-label { color: #81c784; }
+    #stats-panel .stat-value { color: #fff; font-variant-numeric: tabular-nums; }
+    #flower-info {
+      position: fixed; z-index: 20; pointer-events: none;
+      display: none; padding: 8px 12px;
+      background: #000000c0; color: #fff;
+      border-radius: 6px; font-size: 13px; line-height: 1.6;
+      box-shadow: 0 0 8px #4caf5030;
+      border: 1px solid #4caf504d;
+    }
+  </style>
+</head>
+<body>
+  <div id="app-header">
+    <h1>🐝 蜂群协同觅食与信息素标记路径模拟</h1>
+    <span id="fps-counter">FPS: --</span>
+  </div>
+  <div id="tooltip"></div>
+  <div id="flower-info"></div>
+  <div id="stats-panel">
+    <div class="stat-title">📊 实时数据统计</div>
+    <div class="stat-row"><span class="stat-label">活跃蜜蜂数</span><span class="stat-value" id="stat-bees">--</span></div>
+    <div class="stat-row"><span class="stat-label">总采集次数</span><span class="stat-value" id="stat-collect">--</span></div>
+    <div class="stat-row"><span class="stat-label">信息素粒子数</span><span class="stat-value" id="stat-pheromone">--</span></div>
+    <div class="stat-row"><span class="stat-label">平均采集耗时</span><span class="stat-value" id="stat-avg-time">--</span></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
