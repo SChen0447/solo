@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>毛笔涂鸦画板</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="app-container">
+    <div class="canvas-wrapper">
+      <canvas id="paintCanvas" width="800" height="500"></canvas>
+      <div class="hint-text" id="hintText">轻触开始作画</div>
+      <div class="status-bar" id="statusBar">
+        <span id="brushName">中锋</span>
+        <span id="coordInfo">X: 0, Y: 0</span>
+        <span id="pressureInfo">压力: 0.00</span>
+      </div>
+    </div>
+
+    <div class="toolbar" id="toolbar">
+      <div class="toolbar-section">
+        <div class="section-label">笔刷</div>
+        <div class="brush-list" id="brushList">
+          <div class="brush-item active" data-brush="xiaokai">
+            <div class="brush-thumb" style="width:18px;height:18px;"></div>
+            <span>小楷</span>
+          </div>
+          <div class="brush-item" data-brush="zhongfeng">
+            <div class="brush-thumb" style="width:28px;height:28px;"></div>
+            <span>中锋</span>
+          </div>
+          <div class="brush-item" data-brush="dakai">
+            <div class="brush-thumb" style="width:40px;height:40px;"></div>
+            <span>大楷</span>
+          </div>
+          <div class="brush-item" data-brush="kubi">
+            <div class="brush-thumb dry-thumb" style="width:32px;height:32px;"></div>
+            <span>枯笔</span>
+          </div>
+          <div class="brush-item" data-brush="cefeng">
+            <div class="brush-thumb side-thumb" style="width:36px;height:18px;"></div>
+            <span>侧锋</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolbar-section">
+        <div class="section-label">颜色</div>
+        <div class="color-picker-wrapper">
+          <canvas id="colorPicker" width="120" height="120"></canvas>
+          <div class="color-preview" id="colorPreview" style="background:#1a1a1a;"></div>
+        </div>
+      </div>
+
+      <div class="toolbar-section">
+        <div class="section-label">透明度</div>
+        <div class="slider-wrapper">
+          <input type="range" id="opacitySlider" min="10" max="100" value="100" />
+          <span id="opacityValue">100%</span>
+        </div>
+      </div>
+
+      <div class="toolbar-section toolbar-actions">
+        <button class="toolbar-btn" id="clearBtn">清空画布</button>
+        <button class="toolbar-btn" id="saveBtn">保存为PNG</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
