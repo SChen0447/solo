@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>基因链拼接 - Gene Chain Splice</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #12071F 0%, #0A2463 100%);
+      font-family: 'Courier New', monospace;
+      color: #e0e0e0;
+      user-select: none;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw; height: 100vh;
+    }
+    #game-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: block;
+    }
+
+    #target-bar {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      background: rgba(10, 36, 99, 0.7);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 0 8px;
+      box-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
+    }
+    .target-base {
+      width: 26px; height: 26px;
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 14px;
+      transition: background 0.3s, color 0.3s;
+    }
+    .target-base.completed {
+      background: #333 !important;
+      color: #666 !important;
+      box-shadow: none !important;
+    }
+
+    #lives-container {
+      position: absolute;
+      top: 16px; right: 340px;
+      display: flex; gap: 4px; align-items: center;
+    }
+    .heart {
+      width: 16px; height: 16px;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .heart.broken {
+      opacity: 0.2;
+      transform: scale(0.6);
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 16px; right: 16px;
+      width: 320px;
+      background: rgba(10, 36, 99, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 20px;
+      display: flex; flex-direction: column; gap: 14px;
+    }
+    #control-panel .panel-title {
+      font-size: 16px;
+      color: #8be9fd;
+      text-align: center;
+      letter-spacing: 2px;
+    }
+    .stat-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 14px;
+    }
+    .stat-label { color: #aaa; }
+    .stat-value { color: #fff; font-weight: bold; }
+
+    #timer-container {
+      width: 80px; height: 80px;
+      margin: 0 auto;
+      position: relative;
+    }
+    #timer-canvas {
+      width: 80px; height: 80px;
+    }
+    #timer-text {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px; font-weight: bold;
+      color: #fff;
+    }
+
+    #restart-btn {
+      width: 120px; height: 40px;
+      background: #FF6B81;
+      border: none; border-radius: 20px;
+      color: #fff; font-size: 14px;
+      cursor: pointer;
+      margin: 0 auto;
+      transition: background 0.2s, transform 0.1s;
+      font-family: 'Courier New', monospace;
+    }
+    #restart-btn:hover { background: #E85D6F; }
+    #restart-btn:active { transform: scale(0.95); }
+
+    #test-tube-rack {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      padding: 12px 24px;
+      background: rgba(10, 36, 99, 0.5);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .base-card {
+      width: 50px; height: 50px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: bold; font-size: 20px;
+      cursor: grab;
+      transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55),
+                  box-shadow 0.3s;
+      position: relative;
+    }
+    .base-card:hover {
+      transform: scale(1.1);
+    }
+    .base-card.selected {
+      transform: scale(1.2);
+      z-index: 100;
+    }
+    .base-card.dragging {
+      cursor: grabbing;
+      position: fixed;
+      z-index: 200;
+      pointer-events: none;
+      transition: none;
+    }
+
+    #flash-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: red;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 300;
+    }
+
+    #instructions {
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    #game-over-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(18, 7, 31, 0.9);
+      z-index: 400;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+    #game-over-overlay.active { display: flex; }
+    #game-over-overlay h2 {
+      font-size: 36px;
+      color: #FF6B81;
+      letter-spacing: 4px;
+    }
+    #game-over-overlay .final-score {
+      font-size: 20px;
+      color: #8be9fd;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="flash-overlay"></div>
+
+    <div id="target-bar"></div>
+
+    <div id="lives-container"></div>
+
+    <div id="control-panel">
+      <div class="panel-title">控制面板</div>
+      <div class="stat-row">
+        <span class="stat-label">关卡</span>
+        <span class="stat-value" id="level-display">1</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">得分</span>
+        <span class="stat-value" id="score-display">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">连击</span>
+        <span class="stat-value" id="combo-display">0</span>
+      </div>
+      <div id="timer-container">
+        <canvas id="timer-canvas" width="160" height="160"></canvas>
+        <div id="timer-text">120</div>
+      </div>
+      <button id="restart-btn">重新开始</button>
+    </div>
+
+    <div id="test-tube-rack"></div>
+
+    <div id="instructions">点击碱基卡片选中 → 移动鼠标拖拽 → 对准螺旋空位松开 | 按 R 重新开始</div>
+
+    <div id="game-over-overlay">
+      <h2>实验失败</h2>
+      <div class="final-score">最终得分: <span id="final-score-value">0</span></div>
+      <button id="restart-btn-2" style="width:120px;height:40px;background:#FF6B81;border:none;border-radius:20px;color:#fff;font-size:14px;cursor:pointer;font-family:'Courier New',monospace;">重新开始</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
