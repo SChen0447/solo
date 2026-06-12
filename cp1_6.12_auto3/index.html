@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>涂鸦对战 Doodle Battle</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #f2f3f5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    #game-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 20px;
+      width: 100%;
+      height: 100%;
+      max-width: 1400px;
+      max-height: 900px;
+    }
+    #scoreboard {
+      width: 180px;
+      min-width: 140px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    #scoreboard h3 {
+      font-size: 14px;
+      color: #8a8f99;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: #fafbfc;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .player-item.highlight {
+      background: #fff8e6;
+      box-shadow: 0 2px 8px rgba(255, 184, 0, 0.2);
+    }
+    .player-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+    }
+    .player-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .player-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1f2329;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .player-score {
+      font-size: 11px;
+      color: #8a8f99;
+      font-variant-numeric: tabular-nums;
+    }
+    #canvas-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      aspect-ratio: 4 / 3;
+      max-height: 100%;
+      max-width: calc(100% - 440px);
+    }
+    #game-canvas {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+      display: block;
+    }
+    #timer-panel {
+      width: 180px;
+      min-width: 140px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 20px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+    #timer-panel h3 {
+      font-size: 14px;
+      color: #8a8f99;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      align-self: flex-start;
+    }
+    .timer-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    .timer-ring-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .timer-ring-bg {
+      fill: none;
+      stroke: #f0f1f3;
+      stroke-width: 10;
+    }
+    .timer-ring-fg {
+      fill: none;
+      stroke: #4e6ef2;
+      stroke-width: 10;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s linear;
+    }
+    .timer-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+      color: #1f2329;
+      font-variant-numeric: tabular-nums;
+    }
+    .timer-label {
+      font-size: 12px;
+      color: #8a8f99;
+      margin-top: -8px;
+    }
+    #start-panel {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      z-index: 20;
+      border-radius: 20px;
+    }
+    #start-panel h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: #1f2329;
+      letter-spacing: -1px;
+    }
+    #start-panel p {
+      color: #646a73;
+      font-size: 15px;
+      max-width: 420px;
+      text-align: center;
+      line-height: 1.7;
+    }
+    .player-count-select {
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .count-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      border: 2px solid #e5e6eb;
+      background: #fff;
+      font-size: 20px;
+      font-weight: 700;
+      color: #1f2329;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .count-btn:hover {
+      border-color: #4e6ef2;
+      color: #4e6ef2;
+    }
+    .count-btn.active {
+      border-color: #4e6ef2;
+      background: #4e6ef2;
+      color: #fff;
+    }
+    .key-hints {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 560px;
+    }
+    .key-hint {
+      background: #f7f8fa;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: #4e5969;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .key-hint .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .key-hint kbd {
+      background: #fff;
+      border: 1px solid #e5e6eb;
+      border-radius: 5px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-family: inherit;
+      color: #1f2329;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+    .start-btn {
+      padding: 14px 40px;
+      background: linear-gradient(135deg, #4e6ef2, #6b8dff);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(78, 110, 242, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(78, 110, 242, 0.42);
+    }
+    .start-btn:active {
+      transform: translateY(0);
+    }
+    #result-modal {
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 18, 25, 0.55);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      border-radius: 20px;
+    }
+    #result-modal.show {
+      display: flex;
+      animation: fadeIn 0.35s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    .result-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 40px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .result-title {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1f2329;
+      margin-bottom: 6px;
+    }
+    .result-subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #8a8f99;
+      margin-bottom: 28px;
+    }
+    .result-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 30px;
+    }
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fafbfc;
+    }
+    .result-row.rank-1 {
+      background: linear-gradient(135deg, #fff8e6, #fff3cc);
+    }
+    .result-rank {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e5e6eb;
+      color: #4e5969;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .result-row.rank-1 .result-rank {
+      background: linear-gradient(135deg, #ffc800, #ffb400);
+      color: #fff;
+    }
+    .result-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .result-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .result-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1f2329;
+      margin-bottom: 3px;
+    }
+    .result-stats {
+      font-size: 12px;
+      color: #8a8f99;
+      display: flex;
+      gap: 14px;
+    }
+    .result-stats span {
+      font-variant-numeric: tabular-nums;
+    }
+    .result-score {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1f2329;
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+    .result-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .btn-primary, .btn-secondary {
+      padding: 13px 28px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #4e6ef2, #6b8dff);
+      color: #fff;
+      box-shadow: 0 6px 18px rgba(78, 110, 242, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(78, 110, 242, 0.38);
+    }
+    .btn-secondary {
+      background: #f2f3f5;
+      color: #4e5969;
+    }
+    .btn-secondary:hover {
+      background: #e5e6eb;
+    }
+    @media (max-width: 900px) {
+      #game-container {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px;
+      }
+      #scoreboard, #timer-panel {
+        width: 100%;
+        flex-direction: row;
+        min-width: auto;
+        padding: 12px 16px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      #scoreboard h3, #timer-panel h3 {
+        margin-right: auto;
+        margin-bottom: 0;
+      }
+      .player-item {
+        flex: 1;
+        min-width: 120px;
+        padding: 8px 10px;
+      }
+      #canvas-wrap {
+        max-width: 100%;
+        width: 100%;
+      }
+      .timer-ring-wrap {
+        width: 64px;
+        height: 64px;
+      }
+      .timer-text {
+        font-size: 20px;
+      }
+      .timer-label { display: none; }
+      #start-panel h1 { font-size: 28px; }
+      #start-panel p { font-size: 13px; padding: 0 16px; }
+      .key-hints { gap: 8px; padding: 0 12px; }
+      .key-hint { font-size: 11px; padding: 8px 10px; }
+    }
+    @media (orientation: landscape) and (max-height: 500px) {
+      #game-container {
+        flex-direction: row;
+        gap: 12px;
+        padding: 10px;
+      }
+      #scoreboard, #timer-panel {
+        width: 130px;
+        min-width: 100px;
+        flex-direction: column;
+        padding: 12px 10px;
+      }
+      #scoreboard h3, #timer-panel h3 {
+        margin-bottom: 4px;
+        font-size: 12px;
+      }
+      .timer-ring-wrap {
+        width: 80px;
+        height: 80px;
+      }
+      .timer-text { font-size: 24px; }
+      .player-item { padding: 8px 10px; }
+      .player-name { font-size: 12px; }
+      .player-score { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="game-container">
+      <aside id="scoreboard">
+        <h3>玩家排名</h3>
+      </aside>
+      <div id="canvas-wrap">
+        <canvas id="game-canvas"></canvas>
+        <div id="start-panel">
+          <h1>🎨 涂鸦对战</h1>
+          <p>多人实时画板大战！30秒内谁画的线条最长、覆盖面积最大，谁就是冠军！</p>
+          <div>
+            <div style="font-size: 13px; color: #8a8f99; margin-bottom: 10px; text-align: center;">选择玩家数量</div>
+            <div class="player-count-select" id="player-count">
+              <button class="count-btn" data-count="2">2</button>
+              <button class="count-btn active" data-count="3">3</button>
+              <button class="count-btn" data-count="4">4</button>
+            </div>
+          </div>
+          <div class="key-hints" id="key-hints"></div>
+          <button class="start-btn" id="start-btn">开始游戏</button>
+        </div>
+        <div id="result-modal">
+          <div class="result-card">
+            <div class="result-title">🎉 游戏结束</div>
+            <div class="result-subtitle">来看看各位画家的战绩吧</div>
+            <div class="result-list" id="result-list"></div>
+            <div class="result-actions">
+              <button class="btn-secondary" id="back-btn">返回首页</button>
+              <button class="btn-primary" id="restart-btn">再来一局</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <aside id="timer-panel">
+        <h3>倒计时</h3>
+        <div class="timer-ring-wrap">
+          <svg viewBox="0 0 120 120">
+            <circle class="timer-ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle class="timer-ring-fg" cx="60" cy="60" r="52"
+                    stroke-dasharray="326.73" stroke-dashoffset="0"></circle>
+          </svg>
+          <div class="timer-text" id="timer-text">30</div>
+        </div>
+        <div class="timer-label">秒</div>
+      </aside>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
