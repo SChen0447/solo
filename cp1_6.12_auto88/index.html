@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>记忆宫殿构建工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      color: #333;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .ui-control {
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 12px;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+    }
+
+    .ui-control:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .ui-control:active {
+      transform: scale(0.98);
+    }
+
+    input.ui-control {
+      cursor: text;
+    }
+
+    input.ui-control:focus {
+      outline: none;
+      border-color: #4FC3F7;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .toolbar {
+        top: auto !important;
+        bottom: 10px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        height: 80px !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        padding: 10px !important;
+      }
+
+      .toolbar-item {
+        flex-shrink: 0 !important;
+      }
+
+      .properties-panel {
+        width: 100% !important;
+        height: 60vh !important;
+        top: auto !important;
+        bottom: 0 !important;
+        right: 0 !important;
+        border-radius: 16px 16px 0 0 !important;
+        transform: translateY(100%) !important;
+        transition: transform 0.3s ease !important;
+      }
+
+      .properties-panel.open {
+        transform: translateY(0) !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
