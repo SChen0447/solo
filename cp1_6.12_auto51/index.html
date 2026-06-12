@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>光学谜题 - 光线反射与折射模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0a;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 顶部菜单栏 */
+    .top-menu {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50px;
+      background: rgba(20, 20, 30, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 15px;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .menu-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: all 0.1s ease;
+    }
+
+    .menu-btn:hover {
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .menu-btn:active {
+      transform: scale(0.95);
+    }
+
+    .menu-btn.reset {
+      color: #ff4444;
+    }
+
+    .menu-btn.help {
+      color: #44aaff;
+    }
+
+    .level-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.1s ease;
+    }
+
+    .level-select:hover {
+      border-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+    }
+
+    .level-select option {
+      background: #2a2a2a;
+      color: #fff;
+    }
+
+    .game-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-left: auto;
+      background: linear-gradient(90deg, #ff4444, #4488ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Canvas容器 */
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      margin-top: 50px;
+      margin-left: 200px;
+    }
+
+    #gameCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* 左侧控制面板 */
+    .control-panel {
+      position: absolute;
+      top: 50px;
+      left: 0;
+      width: 200px;
+      bottom: 0;
+      background: #2a2a2a;
+      padding: 15px;
+      overflow-y: auto;
+      z-index: 50;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #888;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .element-item {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      cursor: grab;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .element-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .element-item:active {
+      cursor: grabbing;
+    }
+
+    .element-item.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .element-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .element-info {
+      flex: 1;
+    }
+
+    .element-name {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .element-count {
+      font-size: 11px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    /* 状态显示 */
+    .status-display {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      text-align: right;
+      z-index: 80;
+      line-height: 1.6;
+    }
+
+    .status-item {
+      margin-bottom: 4px;
+    }
+
+    .status-label {
+      color: #888;
+      margin-right: 8px;
+    }
+
+    .status-value {
+      color: #fff;
+    }
+
+    .status-ok {
+      color: #44ff44;
+    }
+
+    .status-warning {
+      color: #ff4444;
+      animation: blink 0.5s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* 教程遮罩 */
+    .tutorial-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      transition: opacity 0.5s ease;
+    }
+
+    .tutorial-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tutorial-canvas {
+      width: 600px;
+      height: 400px;
+      border-radius: 12px;
+      background: #0a0a0a;
+      border: 2px solid #4488ff;
+      box-shadow: 0 0 30px rgba(68, 136, 255, 0.3);
+    }
+
+    .tutorial-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      background: linear-gradient(90deg, #ff4444, #4488ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .tutorial-desc {
+      font-size: 14px;
+      color: #aaa;
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 500px;
+    }
+
+    .start-btn {
+      margin-top: 30px;
+      padding: 12px 40px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #4488ff, #66aaff);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .start-btn.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(68, 136, 255, 0.4);
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* 胜利动画 */
+    .victory-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 150;
+    }
+
+    .victory-text {
+      font-size: 72px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #44ff44, #88ff88, #44ff44);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(68, 255, 68, 0.5);
+      transform: scale(0);
+      opacity: 0;
+      transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .victory-text.show {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* 警告提示 */
+    .warning-toast {
+      position: absolute;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      background: rgba(255, 68, 68, 0.9);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 300;
+    }
+
+    .warning-toast.show {
+      opacity: 1;
+    }
+
+    /* 拖拽预览 */
+    .drag-preview {
+      position: fixed;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.7;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .canvas-container {
+        margin-left: 0;
+        margin-bottom: 180px;
+      }
+
+      .control-panel {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 180px;
+        border-right: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+      }
+
+      .panel-title {
+        display: inline-block;
+        margin-right: 15px;
+        margin-bottom: 0;
+        vertical-align: middle;
+      }
+
+      .element-item {
+        display: inline-flex;
+        width: 140px;
+        margin-right: 10px;
+        margin-bottom: 0;
+        transform: scale(0.5);
+        transform-origin: left center;
+      }
+
+      .tutorial-canvas {
+        width: 90%;
+        height: 300px;
+      }
+
+      .victory-text {
+        font-size: 48px;
+      }
+
+      .game-title {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部菜单 -->
+    <div class="top-menu">
+      <button class="menu-btn reset" id="resetBtn" title="重置关卡">↻</button>
+      <button class="menu-btn help" id="helpBtn" title="帮助">?</button>
+      <select class="level-select" id="levelSelect"></select>
+      <div class="game-title">光学谜题 · 光线实验室</div>
+    </div>
+
+    <!-- 左侧控制面板 -->
+    <div class="control-panel" id="controlPanel">
+      <div class="panel-title">元件仓库</div>
+      <div id="elementList"></div>
+    </div>
+
+    <!-- Canvas容器 -->
+    <div class="canvas-container">
+      <canvas id="gameCanvas"></canvas>
+      
+      <!-- 状态显示 -->
+      <div class="status-display" id="statusDisplay">
+        <div class="status-item">
+          <span class="status-label">关卡:</span>
+          <span class="status-value" id="levelNum">1</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">元件:</span>
+          <span class="status-value" id="elementCount">0/3</span>
+        </div>
+        <div class="status-item">
+          <span class="status-label">光束:</span>
+          <span class="status-value status-ok" id="beamStatus">OK</span>
+        </div>
+      </div>
+
+      <!-- 警告提示 -->
+      <div class="warning-toast" id="warningToast"></div>
+
+      <!-- 胜利动画 -->
+      <div class="victory-overlay">
+        <div class="victory-text" id="victoryText">关卡完成!</div>
+      </div>
+    </div>
+
+    <!-- 教程遮罩 -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+      <div class="tutorial-title" id="tutorialTitle">关卡 1: 初识反射</div>
+      <div class="tutorial-desc" id="tutorialDesc">拖动镜面到合适位置，将激光反射到蓝色接收器。点击已放置的镜面可以旋转角度。</div>
+      <canvas class="tutorial-canvas" id="tutorialCanvas" width="600" height="400"></canvas>
+      <button class="start-btn" id="startBtn">开始游戏</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
