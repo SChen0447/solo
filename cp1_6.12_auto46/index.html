@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代城市演变可视化</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-content">
+      <div class="spinner"></div>
+      <p>正在加载城市模型...</p>
+    </div>
+  </div>
+  
+  <div id="app-container">
+    <canvas id="scene-canvas"></canvas>
+    
+    <nav id="top-navbar">
+      <div class="nav-info">
+        <span class="nav-label">当前时代：</span>
+        <span id="current-era" class="nav-value">公元前500年</span>
+      </div>
+      <div class="nav-info">
+        <span class="nav-label">建筑总数：</span>
+        <span id="building-count" class="nav-value">0</span>
+      </div>
+      <h1 class="nav-title">古代城市演变</h1>
+    </nav>
+    
+    <aside id="timeline-panel">
+      <div class="panel-header">
+        <h3>时间轴</h3>
+        <span id="era-start-label">公元前500年</span>
+        <span id="era-end-label">公元1500年</span>
+      </div>
+      <div class="slider-container">
+        <input type="range" id="timeline-slider" min="-500" max="1500" step="50" value="-500" />
+        <div class="slider-marks">
+          <span class="mark" data-value="-500">-500</span>
+          <span class="mark" data-value="0">0</span>
+          <span class="mark" data-value="500">500</span>
+          <span class="mark" data-value="1000">1000</span>
+          <span class="mark" data-value="1500">1500</span>
+        </div>
+      </div>
+      <div class="era-tags">
+        <span class="era-tag greek" data-era="greek">古希腊</span>
+        <span class="era-tag medieval" data-era="medieval">中世纪</span>
+        <span class="era-tag eastasia" data-era="eastasia">东亚</span>
+      </div>
+    </aside>
+    
+    <aside id="template-panel">
+      <button class="template-btn active" data-template="greek" title="古希腊风格">
+        <svg viewBox="0 0 24 24" class="template-icon">
+          <path d="M12 2L2 7v2h20V7L12 2zm-7 9h2v9H5v-9zm5 0h2v9h-2v-9zm5 0h2v9h-2v-9zm3 0h2v9h-2v-9z"/>
+        </svg>
+        <span>古希腊</span>
+      </button>
+      <button class="template-btn" data-template="medieval" title="中世纪欧洲">
+        <svg viewBox="0 0 24 24" class="template-icon">
+          <path d="M12 2l-2 4h-2l1 3H7l-1 4h2v8h8v-8h2l-1-4h-2l1-3h-2l-2-4zM6 17h2v3H6v-3zm10 0h2v3h-2v-3z"/>
+        </svg>
+        <span>中世纪</span>
+      </button>
+      <button class="template-btn" data-template="eastasia" title="东亚风格">
+        <svg viewBox="0 0 24 24" class="template-icon">
+          <path d="M12 2c-3 2-6 3-8 3 2 1 4 2 6 4V8h4v1c2-2 4-3 6-4-2 0-5-1-8-3zM4 10c3 0 7 2 8 5V20H8v-5c0-2-2-3-4-5zm12 0c-2 2-4 3-4 5v5h4v-5c1-3 5-5 8-5-3 0-5 0-8 0z"/>
+        </svg>
+        <span>东亚</span>
+      </button>
+    </aside>
+    
+    <div id="info-card" class="hidden">
+      <div class="card-content">
+        <button id="close-card">&times;</button>
+        <h2 id="card-title">建筑名称</h2>
+        <div class="card-info">
+          <div class="info-row">
+            <span class="info-label">建造年代：</span>
+            <span id="card-era">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">主要用途：</span>
+            <span id="card-purpose">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">建筑风格：</span>
+            <span id="card-style">-</span>
+          </div>
+          <div class="info-desc">
+            <span class="info-label">风格描述：</span>
+            <p id="card-description">-</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
