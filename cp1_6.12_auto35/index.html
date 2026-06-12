@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>时光回溯 - 2D平台跳跃</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0a2e 0%, #4a1a6b 100%);
+      font-family: 'Press Start 2P', cursive;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+    }
+
+    #ui-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: #ffffff;
+      font-size: 10px;
+      line-height: 2;
+      z-index: 10;
+      min-width: 200px;
+    }
+
+    #ui-panel .ui-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 4px 0;
+    }
+
+    #ui-panel .label {
+      color: #b0b0ff;
+    }
+
+    #ui-panel .value {
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+
+    #ui-panel .value.rewind {
+      color: #00bfff;
+      text-shadow: 0 0 8px rgba(0, 191, 255, 0.6);
+    }
+
+    #ui-panel .value.timer {
+      color: #ffffff;
+    }
+
+    #status-bar {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 28px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 10px;
+      z-index: 10;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    #status-bar.rewind-mode {
+      color: #00bfff;
+      text-shadow: 0 0 10px rgba(0, 191, 255, 0.8);
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    #complete-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0);
+      z-index: 20;
+      pointer-events: none;
+    }
+
+    #complete-overlay.active {
+      display: flex;
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      to { background: rgba(255, 255, 255, 0.3); }
+    }
+
+    #complete-text {
+      font-size: 48px;
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.9), 0 0 40px rgba(255, 215, 0, 0.5);
+      opacity: 0;
+      transform: scale(0.3);
+    }
+
+    #complete-overlay.active #complete-text {
+      animation: completeAnim 2s ease-out forwards;
+    }
+
+    @keyframes completeAnim {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      40% {
+        opacity: 1;
+        transform: scale(1.2);
+      }
+      60% {
+        transform: scale(0.95);
+      }
+      80% {
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="ui-panel">
+      <div class="ui-row">
+        <span class="label">时光碎片</span>
+        <span class="value" id="shard-count">0 / 5</span>
+      </div>
+      <div class="ui-row">
+        <span class="label">回溯剩余</span>
+        <span class="value rewind" id="rewind-count">∞</span>
+      </div>
+      <div class="ui-row">
+        <span class="label">计时</span>
+        <span class="value timer" id="timer">00:00</span>
+      </div>
+    </div>
+
+    <div id="status-bar">WASD 移动，R 回溯</div>
+
+    <div id="complete-overlay">
+      <div id="complete-text">关卡完成</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
