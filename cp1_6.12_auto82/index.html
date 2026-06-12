@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>抽象画互动导览</title>
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header class="top-nav">
+      <div class="painting-title" id="paintingTitle">熔岩</div>
+      <button class="reset-btn" id="resetBtn">重置</button>
+    </header>
+
+    <nav class="side-nav" id="sideNav">
+      <div class="thumbnails-container" id="thumbnailsContainer">
+      </div>
+    </nav>
+
+    <main class="canvas-wrapper">
+      <canvas id="mainCanvas"></canvas>
+    </main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
