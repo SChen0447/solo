@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D天气粒子模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .ui-overlay > * {
+      pointer-events: auto;
+    }
+
+    .weather-buttons {
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 12px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .weather-btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      user-select: none;
+    }
+
+    .weather-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .weather-btn:active {
+      transform: scale(0.95);
+      transition: transform 0.15s ease;
+    }
+
+    .weather-btn.rain.active {
+      background: linear-gradient(135deg, #4FC3F7, #1565C0);
+    }
+
+    .weather-btn.snow.active {
+      background: linear-gradient(135deg, #FFFFFF, #B0BEC5);
+      color: #37474F;
+    }
+
+    .weather-btn.thunder.active {
+      background: linear-gradient(135deg, #1A237E, #FFD54F);
+      animation: thunderPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes thunderPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+
+    .stats-panel {
+      top: 24px;
+      right: 24px;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 10px;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      font-size: 13px;
+      min-width: 160px;
+      transition: border-color 0.3s ease;
+    }
+
+    .stats-panel.warning {
+      border-color: #ff4444;
+      box-shadow: 0 0 15px rgba(255, 68, 68, 0.4);
+    }
+
+    .stats-panel h3 {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 10px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    .stat-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .stat-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .stat-value {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-value.fps-warning {
+      color: #ff6666;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <div class="ui-overlay weather-buttons">
+      <button class="weather-btn rain active" data-mode="rain">🌧️ 雨天</button>
+      <button class="weather-btn snow" data-mode="snow">❄️ 雪天</button>
+      <button class="weather-btn thunder" data-mode="thunder">⛈️ 雷暴</button>
+    </div>
+
+    <div class="ui-overlay stats-panel" id="stats-panel">
+      <h3>性能监控</h3>
+      <div class="stat-row">
+        <span class="stat-label">粒子总数</span>
+        <span class="stat-value" id="stat-particles">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">帧率 (FPS)</span>
+        <span class="stat-value" id="stat-fps">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">渲染速率 (PPS)</span>
+        <span class="stat-value" id="stat-pps">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
