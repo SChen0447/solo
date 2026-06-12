@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星河跳跃</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #0A0C1A 0%, #1A0B2E 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-container {
+      position: relative;
+      width: 1200px;
+      height: 800px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 60px rgba(123, 47, 247, 0.3);
+    }
+
+    #game-canvas {
+      display: block;
+      cursor: grab;
+    }
+
+    #game-canvas:active {
+      cursor: grabbing;
+    }
+
+    .ui-layer {
+      position: absolute;
+      pointer-events: none;
+    }
+
+    #timer {
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    #timer.warning {
+      color: #CC3333;
+      font-size: 32px;
+      animation: shake 0.1s infinite;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(-50%) translate(0, 0); }
+      25% { transform: translateX(-50%) translate(-2px, 1px); }
+      50% { transform: translateX(-50%) translate(2px, -1px); }
+      75% { transform: translateX(-50%) translate(-1px, 2px); }
+    }
+
+    #crystal-count {
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #FFE066;
+      text-shadow: 0 0 8px rgba(255, 224, 102, 0.6);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      padding: 10px 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .crystal-icon {
+      width: 20px;
+      height: 20px;
+      background: linear-gradient(135deg, #FFE066 0%, #FFA500 100%);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      box-shadow: 0 0 10px rgba(255, 224, 102, 0.8);
+    }
+
+    #level-info {
+      top: 20px;
+      left: 20px;
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      padding: 8px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* 启动画面 */
+    #start-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, #0A0C1A 0%, #1A0B2E 100%);
+      z-index: 100;
+      pointer-events: auto;
+    }
+
+    #start-screen.hidden {
+      display: none;
+    }
+
+    .start-planet {
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #4ECDC4 0%, #1A0B2E 70%);
+      box-shadow: 0 0 80px rgba(78, 205, 196, 0.5), 0 0 150px rgba(123, 47, 247, 0.3);
+      margin-bottom: 40px;
+      animation: planetPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes planetPulse {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 80px rgba(78, 205, 196, 0.5), 0 0 150px rgba(123, 47, 247, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 0 100px rgba(78, 205, 196, 0.7), 0 0 180px rgba(123, 47, 247, 0.5); }
+    }
+
+    .game-title {
+      font-size: 72px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+      margin-bottom: 50px;
+      letter-spacing: 8px;
+    }
+
+    .start-btn {
+      padding: 16px 48px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.3) 0%, rgba(123, 47, 247, 0.3) 100%);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(78, 205, 196, 0.5);
+      border-radius: 50px;
+      cursor: pointer;
+      animation: btnPulse 1.2s ease-in-out infinite;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    }
+
+    .start-btn:hover {
+      transform: scale(1.1);
+      border-color: rgba(78, 205, 196, 0.8);
+      box-shadow: 0 0 30px rgba(78, 205, 196, 0.4);
+    }
+
+    @keyframes btnPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    /* 游戏结束画面 */
+    #game-over-screen, #level-complete-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(20, 20, 30, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 90;
+      pointer-events: auto;
+    }
+
+    #game-over-screen.visible, #level-complete-screen.visible {
+      display: flex;
+    }
+
+    .game-over-title {
+      font-size: 56px;
+      font-weight: 900;
+      color: #CC3333;
+      text-shadow: 0 0 30px rgba(204, 51, 51, 0.6);
+      margin-bottom: 20px;
+      letter-spacing: 6px;
+    }
+
+    .level-complete-title {
+      font-size: 56px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #FFD700 0%, #FF8C00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 20px;
+      letter-spacing: 6px;
+    }
+
+    .score-text {
+      font-size: 28px;
+      color: #FFE066;
+      margin-bottom: 40px;
+    }
+
+    .action-btn {
+      padding: 14px 40px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(78, 205, 196, 0.4) 0%, rgba(123, 47, 247, 0.4) 100%);
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(78, 205, 196, 0.5);
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+      border-color: rgba(78, 205, 196, 0.8);
+      box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
+    }
+
+    .target-text {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas" width="1200" height="800"></canvas>
+
+    <div id="timer" class="ui-layer">60</div>
+    <div id="crystal-count" class="ui-layer">
+      <div class="crystal-icon"></div>
+      <span id="crystal-num">0</span>
+    </div>
+    <div id="level-info" class="ui-layer">第 1 关</div>
+
+    <!-- 启动画面 -->
+    <div id="start-screen">
+      <div class="start-planet"></div>
+      <h1 class="game-title">星河跳跃</h1>
+      <button class="start-btn" id="start-btn">点击开始</button>
+    </div>
+
+    <!-- 游戏结束画面 -->
+    <div id="game-over-screen">
+      <h2 class="game-over-title">坠落星空</h2>
+      <p class="score-text">收集水晶：<span id="final-score">0</span> 颗</p>
+      <button class="action-btn" id="restart-btn">再来一次</button>
+    </div>
+
+    <!-- 通关画面 -->
+    <div id="level-complete-screen">
+      <h2 class="level-complete-title">关卡通过！</h2>
+      <p class="score-text">收集水晶：<span id="level-score">0</span> 颗</p>
+      <p class="target-text">目标：5 颗水晶</p>
+      <button class="action-btn" id="next-level-btn">下一关</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
