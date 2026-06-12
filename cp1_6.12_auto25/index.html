@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D天气粒子模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0e27 0%, #1a1a2e 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #e0e0e0;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .control-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 260px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .control-panel.collapsed {
+      min-width: unset;
+      padding: 12px;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .control-panel.collapsed .panel-content {
+      display: none;
+    }
+
+    .panel-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #e0e0e0;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .control-panel.collapsed .panel-toggle {
+      display: block;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .panel-close {
+      display: none;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .panel-close:hover {
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 6px;
+    }
+
+    .control-value {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 11px;
+    }
+
+    .control-panel select {
+      width: 100%;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+    }
+
+    .control-panel select:hover {
+      background-color: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .control-panel select:focus {
+      border-color: rgba(79, 195, 247, 0.5);
+      box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.15);
+    }
+
+    .control-panel select option {
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    .control-panel input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 2px;
+      outline: none;
+      transition: background 0.3s ease;
+    }
+
+    .control-panel input[type="range"]:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .control-panel input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #4fc3f7;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(79, 195, 247, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .control-panel input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(79, 195, 247, 0.6);
+    }
+
+    .control-panel input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      background: #4fc3f7;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 6px rgba(79, 195, 247, 0.4);
+    }
+
+    .fps-display {
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: #4fc3f7;
+      text-align: right;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 6px;
+    }
+
+    .fps-display span {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .control-panel {
+        top: 12px;
+        left: 12px;
+      }
+
+      .control-panel:not(.collapsed) {
+        min-width: 220px;
+        padding: 14px;
+      }
+
+      .panel-close {
+        display: block;
+      }
+
+      .control-panel:not(.collapsed) .panel-toggle {
+        display: none;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .control-panel {
+        min-width: unset;
+        padding: 10px;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .control-panel.expanded {
+        border-radius: 12px;
+        width: auto;
+        height: auto;
+        overflow: visible;
+        min-width: 200px;
+        padding: 14px;
+        cursor: default;
+      }
+
+      .control-panel:not(.expanded) .panel-content {
+        display: none;
+      }
+
+      .control-panel:not(.expanded) .panel-toggle {
+        display: block;
+      }
+
+      .panel-close {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="control-panel" id="controlPanel">
+    <button class="panel-toggle" id="panelToggle">☰</button>
+    <div class="panel-content" id="panelContent">
+      <div class="panel-header">
+        <div class="panel-title">天气控制</div>
+        <button class="panel-close" id="panelClose">✕</button>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>天气模式</span>
+        </div>
+        <select id="weatherMode">
+          <option value="lightRain">小雨</option>
+          <option value="heavyRain">暴雨</option>
+          <option value="blizzard">暴风雪</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>雨滴缩放</span>
+          <span class="control-value" id="scaleValue">1.0x</span>
+        </div>
+        <input type="range" id="scaleSlider" min="0.5" max="2.0" step="0.1" value="1.0" />
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>下落速度</span>
+          <span class="control-value" id="speedValue">1.0x</span>
+        </div>
+        <input type="range" id="speedSlider" min="0.5" max="3.0" step="0.1" value="1.0" />
+      </div>
+
+      <div class="fps-display">
+        <span>FPS </span><span id="fpsCounter">60</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
