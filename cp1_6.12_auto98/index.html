@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>分形艺术编辑器 - Fractal Art Editor</title>
+  <style>
+    :root {
+      --bg-primary: #0D1117;
+      --bg-panel: rgba(255, 255, 255, 0.06);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-primary: #E0E0E0;
+      --text-secondary: #BB86FC;
+      --gradient-start: #4A00E0;
+      --gradient-end: #8E2DE2;
+      --warm-start: #4A0000;
+      --warm-end: #FFD700;
+      --cool-start: #2D1B69;
+      --cool-end: #0A0A2E;
+      --panel-width: 280px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #1a1f3a 0%, var(--bg-primary) 70%);
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #fractal-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #fractal-canvas:active {
+      cursor: grabbing;
+    }
+
+    .canvas-container.dragging #fractal-canvas {
+      cursor: grabbing;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: var(--panel-width);
+      height: 100%;
+      padding: 24px 20px;
+      background: var(--bg-panel);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-left: 1px solid var(--border-color);
+      z-index: 100;
+      overflow-y: auto;
+      transition: transform 0.3s ease;
+    }
+
+    .control-panel::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .control-panel::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .control-panel::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 2px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-section {
+      margin-bottom: 24px;
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    .slider-wrapper {
+      margin-bottom: 20px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .slider-label {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-primary);
+    }
+
+    .slider-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .custom-slider {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .slider-track {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(90deg, var(--gradient-start), var(--gradient-end));
+      border-radius: 3px;
+      transition: width 0.1s ease;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      box-shadow: 0 2px 8px rgba(74, 0, 224, 0.4);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      pointer-events: none;
+    }
+
+    .custom-slider:hover .slider-thumb,
+    .custom-slider.dragging .slider-thumb {
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 4px 16px rgba(74, 0, 224, 0.6);
+    }
+
+    .toggle-btn {
+      width: 100%;
+      padding: 12px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      letter-spacing: 0.5px;
+    }
+
+    .toggle-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(74, 0, 224, 0.4);
+    }
+
+    .toggle-btn:active {
+      transform: translateY(0);
+    }
+
+    .julia-preview {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, rgba(10, 10, 46, 0.8), rgba(45, 27, 105, 0.6));
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    #julia-preview-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .julia-control-point {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: radial-gradient(circle at 30% 30%, #64B5F6, #1976D2);
+      border: 2px solid #fff;
+      border-radius: 50%;
+      cursor: grab;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.6);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 10;
+    }
+
+    .julia-control-point:hover,
+    .julia-control-point.dragging {
+      transform: translate(-50%, -50%) scale(1.2);
+      box-shadow: 0 4px 16px rgba(25, 118, 210, 0.8);
+    }
+
+    .julia-control-point:active {
+      cursor: grabbing;
+    }
+
+    .julia-coord-label {
+      position: absolute;
+      padding: 2px 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: translate(-50%, -140%);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .fade-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: var(--bg-primary);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.6s ease;
+    }
+
+    .fade-overlay.active {
+      opacity: 1;
+    }
+
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 200;
+      box-shadow: 0 4px 20px rgba(74, 0, 224, 0.5);
+      transition: transform 0.2s ease;
+    }
+
+    .mobile-toggle:hover {
+      transform: scale(1.1);
+    }
+
+    .status-bar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      padding: 8px 12px;
+      background: rgba(13, 17, 23, 0.8);
+      backdrop-filter: blur(8px);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      z-index: 50;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .hint-text {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(187, 134, 252, 0.1);
+      border-left: 3px solid var(--text-secondary);
+      border-radius: 4px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        position: fixed;
+        top: auto;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 70vh;
+        border-left: none;
+        border-top: 1px solid var(--border-color);
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+        z-index: 150;
+      }
+
+      .control-panel.open {
+        transform: translateY(0);
+      }
+
+      .mobile-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .canvas-container {
+        height: 100%;
+      }
+
+      .status-bar {
+        bottom: 8px;
+        left: 8px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="canvas-container" id="canvas-container">
+      <canvas id="fractal-canvas"></canvas>
+      <div class="fade-overlay" id="fade-overlay"></div>
+    </div>
+
+    <aside class="control-panel" id="control-panel">
+      <h1 class="panel-title">分形艺术编辑器</h1>
+
+      <div class="panel-section">
+        <div class="section-label">分形类型</div>
+        <button class="toggle-btn" id="toggle-btn">切换到 Julia 集</button>
+      </div>
+
+      <div class="panel-section">
+        <div class="section-label">参数控制</div>
+
+        <div class="slider-wrapper" data-slider="iterations">
+          <div class="slider-header">
+            <span class="slider-label">迭代次数</span>
+            <span class="slider-value" id="iterations-value">100</span>
+          </div>
+          <div class="custom-slider" id="iterations-slider">
+            <div class="slider-track" id="iterations-track"></div>
+            <div class="slider-thumb" id="iterations-thumb"></div>
+          </div>
+        </div>
+
+        <div class="slider-wrapper" data-slider="zoom">
+          <div class="slider-header">
+            <span class="slider-label">缩放因子</span>
+            <span class="slider-value" id="zoom-value">1.0</span>
+          </div>
+          <div class="custom-slider" id="zoom-slider">
+            <div class="slider-track" id="zoom-track"></div>
+            <div class="slider-thumb" id="zoom-thumb"></div>
+          </div>
+        </div>
+
+        <div class="slider-wrapper" data-slider="color">
+          <div class="slider-header">
+            <span class="slider-label">颜色偏移</span>
+            <span class="slider-value" id="color-value">0°</span>
+          </div>
+          <div class="custom-slider" id="color-slider">
+            <div class="slider-track" id="color-track"></div>
+            <div class="slider-thumb" id="color-thumb"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-section hidden" id="julia-section">
+        <div class="section-label">Julia 复数参数</div>
+        <div class="hint-text">拖动蓝色控制点调整复数参数 c = a + bi</div>
+        <div class="julia-preview" id="julia-preview">
+          <canvas id="julia-preview-canvas"></canvas>
+          <div class="julia-control-point" id="julia-control-point"></div>
+          <div class="julia-coord-label hidden" id="julia-coord-label"></div>
+        </div>
+      </div>
+
+      <div class="panel-section">
+        <div class="hint-text">
+          💡 提示：拖拽画布平移视图，滚轮以光标为中心缩放（1.15倍）
+        </div>
+      </div>
+    </aside>
+
+    <button class="mobile-toggle" id="mobile-toggle">⚙️</button>
+    <div class="status-bar" id="status-bar">就绪</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
