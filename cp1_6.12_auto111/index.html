@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1A1A2E">
+  <title>盲文诗歌触摸阅读器</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app">
+    <header class="app-header">
+      <h1 class="app-title">盲文诗歌触摸阅读器</h1>
+      <p class="app-subtitle">用指尖感受诗歌的韵律</p>
+    </header>
+
+    <main class="main-container">
+      <div class="spacer-left"></div>
+
+      <section class="reader-section">
+        <div id="braille-reader" class="braille-reader">
+          <canvas id="braille-canvas"></canvas>
+          <div id="touch-overlay" class="touch-overlay"></div>
+        </div>
+
+        <div class="control-bar" id="control-bar">
+          <button class="control-btn ripple" id="load-file-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span>加载诗歌</span>
+          </button>
+          <input type="file" id="file-input" accept=".txt,.brf" hidden>
+
+          <div class="slider-group">
+            <label class="slider-label">
+              <span>语速</span>
+              <span id="speech-rate-value">0.8</span>
+            </label>
+            <input type="range" id="speech-rate" min="0.5" max="1.5" step="0.1" value="0.8" class="custom-slider">
+          </div>
+
+          <div class="slider-group">
+            <label class="slider-label">
+              <span>振动</span>
+              <span id="vibration-value">50</span>
+            </label>
+            <input type="range" id="vibration-level" min="0" max="100" step="1" value="50" class="custom-slider">
+          </div>
+        </div>
+      </section>
+
+      <aside class="translation-panel" id="translation-panel">
+        <div class="panel-header">
+          <h3>实时翻译</h3>
+          <div class="char-indicator" id="char-indicator">0 / 0</div>
+        </div>
+        <div class="panel-content" id="panel-content">
+          <p class="current-text" id="current-text">请开始触摸阅读...</p>
+        </div>
+        <div class="panel-history" id="panel-history"></div>
+      </aside>
+    </main>
+
+    <footer class="app-footer">
+      <p>支持 .txt 和 .brf 盲文格式文件 · 最大 100KB</p>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/App.ts"></script>
+</body>
+</html>
