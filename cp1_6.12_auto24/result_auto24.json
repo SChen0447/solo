@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T04:37:58.644Z",
+  "task_name": "auto24",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个交互式创意字体海报生成器应用，用户可以选择预设字体、调整文字样式和背景，并导出为高清PNG海报。使用TypeScript和React实现，文件结构如下：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, html2canvas, uuid；启动脚本：npm run dev）\n - vite.config.js（React插件配置）\n - tsconfig.json（严格模式，ESModule）\n - index.html（入口，包含id为root的div容器）\n - src/main.tsx（应用入口，渲染App组件）\n - src/components/PosterCanvas.tsx（核心画布组件，使用Canvas 2D渲染文字和背景，接收字体、颜色、大小等参数，实时更新画面）\n - src/components/ControlPanel.tsx（控制面板组件，包含字体选择下拉框、字号滑块、颜色拾取器、背景色选择、文字内容输入框和导出按钮，所有变更通过回调传递给父组件）\n - src/types.ts（定义字体、海报配置的TypeScript类型接口，用于跨文件类型检查）\n - src/utils/exportImage.ts（导出工具函数，使用html2canvas将Canvas元素转为PNG Blob并触发下载）\n\n具体需求：\n1. 用户可以在文本输入框中输入最多30个字符的文字内容，输入时画布上的文字同步更新，输入速度保持在60fps的渲染流畅度。\n2. 字体选择下拉框包含至少5种中英文预设字体（如Arial、Georgia、微软雅黑、思源黑体、手写风格体），选择后画布文字立即应用新字体，切换时有一个0.2秒的字体淡入过渡效果。\n3. 字号滑块控制文字大小，范围为20px到120px，拖动时画布文字同步缩放，并显示当前字号数值在滑块旁边。\n4. 颜色拾取器用于设置文字颜色和背景颜色（两个独立拾色器），点击拾色器打开色盘选择，选择后画布相应部分立即变色，背景颜色支持纯色和渐变色（提供水平/对角线/径向三种渐变模式选择）。\n5. 导出按钮将当前画布内容导出为高清PNG图片（分辨率为显示器物理像素的2倍），点击后显示一个短暂的“导出成功”提示（带淡入淡出动画，持续1.5秒），下载文件命名为“poster-时间戳.png”。\n\n界面方面：页面采用左右分栏布局，左侧为可交互画布区域（占据70%宽度，居中显示），右侧为控制面板（固定宽度320px，浅灰色背景#f5f5f5）。整体使用卡片式设计，控制面板内的每个控件分组用带阴影的卡片包裹（圆角8px，内边距16px），控件之间间距均匀。右侧面板顶部有一个渐变色条（从#667eea到#764ba2），下方为各控件区域。所有按钮使用主色调#667eea，悬停时变暗至#5a67d8，点击时有轻微缩放反馈（scale(0.95)持续0.1秒）。响应式适配：当浏览器窗口宽度小于800px时，画布区域缩小到60%宽度并保持比例，控制面板保持固定宽度但改用横向滚动条；当宽度小于500px时，改为上下布局，画布在上（高度50vh），控制面板在下（可滚动）。\n\n性能要求：画布文字渲染帧率不低于30fps，在拖动字号滑块或快速切换字体时不能出现超过100ms的卡顿。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:1c057e99771b3f59578e2410579819b6_6a2b8bf12a912acc18a3f3ef.6a2b8d1a2a912acc18a3f4d3.6a2b8d199a860384aa37043e:Trae CN.T(2026/6/12 12:37:46)",
+    "user_id": "3986207660317399",
+    "trace_id": "1c057e99771b3f59578e2410579819b6",
+    "session_id": "6a2b8bf12a912acc18a3f3ef",
+    "task_id": "6a2b8d1a2a912acc18a3f4d3",
+    "message_id": "6a2b8d199a860384aa37043e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 12:37:46",
+    "format": "full"
+  },
+  "trace": "null"
+}
