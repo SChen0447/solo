@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T04:49:30.866Z",
+  "task_name": "auto29",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一个远程设计团队需要一个轻量级的在线设计稿标注与反馈工具，用于替换邮件和即时通讯中的碎片化沟通，让设计师和开发者在同一张图上直接讨论修改细节。\n\n构建一个设计稿标注协作应用，使用TypeScript和React实现，所有标注数据和会话信息保存在前端内存中。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, uuid, react-color；启动脚本：npm run dev）\n - vite.config.js（React插件配置，HMR开启）\n - tsconfig.json（严格模式，JSX保留）\n - index.html（入口，包含id为root的div容器和加载字体）\n - src/main.tsx（应用入口，渲染App组件）\n - src/components/CanvasPanel.tsx（核心画布组件，接收用户上传的设计图并渲染为Canvas背景，监听鼠标事件产生标注，数据流向：用户交互→产生标注对象→传递至AnnotationList组件更新列表；内部状态管理当前选中的标注）\n - src/components/Toolbar.tsx（侧边工具栏，提供画笔颜色选择（从react-color拾色器）、标注类别选择（问题/建议/确认）、撤销和重做按钮，操作状态通过回调同步至CanvasPanel）\n - src/components/AnnotationList.tsx（右侧标注列表，接收CanvasPanel传递的标注数组，按时间倒序展示每个标注的缩略位置、颜色标签和评论内容，点击列表项可让CanvasPanel对应标注高亮闪烁，数据流向：接收标注数组→渲染列表→点击事件回调至CanvasPanel）\n\n功能需求：\n1) 图片上传与加载：用户点击“上传设计图”按钮，选择本地图片（支持PNG/JPG，最大5MB），图片自动填充Canvas画布并居中显示，上传后左上角显示图片文件名和尺寸。\n2) 鼠标标注绘制：用户在Canvas上按住鼠标左键拖拽即可绘制矩形标注框，松开后自动弹出浮动输入框让用户输入文字评论，评论提交后标注框固定并带上选中的颜色和类别图标（如问题用红色感叹号、建议用蓝色灯泡、确认用绿色勾号），标注框边缘有圆角（4px）和轻微阴影。\n3) 标注交互管理：每个标注框支持点击选中（出现蓝色缩放句柄）、拖拽移动位置、右下角拖拽调整大小，选中后按Delete键可删除（删除前弹出二次确认弹窗），所有操作都有0.15秒的缓动过渡动画。\n4) 撤销与重做：工具栏提供撤销和重做按钮（或使用Ctrl+Z和Ctrl+Shift+Z快捷键），最多保存50步历史操作，撤销时标注列表同步回退。\n5) 标注列表同步：右侧标注列表实时反映所有标注，每条显示缩略位置（类似地图上的小圆点）、使用的颜色和类别图标、评论前20个字（超出用…省略），点击列表项时画布对应标注框闪烁两次（每次0.3秒，颜色变为黄色再恢复原色）。\n\n界面方面：整体采用深色主题（主背景#1a1a2e，侧边栏#16213e），画布区域占主体（左中布局，工具栏在左侧固定宽度60px，标注列表在右侧固定宽度280px），工具栏图标使用纯色SVG（#e2e8f0悬停变#38bdf8），底部有状态栏显示当前标注总数和选中标注的坐标（X, Y, W, H）。画布自适应窗口大小（最小宽度1024px），标注输入框采用磨砂玻璃效果（backdrop-filter: blur(8px)，背景rgba(255,255,255,0.15)）。所有按钮点击有微妙的按压缩放效果（transform: scale(0.95)持续0.1秒）。\n\n性能约束：标注绘制和拖拽缩放操作响应时间不超过16ms（60FPS），画布在同时存在200个标注框时依然保持流畅滚动和平移。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:47d186e9a360b1814a7df8e503f7f6af_6a2b8f425d32dfa83dcbb10f.6a2b8fce5d32dfa83dcbb186.6a2b8fceb9011c62ab6fa14e:Trae CN.T(2026/6/12 12:49:18)",
+    "user_id": "3986207660317399",
+    "trace_id": "47d186e9a360b1814a7df8e503f7f6af",
+    "session_id": "6a2b8f425d32dfa83dcbb10f",
+    "task_id": "6a2b8fce5d32dfa83dcbb186",
+    "message_id": "6a2b8fceb9011c62ab6fa14e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 12:49:18",
+    "format": "full"
+  },
+  "trace": "null"
+}
