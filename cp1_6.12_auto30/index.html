@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>二维细胞自动机进化模拟器</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0e0e0;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    #canvas-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #main-canvas {
+      border: 1px solid #16213e;
+      image-rendering: pixelated;
+    }
+
+    #pulse-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: inset 0 0 40px 10px rgba(0, 255, 136, 0.15);
+      transition: opacity 0.3s ease;
+    }
+
+    #pulse-overlay.active {
+      animation: pulse-glow 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+
+    #control-panel {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 26, 46, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      z-index: 100;
+    }
+
+    .btn {
+      padding: 8px 18px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #e0e0e0;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.15s ease;
+      outline: none;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .btn:active {
+      transform: scale(0.92);
+    }
+
+    .btn.primary {
+      background: rgba(0, 200, 120, 0.25);
+      border-color: rgba(0, 200, 120, 0.4);
+    }
+
+    .btn.primary:hover {
+      background: rgba(0, 200, 120, 0.4);
+    }
+
+    .btn.danger {
+      background: rgba(220, 60, 60, 0.2);
+      border-color: rgba(220, 60, 60, 0.35);
+    }
+
+    .btn.danger:hover {
+      background: rgba(220, 60, 60, 0.35);
+    }
+
+    .separator {
+      width: 1px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 0 4px;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 12px;
+      color: #999;
+      white-space: nowrap;
+    }
+
+    .control-group input[type="text"] {
+      width: 80px;
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #e0e0e0;
+      font-size: 12px;
+      outline: none;
+      transition: border-color 0.3s ease;
+    }
+
+    .control-group input[type="text"]:focus {
+      border-color: rgba(0, 200, 120, 0.5);
+    }
+
+    .control-group input[type="range"] {
+      width: 100px;
+      accent-color: #00c878;
+    }
+
+    #stats-panel {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      background: rgba(26, 26, 46, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 200px;
+      z-index: 100;
+    }
+
+    #stats-panel h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #00c878;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 12px;
+    }
+
+    .stat-row .label {
+      color: #888;
+    }
+
+    .stat-row .value {
+      color: #e0e0e0;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stat-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 6px 0;
+    }
+
+    .pattern-stats {
+      margin-top: 4px;
+    }
+
+    .pattern-stats .stat-row .label {
+      padding-left: 8px;
+    }
+
+    .pattern-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
+    #minimap-container {
+      position: fixed;
+      bottom: 70px;
+      right: 16px;
+      width: 120px;
+      height: 120px;
+      background: rgba(26, 26, 46, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      z-index: 100;
+      cursor: grab;
+    }
+
+    #minimap-container:active {
+      cursor: grabbing;
+    }
+
+    #minimap-canvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+
+    #minimap-viewport {
+      position: absolute;
+      border: 1px solid rgba(0, 200, 120, 0.6);
+      background: rgba(0, 200, 120, 0.08);
+      pointer-events: none;
+    }
+
+    #speed-value {
+      min-width: 36px;
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    select {
+      padding: 5px 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #e0e0e0;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    select:focus {
+      border-color: rgba(0, 200, 120, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+      <div id="pulse-overlay"></div>
+    </div>
+  </div>
+
+  <div id="control-panel"></div>
+  <div id="stats-panel"></div>
+  <div id="minimap-container">
+    <canvas id="minimap-canvas"></canvas>
+    <div id="minimap-viewport"></div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
