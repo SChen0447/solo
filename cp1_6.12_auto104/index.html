@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D 线描油画模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #1A2333;
+      --line-color: #F5E6D3;
+      --accent: #6C63FF;
+      --accent-hover: #7B73FF;
+      --fps-color: #00FF00;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: #1A2333;
+      color: #fff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at center, #1A2333 0%, #0D1118 100%);
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #fps-counter {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      color: var(--fps-color);
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      z-index: 10;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+      letter-spacing: 1px;
+    }
+
+    #control-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 30px;
+      z-index: 10;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(108, 99, 255, 0.4);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+    }
+
+    .slider-value {
+      font-size: 13px;
+      color: var(--accent);
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 180px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      background: var(--accent-hover);
+      transform: scale(1.1);
+      box-shadow: 0 0 12px rgba(108, 99, 255, 0.6);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .hint {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      z-index: 10;
+      text-align: right;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="fps-counter">FPS: 60</div>
+  <div class="hint">
+    鼠标拖拽旋转视角<br>
+    滚轮缩放场景
+  </div>
+  <div id="control-bar">
+    <button class="btn" id="upload-btn">上传图片</button>
+    <input type="file" id="file-input" accept="image/jpeg,image/png" />
+    <button class="btn btn-secondary" id="reset-btn">重置视角</button>
+    <div class="slider-container">
+      <span class="slider-label">深度范围</span>
+      <input type="range" id="depth-slider" min="0.5" max="3.0" step="0.1" value="1.5" />
+      <span class="slider-value" id="depth-value">1.5</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
