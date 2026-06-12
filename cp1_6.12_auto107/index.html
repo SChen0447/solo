@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>婚礼祝福墙</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SimSun', 'Songti SC', serif;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #page-signin {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #DB2777 0%, #F59E0B 100%);
+    }
+
+    #page-signin.hidden {
+      display: none;
+    }
+
+    .scroll-card {
+      width: 420px;
+      padding: 48px 36px;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 16px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scroll-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='rgba(255,255,255,0.06)' stroke-width='1'/%3E%3C/svg%3E") repeat;
+      pointer-events: none;
+    }
+
+    .couple-names {
+      font-size: 32px;
+      font-weight: 300;
+      color: #FDE68A;
+      letter-spacing: 8px;
+      margin-bottom: 8px;
+      position: relative;
+    }
+
+    .wedding-date {
+      font-size: 14px;
+      font-weight: 300;
+      color: #FDE68A;
+      letter-spacing: 4px;
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .input-area {
+      position: relative;
+    }
+
+    .blessing-textarea {
+      width: 100%;
+      height: 100px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 16px;
+      color: #fff;
+      resize: none;
+      outline: none;
+      font-family: 'SimSun', 'Songti SC', serif;
+      position: relative;
+    }
+
+    .blessing-textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .blessing-textarea:focus {
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+
+    .emoji-picker-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      margin-top: 8px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 20px;
+      color: #FDE68A;
+      transition: background 0.2s;
+      position: relative;
+    }
+
+    .emoji-picker-toggle:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .emoji-panel {
+      display: none;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .emoji-panel.visible {
+      display: flex;
+      opacity: 1;
+    }
+
+    .emoji-item {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+
+    .emoji-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .selected-emoji-display {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 8px;
+      font-size: 28px;
+      vertical-align: middle;
+      position: relative;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      margin-top: 24px;
+      padding: 14px 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: #fff;
+      background: linear-gradient(to right, #DB2777, #BE185D);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: 4px;
+      transition: filter 0.2s, transform 0.2s;
+      position: relative;
+    }
+
+    .submit-btn:hover {
+      filter: brightness(1.15);
+      transform: translateY(-5px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(-2px);
+    }
+
+    #page-wall {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(180deg, #7F1D1D 0%, #000000 100%);
+    }
+
+    #page-wall.active {
+      display: block;
+    }
+
+    #blessing-canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="page-signin">
+    <div class="scroll-card">
+      <div class="couple-names">子轩 &amp; 梦琪</div>
+      <div class="wedding-date">2026年6月12日</div>
+      <div class="input-area">
+        <textarea class="blessing-textarea" id="blessing-input" placeholder="写下你的祝福…"></textarea>
+        <div>
+          <button class="emoji-picker-toggle" id="emoji-toggle">😊</button>
+          <span class="selected-emoji-display" id="selected-emoji"></span>
+        </div>
+        <div class="emoji-panel" id="emoji-panel"></div>
+      </div>
+      <button class="submit-btn" id="submit-btn">留 下 祝 福</button>
+    </div>
+  </div>
+
+  <div id="page-wall">
+    <canvas id="blessing-canvas"></canvas>
+  </div>
+
+  <script type="module" src="/src/App.ts"></script>
+</body>
+</html>
