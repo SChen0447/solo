@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟样板间漫游</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #2a2a2a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: #fff;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #ui-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #ui-container > * {
+      pointer-events: auto;
+    }
+
+    .toolbar {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 60px;
+      background: rgba(42, 42, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 8px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toolbar-btn {
+      width: 44px;
+      height: 44px;
+      margin: 0 auto;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      text-align: center;
+      line-height: 1.2;
+      transition: background 0.2s ease, color 0.2s ease;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .toolbar-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #3b82f6;
+    }
+
+    .toolbar-btn .icon {
+      font-size: 18px;
+    }
+
+    .toolbar-btn.active {
+      background: rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+    }
+
+    .toolbar-divider {
+      width: 36px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 4px auto;
+    }
+
+    .property-panel {
+      position: absolute;
+      top: 20px;
+      right: -300px;
+      width: 280px;
+      background: rgba(42, 42, 42, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: right 0.3s ease;
+    }
+
+    .property-panel.open {
+      right: 20px;
+    }
+
+    .property-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #3b82f6;
+    }
+
+    .property-section {
+      margin-bottom: 16px;
+    }
+
+    .property-label {
+      font-size: 12px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .color-picker-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="color"] {
+      width: 40px;
+      height: 32px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch {
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+    }
+
+    .color-value {
+      font-size: 12px;
+      font-family: monospace;
+      color: #ccc;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #3b82f6;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider-value {
+      font-size: 11px;
+      color: #888;
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    .delete-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      border-radius: 8px;
+      color: #ef4444;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.35);
+    }
+
+    .env-section {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(42, 42, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 12px 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .env-section .property-label {
+      margin-bottom: 0;
+      white-space: nowrap;
+    }
+
+    .env-section input[type="range"] {
+      width: 160px;
+    }
+
+    .screenshot-indicator {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(42, 42, 42, 0.85);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12px;
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .screenshot-indicator.visible {
+      opacity: 1;
+    }
+
+    .screenshot-indicator .count {
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .help-hint {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(42, 42, 42, 0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 11px;
+      color: #888;
+      line-height: 1.8;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .help-hint kbd {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      color: #ccc;
+    }
+
+    .ui-hidden .toolbar,
+    .ui-hidden .property-panel,
+    .ui-hidden .env-section,
+    .ui-hidden .screenshot-indicator,
+    .ui-hidden .help-hint {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      .toolbar {
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        flex-direction: row;
+        padding: 8px;
+        gap: 2px;
+      }
+
+      .toolbar-btn {
+        width: 52px;
+        height: 52px;
+      }
+
+      .toolbar-divider {
+        width: 1px;
+        height: 36px;
+        margin: auto 4px;
+      }
+
+      .property-panel {
+        top: auto;
+        bottom: -400px;
+        left: 0;
+        right: 0 !important;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        transition: bottom 0.3s ease;
+      }
+
+      .property-panel.open {
+        bottom: 0;
+        right: 0;
+      }
+
+      .env-section {
+        bottom: auto;
+        top: 90px;
+        left: 12px;
+        transform: none;
+      }
+
+      .env-section input[type="range"] {
+        width: 100px;
+      }
+
+      .help-hint {
+        display: none;
+      }
+
+      .screenshot-indicator {
+        top: 90px;
+        right: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="ui-container">
+    <div class="toolbar" id="toolbar">
+      <button class="toolbar-btn" data-model="sofa" title="沙发">
+        <span class="icon">🛋️</span>
+        <span>沙发</span>
+      </button>
+      <button class="toolbar-btn" data-model="table" title="茶几">
+        <span class="icon">🪑</span>
+        <span>茶几</span>
+      </button>
+      <button class="toolbar-btn" data-model="bed" title="床">
+        <span class="icon">🛏️</span>
+        <span>床</span>
+      </button>
+      <button class="toolbar-btn" data-model="desk" title="书桌">
+        <span class="icon">📝</span>
+        <span>书桌</span>
+      </button>
+      <button class="toolbar-btn" data-model="chair" title="椅子">
+        <span class="icon">💺</span>
+        <span>椅子</span>
+      </button>
+      <button class="toolbar-btn" data-model="lamp" title="灯具">
+        <span class="icon">💡</span>
+        <span>灯具</span>
+      </button>
+      <div class="toolbar-divider"></div>
+      <button class="toolbar-btn" id="select-tool" title="选择工具">
+        <span class="icon">👆</span>
+        <span>选择</span>
+      </button>
+    </div>
+
+    <div class="property-panel" id="property-panel">
+      <h3 id="panel-title">属性面板</h3>
+      <div class="property-section">
+        <div class="property-label">材质颜色</div>
+        <div class="color-picker-row">
+          <input type="color" id="color-picker" value="#8b8b8b" />
+          <span class="color-value" id="color-value">#8B8B8B</span>
+        </div>
+      </div>
+      <div class="property-section">
+        <div class="property-label">金属度</div>
+        <input type="range" id="metalness-slider" min="0" max="1" step="0.01" value="0" />
+        <div class="slider-value"><span id="metalness-value">0.00</span></div>
+      </div>
+      <div class="property-section">
+        <div class="property-label">粗糙度</div>
+        <input type="range" id="roughness-slider" min="0" max="1" step="0.01" value="0.5" />
+        <div class="slider-value"><span id="roughness-value">0.50</span></div>
+      </div>
+      <button class="delete-btn" id="delete-btn">删除模型</button>
+    </div>
+
+    <div class="env-section">
+      <div class="property-label">环境光照</div>
+      <input type="range" id="ambient-slider" min="0.5" max="2" step="0.01" value="1" />
+      <span class="slider-value" style="margin-top:0;min-width:36px;"><span id="ambient-value">1.00</span></span>
+    </div>
+
+    <div class="screenshot-indicator" id="screenshot-indicator">
+      已保存截图: <span class="count" id="screenshot-count">0</span>/5
+    </div>
+
+    <div class="help-hint">
+      <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动视角</div>
+      <div><kbd>鼠标拖拽</kbd> 旋转视角</div>
+      <div><kbd>C</kbd> 隐藏/显示 UI</div>
+      <div><kbd>S</kbd> 保存截图</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
