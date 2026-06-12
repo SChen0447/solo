@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>足迹地图博客</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <canvas id="mapCanvas"></canvas>
+    
+    <div id="timelinePanel" class="timeline-panel">
+      <div class="timeline-header">
+        <h3>旅行时间线</h3>
+      </div>
+      <div id="timelineList" class="timeline-list"></div>
+    </div>
+    
+    <div id="searchBox" class="search-box">
+      <input type="text" id="searchInput" placeholder="搜索景点名称..." />
+      <button id="clearBtn" class="clear-btn">×</button>
+    </div>
+    
+    <div id="infoCard" class="info-card hidden">
+      <div class="info-card-header">
+        <h4 id="cardTitle"></h4>
+        <button class="close-btn" id="cardCloseBtn">×</button>
+      </div>
+      <div class="info-card-date" id="cardDate"></div>
+      <div class="info-card-summary" id="cardSummary"></div>
+      <button class="read-more-btn" id="readMoreBtn">展开阅读</button>
+    </div>
+    
+    <div id="modalOverlay" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button class="modal-close" id="modalCloseBtn">×</button>
+        <h3 id="modalTitle"></h3>
+        <div class="modal-date" id="modalDate"></div>
+        <div class="modal-story" id="modalStory"></div>
+      </div>
+    </div>
+    
+    <div id="statsBar" class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-icon">🌍</span>
+        <span id="totalMarkers">0</span>
+        <span class="stat-label">景点</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">🌏</span>
+        <span id="totalContinents">0</span>
+        <span class="stat-label">大洲</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-icon">✈️</span>
+        <span id="latestCountry">-</span>
+        <span class="stat-label">最新国家</span>
+      </div>
+      <div class="stat-item">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="stat-label" id="statusLabel">离线</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
