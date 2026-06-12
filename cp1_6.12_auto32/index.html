@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>银河星图 · Galaxy Star Map</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <canvas id="starCanvas"></canvas>
+
+  <div class="search-panel" id="searchPanel">
+    <button class="search-toggle" id="searchToggle" title="搜索星体">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="M21 21l-4.35-4.35"></path>
+      </svg>
+    </button>
+    <div class="search-wrapper" id="searchWrapper">
+      <div class="search-header">
+        <h3>星体搜索</h3>
+        <button class="search-close" id="searchClose">&times;</button>
+      </div>
+      <div class="search-input-wrapper">
+        <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="M21 21l-4.35-4.35"></path>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          class="search-input"
+          placeholder="输入星名 (如 Sirius) 或坐标 (RA:10-12 Dec:+20-30)"
+          autocomplete="off"
+        />
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </div>
+
+  <div class="coords-panel" id="coordsPanel">
+    <div class="coords-row">
+      <span class="coords-label">X:</span>
+      <span class="coords-value" id="coordX">0.00</span>
+    </div>
+    <div class="coords-row">
+      <span class="coords-label">Y:</span>
+      <span class="coords-value" id="coordY">0.00</span>
+    </div>
+    <div class="coords-row">
+      <span class="coords-label">Z:</span>
+      <span class="coords-value" id="coordZ">0.00</span>
+    </div>
+    <div class="coords-row coords-sep"></div>
+    <div class="coords-row">
+      <span class="coords-label">RA:</span>
+      <span class="coords-value" id="coordRA">00h00m</span>
+    </div>
+    <div class="coords-row">
+      <span class="coords-label">Dec:</span>
+      <span class="coords-value" id="coordDec">+00°00′</span>
+    </div>
+  </div>
+
+  <div class="info-card" id="infoCard">
+    <div class="info-card-header">
+      <div class="info-star-color" id="infoStarColor"></div>
+      <div class="info-star-name" id="infoStarName">—</div>
+    </div>
+    <div class="info-card-body">
+      <div class="info-row">
+        <span class="info-label">光谱类型</span>
+        <span class="info-value" id="infoSpectral">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">视星等</span>
+        <span class="info-value accent" id="infoMagnitude">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">距离太阳</span>
+        <span class="info-value accent" id="infoDistance">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">赤经 (RA)</span>
+        <span class="info-value" id="infoRA">—</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">赤纬 (Dec)</span>
+        <span class="info-value" id="infoDec">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls-hint">
+    <span>🖱 拖拽旋转 · 滚轮缩放 · WASD 平移 · 点击星体查看详情</span>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
