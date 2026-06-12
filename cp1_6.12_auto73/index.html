@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>蚁群算法可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #c4a882;
+      color: #3d2b1f;
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    #app {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    #canvas-container {
+      position: relative;
+      flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #simulation-canvas {
+      display: block;
+      background-color: #D2B48C;
+      cursor: crosshair;
+    }
+
+    #ui-panel {
+      width: 260px;
+      flex-shrink: 0;
+      background-color: #e8d5b7;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: bold;
+      color: #5c4033;
+      border-bottom: 2px solid #8b6914;
+      padding-bottom: 8px;
+      margin-bottom: 4px;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 14px;
+    }
+
+    .stat-label {
+      color: #6b4e36;
+    }
+
+    .stat-value {
+      font-weight: bold;
+      color: #3d2b1f;
+      font-family: 'Courier New', monospace;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 80px;
+      background-color: #f5e6d3;
+      border-radius: 4px;
+      border: 1px solid #c4a882;
+      margin-top: 4px;
+    }
+
+    #rate-chart {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-reset {
+      background-color: #c0392b;
+    }
+
+    .btn-reset:hover {
+      background-color: #e74c3c;
+    }
+
+    .btn-speed {
+      background-color: #2980b9;
+    }
+
+    .btn-speed:hover {
+      background-color: #3498db;
+    }
+
+    .btn-toggle {
+      background-color: #27ae60;
+    }
+
+    .btn-toggle:hover {
+      background-color: #2ecc71;
+    }
+
+    .instructions {
+      font-size: 11px;
+      color: #6b4e36;
+      line-height: 1.5;
+      padding: 8px;
+      background-color: #f5e6d3;
+      border-radius: 4px;
+      margin-top: 4px;
+    }
+
+    #mobile-panel {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: #e8d5b7;
+      padding: 10px 16px;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    .mobile-stats {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .mobile-stat {
+      text-align: center;
+    }
+
+    .mobile-stat-label {
+      color: #6b4e36;
+      font-size: 10px;
+    }
+
+    .mobile-stat-value {
+      font-weight: bold;
+      color: #3d2b1f;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        padding-bottom: 70px;
+      }
+
+      #ui-panel {
+        display: none;
+      }
+
+      #mobile-panel {
+        display: block;
+      }
+
+      #canvas-container {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      #simulation-canvas {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="simulation-canvas" width="800" height="600"></canvas>
+    </div>
+    
+    <div id="ui-panel">
+      <div class="panel-title">🐜 蚁群模拟</div>
+      
+      <div class="stat-row">
+        <span class="stat-label">活跃蚂蚁:</span>
+        <span class="stat-value" id="ant-count">0</span>
+      </div>
+      
+      <div class="stat-row">
+        <span class="stat-label">已采集食物:</span>
+        <span class="stat-value" id="food-count">0</span>
+      </div>
+      
+      <div class="stat-row">
+        <span class="stat-label">信息素浓度:</span>
+        <span class="stat-value" id="pheromone-level">0.00</span>
+      </div>
+      
+      <div>
+        <span class="stat-label">食物采集速率 (30s):</span>
+        <div class="chart-container">
+          <canvas id="rate-chart" width="228" height="80"></canvas>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button class="btn btn-reset" id="btn-reset">重置场景</button>
+        <button class="btn btn-speed" id="btn-speed">加速 2x</button>
+        <button class="btn btn-toggle" id="btn-pheromone">隐藏信息素</button>
+      </div>
+      
+      <div class="instructions">
+        <strong>操作指南:</strong><br>
+        • 拖拽添加障碍物<br>
+        • 右键移除障碍物<br>
+        • 长按左键放置食物<br>
+        • H键 切换热力图
+      </div>
+    </div>
+  </div>
+  
+  <div id="mobile-panel">
+    <div class="mobile-stats">
+      <div class="mobile-stat">
+        <div class="mobile-stat-label">蚂蚁</div>
+        <div class="mobile-stat-value" id="mobile-ant-count">0</div>
+      </div>
+      <div class="mobile-stat">
+        <div class="mobile-stat-label">食物</div>
+        <div class="mobile-stat-value" id="mobile-food-count">0</div>
+      </div>
+      <div class="mobile-stat">
+        <div class="mobile-stat-label">信息素</div>
+        <div class="mobile-stat-value" id="mobile-pheromone-level">0.00</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
