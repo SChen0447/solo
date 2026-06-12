@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T06:54:08.762Z",
+  "task_name": "auto102",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一个多人协作的线上读书会需要一款工具，让成员可以共同标注书籍段落、写批注、并实时看到他人的想法气泡浮现在书页上。\n\n构建一个在线阅读协作批注应用，使用TypeScript+React前端与FastAPI后端实现，数据通过本地模拟或fake API在单机运行测试。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：vite, react, @types/react, fastapi, uvicorn，假数据用faker；启动脚本：npm run dev 和 python backend/main.py）\n - vite.config.js（Vite基础配置，代理/api到8000端口）\n - tsconfig.json（严格模式）\n - index.html（入口，浅灰#F5F5F0背景，包含React挂载点）\n - src/App.tsx（主路由组件，管理书页区域和批注列表的状态，接收用户选择段落事件，发送批注数据到后端API）\n - src/AnnotationBubble.tsx（批注气泡UI组件，渲染每个批注的圆形头像、文字内容和点赞按钮，数据从父组件经props传入，点击后触发点赞请求）\n - backend/main.py（FastAPI服务，提供GET /api/annotations和POST /api/annotations端点，返回和接收JSON批注数据，用内存列表模拟数据库）\n\n功能需求：\n1) 主页面显示一本打开的书本（左右两页，左页展示虚拟文章段落，右页预留空白），每行文字可点击选中（选中时背景变为淡黄#FFF9C4），选中后弹出批注输入框（半透明毛玻璃效果，半径12px模糊，边框#B0BEC5），输入框底部有“发送”按钮（圆形，色#4FC3F7，点击后批注出现在左页对应位置附近）。\n2) 每个批注显示为一个圆形头像气泡（直径40px，头像颜色从#FF7043、#66BB6A、#42A5F5、#AB47BC、#FFA726中按用户id取模分配），气泡内显示批注文本前3个字（超出用...），点击气泡展开全文和评论区（评论框和“发表”按钮在同一气泡内，评论上显示用户名和时间）。\n3) 书架视图：页面顶部导航栏（背景#37474F，高度56px，flex水平居中）包含“书架”按钮，点击后切换为网格视图展示3本预设书籍封面（280px宽×380px高的卡片，带box-shadow微阴影和hover上移4px过渡效果，过渡0.3s ease），封面用随机由#E3F2FD、#FCE4EC、#E8F5E9组成的渐变，点击任一卡片回到该书的批注视图。\n4) 所有批注和评论数据通过后端API获取，前端模拟延迟300ms以测试异步行为，数据用faker生成10条初始批注（每批注含id、userId、segmentText、fullText、timestamp、likes）。\n\n界面方面：整体采用暖白（#F5F0E8）背景配深灰（#37474F）导航，字体用系统无衬线，批注气泡用柔和的圆角（12px）和subtle阴影，书架卡片hover时有放大和阴影加深动画，批注输入框聚焦时边框变为#4FC3F7并微脉冲发光。所有组件适配移动端（375px宽时批注气泡缩小为30px直径，书架卡片变为纵向滚动），使用CSS Grid和Flex布局实现。\n\n性能要求：页面加载后2秒内显示书籍内容并完成初始批注渲染，批注渲染帧率不低于30fps，批注数量超过50个时自动折叠最早批注以保持交互流畅。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:ac42ea5e0fe8618fb38ddff4fa6b7c6b_6a2bac46073bc525f525f6c7.6a2bad04073bc525f525f773.6a2bad040c92f1228653f633:Trae CN.T(2026/6/12 14:53:56)",
+    "user_id": "3986207660317399",
+    "trace_id": "ac42ea5e0fe8618fb38ddff4fa6b7c6b",
+    "session_id": "6a2bac46073bc525f525f6c7",
+    "task_id": "6a2bad04073bc525f525f773",
+    "message_id": "6a2bad040c92f1228653f633",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 14:53:56",
+    "format": "full"
+  },
+  "trace": "null"
+}
