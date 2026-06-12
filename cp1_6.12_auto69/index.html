@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>声波共振 - Sonic Resonance Puzzle</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0D1117;
+      color: #E0E0E0;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      background-image:
+        radial-gradient(ellipse at top, rgba(65, 105, 225, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom, rgba(255, 0, 255, 0.06) 0%, transparent 50%);
+    }
+
+    .game-container {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      align-items: flex-start;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 160px;
+    }
+
+    .main-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .game-header {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .game-title {
+      font-size: 22px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00CED1, #FF00FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+
+    .level-indicator {
+      font-size: 14px;
+      color: #888;
+      padding: 4px 12px;
+      border: 1px solid #333;
+      border-radius: 8px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow:
+        0 0 40px rgba(0, 206, 209, 0.15),
+        0 0 80px rgba(255, 0, 255, 0.08),
+        inset 0 0 0 2px rgba(0, 206, 209, 0.2);
+    }
+
+    #gameCanvas {
+      display: block;
+      background: #0D1117;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .timer-box {
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 206, 209, 0.4);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Consolas', monospace;
+      box-shadow: 0 0 12px rgba(0, 206, 209, 0.15);
+    }
+
+    .shot-counter-box {
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 0, 255, 0.4);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 14px;
+      box-shadow: 0 0 12px rgba(255, 0, 255, 0.15);
+    }
+
+    .shot-counter-box .count {
+      font-size: 20px;
+      font-weight: 600;
+      font-family: 'Consolas', monospace;
+      color: #FF00FF;
+    }
+
+    .control-panel {
+      width: 100%;
+      max-width: 600px;
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(20, 25, 35, 0.9);
+      border: 1px solid #222;
+      border-radius: 12px;
+      align-items: center;
+    }
+
+    .emitter-info {
+      flex: 1;
+      text-align: center;
+    }
+
+    .frequency-display {
+      font-size: 28px;
+      font-weight: 700;
+      font-family: 'Consolas', monospace;
+      background: linear-gradient(90deg, #4169E1, #DC143C);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .frequency-label {
+      font-size: 12px;
+      color: #888;
+      letter-spacing: 1px;
+    }
+
+    .angle-display {
+      font-size: 13px;
+      color: #00CED1;
+      margin-top: 6px;
+    }
+
+    .slider-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+    }
+
+    .slider-ticks {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 180px;
+      font-size: 10px;
+      color: #666;
+      font-family: 'Consolas', monospace;
+    }
+
+    input[type="range"].freq-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 180px;
+      height: 6px;
+      background: linear-gradient(90deg, #4169E1, #DC143C);
+      border-radius: 3px;
+      outline: none;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      cursor: pointer;
+    }
+
+    input[type="range"].freq-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      border: 3px solid #00CED1;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 206, 209, 0.6);
+      transition: all 0.15s;
+    }
+
+    input[type="range"].freq-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px rgba(0, 206, 209, 0.9);
+    }
+
+    .fire-btn {
+      padding: 14px 36px;
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #00CED1 0%, #4169E1 100%);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 20px rgba(0, 206, 209, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .fire-btn:hover:not(:disabled) {
+      filter: brightness(1.2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 28px rgba(0, 206, 209, 0.6);
+    }
+
+    .fire-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      filter: grayscale(0.5);
+    }
+
+    .cooldown-bar {
+      width: 100%;
+      height: 4px;
+      background: #1a1f2e;
+      border-radius: 2px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .cooldown-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #FF00FF, #DC143C);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    .level-complete-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.25) 0%, rgba(0, 0, 0, 0.8) 70%);
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    .level-complete-overlay.show {
+      display: flex;
+      animation: flashIn 1.5s ease-out forwards;
+    }
+
+    .level-complete-text {
+      font-size: 52px;
+      font-weight: 800;
+      letter-spacing: 6px;
+      background: linear-gradient(135deg, #FFD700, #FFA500, #FFD700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+      animation: pulseText 1.5s ease-in-out infinite;
+    }
+
+    @keyframes flashIn {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes pulseText {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .info-card {
+      background: rgba(20, 25, 35, 0.9);
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 14px;
+    }
+
+    .info-card h3 {
+      font-size: 13px;
+      color: #00CED1;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .info-card p {
+      font-size: 12px;
+      line-height: 1.7;
+      color: #aaa;
+    }
+
+    .info-card .crystal-status {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .crystal-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      background: #333;
+      border: 1px solid #555;
+      transition: all 0.3s;
+    }
+
+    .crystal-dot.active {
+      background: linear-gradient(135deg, #00CED1, #FF00FF);
+      border-color: #FFD700;
+      box-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="left-panel">
+      <div class="info-card">
+        <h3>游戏说明</h3>
+        <p>
+          🎯 拖动发射器调整角度<br>
+          🎚️ 滑块调节发射频率<br>
+          💥 点击按钮发射声波<br>
+          💎 匹配水晶共振频率<br>
+          ✨ 激活所有水晶通关
+        </p>
+      </div>
+      <div class="info-card">
+        <h3>水晶状态</h3>
+        <div class="crystal-status" id="crystalStatus"></div>
+      </div>
+      <div class="info-card">
+        <h3>操作提示</h3>
+        <p style="font-size: 11px; color: #777;">
+          反射时注意角度，合理利用障碍物折射声波。选择接近水晶隐藏频率的波段以触发共振！
+        </p>
+      </div>
+    </div>
+
+    <div class="main-area">
+      <div class="game-header">
+        <div class="game-title">◈ SONIC RESONANCE ◈</div>
+        <div class="level-indicator" id="levelIndicator">第 1 / 3 关</div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <canvas id="gameCanvas" width="600" height="800"></canvas>
+        <div class="ui-overlay">
+          <div class="shot-counter-box">
+            剩余发射: <span class="count" id="shotCount">15</span>
+          </div>
+          <div class="timer-box">
+            ⏱ <span id="timer">0.0</span>s
+          </div>
+        </div>
+        <div class="level-complete-overlay" id="levelCompleteOverlay">
+          <div class="level-complete-text">关 卡 完 成</div>
+        </div>
+      </div>
+
+      <div class="control-panel">
+        <div class="emitter-info">
+          <div class="frequency-display" id="freqDisplay">500 Hz</div>
+          <div class="frequency-label">FREQUENCY</div>
+          <div class="angle-display" id="angleDisplay">角度: 90°</div>
+          <div class="cooldown-bar" id="cooldownBar">
+            <div class="cooldown-fill" id="cooldownFill"></div>
+          </div>
+        </div>
+
+        <div class="slider-wrapper">
+          <div class="slider-ticks">
+            <span>1000</span>
+            <span>900</span>
+            <span>800</span>
+            <span>700</span>
+            <span>600</span>
+            <span>500</span>
+            <span>400</span>
+            <span>300</span>
+            <span>200</span>
+            <span>100</span>
+          </div>
+        </div>
+
+        <div class="slider-wrapper">
+          <input
+            type="range"
+            class="freq-slider"
+            id="freqSlider"
+            min="100"
+            max="1000"
+            step="100"
+            value="500"
+            style="margin: 90px 0;"
+          />
+        </div>
+
+        <button class="fire-btn" id="fireBtn">发 射</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/GameEngine.ts"></script>
+</body>
+</html>
