@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Element Chain Reaction Sandbox</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a1a2e 100%);
+      font-family: 'Courier New', monospace;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #game-canvas {
+      display: block;
+      width: 80%;
+      height: 80%;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      box-shadow: 0 0 40px rgba(100, 100, 255, 0.2);
+      cursor: crosshair;
+    }
+
+    #hud-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    #toolbar {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      padding: 15px 25px;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 30px;
+      pointer-events: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .element-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .element-btn:hover {
+      transform: scale(1.1);
+    }
+
+    .element-btn.active {
+      transform: scale(1.2);
+    }
+
+    .element-btn.fire {
+      background: #ff4444;
+      border-color: #ff6666;
+      box-shadow: 0 0 10px #ff4444;
+    }
+
+    .element-btn.fire.active {
+      box-shadow: 0 0 20px #ff4444, 0 0 30px #ff4444;
+    }
+
+    .element-btn.water {
+      background: #4488ff;
+      border-color: #66aaff;
+      box-shadow: 0 0 10px #4488ff;
+    }
+
+    .element-btn.water.active {
+      box-shadow: 0 0 20px #4488ff, 0 0 30px #4488ff;
+    }
+
+    .element-btn.earth {
+      background: #8b5a2b;
+      border-color: #a67c52;
+      box-shadow: 0 0 10px #8b5a2b;
+    }
+
+    .element-btn.earth.active {
+      box-shadow: 0 0 20px #8b5a2b, 0 0 30px #8b5a2b;
+    }
+
+    .element-btn.air {
+      background: #88ddff;
+      border-color: #aaeeff;
+      box-shadow: 0 0 10px #88ddff;
+    }
+
+    .element-btn.air.active {
+      box-shadow: 0 0 20px #88ddff, 0 0 30px #88ddff;
+    }
+
+    #energy-counter {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      font-size: 24px;
+      font-weight: bold;
+      color: #ffd700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 0 0 10px rgba(255, 215, 0, 0.5);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #energy-counter .energy-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff7a0 0%, #ffd700 50%, #ffaa00 100%);
+      box-shadow: 0 0 10px #ffd700;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    #chain-indicator {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      font-weight: bold;
+      color: #ffff00;
+      text-shadow: 0 0 10px #ffff00;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    #chain-indicator.visible {
+      opacity: 1;
+      animation: chainPulse 0.5s ease-in-out infinite;
+    }
+
+    @keyframes chainPulse {
+      0%, 100% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.05); }
+    }
+
+    #fps-counter {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="hud-overlay">
+      <div id="energy-counter">
+        <div class="energy-icon"></div>
+        <span id="energy-value">0</span>
+      </div>
+      <div id="toolbar">
+        <button class="element-btn fire" data-element="fire" title="Fire"></button>
+        <button class="element-btn water" data-element="water" title="Water"></button>
+        <button class="element-btn earth" data-element="earth" title="Earth"></button>
+        <button class="element-btn air" data-element="air" title="Air"></button>
+      </div>
+      <div id="chain-indicator"></div>
+      <div id="fps-counter">FPS: 60</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
