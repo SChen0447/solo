@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T07:06:31.565Z",
+  "task_name": "auto109",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "构建一个基于地理位置的数字寻宝游戏应用，玩家可以在浏览器地图上探索虚拟宝箱，通过回答谜题或完成小游戏来解锁宝箱，并获得积分和成就徽章。使用TypeScript和React实现前端，FastAPI实现后端，所有数据通过本地模拟或fake API在单机运行测试。文件结构如下：\n - package.json（依赖：vite, react, @types/react, react-router-dom, leaflet, @types/leaflet, fastapi, uvicorn, faker；启动脚本：npm run dev 和 python backend/main.py）\n - vite.config.js（Vite基础配置，代理/api到后端）\n - tsconfig.json（严格模式，ESModule，target es2020）\n - index.html（入口，全屏地图容器，暗色主题）\n - src/MapView.tsx（地图组件，使用Leaflet嵌入OSM地图，渲染宝箱标记和玩家位置，接收后端宝箱数据，输出点击事件）\n - src/GameEngine.ts（游戏逻辑引擎，管理宝箱解锁状态、谜题答案验证、积分计算和成就触发）\n - backend/main.py（FastAPI应用，提供/api/treasures（获取宝箱列表）、/api/treasure/{id}/puzzle（获取谜题）、/api/treasure/{id}/solve（验证答案更新积分）三个接口，返回JSON数据）\n\n具体需求：\n1. 地图上随机分布20个宝箱标记（金色图标，大小24x24，带有浮动动画，上下移动范围5px，周期2秒），玩家初始位置在(39.9042, 116.4074)，可以通过鼠标拖拽和滚轮缩放地图，缩放范围1到18级。\n2. 点击宝箱标记弹出谜题面板（毛玻璃效果，半透明背景rgba(0,0,0,0.4)，面板从上方滑入，持续0.3秒），谜题为文字描述类（如“什么东西越洗越脏？答案是水”）或简单选择题，面板内包含输入框和“提交答案”按钮。\n3. 答对谜题后，宝箱自动打开并显示获得的积分（+10到+100随机）和一枚成就徽章（如“探索者”、“智者”、“勇者”等，每个宝箱对应一种），同时播放粒子爆炸动画（20个彩色粒子从宝箱位置向外扩散，持续0.5秒）。\n4. 右上角显示玩家总积分和已解锁宝箱数量（数字带缩放动画，每次增加时从1.1倍缩放到1倍，持续0.3秒），点击可展开成就列表，展示所有已获得徽章（小图标+名称，网格布局，每行5个）。\n5. 页脚导航栏提供“重置游戏”按钮，点击后清空所有本地状态和积分，地图回到初始位置。\n\n界面方面：整体采用冒险主题的暖色调配色，背景为深灰蓝#1A2333，地图控件使用金色#F59E0B和暗红#991B1B点缀，按钮采用毛玻璃风格（backdrop-filter: blur(8px)，边框1px实线rgba(255,255,255,0.2)），hover时背景变为半透明白，所有弹窗和面板带有缓动动画，地图加载时显示loading动画（旋转指南针图标）。响应式适配，手机端地图占满宽度，面板改为底部弹出。\n\n性能要求：地图加载与宝箱请求应在1秒内完成，粒子动画帧率稳定在30fps以上，本地状态更新延迟低于100ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:7de800eefc4f3d735a86389dadd33a29_6a2baf5f5133de6bde0571d4.6a2bafeb5133de6bde057229.6a2bafeb83d9da73fdb19a1e:Trae CN.T(2026/6/12 15:06:19)",
+    "user_id": "3986207660317399",
+    "trace_id": "7de800eefc4f3d735a86389dadd33a29",
+    "session_id": "6a2baf5f5133de6bde0571d4",
+    "task_id": "6a2bafeb5133de6bde057229",
+    "message_id": "6a2bafeb83d9da73fdb19a1e",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 15:06:19",
+    "format": "full"
+  },
+  "trace": "null"
+}
