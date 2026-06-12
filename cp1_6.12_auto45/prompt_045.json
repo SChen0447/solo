@@ -1,0 +1,6 @@
+{
+    "任务类型": "0-1代码生成",
+    "业务领域": "全栈web应用",
+    "修改范围": "模块内多文件",
+    "提示词内容": "开发一个在线投票与实时结果统计看板应用，让用户创建投票活动，参与者实时投票并立即看到结果图表更新。使用TypeScript和React实现前端，用Node.js + Express搭建本地Mock后端服务。文件结构如下：\n - package.json（依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, express, uuid, axios, chart.js, react-chartjs-2；启动脚本：npm run dev）\n - vite.config.js（React插件配置，devServer代理至本地mock接口）\n - tsconfig.json（严格模式，ESModule）\n - index.html（入口，包含id为root的div容器）\n - server.js（Express模拟后端，提供投票创建、投票提交和结果查询接口，使用内存存储数据）\n - src/App.tsx（主组件，管理路由和全局状态）\n - src/CreatePoll.tsx（创建投票表单组件，提交后重定向到投票页面）\n - src/VotePage.tsx（投票页面组件，显示选项并提交投票，使用接口轮询或SSE实现实时更新）\n - src/ResultChart.tsx（图表组件，使用chart.js展示实时投票结果）\n\n具体需求：\n1. 用户可以在创建页面输入投票标题和至少2个选项，每个选项可设置图标和颜色，提交后生成唯一链接。\n2. 投票页面展示所有选项，每个选项以卡片形式呈现，包含图标、文本和进度条，点击后提交投票并立即更新进度（颜色随选项变化）。\n3. 实时结果页面使用柱状图或圆环图展示投票分布，图表在每次投票后平滑过渡更新（动画时长0.5秒）。\n4. 支持设置投票截止时间，截止后选项不可再点击，图表显示为最终结果。\n5. 允许匿名投票，同一设备同一投票只能投一次（用localStorage记录）。\n\n界面方面：整体采用深色主题（主背景#1a1a2e，卡片背景#16213e，强调色#e94560），卡片带有柔和圆角和轻微悬浮阴影，投票选项在被选中时有放大和颜色填充的过渡动画（0.3秒），图表使用与选项对应的颜色渐变，页面响应式适配移动端和桌面端。\n\n性能要求：API响应时间不超过200ms，图表更新帧率保持60fps。\n\n运行方式：npm install && npm run dev。"
+}
