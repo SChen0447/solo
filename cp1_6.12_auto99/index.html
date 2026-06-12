@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>植物根系生长模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #1B2A3B 0%, #3D2B1F 100%);
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+
+    #label-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .root-label {
+      background: rgba(30, 20, 10, 0.9);
+      border: 1px solid #8B5E3C;
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: #E8D5B7;
+      font-size: 12px;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      transform: translate(-50%, -120%);
+    }
+
+    .root-label .label-title {
+      font-weight: 600;
+      color: #D4A373;
+      margin-bottom: 4px;
+    }
+
+    .root-label .label-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .root-label .label-value {
+      color: #7CB342;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .lil-gui {
+      --background-color: rgba(30, 20, 10, 0.7) !important;
+      --widget-color: rgba(93, 64, 55, 0.6) !important;
+      --focus-color: #D4A373 !important;
+      --hover-color: rgba(139, 94, 60, 0.5) !important;
+      --font-color: #E8D5B7 !important;
+      --font-family: 'Segoe UI', -apple-system, sans-serif !important;
+      --width: 280px !important;
+      --border-color: #8B5E3C !important;
+      --border-width: 1px !important;
+      border-radius: 8px !important;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      animation: fadeIn 0.2s ease-out 0.1s forwards;
+    }
+
+    .lil-gui.root {
+      border: 1px solid #8B5E3C !important;
+      border-radius: 8px !important;
+      padding: 16px !important;
+    }
+
+    .lil-gui .name {
+      color: #E8D5B7 !important;
+    }
+
+    .lil-gui .slider {
+      background: #5D4037 !important;
+      border-radius: 4px;
+    }
+
+    .lil-gui .slider > .fill {
+      background: #D4A373 !important;
+    }
+
+    .lil-gui .slider > .handle {
+      background: #D4A373 !important;
+      border: 2px solid #fff !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50% !important;
+    }
+
+    .lil-gui .controller {
+      border-bottom: 1px solid rgba(139, 94, 60, 0.3) !important;
+    }
+
+    .lil-gui .title {
+      color: #D4A373 !important;
+      font-weight: 600 !important;
+      font-size: 13px !important;
+    }
+
+    .lil-gui .boolean > .widget {
+      background: rgba(139, 94, 60, 0.4) !important;
+    }
+
+    .custom-btn {
+      width: 100%;
+      padding: 10px 16px;
+      margin-top: 8px;
+      background: linear-gradient(135deg, #8B5E3C 0%, #6B4B2B 100%);
+      color: #E8D5B7;
+      border: 1px solid #D4A373;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .custom-btn:hover {
+      background: linear-gradient(135deg, #A67B52 0%, #8B5E3C 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(212, 163, 115, 0.3);
+    }
+
+    .custom-btn:active {
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="label-container"></div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
