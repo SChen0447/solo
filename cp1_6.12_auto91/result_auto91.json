@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T06:38:30.237Z",
+  "task_name": "auto91",
+  "task_type": "0-1代码生成",
+  "business_domain": "Web前端",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个交互式音乐波形可视化与简易合成器应用，让用户在浏览器中通过绘制波形（正弦波、方波、锯齿波）和调节包络参数（ADSR），实时生成并听到对应的电子音色，同时看到波形动态绘制在Canvas画布上。使用TypeScript、Canvas API和Vite实现，所有逻辑在浏览器端本地运行，无需后端。文件结构如下：\n - package.json（依赖：vite, typescript；启动脚本：npm run dev）\n - vite.config.js（Vite基础配置）\n - tsconfig.json（严格模式，ESModule）\n - index.html（入口，深色渐变背景，全屏应用容器）\n - src/AudioEngine.ts（负责Web Audio API初始化、波形生成、包络控制、播放停止逻辑）\n - src/Visualizer.ts（负责Canvas波形绘制、实时频谱动画、坐标轴和网格渲染）\n - src/UIManager.ts（负责DOM交互界面渲染、参数调节滑块事件绑定、布局管理，调用AudioEngine和Visualizer）\n\n具体需求：\n1. 用户进入页面后，看到一个深色科技风（主背景#121212，辅色#1E1E2E）的界面，左侧为波形控制面板（宽300px，半透明白色文字），右侧为波形显示画布（面积占剩余宽度，背景#0D1117）。默认选择正弦波，频率440Hz，音量0.5，ADSR参数：Attack 0.1s, Decay 0.2s, Sustain 0.7, Release 0.5s。画布上显示一个静态的正弦波形图（绿色线条，#4CAF50，线宽2px）。\n2. 波形选择区域提供三个可点击的圆形按钮（直径50px，分别标注正弦波（蓝色#448AFF）、方波（橙色#FF7043）、锯齿波（紫色#AB47BC）），选中按钮有发光内阴影（box-shadow inset 0 0 12px rgba(255,255,255,0.3)）和1.1倍的缩放动画（transition 0.2s ease）。点击后波形立即切换，画布上的波形线条同步变化颜色（正弦波绿#4CAF50，方波橙#FF7043，锯齿波紫#AB47BC）。\n3. 包络控制区包含四个垂直滑块（Attack, Decay, Sustain, Release），滑块宽8px，高100px，轨道路径为深灰#333，滑块手柄为圆形（直径16px，颜色与当前波形一致），拖拽时手柄周围出现光晕（径向渐变）。滑块值实时显示在下方数字标签（白色，字号14px）。Sustain滑块范围为0.0-1.0，其他为0.01-2.0秒。\n4. 右下角有一个播放/停止按钮（圆形，直径55px，播放图标为三角形，停止图标为正方形，颜色#E0E0E0），点击时背景颜色根据状态变化：播放时变为绿色#4CAF50并开始播放当前波形和包络（循环播放，每次触发一个音符，由用户点击按钮触发），停止时恢复为#616161按钮动画有0.3s的scale脉冲效果。\n5. 画布上除了实时波形外，还在右上角显示当前频率数字（白色，字号16px，等宽字体），在左下角显示音量电平条（水平条形，宽80px，高8px，背景#333，填充#76FF03，随音量线性变化）。\n\n界面方面：整体采用暗深色主题，统一使用无衬线字体（Inter或system-ui）。布局为左右两栏，左侧控制面板内部使用flex列排列，每个控制区之间有12px间距，控制面板顶部有应用标题“WaveSynth”（字体18px，字重600，颜色#E0E0E0）。所有交互元素在hover时应有轻微亮度变化（filter brightness(1.2)），点击或切换时有平滑的transition（0.2s ease）。响应式适配：屏幕宽度小于768px时，控制面板移到上方，画布区域在下方，高度各占50%。\n\n性能要求：波形绘制和音频播放的帧率不低于60fps，音频缓冲无卡顿（延迟<10ms）。使用requestAnimationFrame进行动画循环，AudioContext管理音频处理。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:0f421714a98825187d1cb5b009775890_6a2ba8dccc839ad4a581e8da.6a2ba94acc839ad4a581e92b.6a2ba9491bb8d2a69ea071e8:Trae CN.T(2026/6/12 14:38:02)",
+    "user_id": "3986207660317399",
+    "trace_id": "0f421714a98825187d1cb5b009775890",
+    "session_id": "6a2ba8dccc839ad4a581e8da",
+    "task_id": "6a2ba94acc839ad4a581e92b",
+    "message_id": "6a2ba9491bb8d2a69ea071e8",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 14:38:02",
+    "format": "full"
+  },
+  "trace": "null"
+}

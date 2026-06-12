@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WaveSynth - Interactive Wave Synthesizer</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #121212 0%, #1E1E2E 100%);
+      color: #E0E0E0;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: row;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #control-panel {
+      width: 300px;
+      min-width: 300px;
+      background: rgba(30, 30, 46, 0.85);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      overflow-y: auto;
+    }
+
+    #canvas-container {
+      flex: 1;
+      position: relative;
+      background: #0D1117;
+    }
+
+    #wave-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #E0E0E0;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .control-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wave-selector {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      padding: 8px 0;
+    }
+
+    .wave-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .wave-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .wave-btn.sine {
+      background: #448AFF;
+    }
+
+    .wave-btn.square {
+      background: #FF7043;
+    }
+
+    .wave-btn.sawtooth {
+      background: #AB47BC;
+    }
+
+    .wave-btn.active {
+      box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .slider-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      padding: 8px 0;
+    }
+
+    .vertical-slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .vertical-slider-label {
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .vertical-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100px;
+      height: 8px;
+      border-radius: 4px;
+      background: #333;
+      outline: none;
+      transform: rotate(-90deg);
+      transform-origin: center;
+      cursor: pointer;
+    }
+
+    .vertical-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.6);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .vertical-slider::-webkit-slider-thumb:hover,
+    .vertical-slider:active::-webkit-slider-thumb {
+      box-shadow: 0 0 12px 4px rgba(76, 175, 80, 0.5);
+    }
+
+    .vertical-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4CAF50;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.6);
+      transition: box-shadow 0.2s ease;
+    }
+
+    .slider-value {
+      font-size: 14px;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      min-width: 40px;
+      text-align: center;
+    }
+
+    .param-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 4px 0;
+    }
+
+    .param-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .param-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #333;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .param-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #76FF03;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .param-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 10px 2px rgba(118, 255, 3, 0.4);
+    }
+
+    .param-slider::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #76FF03;
+      cursor: pointer;
+      border: none;
+    }
+
+    #play-btn {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: #616161;
+      color: #E0E0E0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      font-size: 0;
+    }
+
+    #play-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    #play-btn.playing {
+      background: #4CAF50;
+    }
+
+    #play-btn::before {
+      content: '';
+      display: block;
+    }
+
+    #play-btn.play-icon::before {
+      width: 0;
+      height: 0;
+      border-left: 16px solid #E0E0E0;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      margin-left: 4px;
+    }
+
+    #play-btn.stop-icon::before {
+      width: 16px;
+      height: 16px;
+      background: #E0E0E0;
+    }
+
+    #play-btn.pulse {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    #freq-display {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      font-size: 16px;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #volume-meter {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      width: 80px;
+      height: 8px;
+      background: #333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    #volume-fill {
+      height: 100%;
+      width: 50%;
+      background: #76FF03;
+      border-radius: 4px;
+      transition: width 0.05s linear;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      #control-panel {
+        width: 100%;
+        min-width: 100%;
+        height: 50vh;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      }
+
+      #canvas-container {
+        height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside id="control-panel">
+      <h1 class="app-title">WaveSynth</h1>
+
+      <div class="control-section">
+        <div class="section-title">Waveform</div>
+        <div class="wave-selector">
+          <button class="wave-btn sine active" data-wave="sine">Sine</button>
+          <button class="wave-btn square" data-wave="square">Square</button>
+          <button class="wave-btn sawtooth" data-wave="sawtooth">Saw</button>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">Frequency</div>
+        <div class="param-row">
+          <div class="param-label">
+            <span>Freq</span>
+            <span id="freq-value">440 Hz</span>
+          </div>
+          <input type="range" id="freq-slider" class="param-slider" min="20" max="2000" value="440" step="1">
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">Volume</div>
+        <div class="param-row">
+          <div class="param-label">
+            <span>Vol</span>
+            <span id="vol-value">0.50</span>
+          </div>
+          <input type="range" id="vol-slider" class="param-slider" min="0" max="1" value="0.5" step="0.01">
+        </div>
+      </div>
+
+      <div class="control-section">
+        <div class="section-title">Envelope (ADSR)</div>
+        <div class="slider-group">
+          <div class="vertical-slider-container">
+            <span class="vertical-slider-label">A</span>
+            <input type="range" id="attack-slider" class="vertical-slider" min="0.01" max="2" value="0.1" step="0.01">
+            <span class="slider-value" id="attack-value">0.10</span>
+          </div>
+          <div class="vertical-slider-container">
+            <span class="vertical-slider-label">D</span>
+            <input type="range" id="decay-slider" class="vertical-slider" min="0.01" max="2" value="0.2" step="0.01">
+            <span class="slider-value" id="decay-value">0.20</span>
+          </div>
+          <div class="vertical-slider-container">
+            <span class="vertical-slider-label">S</span>
+            <input type="range" id="sustain-slider" class="vertical-slider" min="0" max="1" value="0.7" step="0.01">
+            <span class="slider-value" id="sustain-value">0.70</span>
+          </div>
+          <div class="vertical-slider-container">
+            <span class="vertical-slider-label">R</span>
+            <input type="range" id="release-slider" class="vertical-slider" min="0.01" max="2" value="0.5" step="0.01">
+            <span class="slider-value" id="release-value">0.50</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main id="canvas-container">
+      <canvas id="wave-canvas"></canvas>
+      <div id="freq-display">440 Hz</div>
+      <div id="volume-meter">
+        <div id="volume-fill"></div>
+      </div>
+      <button id="play-btn" class="play-icon"></button>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
