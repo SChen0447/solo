@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T05:03:49.322Z",
+  "task_name": "auto39",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个基于粒子系统的抽象艺术生成器的项目，想法是用户通过调节一系列参数（如粒子数量、运动速度、颜色渐变、吸引子位置），实时看到三维空间中成千上万个彩色粒子按照物理规则（如引力、斥力、湍流）运动并绘制出绚丽的动态图案，就像一种可以交互的流动雕塑。希望它能做到：第一，页面加载后默认显示一个黑暗背景的3D场景，其中有3000个粒子随机分布在半径为10的球体内，每个粒子是带渐变色的小圆点（从中心HSL色环随机取色），粒子以20fps以上持续运动，点击“开始/暂停”按钮控制动画启停；第二，右侧控制面板提供5个滑块（粒子数量：1000-8000、速度：0.1-5.0、湍流强度：0-3、颜色H偏移：0-360、吸引子X/Y/Z偏移：-5到5），每个滑块实时显示当前数值，拖动时整个粒子系统的运动方式和颜色即时变化，不能有卡顿；第三，用户鼠标在场景上拖拽可以任意旋转视角（带缓动惯性），滚轮平滑缩放（0.5倍到3倍），双击场景重置视角到默认位置，整个交互响应延迟低于50ms；第四，界面上有一个“截图”按钮，点击将当前粒子画面导出为PNG图片（使用Canvas.toDataURL），并自动下载保存。界面方面希望采用深色主题（背景#0a0a0f），控制面板半透明磨砂玻璃效果（backdrop-filter: blur(10px)），白色/浅灰文字，滑块用渐变色轨道（从青色渐变到品红），粒子颜色在面板调节时有一个平滑过渡动画（0.3秒过渡）。性能上要保证粒子数量达到8000时帧率仍保持24fps以上。实现用TypeScript、Three.js和Vite，把代码拆成以下文件：\n - package.json（含依赖：three, @types/three, vite, typescript；启动脚本：npm run dev）\n - vite.config.js（Vite基础配置，无特殊插件）\n - tsconfig.json（严格模式，ESModule目标）\n - index.html（入口，包含全屏Three.js容器和id为root的div）\n - src/main.ts（场景初始化、粒子系统构建、渲染循环，职责：创建Scene/Camera/Renderer，管理粒子几何体和材质，启动requestAnimationFrame循环，输出渲染结果给Canvas）\n - src/ControlsPanel.ts（UI控制面板的创建和事件绑定，职责：生成滑块DOM并绑定input事件，将用户输入的参数通过回调传递给粒子系统，数据流向：Slider input事件→回调函数→更新粒子系统的position/color等属性）\n - src/ParticleSystem.ts（粒子物理引擎和动画更新逻辑，职责：定义粒子位置、速度、颜色数组，每帧根据吸引子位置、湍流模拟计算新位置，更新BufferGeometry的attributes，输出更新的几何体给main.ts）\n\n跑 npm install && npm run dev 就能直接看到效果，一个动态粒子艺术画布。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:760c38ffadc2f892067a2474ce580d79_6a2b925319aa2a8b34945ac1.6a2b932919aa2a8b34945b76.6a2b93292fdd4b62a9a6beea:Trae CN.T(2026/6/12 13:03:37)",
+    "user_id": "3986207660317399",
+    "trace_id": "760c38ffadc2f892067a2474ce580d79",
+    "session_id": "6a2b925319aa2a8b34945ac1",
+    "task_id": "6a2b932919aa2a8b34945b76",
+    "message_id": "6a2b93292fdd4b62a9a6beea",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 13:03:37",
+    "format": "full"
+  },
+  "trace": "null"
+}
