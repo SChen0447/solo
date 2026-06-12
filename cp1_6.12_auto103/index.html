@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>微生物吞噬进化模拟器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0B132B 0%, #1A233A 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      position: relative;
+      color: #FFFFFF;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-width: 0;
+    }
+
+    .canvas-container {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      border-radius: 8px;
+      background: #0B132B;
+      box-shadow: 0 0 30px rgba(0, 255, 200, 0.2);
+      overflow: hidden;
+    }
+
+    #simulation-canvas {
+      display: block;
+      cursor: grab;
+    }
+
+    #simulation-canvas:active {
+      cursor: grabbing;
+    }
+
+    .info-panel {
+      width: 280px;
+      padding: 20px;
+      background: rgba(26, 35, 58, 0.7);
+      backdrop-filter: blur(6px);
+      border-left: 1px solid rgba(79, 195, 247, 0.2);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      transition: all 0.3s ease;
+    }
+
+    .panel-section {
+      background: rgba(11, 19, 43, 0.6);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid rgba(79, 195, 247, 0.15);
+    }
+
+    .panel-title {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .microbe-count {
+      font-size: 18px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+
+    #evolution-chart {
+      width: 100%;
+      height: 150px;
+      border-radius: 8px;
+      background: #1A233A;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.speed {
+      background: #4FC3F7;
+    }
+
+    .legend-dot.size {
+      background: #00E676;
+    }
+
+    .fastest-microbe {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(79, 195, 247, 0.5);
+      box-shadow: 0 0 15px rgba(79, 195, 247, 0.3);
+    }
+
+    .fastest-title {
+      font-size: 13px;
+      color: #4FC3F7;
+      margin-bottom: 8px;
+    }
+
+    .fastest-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .fastest-label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .fastest-value {
+      font-weight: 600;
+    }
+
+    .toolbar {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 24px;
+      background: rgba(26, 35, 58, 0.7);
+      backdrop-filter: blur(6px);
+      border-radius: 8px;
+      border: 1px solid rgba(79, 195, 247, 0.2);
+      z-index: 100;
+    }
+
+    .toolbar-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #FFFFFF;
+      transition: all 0.2s ease;
+    }
+
+    .toolbar-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .toolbar-btn:active {
+      transform: scale(0.9);
+      transition: transform 0.1s ease;
+    }
+
+    .toolbar-btn.play {
+      background: #4CAF50;
+    }
+
+    .toolbar-btn.pause {
+      background: #F44336;
+    }
+
+    .toolbar-btn.reset {
+      background: #374151;
+    }
+
+    .toolbar-btn.reset:hover {
+      background: #4FC3F7;
+    }
+
+    .speed-control {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .speed-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .speed-slider {
+      width: 120px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #374151;
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .speed-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4FC3F7;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .speed-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 10px rgba(79, 195, 247, 0.6);
+    }
+
+    .speed-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4FC3F7;
+    }
+
+    .instruction {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      background: rgba(79, 195, 247, 0.1);
+      border: 1px solid rgba(79, 195, 247, 0.3);
+      border-radius: 8px;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      #app {
+        flex-direction: column;
+      }
+
+      .info-panel {
+        width: 100%;
+        max-height: 40%;
+        border-left: none;
+        border-top: 1px solid rgba(79, 195, 247, 0.2);
+      }
+
+      .canvas-container {
+        width: 95vw;
+        height: 55vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="main-content">
+      <div class="instruction">点击培养皿生成微生物 · 拖拽平移 · 滚轮缩放</div>
+      <div class="canvas-container">
+        <canvas id="simulation-canvas" width="800" height="600"></canvas>
+      </div>
+    </div>
+    <div class="info-panel">
+      <div class="panel-section">
+        <div class="panel-title">微生物数量</div>
+        <div class="microbe-count" id="microbe-count">0</div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-title">进化树</div>
+        <canvas id="evolution-chart" width="230" height="150"></canvas>
+        <div class="chart-legend">
+          <div class="legend-item">
+            <span class="legend-dot speed"></span>
+            <span>平均速度</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot size"></span>
+            <span>平均大小</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel-section">
+        <div class="panel-title">最快微生物</div>
+        <div class="fastest-microbe" id="fastest-microbe">
+          <div class="fastest-title">暂无数据</div>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar">
+      <button class="toolbar-btn play" id="play-pause-btn" title="播放/暂停">▶</button>
+      <div class="speed-control">
+        <span class="speed-label">速度</span>
+        <input type="range" class="speed-slider" id="speed-slider" min="0.5" max="5" step="0.5" value="1">
+        <span class="speed-value" id="speed-value">1.0x</span>
+      </div>
+      <button class="toolbar-btn reset" id="reset-btn" title="重置">↻</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
