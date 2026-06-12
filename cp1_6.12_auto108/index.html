@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>水墨书法生成器</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-width: 768px;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #F5F0E8 0%, #E8E0D0 100%);
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      width: 30px;
+      height: 100%;
+      background: linear-gradient(to right, rgba(93, 64, 55, 0.15), transparent);
+      z-index: 0;
+    }
+
+    body::before { left: 0; background: linear-gradient(to right, rgba(93, 64, 55, 0.12), transparent); }
+    body::after { right: 0; background: linear-gradient(to left, rgba(93, 64, 55, 0.12), transparent); }
+
+    .title {
+      font-size: 28px;
+      color: #5D4037;
+      margin-bottom: 16px;
+      letter-spacing: 8px;
+      position: relative;
+      z-index: 1;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      z-index: 1;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .text-input {
+      width: 300px;
+      padding: 8px 14px;
+      font-size: 16px;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      border: 2px solid #D4A574;
+      border-radius: 4px;
+      background: rgba(245, 240, 232, 0.9);
+      color: #5D4037;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .text-input:focus {
+      border-color: #8D6E63;
+      box-shadow: 0 0 8px rgba(212, 165, 116, 0.4);
+    }
+
+    .btn {
+      padding: 8px 20px;
+      font-size: 15px;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      background: #5D4037;
+      color: #D4A574;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.3s, box-shadow 0.3s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: #6D4C41;
+      transform: translateY(-3px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .style-select {
+      padding: 8px 12px;
+      font-size: 15px;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      background: #5D4037;
+      color: #D4A574;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.3s;
+    }
+
+    .style-select:hover { background: #6D4C41; }
+
+    .style-select option {
+      background: #5D4037;
+      color: #D4A574;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      z-index: 1;
+      box-shadow:
+        0 4px 20px rgba(93, 64, 55, 0.25),
+        0 0 40px rgba(93, 64, 55, 0.1),
+        inset 0 0 60px rgba(93, 64, 55, 0.05);
+      border-radius: 2px;
+    }
+
+    #calligraphyCanvas {
+      display: block;
+      border: 1px solid #D4C5A9;
+    }
+
+    .hint-bar {
+      margin-top: 12px;
+      padding: 10px 24px;
+      background: rgba(245, 235, 220, 0.8);
+      border-radius: 8px;
+      color: #8D6E63;
+      font-size: 13px;
+      letter-spacing: 1px;
+      z-index: 1;
+      text-align: center;
+      line-height: 1.8;
+      backdrop-filter: blur(4px);
+    }
+
+    .seal-section {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 1;
+    }
+
+    .seal-input {
+      width: 80px;
+      padding: 8px 10px;
+      font-size: 16px;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      border: 2px solid #D4A574;
+      border-radius: 4px;
+      background: rgba(245, 240, 232, 0.9);
+      color: #5D4037;
+      outline: none;
+      text-align: center;
+      transition: border-color 0.3s;
+    }
+
+    .seal-input:focus {
+      border-color: #8D6E63;
+    }
+
+    .divider {
+      width: 1px;
+      height: 28px;
+      background: #D4A574;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="title">水墨书法</div>
+
+  <div class="controls">
+    <input
+      type="text"
+      class="text-input"
+      id="textInput"
+      placeholder="输入诗句或短句（最多20字）"
+      maxlength="20"
+    />
+    <select class="style-select" id="styleSelect">
+      <option value="xing">行书</option>
+      <option value="cao">草书</option>
+      <option value="kai">楷书</option>
+    </select>
+    <button class="btn" id="writeBtn">挥毫</button>
+    <div class="divider"></div>
+    <div class="seal-section">
+      <input
+        type="text"
+        class="seal-input"
+        id="sealInput"
+        placeholder="落款"
+        maxlength="2"
+      />
+      <button class="btn" id="sealBtn">落款</button>
+    </div>
+    <div class="divider"></div>
+    <button class="btn" id="exportBtn">导出</button>
+    <button class="btn" id="clearBtn">清空</button>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas id="calligraphyCanvas" width="800" height="600"></canvas>
+  </div>
+
+  <div class="hint-bar">
+    拖拽移动文字 · 双击删除 · 滚轮旋转15° · Ctrl+滚轮缩放（0.8x~2.0x）
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
