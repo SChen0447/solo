@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D植物生长模拟</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #1a1a2e; }
+    #canvas-container { width: 100%; height: 100%; position: relative; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    #ui-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      font-family: 'Courier New', 'Consolas', monospace;
+      color: #e0e0e0;
+    }
+
+    .panel {
+      pointer-events: auto;
+      background: rgba(26, 26, 46, 0.75);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 12px;
+      padding: 20px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 280px;
+      z-index: 10;
+    }
+
+    #view-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #00ff88;
+      margin-bottom: 16px;
+      text-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: rgba(224, 224, 224, 0.7);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+
+    .control-group select,
+    .control-group input[type="range"] {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      outline: none;
+    }
+
+    .control-group select {
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 6px;
+      color: #e0e0e0;
+      padding: 8px 10px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .control-group select:hover,
+    .control-group select:focus {
+      border-color: rgba(0, 255, 136, 0.5);
+    }
+
+    .control-group select option {
+      background: #1a1a2e;
+      color: #e0e0e0;
+    }
+
+    input[type="range"] {
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00ff88;
+      box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 14px rgba(0, 255, 136, 0.8);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00ff88;
+      border: none;
+      box-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
+      cursor: pointer;
+    }
+
+    #progress-value {
+      font-size: 12px;
+      text-align: right;
+      margin-top: 2px;
+      color: #00ff88;
+    }
+
+    #stage-description {
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 40px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: rgba(0, 255, 136, 0.05);
+      border-left: 3px solid;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    #day-progress {
+      font-size: 11px;
+      color: rgba(224, 224, 224, 0.6);
+      margin-top: 6px;
+    }
+
+    .btn-auto {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 8px;
+      background: rgba(0, 255, 136, 0.08);
+      color: #00ff88;
+      font-family: inherit;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .btn-auto:hover {
+      background: rgba(0, 255, 136, 0.15);
+      border-color: rgba(0, 255, 136, 0.5);
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+    }
+
+    .btn-auto.active {
+      background: rgba(0, 255, 136, 0.2);
+      border-color: #00ff88;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-grow {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 8px;
+      background: rgba(255, 215, 0, 0.08);
+      color: #ffd700;
+      font-family: inherit;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .btn-grow:hover {
+      background: rgba(255, 215, 0, 0.15);
+      border-color: rgba(255, 215, 0, 0.5);
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+    }
+
+    .view-btn {
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 8px;
+      background: rgba(26, 26, 46, 0.75);
+      backdrop-filter: blur(16px);
+      color: #e0e0e0;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      pointer-events: auto;
+    }
+
+    .view-btn:hover {
+      background: rgba(0, 255, 136, 0.12);
+      border-color: rgba(0, 255, 136, 0.5);
+      color: #00ff88;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+    }
+
+    #info-popup {
+      position: absolute;
+      display: none;
+      pointer-events: none;
+      background: rgba(26, 26, 46, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      max-width: 240px;
+      z-index: 20;
+      transition: opacity 0.2s;
+    }
+
+    #info-popup h3 {
+      font-size: 14px;
+      color: #00ff88;
+      margin-bottom: 6px;
+    }
+
+    #info-popup p {
+      font-size: 11px;
+      line-height: 1.5;
+      color: rgba(224, 224, 224, 0.8);
+    }
+
+    #hamburger-btn {
+      display: none;
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      border-radius: 8px;
+      background: rgba(26, 26, 46, 0.8);
+      backdrop-filter: blur(12px);
+      color: #00ff88;
+      font-size: 20px;
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      pointer-events: auto;
+    }
+
+    #hamburger-btn:hover {
+      background: rgba(0, 255, 136, 0.12);
+    }
+
+    @media (max-width: 767px) {
+      #hamburger-btn { display: flex; }
+
+      #control-panel {
+        top: 64px;
+        left: 12px;
+        width: calc(100% - 24px);
+        transform: translateY(-10px);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+
+      #control-panel.open {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      #view-panel {
+        top: 64px;
+        right: 12px;
+        flex-direction: row;
+      }
+
+      .view-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 15px;
+      }
+    }
+
+    .loading-screen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s;
+    }
+
+    .loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-text {
+      font-family: 'Courier New', monospace;
+      color: #00ff88;
+      font-size: 16px;
+      letter-spacing: 4px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <div id="ui-overlay">
+      <button id="hamburger-btn">☰</button>
+
+      <div id="control-panel" class="panel">
+        <div class="panel-title">🌿 植物生长模拟</div>
+
+        <div class="control-group">
+          <label>植物类型</label>
+          <select id="plant-type">
+            <option value="sunflower">向日葵</option>
+            <option value="fern">蕨类植物</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>生长进度</label>
+          <input type="range" id="growth-slider" min="0" max="100" value="0" step="1" />
+          <div id="progress-value">0%</div>
+        </div>
+
+        <div class="control-group">
+          <div id="stage-description" style="border-color: #00ff88; color: #00ff88;">
+            幼苗阶段 — 种子萌发
+          </div>
+          <div id="day-progress">第 0 天 / 共 120 天</div>
+        </div>
+
+        <div class="control-group">
+          <button class="btn-grow" id="btn-grow">▶ 开始生长</button>
+        </div>
+
+        <div class="control-group">
+          <button class="btn-auto" id="btn-auto">⏩ 自动播放</button>
+        </div>
+      </div>
+
+      <div id="view-panel">
+        <button class="view-btn" data-view="front" title="正面">◻</button>
+        <button class="view-btn" data-view="top" title="俯视">◇</button>
+        <button class="view-btn" data-view="left" title="左侧">◁</button>
+        <button class="view-btn" data-view="right" title="右侧">▷</button>
+      </div>
+
+      <div id="info-popup">
+        <h3 id="info-name"></h3>
+        <p id="info-desc"></p>
+      </div>
+    </div>
+
+    <div class="loading-screen" id="loading">
+      <div class="loading-text">INITIALIZING...</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
