@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T06:12:24.274Z",
+  "task_name": "auto80",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助用户管理个人音乐收藏并生成播放清单和统计报表的全栈应用，主要解决本地音乐文件太多、分类困难、缺乏可视化统计的问题。\n\n它应当具备以下能力：\n1) 用户首次进入时看到一个深色主题（背景色#1A1A2E）的仪表盘页面，左侧为固定侧边栏（宽240px，毛玻璃效果，半透明背景rgba(255,255,255,0.08)），显示应用logo（一个音符图标+“音藏馆”文字）、导航菜单（“我的曲库”、“播放清单”、“统计看板”）和系统设置入口。右侧主内容区默认展示我的曲库视图，所有已导入的歌曲以网格卡片形式展示（每张卡片宽200px，高280px，圆角16px，背景渐变色从顶部深蓝#16213E到底部深紫#0F3460，鼠标悬停时卡片轻微上浮8px并添加外发光#E94560阴影），每张卡片包含专辑封面占位符（一个彩色渐变圆，尺寸120x120px，根据歌曲风格随机分配色系）、歌曲名（白色，16px）、歌手名（淡灰色，12px）和时长标签。\n2) 用户可以通过点击右上角的“导入歌曲”按钮（悬停时背景从#E94560渐变为#FF6B6B）打开文件选择器，最多同时选择10个MP3文件上传。上传过程中每张卡片上显示蓝色进度条（宽度100%，高度4px，圆角，动画时长与文件大小成比例），上传完成后进度条变为绿色(#4CAF50)并显示“已导入”标签。上传的歌曲元数据（文件名、文件大小、时长、上传时间）被发送到后端存储。\n3) 用户可以在侧边栏点击“播放清单”进入清单管理页面，页面顶部有一个输入框和“新建清单”按钮。用户输入清单名称后创建空清单，清单以水平滚动的卡片列表展示（每张卡片宽280px，高160px，圆角12px，白色文字，背景使用随机柔和渐变色），每个清单卡片显示名称、歌曲数量、最后更新时间。点击清单卡片进入详情页，展示该清单内的所有歌曲列表，用户可以通过拖拽排序歌曲顺序，拖拽过程中被拖拽的卡片呈现半透明状态并跟随鼠标移动，拖放后其他卡片自动平滑位移以填补空缺。\n4) 侧边栏“统计看板”页面展示基于曲库数据的可视化图表。页面顶部显示四个统计指标卡片：总歌曲数、总时长（格式为XX小时XX分钟）、最多歌手、最活跃月份，每个卡片采用毛玻璃材质（背景rgba(255,255,255,0.1)，边框1px solid rgba(255,255,255,0.2)，圆角16px）。下方左侧显示一个柱状图（统计每月导入歌曲数量，X轴为月份，Y轴为数量，柱体颜色使用渐变色#E94560到#FF6B6B），右侧显示一个圆环图（歌曲风格分布：流行、摇滚、古典、电子、民谣，每个扇区使用不同颜色，鼠标悬停时扇区外扩15px并显示标签和数值）。\n5) 整个应用支持响应式适配：当屏幕宽度小于768px时，侧边栏自动折叠为一个底部Tab栏（高度64px，半透明背景，图标+文字），主内容区卡片从4列变为2列；当宽度小于480px时，卡片变为1列。所有动画过渡持续时间250ms，使用ease-in-out缓动函数。\n\n界面方面：整体采用深色主题搭配高亮珊瑚红#E94560作为强调色，字体使用系统原生无衬线字体（system-ui, -apple-system）。卡片与按钮均采用圆角设计，列表与网格之间切换时有平滑的淡入淡出效果。加载更多数据时显示骨架屏动画（灰色闪烁占位块）。\n\n性能上需要：页面初次加载时间不超过2秒（使用缓存和懒加载），拖拽排序交互帧率不低于50FPS，图表渲染完成时间不超过500ms。\n\n实现采用TypeScript和React（Vite构建）实现前端，Node.js + Express搭建本地Mock后端服务，歌曲元数据存储在JSON文件中。按以下文件组织代码：\n - package.json（含依赖：react, react-dom, typescript, vite, @vitejs/plugin-react, express, uuid, axios, react-router-dom, recharts, @types/react, @types/react-dom, @types/express, @types/uuid；启动脚本：npm run dev；后端启动脚本：node server.js）\n - vite.config.js（Vite基础配置，代理/api请求到后端端口3001）\n - tsconfig.json（严格模式，ESModule，jsx设置为react-jsx）\n - index.html（入口，包含root挂载点和全局样式链接）\n - server.js（后端Mock服务：提供/api/songs和/api/playlists的GET/POST/PUT接口，返回JSON数据，允许跨域，监听端口3001）\n - src/App.tsx（主组件，包含路由配置和整体布局：侧边栏/底部Tab栏与主内容区）\n - src/components/Sidebar.tsx（侧边栏导航组件，响应式切换逻辑）\n - src/pages/Library.tsx（曲库页面：网格展示、导入功能、进度动画）\n - src/pages/Playlists.tsx（播放清单管理页面：创建、列表、拖拽排序详情）\n - src/pages/Stats.tsx（统计看板页面：指标卡片和图表）\n - data/songs.json（初始空数据，结构：[{id, title, artist, genre, duration, size, addedAt}]）\n - data/playlists.json（初始空数据，结构：[{id, name, songIds, updatedAt}]）\n\n运行方式：npm install && npm run dev（需要同时启动两个终端，一个运行后端 node server.js，一个运行前端npm run dev）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:b20bdd0eece9332ff8c544408d702391_6a2ba1e5e5df47b6d75a5c2e.6a2ba33ce5df47b6d75a5ce4.6a2ba33b18afcfcf2360400b:Trae CN.T(2026/6/12 14:12:12)",
+    "user_id": "3986207660317399",
+    "trace_id": "b20bdd0eece9332ff8c544408d702391",
+    "session_id": "6a2ba1e5e5df47b6d75a5c2e",
+    "task_id": "6a2ba33ce5df47b6d75a5ce4",
+    "message_id": "6a2ba33b18afcfcf2360400b",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/12 14:12:12",
+    "format": "full"
+  },
+  "trace": "null"
+}
