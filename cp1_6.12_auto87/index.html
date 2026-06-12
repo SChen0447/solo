@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>课堂互动问答管理系统</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #263238;
+      --bg-card: #37474F;
+      --bg-card-alt: #455A64;
+      --text-primary: #ECEFF1;
+      --text-secondary: #B0BEC5;
+      --accent-yellow: #FFF176;
+      --accent-green: #4CAF50;
+      --accent-red: #E53935;
+      --radius: 8px;
+      --gap: 12px;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--bg-card);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      gap: 16px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      cursor: pointer;
+      border-radius: var(--radius);
+      transition: transform 0.2s ease, background 0.2s ease;
+      padding: 6px;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .header-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      padding: var(--gap);
+      gap: var(--gap);
+    }
+
+    .roster-panel {
+      width: 240px;
+      min-width: 240px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.4s ease-out 0s forwards;
+    }
+
+    .roster-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .roster-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: #4FC3F7;
+      border-radius: 2px;
+    }
+
+    .roster-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .roster-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+      cursor: default;
+    }
+
+    .roster-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+
+    .roster-name {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .center-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--gap);
+      min-width: 0;
+    }
+
+    .grid-wrapper {
+      flex: 1;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      padding: 16px;
+      overflow: auto;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.4s ease-out 0.1s forwards;
+    }
+
+    .grid-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .grid-title {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .grid-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: #81C784;
+      border-radius: 2px;
+    }
+
+    .grid-stats {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .heatmap-panel {
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.4s ease-out 0.15s forwards;
+    }
+
+    .log-panel {
+      height: 140px;
+      min-height: 140px;
+      background: var(--bg-card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: slideUp 0.4s ease-out 0.2s forwards;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .log-header {
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .log-header::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      background: #FFB74D;
+      border-radius: 2px;
+    }
+
+    .log-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .log-item {
+      padding: 6px 16px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      line-height: 1.5;
+    }
+
+    .log-item:nth-child(odd) {
+      background: var(--bg-card);
+    }
+
+    .log-item:nth-child(even) {
+      background: var(--bg-card-alt);
+    }
+
+    .log-time {
+      color: #78909C;
+      font-family: 'SF Mono', 'Consolas', monospace;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    @keyframes slideUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="header">
+      <div class="logo" id="logo" title="返回首页">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="8" width="40" height="30" rx="3" fill="#546E7A" stroke="#78909C" stroke-width="1.5"/>
+          <rect x="8" y="12" width="32" height="22" rx="2" fill="#37474F"/>
+          <path d="M14 20L18 26L22 22L28 30L34 18" stroke="#81C784" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="20" y="40" width="8" height="3" rx="1" fill="#78909C"/>
+          <rect x="14" y="43" width="20" height="2" rx="1" fill="#78909C"/>
+        </svg>
+      </div>
+      <div>
+        <div class="header-title">课堂互动问答管理系统</div>
+        <div class="header-subtitle">实时参与度监控 · 热力图分析</div>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <aside class="roster-panel">
+        <div class="roster-title">班级花名册</div>
+        <div class="roster-list" id="rosterList"></div>
+      </aside>
+
+      <div class="center-content">
+        <div class="grid-wrapper">
+          <div class="grid-header">
+            <div class="grid-title">座位网格视图</div>
+            <div class="grid-stats">
+              <div class="stat-item"><span class="stat-dot" style="background:#4CAF50"></span>回答正确</div>
+              <div class="stat-item"><span class="stat-dot" style="background:#E53935"></span>回答错误</div>
+              <div class="stat-item"><span class="stat-dot" style="background:#FFF176"></span>正在提问</div>
+            </div>
+          </div>
+          <student-grid id="studentGrid"></student-grid>
+        </div>
+
+        <div class="log-panel">
+          <div class="log-header">课堂记录</div>
+          <div class="log-list" id="logList"></div>
+        </div>
+      </div>
+
+      <heat-map id="heatMap" class="heatmap-panel"></heat-map>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
