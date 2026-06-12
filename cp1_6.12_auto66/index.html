@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>虚拟星辰演化</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="canvas-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <div id="control-panel" class="control-panel">
+    <div class="panel-header" id="panel-header">
+      <span class="panel-title">星辰控制台</span>
+      <button class="toggle-btn" id="toggle-btn">▼</button>
+    </div>
+    <div class="panel-content" id="panel-content">
+      <div class="control-item">
+        <button class="action-btn" id="solar-wind-btn">太阳风</button>
+      </div>
+      <div class="control-item">
+        <button class="action-btn" id="reset-btn">重置</button>
+      </div>
+      <div class="control-item">
+        <label class="control-label" for="mass-slider">恒星质量: <span id="mass-value">200</span></label>
+        <input type="range" id="mass-slider" class="mass-slider" min="10" max="500" value="200" />
+      </div>
+      <div class="control-item">
+        <span class="particle-count">粒子总数: <span id="particle-count">0</span></span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
