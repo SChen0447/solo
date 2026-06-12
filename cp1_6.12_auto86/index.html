@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>声波共振益智游戏</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0D1117;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: #C9D1D9;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    #game-canvas {
+      display: block;
+      background: #0D1117;
+      box-shadow: 0 0 60px rgba(0, 116, 217, 0.2);
+      border-radius: 8px;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .control-panel {
+      position: absolute;
+      left: 20px;
+      top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      pointer-events: auto;
+      min-width: 220px;
+      z-index: 20;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: #8B949E;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .control-value {
+      color: #58A6FF;
+      font-weight: 600;
+    }
+
+    .slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58A6FF, #1F6FEB);
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(88, 166, 255, 0.8);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #58A6FF, #1F6FEB);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      color: #C9D1D9;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 10px;
+      background: linear-gradient(45deg, #58A6FF, #1F6FEB, #3FB950, #D2A8FF);
+      opacity: 0;
+      z-index: -1;
+      transition: opacity 0.3s ease;
+      filter: blur(8px);
+    }
+
+    .btn:hover {
+      border-color: transparent;
+      transform: translateY(-1px);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, rgba(31, 111, 235, 0.3), rgba(88, 166, 255, 0.2));
+      border-color: rgba(88, 166, 255, 0.4);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 0 30px rgba(88, 166, 255, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn:disabled:hover::before {
+      opacity: 0;
+    }
+
+    .timer {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 18px;
+      font-weight: 600;
+      color: #58A6FF;
+      font-family: 'Courier New', monospace;
+      z-index: 20;
+    }
+
+    .crystal-counter {
+      position: absolute;
+      right: 20px;
+      top: 20px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 16px;
+      font-weight: 600;
+      color: #D2A8FF;
+      z-index: 20;
+    }
+
+    .instructions {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 12px;
+      color: #8B949E;
+      line-height: 1.6;
+      z-index: 20;
+      max-width: 250px;
+    }
+
+    .instructions kbd {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #C9D1D9;
+    }
+
+    .victory-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 17, 23, 0.9);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      pointer-events: auto;
+    }
+
+    .victory-overlay.active {
+      display: flex;
+    }
+
+    .victory-title {
+      font-size: 48px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #FFDC00, #FF851B, #FF4136);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      text-shadow: 0 0 40px rgba(255, 220, 0, 0.3);
+    }
+
+    .victory-time {
+      font-size: 24px;
+      color: #58A6FF;
+      margin-bottom: 32px;
+    }
+
+    .fireworks-container {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .firework-particle {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      opacity: 1;
+    }
+
+    @keyframes firework {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+      }
+    }
+
+    .mobile-hint {
+      display: none;
+      position: absolute;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #8B949E;
+      z-index: 20;
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        left: 10px;
+        top: 10px;
+        right: 10px;
+        min-width: auto;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 12px;
+      }
+
+      .control-group {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .timer {
+        right: 10px;
+        bottom: 10px;
+        font-size: 14px;
+        padding: 8px 14px;
+      }
+
+      .crystal-counter {
+        right: 10px;
+        top: auto;
+        bottom: 10px;
+        font-size: 13px;
+        padding: 8px 14px;
+      }
+
+      .instructions {
+        display: none;
+      }
+
+      .mobile-hint {
+        display: block;
+      }
+
+      .victory-title {
+        font-size: 32px;
+      }
+
+      .victory-time {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+
+    <div class="control-panel">
+      <div class="control-group">
+        <label class="control-label">
+          发射角度
+          <span class="control-value" id="angle-value">0°</span>
+        </label>
+        <input type="range" class="slider" id="angle-slider" min="0" max="360" value="0" step="1">
+      </div>
+      <div class="control-group">
+        <label class="control-label">
+          频率
+          <span class="control-value" id="freq-value">1000Hz</span>
+        </label>
+        <input type="range" class="slider" id="freq-slider" min="200" max="2000" value="1000" step="1">
+      </div>
+      <button class="btn btn-primary" id="fire-btn">发射声波</button>
+      <button class="btn" id="reset-btn">重置关卡</button>
+    </div>
+
+    <div class="crystal-counter">
+      💎 水晶: <span id="crystal-count">0</span>/3
+    </div>
+
+    <div class="timer">
+      ⏱️ <span id="timer">00:00.00</span>
+    </div>
+
+    <div class="instructions">
+      <kbd>↑↓</kbd> 调整角度<br>
+      <kbd>←→</kbd> 调整频率<br>
+      <kbd>空格</kbd> 发射<br>
+      收集3个水晶即可通关
+    </div>
+
+    <div class="mobile-hint">
+      拖动发射器调整角度，滑动调整频率
+    </div>
+
+    <div class="victory-overlay" id="victory-overlay">
+      <div class="fireworks-container" id="fireworks"></div>
+      <h1 class="victory-title">🎉 通关成功！</h1>
+      <p class="victory-time">用时: <span id="final-time">00:00.00</span></p>
+      <button class="btn btn-primary" id="restart-btn">再玩一次</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/GameEngine.ts"></script>
+</body>
+</html>
