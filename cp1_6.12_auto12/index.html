@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Molecule 3D Viewer · 分子结构可视化</title>
+  <style>
+    :root {
+      --accent: #00d4ff;
+      --accent-soft: rgba(0, 212, 255, 0.25);
+      --text-primary: #e8eaf0;
+      --text-secondary: #9aa3b2;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --panel-bg: rgba(20, 25, 50, 0.75);
+      --panel-border: rgba(0, 212, 255, 0.2);
+      --radius: 12px;
+      --shadow-soft: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text-primary);
+      background: #0a0e27;
+    }
+
+    body {
+      position: relative;
+    }
+
+    #app-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      display: block;
+    }
+
+    body.bg-space {
+      background: radial-gradient(ellipse at 50% 40%, #1a0f3a 0%, #0a0e27 55%, #05060f 100%);
+    }
+    body.bg-white {
+      background: #ffffff;
+      color: #1a1a2e;
+    }
+    body.bg-black {
+      background: #000000;
+    }
+
+    .hamburger-btn {
+      display: none;
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 30;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      border: 1px solid var(--panel-border);
+      background: var(--panel-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: all 0.25s ease;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hamburger-btn:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-soft);
+    }
+    .hamburger-btn span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .hamburger-btn.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .hamburger-btn.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger-btn.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    #gui-container {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    #gui-container.hidden-mobile {
+      transform: translateX(-120%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .lil-gui {
+      --width: 280px;
+      --background-color: rgba(20, 25, 50, 0.75);
+      --widget-color: rgba(255, 255, 255, 0.08);
+      --focus-color: rgba(0, 212, 255, 0.35);
+      --hover-color: rgba(0, 212, 255, 0.18);
+      --font-family: 'Segoe UI', system-ui, sans-serif;
+      --font-size: 13px;
+      --border-radius: 10px;
+      border: 1px solid var(--panel-border) !important;
+      backdrop-filter: blur(14px) saturate(150%);
+      -webkit-backdrop-filter: blur(14px) saturate(150%);
+      border-radius: var(--radius) !important;
+      box-shadow: var(--shadow-soft) !important;
+      overflow: hidden;
+    }
+    .lil-gui .title {
+      background: linear-gradient(90deg, rgba(0,212,255,0.2), rgba(138,43,226,0.2));
+      color: var(--text-primary) !important;
+      font-weight: 600 !important;
+      letter-spacing: 0.5px;
+    }
+    .lil-gui .string {
+      color: var(--accent);
+    }
+    .lil-gui .controller.number input {
+      color: var(--accent);
+    }
+
+    .info-card {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 20;
+      min-width: 240px;
+      padding: 18px 20px;
+      border-radius: var(--radius);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(16px) saturate(160%);
+      -webkit-backdrop-filter: blur(16px) saturate(160%);
+      box-shadow: var(--shadow-soft);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      opacity: 0;
+      transform: translateY(-10px) scale(0.98);
+      pointer-events: none;
+    }
+    .info-card.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    .info-card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .element-badge {
+      width: 42px;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      border-radius: 10px;
+      color: #fff;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 20px currentColor;
+    }
+    .element-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .element-id {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      font-size: 13px;
+    }
+    .info-label {
+      color: var(--text-secondary);
+    }
+    .info-value {
+      font-family: 'Consolas', 'Monaco', monospace;
+      color: var(--accent);
+      font-size: 12px;
+    }
+    .info-coords {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: rgba(0, 212, 255, 0.06);
+      border: 1px solid var(--accent-soft);
+    }
+    .coord-axis {
+      display: inline-block;
+      width: 22px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .tips-bar {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 12px;
+      color: var(--text-secondary);
+      display: flex;
+      gap: 18px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 90vw;
+    }
+    .tips-bar kbd {
+      display: inline-block;
+      padding: 2px 7px;
+      margin: 0 2px;
+      border-radius: 5px;
+      background: rgba(0, 212, 255, 0.14);
+      border: 1px solid var(--accent-soft);
+      color: var(--accent);
+      font-family: 'Consolas', monospace;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        display: flex;
+      }
+      #gui-container {
+        top: 70px;
+        left: 16px;
+        right: 16px;
+      }
+      .lil-gui {
+        --width: 100%;
+      }
+      .info-card {
+        top: auto;
+        right: 16px;
+        left: 16px;
+        bottom: 80px;
+        min-width: unset;
+      }
+      .tips-bar {
+        font-size: 11px;
+        padding: 8px 14px;
+        gap: 10px;
+      }
+      .tips-bar .tip-item {
+        display: none;
+      }
+      .tips-bar .tip-item.mobile-visible {
+        display: inline-flex;
+      }
+    }
+  </style>
+</head>
+<body class="bg-space">
+  <canvas id="app-canvas"></canvas>
+
+  <button class="hamburger-btn" id="hamburgerBtn" aria-label="打开控制面板">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div id="gui-container"></div>
+
+  <div class="info-card" id="atomInfoCard">
+    <div class="info-card-header">
+      <div class="element-badge" id="elBadge">C</div>
+      <div>
+        <div class="element-name" id="elName">Carbon</div>
+        <div class="element-id" id="elId">ID: 0</div>
+      </div>
+    </div>
+    <div class="info-row">
+      <span class="info-label">元素符号</span>
+      <span class="info-value" id="elSymbol">C</span>
+    </div>
+    <div class="info-coords">
+      <div class="info-row"><span><span class="coord-axis">X</span><span id="coordX" class="info-value">0.000</span></span></div>
+      <div class="info-row"><span><span class="coord-axis">Y</span><span id="coordY" class="info-value">0.000</span></span></div>
+      <div class="info-row"><span><span class="coord-axis">Z</span><span id="coordZ" class="info-value">0.000</span></span></div>
+    </div>
+  </div>
+
+  <div class="tips-bar">
+    <span class="tip-item mobile-visible"><kbd>拖拽</kbd> 旋转</span>
+    <span class="tip-item mobile-visible"><kbd>滚轮</kbd> 缩放</span>
+    <span class="tip-item"><kbd>R</kbd> 重置视角</span>
+    <span class="tip-item"><kbd>T</kbd> 顶视图</span>
+    <span class="tip-item"><kbd>Esc</kbd> 关闭卡片</span>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
