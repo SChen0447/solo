@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 15 C60 25 65 35 50 50 C35 35 40 25 50 15 M50 50 C65 45 75 55 65 70 C55 65 55 60 50 50 M50 50 C35 45 25 55 35 70 C45 65 45 60 50 50 M50 85 C40 75 35 65 50 50 C65 65 60 75 50 85' fill='%23FF69B4'/%3E%3C/svg%3E" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>秘境花语 · 盲盒社交</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body, #root {
+        width: 100%;
+        min-height: 100vh;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: radial-gradient(circle at 70% 30%, #FF69B4 0%, #8B008B 40%, #2D0C5E 100%);
+        background-attachment: fixed;
+        color: #fff;
+        overflow-x: hidden;
+      }
+      #loading-petal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        animation: fadeIn 1.2s ease-out forwards;
+        z-index: 9999;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+        to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .loading-spin {
+        animation: spin 2s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-petal">
+      <svg class="loading-spin" width="80" height="80" viewBox="0 0 100 100">
+        <path d="M50 10 C65 20 75 35 50 50 C25 35 35 20 50 10" fill="#FF69B4" opacity="0.9"/>
+        <path d="M90 50 C80 65 65 75 50 50 C65 25 80 35 90 50" fill="#DA70D6" opacity="0.9"/>
+        <path d="M50 90 C35 80 25 65 50 50 C75 65 65 80 50 90" fill="#9370DB" opacity="0.9"/>
+        <path d="M10 50 C20 35 35 25 50 50 C35 75 20 65 10 50" fill="#BA55D3" opacity="0.9"/>
+      </svg>
+    </div>
+    <div id="root"></div>
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const loader = document.getElementById('loading-petal');
+          if (loader) {
+            loader.style.transition = 'opacity 0.5s ease-out';
+            loader.style.opacity = '0';
+            setTimeout(() => loader.remove(), 500);
+          }
+        }, 600);
+      });
+    </script>
+    <script type="module" src="/src/frontend/main.tsx"></script>
+  </body>
+</html>
