@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>晶隙·熵增花园</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+SC:wght@300;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0e1a;
+      font-family: 'Noto Sans SC', 'Orbitron', sans-serif;
+      color: #a1c4fd;
+    }
+    #app {
+      width: 100vw;
+      height: 100vh;
+      min-width: 800px;
+      min-height: 600px;
+      position: relative;
+    }
+    #app canvas {
+      display: block;
+    }
+    .title-overlay {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .title-overlay h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      background: linear-gradient(90deg, #ff6b9d, #c44dff, #4ecdc4);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(196, 77, 255, 0.3);
+    }
+    .title-overlay p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: rgba(161, 196, 253, 0.6);
+      letter-spacing: 2px;
+    }
+    .hint-overlay {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 12px;
+      color: rgba(161, 196, 253, 0.5);
+      pointer-events: none;
+      z-index: 10;
+      line-height: 1.8;
+    }
+    .hint-overlay span {
+      display: inline-block;
+      margin: 0 12px;
+      padding: 4px 12px;
+      border: 1px solid rgba(161, 196, 253, 0.2);
+      border-radius: 20px;
+      background: rgba(10, 14, 26, 0.6);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="title-overlay">
+      <h1>晶隙 · 熵增花园</h1>
+      <p>CRYSTAL ENTROPY GARDEN</p>
+    </div>
+    <div class="hint-overlay">
+      <span>拖拽地面 · 生长晶体</span>
+      <span>点击晶体 · 分裂繁殖</span>
+      <span>静静观察 · 熵增衰变</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
