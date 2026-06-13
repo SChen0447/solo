@@ -1,0 +1,236 @@
+.favorites-page {
+  padding-bottom: 40px;
+  animation: fadeIn 0.4s ease;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  
+  h1 {
+    font-size: 28px;
+    color: #6B8E23;
+  }
+  
+  .favorite-count {
+    font-size: 14px;
+    color: #999;
+  }
+}
+
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.favorite-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 2px solid #D2691E;
+  box-shadow: 0 4px 16px rgba(210, 105, 30, 0.1);
+  padding: 20px;
+  animation: fadeInUp 0.5s ease both;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(210, 105, 30, 0.15);
+  }
+}
+
+.favorite-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.favorite-season {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  .season-icon {
+    font-size: 28px;
+  }
+  
+  .season-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #3D3D3D;
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+.favorite-btn {
+  font-size: 24px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.2);
+  }
+  
+  &.favorited {
+    animation: heartPulse 0.4s ease;
+  }
+}
+
+@keyframes heartPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+.favorite-cuisine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #6B6B6B;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #E8E0D5;
+  
+  .dot {
+    color: #ccc;
+  }
+}
+
+.favorite-dishes-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.dish-preview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #FDF8F0;
+  border-radius: 20px;
+  font-size: 13px;
+  
+  .dish-icon {
+    font-size: 18px;
+  }
+  
+  .dish-name {
+    color: #3D3D3D;
+  }
+  
+  &.more {
+    color: #999;
+    font-style: italic;
+  }
+}
+
+.favorite-card-footer {
+  .total-calories {
+    font-size: 13px;
+    color: #D2691E;
+    font-weight: 500;
+  }
+}
+
+.favorite-dishes-detail {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #F0E8DC;
+  
+  h4 {
+    font-size: 16px;
+    color: #6B8E23;
+    margin-bottom: 16px;
+  }
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    font-size: 22px;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 15px;
+    color: #999;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1024px) {
+  .favorites-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    h1 {
+      font-size: 24px;
+    }
+  }
+  
+  .favorite-card {
+    padding: 16px;
+  }
+  
+  .favorite-season .season-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 375px) {
+  .page-header {
+    h1 {
+      font-size: 20px;
+    }
+  }
+  
+  .dish-preview {
+    padding: 5px 10px;
+    font-size: 12px;
+    
+    .dish-icon {
+      font-size: 16px;
+    }
+  }
+}

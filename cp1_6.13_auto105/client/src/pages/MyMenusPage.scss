@@ -1,0 +1,268 @@
+.my-menus-page {
+  padding-bottom: 40px;
+  animation: fadeIn 0.4s ease;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  
+  h1 {
+    font-size: 28px;
+    color: #6B8E23;
+  }
+  
+  .menu-count {
+    font-size: 14px;
+    color: #999;
+  }
+}
+
+.menus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.menu-group {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #E8E0D5;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeInUp 0.5s ease both;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.menu-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  
+  &:hover {
+    background: #FDF8F0;
+  }
+}
+
+.menu-group-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.menu-season {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  
+  .season-icon {
+    font-size: 24px;
+  }
+  
+  .season-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: #3D3D3D;
+    font-family: 'Playfair Display', serif;
+  }
+}
+
+.menu-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6B6B6B;
+  
+  .dot {
+    color: #ccc;
+  }
+}
+
+.menu-date {
+  font-size: 13px;
+  color: #999;
+}
+
+.menu-group-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .favorite-btn,
+  .delete-btn {
+    font-size: 20px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+  
+  .expand-arrow {
+    font-size: 12px;
+    color: #999;
+    margin-left: 8px;
+  }
+}
+
+.menu-group-content {
+  padding: 0 24px 24px;
+  border-top: 1px solid #F0E8DC;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ingredients-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px dashed #E8E0D5;
+  margin-bottom: 20px;
+  
+  .ingredients-label {
+    font-size: 14px;
+    color: #6B6B6B;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+}
+
+.ingredient-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ingredient-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #FDF8F0;
+  border: 1px solid #6B8E23;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #3D3D3D;
+}
+
+.menu-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.menu-card-wrapper {
+  animation: fadeInUp 0.4s ease both;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  
+  .empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+  
+  h2 {
+    font-size: 22px;
+    color: #6B6B6B;
+    margin-bottom: 8px;
+  }
+  
+  p {
+    font-size: 15px;
+    color: #999;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    h1 {
+      font-size: 24px;
+    }
+  }
+  
+  .menu-group-header {
+    padding: 16px;
+  }
+  
+  .menu-group-info {
+    gap: 12px;
+  }
+  
+  .menu-group-content {
+    padding: 0 16px 20px;
+  }
+  
+  .menu-cards-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .ingredients-preview {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 375px) {
+  .page-header {
+    h1 {
+      font-size: 20px;
+    }
+  }
+  
+  .menu-season .season-name {
+    font-size: 15px;
+  }
+  
+  .menu-meta {
+    font-size: 12px;
+  }
+  
+  .menu-date {
+    font-size: 12px;
+  }
+}

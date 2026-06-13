@@ -1,0 +1,135 @@
+.login-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.login-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.4s ease;
+  border: 2px solid #6B8E23;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 24px;
+  
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    color: #6B8E23;
+    margin-bottom: 8px;
+  }
+  
+  .modal-subtitle {
+    color: #6B6B6B;
+    font-size: 14px;
+  }
+}
+
+.modal-form {
+  .form-group {
+    margin-bottom: 20px;
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #3D3D3D;
+    }
+    
+    input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #E8E0D5;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      background: #FDF8F0;
+      
+      &:focus {
+        outline: none;
+        border-color: #6B8E23;
+        box-shadow: 0 0 0 3px rgba(107, 142, 35, 0.1);
+      }
+      
+      &::placeholder {
+        color: #B0A99E;
+      }
+    }
+  }
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 14px;
+  background: #6B8E23;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover:not(:disabled) {
+    background: #5A7A1E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(107, 142, 35, 0.4);
+  }
+  
+  &:disabled {
+    background: #C5C5C5;
+    cursor: not-allowed;
+  }
+}
+
+.modal-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  
+  .footer-icon {
+    font-size: 16px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 375px) {
+  .login-modal {
+    padding: 24px 20px;
+    margin: 16px;
+  }
+}

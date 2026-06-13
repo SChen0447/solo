@@ -1,0 +1,248 @@
+.upload-card {
+  width: 100%;
+}
+
+.upload-area {
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+  border: 2px dashed #6B8E23;
+  border-radius: 16px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  
+  &:hover {
+    border-color: #D2691E;
+    background: rgba(210, 105, 30, 0.02);
+    
+    .upload-icon {
+      transform: translateY(-4px) scale(1.1);
+    }
+  }
+  
+  &.dragging {
+    border-color: #D2691E;
+    border-style: solid;
+    background: rgba(210, 105, 30, 0.05);
+  }
+  
+  &.has-preview {
+    border-style: solid;
+  }
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
+}
+
+.upload-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #3D3D3D;
+  margin-bottom: 8px;
+}
+
+.upload-hint {
+  font-size: 13px;
+  color: #999;
+}
+
+.ripple-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgba(210, 105, 30, 0.3);
+  border-radius: 50%;
+  animation: rippleExpand 1.5s ease-out infinite;
+}
+
+@keyframes rippleExpand {
+  0% {
+    width: 50px;
+    height: 50px;
+    opacity: 1;
+  }
+  100% {
+    width: 250px;
+    height: 250px;
+    opacity: 0;
+  }
+}
+
+.preview-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.preview-image {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border: 1px solid #6B8E23;
+}
+
+.reset-btn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #6B8E23;
+  border-radius: 8px;
+  color: #6B8E23;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #6B8E23;
+    color: #fff;
+  }
+}
+
+.upload-progress-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+}
+
+.progress-icons {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.progress-icon {
+  font-size: 32px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.progress-bar-container {
+  width: 200px;
+  height: 8px;
+  background: #E8E0D5;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #6B8E23, #8FB838);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 14px;
+  color: #6B6B6B;
+}
+
+.upload-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: rgba(210, 105, 30, 0.1);
+  border-radius: 8px;
+  color: #D2691E;
+  font-size: 14px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .upload-area {
+    min-height: 250px;
+  }
+  
+  .upload-icon {
+    font-size: 48px;
+  }
+  
+  .upload-text {
+    font-size: 16px;
+  }
+  
+  .preview-image {
+    width: 160px;
+    height: 160px;
+  }
+}
+
+@media (max-width: 375px) {
+  .upload-area {
+    min-height: 200px;
+  }
+  
+  .upload-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+  
+  .upload-text {
+    font-size: 15px;
+  }
+  
+  .upload-hint {
+    font-size: 12px;
+  }
+  
+  .preview-image {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .progress-icon {
+    font-size: 28px;
+  }
+}

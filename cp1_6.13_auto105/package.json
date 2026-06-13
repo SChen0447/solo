@@ -1,0 +1,12 @@
+{
+  "name": "shiguang-xunwei",
+  "version": "1.0.0",
+  "description": "食光·旬味 - 时令美食全栈应用",
+  "scripts": {
+    "dev": "concurrently \"npm run dev --prefix client\" \"npm run dev --prefix server\"",
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

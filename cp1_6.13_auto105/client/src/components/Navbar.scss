@@ -1,0 +1,180 @@
+.navbar {
+  background: #fff;
+  border-bottom: 1px solid #E8E0D5;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  
+  .logo-icon {
+    font-size: 28px;
+  }
+  
+  .logo-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: #6B8E23;
+    letter-spacing: 1px;
+  }
+  
+  &:hover {
+    .logo-text {
+      color: #D2691E;
+    }
+  }
+}
+
+.navbar-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #6B6B6B;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  .nav-icon {
+    font-size: 16px;
+  }
+  
+  &:hover {
+    background: rgba(107, 142, 35, 0.1);
+    color: #6B8E23;
+  }
+  
+  &.active {
+    background: rgba(107, 142, 35, 0.15);
+    color: #6B8E23;
+  }
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #6B8E23;
+  }
+  
+  .user-nickname {
+    font-size: 14px;
+    font-weight: 500;
+    color: #3D3D3D;
+  }
+  
+  .logout-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    color: #D2691E;
+    border: 1px solid #D2691E;
+    border-radius: 6px;
+    background: transparent;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: #D2691E;
+      color: #fff;
+    }
+  }
+}
+
+.login-btn {
+  padding: 8px 20px;
+  background: #6B8E23;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: #5A7A1E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(107, 142, 35, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-content {
+    padding: 0 16px;
+  }
+  
+  .navbar-logo .logo-text {
+    font-size: 18px;
+  }
+  
+  .nav-link {
+    padding: 8px 10px;
+    
+    .nav-label {
+      display: none;
+    }
+    
+    .nav-icon {
+      font-size: 20px;
+    }
+  }
+  
+  .user-info .user-nickname {
+    display: none;
+  }
+}
+
+@media (max-width: 375px) {
+  .navbar-content {
+    padding: 0 12px;
+    height: 56px;
+  }
+  
+  .navbar-logo .logo-icon {
+    font-size: 24px;
+  }
+  
+  .navbar-logo .logo-text {
+    font-size: 16px;
+  }
+  
+  .navbar-links {
+    gap: 4px;
+  }
+  
+  .login-btn {
+    padding: 6px 14px;
+    font-size: 12px;
+  }
+}
