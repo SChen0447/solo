@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>蔓光 · 幽谷</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #0f0f23;
+        font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Microsoft YaHei', sans-serif;
+        color: #cccccc;
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 24px;
+      }
+      #canvas-wrapper {
+        position: relative;
+        width: 90vw;
+        height: 85vh;
+        min-width: 800px;
+        min-height: 600px;
+        border-radius: 4px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #1a1a2e 0%, #14142b 50%, #0f0f23 100%);
+        box-shadow: 0 0 40px rgba(68, 136, 255, 0.1);
+      }
+      #game-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: crosshair;
+      }
+      #status-panel {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        background: rgba(13, 13, 46, 0.75);
+        border-radius: 8px;
+        padding: 12px 16px;
+        color: #cccccc;
+        font-size: 14px;
+        line-height: 1.8;
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(68, 136, 255, 0.15);
+        pointer-events: none;
+        user-select: none;
+        font-variant-numeric: tabular-nums;
+      }
+      #status-panel .label {
+        opacity: 0.6;
+        margin-right: 6px;
+      }
+      #status-panel .value {
+        color: #a0d8ff;
+        font-weight: 500;
+      }
+      #tip-bar {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 50px;
+        background: rgba(26, 26, 46, 0.85);
+        color: #bbbbbb;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        user-select: none;
+        letter-spacing: 0.5px;
+      }
+      #tip-bar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: #333355;
+      }
+      #tip-bar span {
+        margin: 0 14px;
+      }
+      #tip-bar .sep {
+        opacity: 0.3;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="canvas-wrapper">
+        <canvas id="game-canvas"></canvas>
+        <div id="status-panel">
+          <div><span class="label">藤蔓:</span><span class="value" id="stat-vines">0/5</span></div>
+          <div><span class="label">节点:</span><span class="value" id="stat-nodes">0/30</span></div>
+          <div><span class="label">帧率:</span><span class="value" id="stat-fps">60 FPS</span></div>
+        </div>
+      </div>
+    </div>
+    <div id="tip-bar">
+      <span>🖱 左键点击种植藤蔓</span><span class="sep">│</span>
+      <span>✋ 拖拽引导生长方向</span><span class="sep">│</span>
+      <span>❌ 右键删除节点</span><span class="sep">│</span>
+      <span>↶ Ctrl + Z 撤销删除</span>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
