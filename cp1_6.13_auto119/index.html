@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蔚蓝·共生礁</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a1628 0%, #02050a 100%);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .loading-ripple {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100px;
+      height: 100px;
+      z-index: 9999;
+    }
+
+    .loading-ripple::before,
+    .loading-ripple::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border: 2px solid rgba(127, 199, 217, 0.8);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      animation: ripple-expand 2s ease-out infinite;
+    }
+
+    .loading-ripple::after {
+      animation-delay: 0.6s;
+    }
+
+    @keyframes ripple-expand {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+      }
+      100% {
+        width: 200px;
+        height: 200px;
+        opacity: 0;
+      }
+    }
+
+    .loading-ripple.hidden {
+      display: none;
+    }
+
+    .toolbar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      padding: 12px 20px;
+      background: rgba(10, 30, 40, 0.7);
+      border: 1px solid #3a6a8a;
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .toolbar-btn {
+      position: relative;
+      padding: 10px 18px;
+      background: transparent;
+      border: 1px solid rgba(127, 199, 217, 0.4);
+      border-radius: 8px;
+      color: #bfe6f0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toolbar-btn::after {
+      content: '';
+      position: absolute;
+      bottom: -50%;
+      left: 50%;
+      width: 200%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(127, 199, 217, 0.3) 0%, transparent 70%);
+      transform: translateX(-50%) translateY(100%);
+      transition: transform 0.2s ease;
+      pointer-events: none;
+    }
+
+    .toolbar-btn:hover {
+      border-color: rgba(127, 199, 217, 0.8);
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(127, 199, 217, 0.2);
+    }
+
+    .toolbar-btn:hover::after {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .toolbar-btn.active {
+      background: rgba(127, 199, 217, 0.2);
+      border-color: #7fc7d9;
+      color: #ffffff;
+    }
+
+    .toolbar-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.5;
+    }
+
+    .canvas-container.placing {
+      cursor: crosshair;
+    }
+
+    .cursor-ring {
+      position: fixed;
+      width: 40px;
+      height: 40px;
+      border: 2px solid #7fc7d9;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: ring-pulse 1.5s ease-in-out infinite;
+      z-index: 9998;
+      display: none;
+    }
+
+    .cursor-ring.visible {
+      display: block;
+    }
+
+    @keyframes ring-pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    .click-ripple {
+      position: fixed;
+      width: 0;
+      height: 0;
+      border: 2px solid #7fc7d9;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      animation: click-ripple-expand 0.6s ease-out forwards;
+      z-index: 9997;
+    }
+
+    @keyframes click-ripple-expand {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 1;
+        border-color: #7fc7d9;
+      }
+      100% {
+        width: 80px;
+        height: 80px;
+        opacity: 0;
+        border-color: transparent;
+      }
+    }
+
+    .status-panel {
+      position: fixed;
+      padding: 16px 20px;
+      background: rgba(5, 20, 30, 0.92);
+      border: 1px solid rgba(127, 199, 217, 0.5);
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 200;
+      min-width: 220px;
+      animation: panel-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      pointer-events: auto;
+    }
+
+    .status-panel::before {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 8px solid rgba(5, 20, 30, 0.92);
+    }
+
+    @keyframes panel-pop {
+      0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+      }
+    }
+
+    .panel-title {
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(127, 199, 217, 0.3);
+    }
+
+    .panel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      font-size: 13px;
+    }
+
+    .panel-label {
+      color: #bfe6f0;
+    }
+
+    .panel-value {
+      color: #00bfff;
+      font-weight: 500;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .panel-close {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      width: 20px;
+      height: 20px;
+      background: none;
+      border: none;
+      color: #bfe6f0;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .panel-close:hover {
+      opacity: 1;
+      color: #ffffff;
+    }
+
+    .time-indicator {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background: rgba(10, 30, 40, 0.7);
+      border: 1px solid rgba(127, 199, 217, 0.4);
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #bfe6f0;
+      font-size: 13px;
+      z-index: 100;
+    }
+
+    .time-indicator span {
+      color: #00bfff;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading-ripple" id="loading"></div>
+    <div id="canvas-container" class="canvas-container"></div>
+
+    <div class="cursor-ring" id="cursorRing"></div>
+
+    <div class="time-indicator">
+      时间流速: <span id="timeSpeed">1x</span>
+    </div>
+
+    <div class="toolbar" id="toolbar">
+      <button class="toolbar-btn" data-mode="coral" id="btnCoral">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 22C12 22 14 18 14 14C14 10 12 8 12 8C12 8 10 10 10 14C10 18 12 22 12 22Z"/>
+          <path d="M12 8C12 8 8 10 6 6C6 6 10 2 12 8Z"/>
+          <path d="M12 8C12 8 16 10 18 6C18 6 14 2 12 8Z"/>
+          <path d="M8 14C8 14 4 16 5 20C5 20 10 18 8 14Z"/>
+          <path d="M16 14C16 14 20 16 19 20C19 20 14 18 16 14Z"/>
+        </svg>
+        放置珊瑚
+      </button>
+      <button class="toolbar-btn" data-mode="fish" id="btnFish">
+        <svg viewBox="0 0 24 24">
+          <path d="M2 12C2 12 6 6 14 7C14 7 12 12 14 17C14 17 6 18 2 12Z"/>
+          <circle cx="11" cy="11" r="0.8" fill="currentColor"/>
+          <path d="M14 10L18 6L20 8L16 12L20 16L18 18L14 14"/>
+        </svg>
+        放置鱼群
+      </button>
+      <button class="toolbar-btn" id="btnTimeSpeed">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7V12L15 14"/>
+        </svg>
+        <span id="timeSpeedBtn">1x</span>
+      </button>
+      <button class="toolbar-btn" id="btnReset">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 12A9 9 0 1 1 12 21"/>
+          <path d="M3 12V7L8 7"/>
+          <path d="M3 12V17L8 17"/>
+        </svg>
+        重置视野
+      </button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
