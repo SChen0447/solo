@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星雨·浮屿</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #08081a 0%, #0a0e27 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(26, 26, 46, 0.85);
+      border-radius: 12px;
+      padding: 20px;
+      color: #ffffff;
+      z-index: 100;
+      width: 260px;
+      transform: translateY(-60px);
+      opacity: 0;
+      animation: slideIn 0.6s ease-out forwards;
+    }
+
+    @keyframes slideIn {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .panel-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #88ccff;
+      text-shadow: 0 0 10px rgba(136, 204, 255, 0.5);
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
+    }
+
+    .slider-label {
+      font-size: 13px;
+      color: #aabbcc;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .slider-value {
+      color: #88ccff;
+      font-weight: 500;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 24px;
+    }
+
+    .slider-track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: rgba(136, 204, 255, 0.2);
+      border-radius: 2px;
+      transform: translateY(-50%);
+    }
+
+    .slider-progress {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      height: 4px;
+      background: #88ccff;
+      border-radius: 2px;
+      transform: translateY(-50%);
+      box-shadow: 0 0 8px rgba(136, 204, 255, 0.6);
+      width: 50%;
+    }
+
+    input[type="range"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+      margin: 0;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      background: #ffffff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+      pointer-events: none;
+      transition: width 0.2s, height 0.2s, box-shadow 0.2s;
+      left: 50%;
+    }
+
+    .slider-wrapper:hover .slider-thumb {
+      width: 14px;
+      height: 14px;
+      box-shadow: 0 0 16px rgba(255, 255, 255, 1);
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, #88ccff 0%, #6699dd 100%);
+      border: none;
+      border-radius: 8px;
+      color: #0a0e27;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .reset-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(136, 204, 255, 0.4);
+    }
+
+    .reset-btn:active {
+      transform: translateY(0);
+    }
+
+    .hint-text {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      z-index: 100;
+      user-select: none;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div class="control-panel">
+    <div class="panel-title">✦ 星雨·浮屿 控制台</div>
+
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>星环倾斜角度</span>
+        <span class="slider-value" id="tilt-value">0°</span>
+      </div>
+      <div class="slider-wrapper">
+        <div class="slider-track"></div>
+        <div class="slider-progress" id="tilt-progress"></div>
+        <div class="slider-thumb" id="tilt-thumb"></div>
+        <input type="range" id="tilt-slider" min="-30" max="30" value="0" step="1" />
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>星环转速</span>
+        <span class="slider-value" id="speed-value">0.05</span>
+      </div>
+      <div class="slider-wrapper">
+        <div class="slider-track"></div>
+        <div class="slider-progress" id="speed-progress"></div>
+        <div class="slider-thumb" id="speed-thumb"></div>
+        <input type="range" id="speed-slider" min="0" max="0.2" value="0.05" step="0.005" />
+      </div>
+    </div>
+
+    <div class="slider-group">
+      <div class="slider-label">
+        <span>瀑布粒子数量</span>
+        <span class="slider-value" id="particle-value">80</span>
+      </div>
+      <div class="slider-wrapper">
+        <div class="slider-track"></div>
+        <div class="slider-progress" id="particle-progress"></div>
+        <div class="slider-thumb" id="particle-thumb"></div>
+        <input type="range" id="particle-slider" min="50" max="100" value="80" step="1" />
+      </div>
+    </div>
+
+    <button class="reset-btn" id="reset-waterfall">重置瀑布位置</button>
+  </div>
+
+  <div class="hint-text">拖拽旋转 | 滚轮缩放 | 点击种树</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
