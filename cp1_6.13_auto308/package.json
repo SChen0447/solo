@@ -1,0 +1,14 @@
+{
+  "name": "light-wheel-gravity-maze",
+  "version": "1.0.0",
+  "description": "光轮·重力回廊 - 几何解谜游戏",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}

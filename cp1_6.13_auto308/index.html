@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光轮·重力回廊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(90deg, #0f0c29, #302b63);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    #game-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+    }
+
+    #ui-panel {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 12px;
+      padding: 16px;
+      color: #ffffff;
+      min-width: 180px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #level-label {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #ffffff;
+    }
+
+    #energy-label {
+      font-size: 14px;
+      margin-bottom: 14px;
+      color: #feca57;
+    }
+
+    .gravity-indicator {
+      display: grid;
+      grid-template-columns: repeat(3, 28px);
+      grid-template-rows: repeat(3, 28px);
+      gap: 2px;
+      justify-content: center;
+      margin-bottom: 4px;
+    }
+
+    .arrow {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      opacity: 0.2;
+      transition: all 0.3s ease;
+      color: #48dbfb;
+    }
+
+    .arrow.active {
+      opacity: 1;
+      color: #ffffff;
+      text-shadow: 0 0 8px #ffffff;
+      transform: scale(1.5);
+    }
+
+    .arrow-up { grid-column: 2; grid-row: 1; }
+    .arrow-left { grid-column: 1; grid-row: 2; }
+    .arrow-right { grid-column: 3; grid-row: 2; }
+    .arrow-down { grid-column: 2; grid-row: 3; }
+
+    #retry-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #retry-overlay.visible {
+      display: flex;
+    }
+
+    #retry-btn {
+      padding: 16px 48px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.3s ease;
+      letter-spacing: 4px;
+    }
+
+    #retry-btn:hover {
+      background: rgba(72, 219, 251, 0.2);
+      border-color: #48dbfb;
+      transform: scale(1.05);
+      box-shadow: 0 0 24px rgba(72, 219, 251, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+  <div id="ui-panel">
+    <div id="level-label">关卡 1</div>
+    <div id="energy-label">光能：0/9</div>
+    <div class="gravity-indicator">
+      <div class="arrow arrow-up active">▲</div>
+      <div class="arrow arrow-left">◀</div>
+      <div class="arrow arrow-right">▶</div>
+      <div class="arrow arrow-down">▼</div>
+    </div>
+  </div>
+  <div id="retry-overlay">
+    <button id="retry-btn">重试</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
