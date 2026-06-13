@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>古代星图石板拓印</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000000;
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-star {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      animation: spin 2s linear infinite;
+    }
+
+    .loading-star::before,
+    .loading-star::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%);
+    }
+
+    .loading-star::before {
+      background: #FFD700;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      filter: drop-shadow(0 0 10px #FFD700);
+    }
+
+    .loading-star::after {
+      background: #B8860B;
+      clip-path: polygon(50% 10%, 58% 38%, 88% 38%, 63% 56%, 73% 84%, 50% 68%, 27% 84%, 37% 56%, 12% 38%, 42% 38%);
+      filter: drop-shadow(0 0 5px #B8860B);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      color: #FFD700;
+      font-size: 18px;
+      letter-spacing: 8px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    #reset-btn {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 215, 0, 0.15);
+      cursor: pointer;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    #reset-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 32px;
+      height: 32px;
+      margin: -16px 0 0 -16px;
+      border: 2px solid transparent;
+      border-top-color: #FFD700;
+      border-right-color: #FFD700;
+      border-radius: 50%;
+      animation: ring-rotate 3s linear infinite;
+    }
+
+    #reset-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      background: #FFD700;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      opacity: 0.7;
+    }
+
+    #reset-btn.spinning::before {
+      animation: ring-rotate-fast 0.3s linear;
+    }
+
+    @keyframes ring-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes ring-rotate-fast {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    #reset-btn:hover {
+      background: rgba(255, 215, 0, 0.3);
+    }
+
+    #progress-bar {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 4px;
+      background: rgba(184, 134, 11, 0.3);
+      border-radius: 2px;
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    #progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #B8860B, #FFD700);
+      transition: width 0.5s ease-out;
+      box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+    }
+
+    #progress-text {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #FFD700;
+      font-size: 14px;
+      letter-spacing: 2px;
+      z-index: 100;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    }
+
+    @media (max-width: 1024px) {
+      #progress-bar {
+        width: 240px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #progress-bar {
+        width: 180px;
+      }
+      .loading-text {
+        font-size: 14px;
+        letter-spacing: 4px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading-screen">
+      <div class="loading-star"></div>
+      <div class="loading-text">星图加载中</div>
+    </div>
+    <button id="reset-btn" title="重置拓印"></button>
+    <div id="progress-text">拓印进度 0%</div>
+    <div id="progress-bar">
+      <div id="progress-fill"></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
