@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>光球·声谱涟漪</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000011;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #control-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      background: rgba(0, 10, 30, 0.8);
+      border: 1px solid #00aaff;
+      border-radius: 12px;
+      padding: 16px;
+      min-width: 220px;
+      box-shadow: 0 0 20px rgba(0, 170, 255, 0.3);
+      transform: translateY(120%);
+      opacity: 0;
+      transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      z-index: 10;
+    }
+
+    #control-panel.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    #control-panel h3 {
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #00aaff;
+      text-shadow: 0 0 8px rgba(0, 170, 255, 0.5);
+    }
+
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #aaccff;
+      margin-bottom: 6px;
+      display: block;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      background: rgba(0, 30, 60, 0.8);
+      border: 1px solid #00aaff;
+      border-radius: 6px;
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      transition: box-shadow 0.2s ease;
+    }
+
+    select:hover,
+    select:focus {
+      box-shadow: 0 0 10px rgba(0, 170, 255, 0.5);
+    }
+
+    select option {
+      background: #001133;
+      color: #ffffff;
+    }
+
+    #volume-bar-container {
+      width: 100%;
+      height: 60px;
+      background: rgba(0, 20, 40, 0.6);
+      border: 1px solid #00aaff;
+      border-radius: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #volume-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 0%;
+      background: linear-gradient(to top, #00ff66, #ffff00, #ff3300);
+      transition: height 0.05s linear;
+    }
+
+    #volume-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+      z-index: 2;
+    }
+
+    #fps-counter {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      font-size: 14px;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(0, 170, 255, 0.8);
+      z-index: 10;
+      font-family: 'Courier New', monospace;
+      pointer-events: none;
+    }
+
+    #source-toggle {
+      position: absolute;
+      top: 40px;
+      right: 20px;
+      padding: 8px 16px;
+      background: rgba(0, 10, 30, 0.8);
+      border: 1px solid #00aaff;
+      border-radius: 8px;
+      color: #00aaff;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.2s ease;
+    }
+
+    #source-toggle:hover {
+      background: rgba(0, 170, 255, 0.2);
+      box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
+    }
+
+    #source-toggle.active {
+      background: rgba(0, 170, 255, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    
+    <div id="fps-counter">FPS: --</div>
+    
+    <button id="source-toggle">切换音频源</button>
+    
+    <div id="control-panel">
+      <h3>控制面板</h3>
+      
+      <div class="control-group">
+        <label class="control-label">音频源</label>
+        <select id="audio-source-select">
+          <option value="sweep">正弦扫频测试音</option>
+          <option value="mic">麦克风输入</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <label class="control-label">音量指示</label>
+        <div id="volume-bar-container">
+          <div id="volume-bar"></div>
+          <span id="volume-text">0%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
