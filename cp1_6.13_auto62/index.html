@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>节奏光剑·音浪斩</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: 'Consolas', 'Orbitron', 'Microsoft YaHei', monospace;
+      color: #fff;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: none;
+      touch-action: none;
+    }
+
+    /* Loading Screen */
+    #loadingScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #1a1a4a 0%, #0d0d2b 50%, #050514 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.6s ease;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .saber-icon {
+      width: 100px;
+      height: 100px;
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .saber-icon::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 8px;
+      height: 70px;
+      background: linear-gradient(180deg, #00ffff 0%, #ff00ff 100%);
+      border-radius: 4px;
+      transform: translate(-50%, -50%) rotate(0deg);
+      box-shadow: 0 0 20px #00ffff, 0 0 40px #ff00ff, 0 0 60px #00ffff;
+      animation: saberSpin 2s ease-in-out infinite;
+      transform-origin: center bottom;
+    }
+
+    .saber-icon::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 50%;
+      width: 16px;
+      height: 25px;
+      background: linear-gradient(180deg, #444 0%, #222 100%);
+      border-radius: 3px;
+      transform: translateX(-50%);
+      box-shadow: inset 0 0 5px rgba(255,255,255,0.3);
+    }
+
+    @keyframes saberSpin {
+      0% { transform: translate(-50%, -50%) rotate(-20deg); }
+      50% { transform: translate(-50%, -50%) rotate(20deg); }
+      100% { transform: translate(-50%, -50%) rotate(-20deg); }
+    }
+
+    .loading-text {
+      font-size: 20px;
+      letter-spacing: 4px;
+      color: #00ffff;
+      text-shadow: 0 0 10px #00ffff;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* UI Overlay */
+    #uiOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .score-panel {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      text-align: right;
+      pointer-events: none;
+    }
+
+    .score-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 2px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .score-value {
+      font-size: 42px;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 255, 0.5);
+      letter-spacing: 2px;
+      line-height: 1;
+    }
+
+    .combo-display {
+      position: absolute;
+      top: 100px;
+      right: 24px;
+      text-align: right;
+    }
+
+    .combo-value {
+      font-size: 32px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 15px #ff6600, 0 0 30px #ff3300;
+      letter-spacing: 2px;
+      position: relative;
+    }
+
+    .combo-value.fire {
+      animation: fireCombo 0.3s ease-in-out infinite alternate;
+    }
+
+    .combo-value.fire::before,
+    .combo-value.fire::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 30px;
+      height: 100%;
+      transform: translateY(-50%);
+      background: linear-gradient(90deg, transparent, #ff6600, #ff0000);
+      filter: blur(8px);
+      opacity: 0.8;
+      animation: flame 0.15s ease-in-out infinite alternate;
+    }
+
+    .combo-value.fire::before {
+      left: -35px;
+      transform: translateY(-50%) scaleX(-1);
+    }
+
+    .combo-value.fire::after {
+      right: -35px;
+    }
+
+    @keyframes fireCombo {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    @keyframes flame {
+      0% { opacity: 0.5; height: 80%; }
+      100% { opacity: 0.9; height: 120%; }
+    }
+
+    .combo-label {
+      font-size: 12px;
+      color: rgba(255, 215, 0, 0.8);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Start Screen */
+    #startScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 30, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      pointer-events: all;
+      transition: opacity 0.5s ease;
+    }
+
+    #startScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .game-title {
+      font-size: 56px;
+      font-weight: 900;
+      letter-spacing: 8px;
+      background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #ffff00 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 30px rgba(0, 255, 255, 0.5));
+      margin-bottom: 10px;
+    }
+
+    .game-subtitle {
+      font-size: 18px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 6px;
+      margin-bottom: 60px;
+      text-transform: uppercase;
+    }
+
+    .start-btn {
+      padding: 18px 60px;
+      font-size: 20px;
+      font-family: inherit;
+      font-weight: 700;
+      letter-spacing: 4px;
+      color: #00ffff;
+      background: rgba(0, 255, 255, 0.1);
+      border: 2px solid #00ffff;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.3), inset 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+
+    .start-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      border-color: #80ffff;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.5), inset 0 0 30px rgba(0, 255, 255, 0.1);
+      transform: scale(1.05);
+    }
+
+    .start-btn:active {
+      transform: scale(0.98);
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .instructions {
+      margin-top: 50px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      line-height: 2;
+    }
+
+    .instructions span {
+      display: block;
+      letter-spacing: 2px;
+    }
+
+    /* Game Over Panel */
+    #gameOverScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+      pointer-events: all;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #gameOverScreen.visible {
+      opacity: 1;
+    }
+
+    .game-over-card {
+      position: relative;
+      width: 380px;
+      padding: 50px 40px;
+      background: rgba(20, 20, 40, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .game-over-title {
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 6px;
+      color: #ff00ff;
+      text-shadow: 0 0 20px #ff00ff;
+      margin-bottom: 30px;
+      text-transform: uppercase;
+    }
+
+    .rating-badge {
+      position: absolute;
+      top: -35px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+      color: #fff;
+      box-shadow: 0 0 30px #ffd700, 0 0 60px #ff8c00;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      animation: ratingPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes ratingPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .stat-row:last-of-type {
+      border-bottom: none;
+      margin-bottom: 30px;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: #00ffff;
+      text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    .restart-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .restart-btn:hover {
+      background: rgba(0, 255, 255, 0.2);
+      border-color: #00ffff;
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+      transform: rotate(90deg);
+    }
+
+    .restart-btn:active {
+      transform: scale(0.9) rotate(90deg);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .game-title {
+        font-size: 36px;
+        letter-spacing: 4px;
+      }
+
+      .game-subtitle {
+        font-size: 14px;
+        letter-spacing: 4px;
+        margin-bottom: 40px;
+      }
+
+      .start-btn {
+        padding: 14px 40px;
+        font-size: 16px;
+        letter-spacing: 3px;
+      }
+
+      .score-value {
+        font-size: 34px;
+      }
+
+      .combo-value {
+        font-size: 26px;
+      }
+
+      .score-panel, .combo-display {
+        transform: scale(0.8);
+        transform-origin: top right;
+      }
+
+      .game-over-card {
+        width: 90%;
+        max-width: 340px;
+        padding: 40px 25px;
+      }
+
+      .game-over-title {
+        font-size: 22px;
+        letter-spacing: 4px;
+      }
+
+      .stat-value {
+        font-size: 22px;
+      }
+
+      .rating-badge {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+        top: -30px;
+        right: 20px;
+      }
+
+      .instructions {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingScreen">
+    <div class="saber-icon"></div>
+    <div class="loading-text">LOADING</div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div id="uiOverlay">
+    <div class="score-panel">
+      <div class="score-label">Score</div>
+      <div class="score-value" id="scoreValue">0</div>
+    </div>
+    <div class="combo-display">
+      <div class="combo-value" id="comboValue">0</div>
+      <div class="combo-label">Combo</div>
+    </div>
+  </div>
+
+  <div id="startScreen">
+    <h1 class="game-title">节奏光剑</h1>
+    <p class="game-subtitle">音 · 浪 · 斩</p>
+    <button class="start-btn" id="startBtn">开始游戏</button>
+    <div class="instructions">
+      <span>移动鼠标 / 手指滑动 控制光剑</span>
+      <span>斩击飞来的音符方块</span>
+      <span>连击越多 得分越高</span>
+    </div>
+  </div>
+
+  <div id="gameOverScreen">
+    <div class="game-over-card">
+      <button class="restart-btn" id="restartBtn" title="重新开始">↻</button>
+      <div class="rating-badge" id="ratingBadge">S</div>
+      <h2 class="game-over-title">游戏结束</h2>
+      <div class="stat-row">
+        <span class="stat-label">总得分</span>
+        <span class="stat-value" id="finalScore">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">最高连击</span>
+        <span class="stat-value" id="maxCombo">0</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
