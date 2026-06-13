@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>光络·篆刻印记</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #c9b99a 0%, #a38b64 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .control-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 66px;
+      background: rgba(245, 240, 232, 0.85);
+      border-bottom: 2px solid #8b6914;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      padding: 0 20px;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .control-label {
+      font-size: 13px;
+      color: #5a4a2a;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .pressure-slider {
+      width: 140px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #d4c4a8, #8b6914);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .pressure-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #fceabb, #b8860b);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(139, 105, 20, 0.4);
+    }
+
+    .pressure-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: radial-gradient(circle, #fceabb, #b8860b);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(139, 105, 20, 0.4);
+    }
+
+    .pressure-value {
+      font-size: 14px;
+      color: #8b6914;
+      font-weight: 700;
+      width: 24px;
+      text-align: center;
+    }
+
+    .color-presets {
+      display: flex;
+      gap: 8px;
+    }
+
+    .color-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .color-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .color-btn.active {
+      border-color: #fceabb;
+      box-shadow: 0 0 10px rgba(252, 234, 187, 0.8);
+    }
+
+    .action-btn {
+      padding: 8px 18px;
+      border: 1px solid #8b6914;
+      background: linear-gradient(to bottom, #fceabb, #d4b86a);
+      color: #5a4a2a;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: linear-gradient(to bottom, #fff5d6, #e0c478);
+      box-shadow: 0 2px 8px rgba(139, 105, 20, 0.3);
+    }
+
+    .action-btn:active {
+      transform: translateY(1px);
+    }
+
+    .canvas-container {
+      position: absolute;
+      top: 86px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+    }
+
+    .stone-canvas {
+      display: block;
+      cursor: crosshair;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 60px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 700px) {
+      .control-bar {
+        height: 56px;
+        gap: 12px;
+        padding: 0 12px;
+      }
+
+      .control-label {
+        font-size: 11px;
+      }
+
+      .pressure-slider {
+        width: 80px;
+      }
+
+      .color-btn {
+        width: 22px;
+        height: 22px;
+      }
+
+      .action-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+
+      .canvas-container {
+        top: 76px;
+        width: 100%;
+        padding: 0 10px;
+      }
+
+      .stone-canvas {
+        width: 100%;
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
