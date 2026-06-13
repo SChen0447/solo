@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T19:58:20.380Z",
+  "task_name": "auto145",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为'谜境·词踪'的全栈web应用，用户通过浏览器在虚拟的迷雾森林中探索，每片迷雾区域包含一个与历史典故、成语或冷知识相关的文字谜题，正确解答后迷雾消散并生成对应的水墨风格配图和短文介绍，所有解谜记录和收藏在个人图鉴中展示。使用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建。文件结构如下：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite@5、@types/react、@types/react-dom、axios、react-router-dom、sass，后端依赖：express、cors、typescript、ts-node、@types/express、@types/cors，根目录统一启动脚本：npm run dev）\n - packages/frontend/vite.config.js（配置代理到后端端口3001）\n - packages/frontend/tsconfig.json（严格模式）\n - packages/frontend/index.html（入口页面）\n - packages/frontend/src/App.tsx（路由和状态管理）\n - packages/frontend/src/components/AreaMap.tsx（迷雾地图组件，接收谜题数据，点击触发谜题弹窗）\n - packages/frontend/src/components/PuzzleModal.tsx（谜题弹窗组件，显示题目、输入框和提交按钮，发送axios请求到后端）\n - packages/frontend/src/components/Collection.tsx（个人图鉴组件，展示已解谜条目）\n - packages/backend/src/server.ts（Express服务，端口3001，处理谜题验证、图鉴增删查接口）\n - packages/backend/src/routes/puzzle.ts（谜题路由：GET获取迷雾区域谜题列表，POST验证答案并返回结果和配图数据）\n - packages/backend/src/routes/collection.ts（图鉴路由：GET获取用户图鉴，POST添加新条目，DELETE删除条目）\n\n具体需求：\n1. 首页默认为迷雾森林地图，由6-8块不规则多边形区域组成，每块区域以半透明灰色迷雾覆盖（透明度0.6），背景为墨绿色渐变，包含7-9棵水墨风格的松树剪影（随机位置，大小80-120px不等）。鼠标悬停时迷雾透明度降至0.2并显示区域边框（金色虚线），点击后弹出谜题弹窗。\n2. 谜题弹窗尺寸350x450px，居中于视口，背景为宣纸纹理（浅米色噪点），标题区有毛笔字体显示题目编号（如‘谜·壹’），题目区展示文字谜题（40-80字的中文诗句或成语描述），输入框为半透明古风卷轴样式（淡黄色底色，深棕色边框），提交按钮为圆形朱砂印章样式（直径40px，红色色值#c23b22，白色字体‘答’）。\n3. 答案验证通过后，弹窗关闭并触发对应迷雾区域动画：迷雾快速消散（透明度从0.6降至0，持续1.5秒），区域中央浮现一副水墨风格配图（尺寸200x200px，边缘墨水晕染效果），配图下方显示140-200字的短文介绍，整体以淡入动画出现（从透明到不透明，持续2秒）。\n4. 地图右下角固定显示一个个人图鉴入口按钮（直径50px，圆形，背景为复古金色纹理，内部显示当前收集数量，如‘3/8’）。点击后从右侧滑入个人图鉴面板（宽度350px，高度90%视口，背景为深蓝色渐变，列表项以卡片形式展示，每张卡片包含配图缩略图（80x80px）、题目摘要（20字截断）、已解锁日期，点击卡片可再次查看完整配图和介绍。\n5. 后端提供API：‘/api/puzzles’返回迷雾区域列表（含id、name、question、已解锁状态），‘/api/puzzles/:id/verify’接受POST请求体{answer: string}，返回{correct: boolean, painting: string, description: string}，‘/api/collections’返回用户收藏列表（含id、puzzleId、painting、description、unlockedAt），‘/api/collections’支持POST添加和DELETE删除。\n\n界面方面：整体采用中国水墨画风格，主色调为墨黑（#1a1a1a）、宣纸米黄（#f5e6d0）、朱砂红（#c23b22）和青绿（#2e8b57）。布局为全屏自适应（最小宽度1024px），所有组件均使用Sass变量统一管理配色。迷雾消散动画使用CSS关键帧实现缓动效果，配图浮现使用GSAP的fromTo方法控制透明度和缩放。响应式适配确保在1400x900和1920x1080分辨率下地图区域等比例缩放。\n\n性能要求：地图初始加载时间不超过2秒，谜题验证接口响应时间不超过500ms，迷雾消散动画帧率保持在55fps以上。\n\n运行方式：在根目录执行npm install安装前后端依赖，然后npm run dev同时启动前端（Vite开发服务器，端口3000）和后端（ts-node监听3001端口），浏览器访问http://localhost:3000即可。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:5f33f2c3c7a10ccc8f367ef8e819d85b_6a2c6491af784b7bb6b06e06.6a2c64c0af784b7bb6b06e16.6a2c64c07c84438395c403bd:Trae CN.T(2026/6/13 03:57:52)",
+    "user_id": "3986207660317399",
+    "trace_id": "5f33f2c3c7a10ccc8f367ef8e819d85b",
+    "session_id": "6a2c6491af784b7bb6b06e06",
+    "task_id": "6a2c64c0af784b7bb6b06e16",
+    "message_id": "6a2c64c07c84438395c403bd",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 03:57:52",
+    "format": "full"
+  },
+  "trace": "null"
+}
