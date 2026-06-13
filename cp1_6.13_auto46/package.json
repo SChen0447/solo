@@ -1,0 +1,21 @@
+{
+  "name": "geological-drill-simulator",
+  "version": "1.0.0",
+  "description": "Interactive 3D Geological Drilling Simulator",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "@types/three": "^0.160.0",
+    "d3-scale": "^4.0.2",
+    "d3-interpolate": "^3.0.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
