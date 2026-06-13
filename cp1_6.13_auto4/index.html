@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座连线涂鸦画板</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #2a1a4a 100%);
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3a 50%, #2a1a4a 100%);
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(100, 150, 255, 0.2);
+      border-top-color: #6496ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      color: #a0b0ff;
+      font-size: 16px;
+      letter-spacing: 2px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #hamburger-btn {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      cursor: pointer;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    #hamburger-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 20px rgba(100, 150, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    #hamburger-btn span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: #ffffff;
+      margin: 5px auto;
+      transition: all 0.3s ease;
+    }
+
+    #hamburger-btn.active span:nth-child(1) {
+      transform: translateY(7px) rotate(45deg);
+    }
+
+    #hamburger-btn.active span:nth-child(2) {
+      opacity: 0;
+    }
+
+    #hamburger-btn.active span:nth-child(3) {
+      transform: translateY(-7px) rotate(-45deg);
+    }
+
+    #tool-panel-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100%;
+      z-index: 500;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      #hamburger-btn {
+        display: block;
+      }
+
+      #tool-panel-container {
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+      }
+
+      #tool-panel-container.open {
+        transform: translateX(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">正在加载星空...</div>
+  </div>
+
+  <button id="hamburger-btn" aria-label="菜单">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div id="canvas-container"></div>
+  <div id="tool-panel-container"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
