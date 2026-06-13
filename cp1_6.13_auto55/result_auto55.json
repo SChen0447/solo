@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T17:11:59.276Z",
+  "task_name": "auto55",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为'诗笺传情'的匿名诗歌接龙社区应用，让用户能发布诗歌片段、接力创作并标注灵感来源。使用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建。文件结构如下：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom、axios；后端依赖：express、cors、uuid、typescript、ts-node-dev、@types/express、@types/cors、@types/uuid；启动脚本：npm run dev）\n - vite.config.ts（前端构建配置，代理/api到后端3001端口）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（前端入口）\n - backend/src/server.ts（后端服务，端口3001，处理诗歌片段的CRUD和接龙匹配）\n - backend/src/routes.ts（路由处理，定义RESTful API：GET /poems、POST /poems、GET /poems/:id/chain、POST /poems/:id/extend）\n - frontend/src/App.tsx（主组件，路由切换至诗列表、详情页、创建页面）\n - frontend/src/components/PoemCard.tsx（诗歌卡片组件，显示片段首句、作者匿名标识、接龙人数，带有背景渐变和悬浮阴影动画）\n - frontend/src/components/ChainEditor.tsx（接龙编辑器组件，显示已有片段链为时间轴，新片段输入框，点击发布时触发POST请求）\n\n具体需求：\n1. 首页展示一个瀑布流布局的诗歌片段卡片列表，每张卡片随机从10种柔和渐变色（如雾霾蓝到薰衣草紫、杏仁白到浅驼色）中取一种为背景，卡片左上角显示随机生成的古风匿名笔名（如'云中子'、'水边客'），卡片中央显示诗歌前两行，底部显示接龙人数（数字带淡入动画）和'续写'按钮（按钮点击时有微小的弹性缩放效果）。\n2. 用户点击'续写'按钮或首页的'发起新诗'按钮（橙色圆角按钮，毛玻璃质感），跳转至创作页面。创作页面顶部显示已有诗歌片段以时间轴形式纵向排列，每个片段左侧有竖线连接，旁边显示作者匿名标识和发布时间（相对时间，如'3分钟前'）。底部提供输入框（最多140字，字数实时统计，接近上限时输入框边框渐变为橙色），用户提交后新片段加入时间轴底部，页面有平滑滚动动画。\n3. 每首诗歌链最上方显示该链的灵感来源标签（如'源自李商隐《锦瑟》'或'原创'），标签为圆角小胶囊形状，背景为半透明白色，点击标签可查看来源原诗片段（弹出一个从底部滑入的模态框，模态框背景是半透明毛玻璃，关闭时模态框渐隐）。\n4. 用户提交新片段后，后端使用uuid生成唯一标识返回前端，前端在时间轴末尾添加一条新片段卡片，并触发一个彩带飘落庆祝动画（持续2秒，彩带颜色随机从6种亮色中选取）。\n5. 搜索功能：首页顶部有一个搜索框（圆角，输入时显示占位文字'搜索诗句或笔名'），输入文字后实时过滤卡片列表（延迟300ms防抖），匹配到诗句内容或笔名的卡片高亮显示（边框变为金色并轻微闪烁），未匹配卡片变为浅灰色并降低透明度。\n\n界面方面：整体采用米白色为主背景，搭配古风书法字体（如'思源宋体'），卡片使用柔和圆角（12px）和阴影（0 2px 8px rgba(0,0,0,0.08)），页面最大宽度1200px居中，左右保留呼吸空间。加载状态显示一个旋转的毛笔图标动画（从淡入到匀速旋转，颜色渐变色）。响应式适配：在宽度小于768px时，瀑布流变为单列布局，卡片宽度占满屏幕并左右留边距10px；动画和过渡使用CSS transition（0.3s ease）和@keyframes实现。\n\n性能要求：页面初始加载时间不超过2秒（使用代码分包和懒加载），搜索过滤响应时间低于150ms，接龙提交后页面更新在1秒内完成。运行时：在项目根目录执行npm install && npm run dev，同时启动前端（默认5173端口）和后端（3001端口），直接打开http://localhost:5173即可使用。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:2dd589391a56e534477ad14a03cc6e33_6a2c3ceedf29353bc2ecde0b.6a2c3dd2df29353bc2ecdecb.6a2c3dd24df936aab3d801f0:Trae CN.T(2026/6/13 01:11:46)",
+    "user_id": "3986207660317399",
+    "trace_id": "2dd589391a56e534477ad14a03cc6e33",
+    "session_id": "6a2c3ceedf29353bc2ecde0b",
+    "task_id": "6a2c3dd2df29353bc2ecdecb",
+    "message_id": "6a2c3dd24df936aab3d801f0",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 01:11:46",
+    "format": "full"
+  },
+  "trace": "null"
+}
