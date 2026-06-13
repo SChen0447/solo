@@ -1,0 +1,18 @@
+{
+  "name": "jin-yu-sen-huo",
+  "version": "1.0.0",
+  "description": "烬语·森火 - 交互式魔法火种唤醒游戏",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

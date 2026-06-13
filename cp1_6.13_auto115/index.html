@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>烬语·森火 - 魔法火种唤醒</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Ma Shan Zheng', 'ZCOOL KuaiLe', cursive;
+    }
+
+    body {
+      background: linear-gradient(180deg, 
+        #0a1f0a 0%, 
+        #0d2818 25%, 
+        #1a1a3e 60%, 
+        #1a0a2e 100%);
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: crosshair;
+    }
+
+    #loadingScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        #0a1f0a 0%, 
+        #0d2818 25%, 
+        #1a1a3e 60%, 
+        #1a0a2e 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 1s ease-out;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loadingTitle {
+      font-size: 48px;
+      color: #d4a853;
+      text-shadow: 
+        0 0 10px rgba(212, 168, 83, 0.5),
+        0 0 20px rgba(212, 168, 83, 0.3),
+        2px 2px 4px rgba(0, 0, 0, 0.8);
+      margin-bottom: 40px;
+      letter-spacing: 8px;
+    }
+
+    #loadingSpark {
+      position: relative;
+      width: 60px;
+      height: 80px;
+    }
+
+    .spark-body {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 30px;
+      height: 50px;
+      background: radial-gradient(ellipse at 50% 80%, 
+        #fff7a0 0%, 
+        #d4a853 40%, 
+        #a87832 70%, 
+        transparent 100%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      filter: blur(2px);
+      animation: flicker 1.5s ease-in-out infinite;
+    }
+
+    .spark-glow {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, 
+        rgba(212, 168, 83, 0.4) 0%, 
+        rgba(212, 168, 83, 0.1) 40%, 
+        transparent 70%);
+      border-radius: 50%;
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% {
+        height: 45px;
+        opacity: 0.7;
+        transform: translateX(-50%) scaleX(1);
+      }
+      25% {
+        height: 55px;
+        opacity: 0.9;
+        transform: translateX(-52%) scaleX(1.05);
+      }
+      50% {
+        height: 48px;
+        opacity: 0.6;
+        transform: translateX(-48%) scaleX(0.95);
+      }
+      75% {
+        height: 52px;
+        opacity: 0.85;
+        transform: translateX(-51%) scaleX(1.02);
+      }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 0.5;
+      }
+      50% {
+        transform: translateX(-50%) scale(1.3);
+        opacity: 0.8;
+      }
+    }
+
+    #loadingText {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #a88842;
+      letter-spacing: 4px;
+      animation: textFade 2s ease-in-out infinite;
+    }
+
+    @keyframes textFade {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingScreen">
+    <div id="loadingTitle">烬 语 · 森 火</div>
+    <div id="loadingSpark">
+      <div class="spark-glow"></div>
+      <div class="spark-body"></div>
+    </div>
+    <div id="loadingText">唤醒古老的魔法火种...</div>
+  </div>
+  <canvas id="gameCanvas"></canvas>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
