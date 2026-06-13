@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星座复原 — Constellation Restorer</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Caveat', cursive, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a0a2e 50%, #0d0520 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a0a2e 50%, #0d0520 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease;
+    }
+
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-vortex {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .loading-vortex::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: #ffd700;
+      border-right-color: rgba(192, 192, 192, 0.4);
+      animation: vortex-spin 1.2s linear infinite;
+    }
+
+    .loading-vortex::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-bottom-color: #b8860b;
+      border-left-color: rgba(255, 215, 0, 0.3);
+      animation: vortex-spin 0.8s linear infinite reverse;
+    }
+
+    @keyframes vortex-spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 24px;
+      color: #b8860b;
+      font-size: 18px;
+      letter-spacing: 3px;
+      animation: loading-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes loading-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    #app-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #stardisk-canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    #three-preview {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      width: 150px;
+      height: 150px;
+      border: 1px solid rgba(184, 134, 11, 0.4);
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(10, 10, 46, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    #info-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      width: 200px;
+      height: 150px;
+      background: rgba(10, 10, 46, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(184, 134, 11, 0.5);
+      border-radius: 12px;
+      padding: 16px;
+      color: #c0c0c0;
+      font-size: 14px;
+      line-height: 1.8;
+      z-index: 10;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #info-panel:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(184, 134, 11, 0.3);
+    }
+
+    #info-panel .panel-title {
+      color: #ffd700;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    #info-panel .panel-row {
+      display: flex;
+      justify-content: space-between;
+      color: #c0c0c0;
+    }
+
+    #info-panel .panel-value {
+      color: #ffd700;
+    }
+
+    #progress-bar-container {
+      margin-top: 10px;
+      width: 100%;
+      height: 4px;
+      background: rgba(192, 192, 192, 0.2);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #b8860b, #ffd700);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .ctrl-btn {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, #c9960c, #8b6508);
+      border: 1px solid rgba(255, 215, 0, 0.5);
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 15px rgba(184, 134, 11, 0.6);
+    }
+
+    .ctrl-btn svg {
+      width: 16px;
+      height: 16px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    #reset-btn {
+      top: 20px;
+      right: 20px;
+    }
+
+    #switch-btn {
+      bottom: 20px;
+      right: 20px;
+    }
+
+    #confirm-dialog {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+    }
+
+    #confirm-dialog.visible {
+      display: flex;
+    }
+
+    .dialog-box {
+      width: 280px;
+      background: rgba(10, 10, 46, 0.9);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(184, 134, 11, 0.6);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      color: #c0c0c0;
+      font-size: 15px;
+    }
+
+    .dialog-box p {
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .dialog-btns {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .dialog-btns button {
+      padding: 6px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(184, 134, 11, 0.5);
+      cursor: pointer;
+      font-family: 'Caveat', cursive;
+      font-size: 14px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .dialog-btns button:hover {
+      transform: scale(1.05);
+    }
+
+    .dialog-btns .btn-confirm {
+      background: radial-gradient(circle at 40% 35%, #c9960c, #8b6508);
+      color: #ffffff;
+    }
+
+    .dialog-btns .btn-cancel {
+      background: rgba(192, 192, 192, 0.1);
+      color: #c0c0c0;
+    }
+
+    #poem-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .poem-text {
+      position: absolute;
+      color: rgba(255, 215, 0, 0.9);
+      font-family: 'Caveat', cursive;
+      font-size: 14px;
+      white-space: nowrap;
+      pointer-events: auto;
+      cursor: pointer;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+      transition: transform 0.2s ease;
+    }
+
+    .poem-text:hover {
+      transform: scale(1.1);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="loading-vortex"></div>
+    <div class="loading-text">Awakening the Stars...</div>
+  </div>
+
+  <div id="app-container">
+    <canvas id="stardisk-canvas"></canvas>
+
+    <div id="poem-layer"></div>
+
+    <div id="three-preview"></div>
+
+    <div id="info-panel">
+      <div class="panel-title" id="constellation-name">Orion</div>
+      <div class="panel-row">
+        <span>Stars</span>
+        <span class="panel-value" id="stars-placed">0 / 20</span>
+      </div>
+      <div class="panel-row">
+        <span>Progress</span>
+        <span class="panel-value" id="progress-pct">0%</span>
+      </div>
+      <div class="panel-row">
+        <span>Poems</span>
+        <span class="panel-value" id="poems-triggered">0</span>
+      </div>
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+      </div>
+    </div>
+
+    <button class="ctrl-btn" id="reset-btn" title="Reset">
+      <svg viewBox="0 0 24 24">
+        <polyline points="1 4 1 10 7 10"></polyline>
+        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+      </svg>
+    </button>
+
+    <button class="ctrl-btn" id="switch-btn" title="Switch Constellation">
+      <svg viewBox="0 0 24 24">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+      </svg>
+    </button>
+
+    <div id="confirm-dialog">
+      <div class="dialog-box">
+        <p>Reset all star fragments to their original positions?</p>
+        <div class="dialog-btns">
+          <button class="btn-cancel" id="dialog-cancel">Cancel</button>
+          <button class="btn-confirm" id="dialog-confirm">Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
