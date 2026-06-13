@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>词海·星旋书</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f0c29;
+      font-family: 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    #app {
+      width: 100%;
+      height: 100%;
+    }
+    #hint-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      color: #a78bfa;
+      font-size: 14px;
+      z-index: 100;
+      letter-spacing: 1px;
+    }
+    #hint-bar .count {
+      color: #feca57;
+    }
+    canvas {
+      display: block;
+      cursor: grab;
+    }
+    canvas:active {
+      cursor: grabbing;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="hint-bar">
+    <span>星环文字：<span class="count" id="ring-count">0</span>/12</span>
+    <span>点击文字选择，拖拽至核心吸附，Shift+Click释放</span>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
