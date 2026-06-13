@@ -1,0 +1,123 @@
+{
+  "title": "星途迷踪",
+  "intro": "在无尽的星海中，每一步选择都将改写命运的轨迹……",
+  "startNodeId": "node_1",
+  "nodes": [
+    {
+      "id": "node_1",
+      "text": "你站在古老星图的起点，脚下的石板刻满符文，微微发出蓝光。前方有三条路——左边的通道传来低沉的嗡鸣，右边的阶梯飘来幽幽花香，正前方的石门半掩着，透出金色的光。",
+      "options": [
+        { "text": "循着嗡鸣声走向左侧通道", "nextNodeId": "node_2" },
+        { "text": "踏上飘着花香的阶梯", "nextNodeId": "node_3" },
+        { "text": "推开金光石门", "nextNodeId": "node_4", "isBranch": true }
+      ],
+      "atmosphere": "mysterious",
+      "isEnding": false
+    },
+    {
+      "id": "node_2",
+      "text": "低沉的嗡鸣引你来到一间石室。墙上嵌着一颗脉动的暗红晶石，它的光与你的心跳同步。晶石旁刻着古老文字：'触碰我，便知过往；离开我，便得安宁。'",
+      "options": [
+        { "text": "伸手触碰暗红晶石", "nextNodeId": "node_5" },
+        { "text": "转身离开石室", "nextNodeId": "node_3" }
+      ],
+      "atmosphere": "tense",
+      "isEnding": false
+    },
+    {
+      "id": "node_3",
+      "text": "阶梯尽头是一座悬浮花园，花瓣在无重力中缓缓飘舞。一位银发守望者坐在花丛中，她的眼中映着整片星空。'旅人，你为何而来？'她轻声问道。",
+      "options": [
+        { "text": "'我寻找回家的路'", "nextNodeId": "node_6" },
+        { "text": "'我渴望探索未知的星辰'", "nextNodeId": "node_4", "isBranch": true },
+        { "text": "'我只是迷路的旅人'", "nextNodeId": "node_5" }
+      ],
+      "atmosphere": "calm",
+      "isEnding": false
+    },
+    {
+      "id": "node_4",
+      "text": "金色光芒中，你看到一面星象仪。它的齿轮缓缓转动，每转一圈便展开一幅星图。你注意到其中两颗星辰异常明亮——一颗代表'归途'，一颗代表'远征'。你的手伸向其中一颗。",
+      "options": [
+        { "text": "选择'归途'之星", "nextNodeId": "node_6" },
+        { "text": "选择'远征'之星", "nextNodeId": "node_5" }
+      ],
+      "atmosphere": "mysterious",
+      "isEnding": false
+    },
+    {
+      "id": "node_5",
+      "text": "星辰的力量涌入你的身体，你感到前所未有的清明。宇宙在你眼前铺展开来——无数条路径交织成网，每一条都通向不同的命运。你明白了一切选择的意义：重要的不是终点，而是你走过的每一步。",
+      "options": [
+        { "text": "接受星辰的馈赠", "nextNodeId": "ending_explorer" }
+      ],
+      "atmosphere": "triumphant",
+      "isEnding": false
+    },
+    {
+      "id": "node_6",
+      "text": "温暖的光芒包裹了你。你看到了家的方向——那扇一直敞开的门，门后是你熟悉的星空。守望者的声音在耳边回荡：'家不是一个地方，而是一段旅程的归宿。'",
+      "options": [
+        { "text": "推开门回家", "nextNodeId": "ending_home" }
+      ],
+      "atmosphere": "calm",
+      "isEnding": false
+    },
+    {
+      "id": "ending_explorer",
+      "text": "你化身为星海中的光，永无止境地穿行在未知的宇宙之间。每一次跃迁都带来新的发现，每一片星云都讲述着不同的故事。你的名字被刻在星图上——'探索者'。",
+      "options": [],
+      "atmosphere": "triumphant",
+      "isEnding": true,
+      "endingTitle": "无尽探索者",
+      "achievement": {
+        "name": "冒险家",
+        "description": "选择了远征之路，拥抱未知",
+        "color": "#667eea"
+      }
+    },
+    {
+      "id": "ending_home",
+      "text": "你回到了最初的星空，一切如故又焕然一新。门在身后缓缓关闭，门缝间透出的光芒暗示着另一次旅程的可能。你微笑着，心中已知——无论何时，你都可以再次启程。",
+      "options": [],
+      "atmosphere": "calm",
+      "isEnding": true,
+      "endingTitle": "归途守望者",
+      "achievement": {
+        "name": "首次探索者",
+        "description": "选择了归途，找到了内心安宁",
+        "color": "#fcca46"
+      }
+    }
+  ],
+  "audioConfigs": {
+    "tense": {
+      "atmosphere": "tense",
+      "windFreq": 120,
+      "heartbeatRate": 1.2,
+      "bellFreq": 220,
+      "volume": 0.3
+    },
+    "calm": {
+      "atmosphere": "calm",
+      "windFreq": 60,
+      "heartbeatRate": 0.6,
+      "bellFreq": 880,
+      "volume": 0.2
+    },
+    "mysterious": {
+      "atmosphere": "mysterious",
+      "windFreq": 90,
+      "heartbeatRate": 0.8,
+      "bellFreq": 440,
+      "volume": 0.25
+    },
+    "triumphant": {
+      "atmosphere": "triumphant",
+      "windFreq": 40,
+      "heartbeatRate": 0.5,
+      "bellFreq": 1320,
+      "volume": 0.35
+    }
+  }
+}
