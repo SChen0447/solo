@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光脊·云顶穹庐</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a0a3e 100%);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, monospace;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      transition: all 0.3s ease;
+    }
+
+    .glass-panel:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    #time-display {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 100;
+      transition: color 0.3s ease;
+    }
+
+    #time-display .icon {
+      font-size: 18px;
+      transition: all 0.3s ease;
+    }
+
+    #time-display .time-text {
+      letter-spacing: 2px;
+      font-weight: 600;
+    }
+
+    #control-panel {
+      position: absolute;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 200px;
+      padding: 24px 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #control-panel .panel-title {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    #control-panel .time-labels {
+      width: 160px;
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 10px;
+      font-family: monospace;
+    }
+
+    .slider-container {
+      width: 160px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 160px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #0a0a2e 0%, #1a0a3e 100%);
+      outline: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="range"]:hover {
+      height: 8px;
+      background: linear-gradient(90deg, #1a1a4e 0%, #2a1a5e 100%);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #48dbfb;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(72, 219, 251, 0.6);
+      transition: all 0.3s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 20px rgba(72, 219, 251, 0.9);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #48dbfb;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 12px rgba(72, 219, 251, 0.6);
+    }
+
+    #play-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: white;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    #play-toggle.playing {
+      background: #00b894;
+    }
+
+    #play-toggle.playing:hover {
+      background: #00cec9;
+      transform: scale(1.1);
+    }
+
+    #play-toggle.paused {
+      background: #ff6b6b;
+    }
+
+    #play-toggle.paused:hover {
+      background: #ee5a5a;
+      transform: scale(1.1);
+    }
+
+    #current-time-value {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      font-family: monospace;
+      letter-spacing: 1px;
+    }
+
+    #project-title {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 10px 30px;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 14px;
+      letter-spacing: 4px;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="time-display" class="glass-panel">
+      <i class="icon fa-solid fa-sun" id="time-icon"></i>
+      <span class="time-text" id="time-text">12:00</span>
+    </div>
+
+    <div id="control-panel" class="glass-panel">
+      <div class="panel-title">时间控制</div>
+      <div class="slider-container">
+        <div class="time-labels">
+          <span>00:00</span>
+          <span>24:00</span>
+        </div>
+        <input type="range" id="time-slider" min="0" max="100" value="50" />
+        <div id="current-time-value">12:00</div>
+      </div>
+      <button id="play-toggle" class="paused" title="暂停/继续">
+        <i class="fa-solid fa-play" id="toggle-icon"></i>
+      </button>
+    </div>
+
+    <div id="project-title" class="glass-panel">
+      光脊 · 云顶穹庐
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
