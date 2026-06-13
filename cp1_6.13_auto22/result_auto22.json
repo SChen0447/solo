@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T16:17:46.969Z",
+  "task_name": "auto22",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个面向家庭用户的食谱管理与智能采购清单生成应用，实现上传菜谱、按食材自动生成购物清单、并支持多人协作编辑。使用TypeScript、React、Node.js和Vite构建（前端React+TypeScript，后端Express+TypeScript）。文件结构如下：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom、axios、react-beautiful-dnd；后端依赖：express、typescript、ts-node、@types/express、cors、uuid；启动脚本：根目录npm run dev同时启动前后端）\n - vite.config.js（构建配置，指向index.html，代理/api到后端3001端口）\n - tsconfig.json（严格模式，jsx: react-jsx，模块解析为bundler）\n - index.html（入口页面，含加载动画和React根容器）\n - src/client/App.tsx（前端主组件，负责路由和全局状态）\n - src/client/pages/Dashboard.tsx（仪表盘：显示所有菜谱列表，支持搜索和按标签过滤，列表项有悬停放大和滑入动画）\n - src/client/pages/RecipeEditor.tsx（菜谱编辑器：支持添加标题、食材列表（可拖拽排序）、步骤描述、上传封面图，保存时校验必填项并触发提交动画）\n - src/client/pages/ShoppingList.tsx（购物清单页：自动汇总选中菜谱的食材，支持手动勾选完成、添加额外物品，勾选时带有划掉文字和火花粒子效果，导出为文本或打印）\n - src/client/components/Layout.tsx（导航侧边栏：含图标导航项，当前页高亮带有下划线动画，毛玻璃背景，响应式收起为汉堡菜单）\n - src/server/index.ts（Express后端：提供菜品CRUD接口和清单生成接口，数据存储于内存，支持跨域）\n\n具体需求：\n1. 用户可以在仪表盘浏览已创建的菜谱，每道菜谱以卡片形式展示封面图、名称和标签（如\"家常\"\"快手\"\"素食\"），卡片在鼠标悬停时放大1.05倍并投射柔和阴影，点击进入详情编辑页面。\n2. 菜谱编辑器支持添加带数量单位的食材列表，食材项可拖拽排序（使用react-beautiful-dnd），拖拽时有半透明预览和弹性回弹动画；新增食材时输入框有焦点放大和绿色边框过渡效果。\n3. 在购物清单页面，用户可从仪表盘勾选多道菜谱，点击\"生成清单\"按钮，系统自动汇总所有去重食材（相同食材数量相加）并显示，按钮点击时有加载旋转动画，清单生成后每条食材左侧有复选框，勾选时文字出现划掉效果并伴随细小火花粒子动画。\n4. 购物清单支持手动添加额外物品（如调料、日用品），添加后自动滚动到列表末尾并高亮闪烁两次；清单可导出为纯文本格式，点击导出按钮时出现文件下载提示框和进度条动画。\n5. 每道菜谱详情页包含封面图、食材列表和步骤描述，封面图支持本地上传（jpg/png/webp，最大5MB），上传时显示圆形进度环，完成时图片淡入显示。\n\n界面方面：整体采用暖色调，主背景为米白色（#FAF5EF），标题和按钮使用橙红色（#E07A5F）为主色，卡片背景为柔和奶油色（#FFF8F0），文字使用深灰（#3D405B）。导航侧边栏采用半透明毛玻璃效果（backdrop-filter: blur(8px)），卡片采用圆角16px和浅阴影。页面过渡使用FadeIn动画（持续时间0.3s），按钮悬停时有背景颜色渐变和轻微上浮效果。所有列表项在加载时按次序逐条出现（stagger动画）。在移动设备上（小于768px），侧边栏收起为底部标签栏，卡片自适应为单列布局，字体和间距适当缩放。\n\n性能要求：菜谱列表首次加载显示时间不超过1.5秒（假设50道菜谱），拖拽排序操作帧率不低于45fps，购物清单生成（50个食材以内）响应时间不超过300ms。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:187b02b40de605eaddc124606e20c2dc_6a2c30432c56224c163dad85.6a2c311e2c56224c163dae44.6a2c311ef30d24a49b71b1d8:Trae CN.T(2026/6/13 00:17:34)",
+    "user_id": "3986207660317399",
+    "trace_id": "187b02b40de605eaddc124606e20c2dc",
+    "session_id": "6a2c30432c56224c163dad85",
+    "task_id": "6a2c311e2c56224c163dae44",
+    "message_id": "6a2c311ef30d24a49b71b1d8",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 00:17:34",
+    "format": "full"
+  },
+  "trace": "null"
+}
