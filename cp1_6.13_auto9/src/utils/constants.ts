@@ -1,0 +1,89 @@
+export const GAME_WIDTH = 1200;
+export const GAME_HEIGHT = 800;
+
+export const TRACK = {
+  CENTER_X: GAME_WIDTH / 2,
+  CENTER_Y: GAME_HEIGHT / 2,
+  OUTER_RADIUS_X: 520,
+  OUTER_RADIUS_Y: 320,
+  INNER_RADIUS_X: 320,
+  INNER_RADIUS_Y: 140,
+  TRACK_WIDTH: 0,
+  START_ANGLE: -Math.PI / 2,
+  TOTAL_LAPS: 3
+};
+
+TRACK.TRACK_WIDTH = (TRACK.OUTER_RADIUS_X - TRACK.INNER_RADIUS_X) / 2 + (TRACK.OUTER_RADIUS_Y - TRACK.INNER_RADIUS_Y) / 2;
+
+export const COLORS = {
+  SAND_DARK: 0x3d2817,
+  SAND_LIGHT: 0x6b4423,
+  SAND_TRACK: 0x4a3020,
+  BRICK_RED: 0x8b2500,
+  BRICK_RED_DARK: 0x5c1a00,
+  GOLD: 0xc9a227,
+  GOLD_LIGHT: 0xffd700,
+  PARCHMENT: 0xf5e6c8,
+  PARCHMENT_DARK: 0xd4c4a0,
+  PLAYER1: 0xdc143c,
+  PLAYER2: 0x1e90ff,
+  WHITE: 0xffffff,
+  TIRE_MARK: 0x2a1810,
+  TIRE_TRAIL: 0xb89968,
+  DUST: 0xc4a35a,
+  SHOCKWAVE: 0xff6600,
+  GATE_GLOW: 0xffd700
+};
+
+export const CHARIOT = {
+  COLLISION_RADIUS: 24,
+  ACCELERATION: 260,
+  FRICTION: 0.985,
+  MAX_SPEED: 320,
+  MIN_SPEED: -80,
+  TURN_SPEED: 3.0,
+  DRIFT_FACTOR: 0.85,
+  SLOWDOWN_DURATION: 300,
+  SLOWDOWN_FACTOR: 0.4,
+  FLASH_DURATION: 300,
+  COLLISION_COOLDOWN: 1000,
+  INTERPOLATION_ALPHA: 0.35
+};
+
+export const PARTICLES = {
+  MAX_COUNT: 200,
+  DUST_EMIT_RATE: 4,
+  DUST_LIFESPAN: 600,
+  AUDIENCE_EMIT_RATE: 2,
+  AUDIENCE_LIFESPAN: 2000,
+  SHOCKWAVE_LIFESPAN: 500,
+  TIRE_TRAIL_COUNT: 2,
+  TIRE_TRAIL_LIFESPAN: 2500
+};
+
+export const GATE = {
+  WIDTH: 60,
+  HEIGHT: 160,
+  FLASH_DURATION: 800,
+  ALPHA: 0.35
+};
+
+export const HUD = {
+  TOP_BAR_HEIGHT: 60,
+  RIGHT_PANEL_WIDTH: 220,
+  SCROLL_DURATION: 200
+};
+
+export const PLAYER1_KEYS = {
+  UP: Phaser.Input.Keyboard.KeyCodes.W,
+  DOWN: Phaser.Input.Keyboard.KeyCodes.S,
+  LEFT: Phaser.Input.Keyboard.KeyCodes.A,
+  RIGHT: Phaser.Input.Keyboard.KeyCodes.D
+};
+
+export const PLAYER2_KEYS = {
+  UP: Phaser.Input.Keyboard.KeyCodes.UP,
+  DOWN: Phaser.Input.Keyboard.KeyCodes.DOWN,
+  LEFT: Phaser.Input.Keyboard.KeyCodes.LEFT,
+  RIGHT: Phaser.Input.Keyboard.KeyCodes.RIGHT
+};

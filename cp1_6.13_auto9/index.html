@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古罗马战车大赛 - Roman Chariot Race</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a0f0a;
+      font-family: 'Times New Roman', 'Georgia', serif;
+      color: #f5e6c8;
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: 
+        radial-gradient(ellipse at center, #2d1810 0%, #0d0604 100%);
+    }
+
+    #game-container {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      width: 100%;
+      height: 100%;
+    }
+
+    #game-wrapper {
+      position: relative;
+      flex: 1;
+      max-width: 1200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    canvas {
+      display: block;
+      border: 4px solid #c9a227;
+      border-radius: 8px;
+      box-shadow: 
+        0 0 30px rgba(201, 162, 39, 0.4),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+    }
+
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 100;
+    }
+
+    #loading h1 {
+      font-size: 36px;
+      color: #c9a227;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+      margin-bottom: 16px;
+      letter-spacing: 4px;
+    }
+
+    #loading p {
+      font-size: 18px;
+      color: #f5e6c8;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 1024px) {
+      #game-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="game-container">
+      <div id="game-wrapper">
+        <div id="loading">
+          <h1>⚔ LUDUS CIRCENSIS ⚔</h1>
+          <p>战车集结中，准备出征...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
