@@ -1,0 +1,19 @@
+{
+  "name": "string-light-particle-poem",
+  "version": "1.0.0",
+  "description": "弦光·粒子诗 - 交互式音画合成器",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.2",
+    "tone": "^14.8.49"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.2",
+    "vite": "^5.0.8"
+  }
+}

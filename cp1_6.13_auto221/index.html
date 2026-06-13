@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>弦光 · 粒子诗</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0f0c29 0%, #302b63 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    #ui-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.9);
+      user-select: none;
+      z-index: 10;
+      min-width: 180px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      letter-spacing: 2px;
+      color: rgba(255, 255, 255, 0.95);
+      text-align: center;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.75);
+      margin-bottom: 8px;
+    }
+
+    .control-value {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 8px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 120px;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.6);
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: 2px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.6);
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      #ui-panel {
+        top: auto;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 80px;
+        border-radius: 16px 16px 0 0;
+        padding: 12px 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .panel-title {
+        margin-bottom: 8px;
+        font-size: 12px;
+      }
+
+      .controls-row {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        justify-content: space-between;
+        flex: 1;
+      }
+
+      .control-group {
+        margin-bottom: 0;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .control-label {
+        font-size: 10px;
+        margin-bottom: 4px;
+      }
+
+      .control-value {
+        font-size: 10px;
+        padding: 1px 6px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+    <div id="ui-panel">
+      <div class="panel-title">弦光 · 粒子诗</div>
+      <div class="controls-row">
+        <div class="control-group">
+          <div class="control-label">
+            <span>粒子密度</span>
+            <span class="control-value" id="density-value">200</span>
+          </div>
+          <input type="range" id="density-slider" min="50" max="300" value="200">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>音符速率</span>
+            <span class="control-value" id="speed-value">中</span>
+          </div>
+          <input type="range" id="speed-slider" min="1" max="3" step="1" value="2">
+        </div>
+        <div class="control-group">
+          <div class="control-label">
+            <span>色彩饱和</span>
+            <span class="control-value" id="saturation-value">100</span>
+          </div>
+          <input type="range" id="saturation-slider" min="0" max="100" value="100">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
