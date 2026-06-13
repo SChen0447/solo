@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D火山喷发模拟</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="flame-icon">🔥</div>
+    <p>正在加载火山场景...</p>
+  </div>
+
+  <canvas id="scene-canvas"></canvas>
+
+  <div id="ui-container">
+    <div class="button-group" id="button-group">
+      <button class="control-btn" data-state="dormant">休眠</button>
+      <button class="control-btn" data-state="erupting">喷发</button>
+      <button class="control-btn" data-state="cooling">冷却</button>
+      <button class="control-btn" id="reset-camera">重置视角</button>
+    </div>
+
+    <div class="slider-container">
+      <input type="range" id="time-slider" min="0" max="100" value="0" step="1">
+      <div class="slider-labels">
+        <span>休眠</span>
+        <span>喷发初期</span>
+        <span>喷发高潮</span>
+        <span>冷却</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
