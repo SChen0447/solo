@@ -1,0 +1,136 @@
+.book-card {
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.book-card.hovered {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.book-cover {
+  position: relative;
+  width: 40%;
+  float: left;
+  padding-top: 60%;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.cover-skeleton {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 800px 104px;
+  animation: skeletonShimmer 1.5s infinite linear;
+}
+
+.cover-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.cover-image.loaded {
+  opacity: 1;
+  animation: fadeIn 0.5s ease;
+}
+
+.status-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 1;
+}
+
+.status-tag.available {
+  background-color: #f6ffed;
+  color: var(--success-color);
+}
+
+.status-tag.exchanged {
+  background-color: #fff7e6;
+  color: #fa8c16;
+}
+
+.book-info {
+  padding: 12px 16px;
+  overflow: hidden;
+}
+
+.book-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-author {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+}
+
+.book-desc {
+  font-size: 13px;
+  color: var(--text-color);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.8;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .book-info {
+    padding: 10px 12px;
+  }
+  
+  .book-title {
+    font-size: 14px;
+  }
+  
+  .book-desc {
+    -webkit-line-clamp: 2;
+  }
+}

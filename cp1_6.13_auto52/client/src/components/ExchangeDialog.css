@@ -1,0 +1,170 @@
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 300;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.dialog-overlay.visible {
+  opacity: 1;
+}
+
+.dialog-overlay.closing {
+  opacity: 0;
+}
+
+.dialog-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 301;
+  padding: 24px;
+}
+
+.dialog-content {
+  max-width: 500px;
+  width: 100%;
+  border-radius: 16px;
+  padding: 32px;
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: var(--shadow-lg);
+}
+
+.dialog-wrapper.visible .dialog-content {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dialog-wrapper.closing .dialog-content {
+  opacity: 0;
+  transform: scale(0.9);
+}
+
+.dialog-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.book-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.target-book, .my-book {
+  flex: 1;
+}
+
+.preview-label {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.book-mini {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.book-mini img {
+  width: 48px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.book-mini-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.book-mini-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 4px;
+}
+
+.book-mini-author {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.exchange-arrow {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.book-select {
+  width: 100%;
+  padding: 12px 14px;
+}
+
+.select-skeleton {
+  height: 44px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 800px 104px;
+  animation: skeletonShimmer 1.5s infinite linear;
+}
+
+.no-books {
+  padding: 16px;
+  text-align: center;
+  color: var(--text-light);
+  font-size: 14px;
+  background-color: #fafafa;
+  border-radius: 8px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.dialog-actions .btn {
+  min-width: 100px;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .dialog-content {
+    padding: 24px 20px;
+  }
+  
+  .dialog-title {
+    font-size: 18px;
+  }
+}

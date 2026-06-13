@@ -1,0 +1,55 @@
+.book-card-skeleton {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.skeleton-cover {
+  width: 40%;
+  float: left;
+  padding-top: 60%;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 800px 104px;
+  animation: skeletonShimmer 1.5s infinite linear;
+}
+
+.skeleton-info {
+  padding: 12px 16px;
+  overflow: hidden;
+}
+
+.skeleton-line {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 800px 104px;
+  animation: skeletonShimmer 1.5s infinite linear;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line.title {
+  height: 18px;
+  width: 70%;
+}
+
+.skeleton-line.author {
+  height: 14px;
+  width: 50%;
+}
+
+.skeleton-line.desc {
+  height: 14px;
+  width: 100%;
+}
+
+.skeleton-line.desc.short {
+  width: 60%;
+}
+
+@keyframes skeletonShimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
