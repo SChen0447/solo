@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>月痕·弦影猎场</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0f172a 0%, #020617 100%);
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: default;
+    }
+    #gameCanvas.aiming {
+      cursor: crosshair;
+    }
+    #gameCanvas.shake {
+      animation: shake 0.1s;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-2px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-2px, -2px); }
+    }
+    #flashOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(192, 132, 252, 0.5);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease-out;
+    }
+    #flashOverlay.active {
+      opacity: 1;
+    }
+    #hint {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(125, 211, 252, 0.6);
+      font-size: 14px;
+      text-align: center;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="flashOverlay"></div>
+  <div id="hint">在围栏内按住鼠标拖拽瞄准，松开发射箭矢 | 右键释放弦月斩击（需3颗能量星）</div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
