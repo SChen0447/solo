@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>回声织机 · 记忆经纬</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0f2a;
+      font-family: 'Georgia', 'Times New Roman', serif;
+      color: #ffffff;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #0b0f2a;
+    }
+
+    #game-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0b0f2a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      transition: opacity 0.8s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loading-title {
+      font-size: 32px;
+      letter-spacing: 8px;
+      color: #4fc3f7;
+      margin-bottom: 60px;
+      text-shadow: 0 0 20px rgba(79, 195, 247, 0.6);
+    }
+
+    #loading-subtitle {
+      font-size: 14px;
+      letter-spacing: 4px;
+      color: rgba(79, 195, 247, 0.6);
+      margin-top: 60px;
+    }
+
+    .ripple {
+      position: absolute;
+      border: 2px solid rgba(79, 195, 247, 0.8);
+      border-radius: 50%;
+      animation: ripple-expand 2.4s ease-out infinite;
+    }
+
+    .ripple:nth-child(2) { animation-delay: 0.8s; }
+    .ripple:nth-child(3) { animation-delay: 1.6s; }
+
+    @keyframes ripple-expand {
+      0% {
+        width: 0;
+        height: 0;
+        opacity: 0.8;
+        border-width: 3px;
+      }
+      100% {
+        width: 300px;
+        height: 300px;
+        opacity: 0;
+        border-width: 1px;
+      }
+    }
+
+    .ripple-wrapper {
+      position: relative;
+      width: 0;
+      height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ripple-wrapper .ripple {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="loading-screen">
+      <div id="loading-title">回声织机</div>
+      <div class="ripple-wrapper">
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+        <div class="ripple"></div>
+      </div>
+      <div id="loading-subtitle">记忆经纬 · 加载中</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
