@@ -1,0 +1,19 @@
+{
+  "name": "yingling-gongxiguang",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "荧灵·共栖光 - 交互式光灵养育应用",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vite": "^5.0.0"
+  },
+  "dependencies": {
+    "gsap": "^3.12.0"
+  }
+}
