@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎵</text></svg>" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>潮汐琴弦·海风韵律</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      background: linear-gradient(
+        180deg,
+        #1e3c72 0%,
+        #2a5298 50%,
+        #191970 100%
+      );
+      font-family: 'Georgia', 'Times New Roman', serif;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      animation: fadeIn 2s ease-out forwards;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(
+        180deg,
+        #1e3c72 0%,
+        #2a5298 50%,
+        #191970 100%
+      );
+      color: #87ceeb;
+      z-index: 100;
+      pointer-events: none;
+      transition: opacity 1s ease-out;
+    }
+
+    .loading.hidden {
+      opacity: 0;
+    }
+
+    .loading-title {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      letter-spacing: 0.5rem;
+      text-shadow: 0 0 20px rgba(135, 206, 235, 0.8);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .loading-subtitle {
+      font-size: 1rem;
+      opacity: 0.8;
+      letter-spacing: 0.3rem;
+    }
+
+    .loading-hint {
+      position: absolute;
+      bottom: 3rem;
+      font-size: 0.9rem;
+      opacity: 0.6;
+      letter-spacing: 0.2rem;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    .instructions {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 2s ease-out forwards;
+      animation-delay: 3s;
+    }
+
+    .instructions p {
+      margin: 0.3rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading" id="loading">
+    <h1 class="loading-title">潮汐琴弦</h1>
+    <p class="loading-subtitle">海 风 韵 律</p>
+    <p class="loading-hint">点击屏幕开启声音 · 鼠标在沙滩上移动</p>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="instructions">
+    <p>🌊 海浪拍打竖琴，触发琴弦共鸣</p>
+    <p>🏖️ 在沙滩上移动鼠标，留下光斑触发低音和弦</p>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loading = document.getElementById('loading');
+        if (loading) {
+          loading.classList.add('hidden');
+          setTimeout(() => {
+            loading.style.display = 'none';
+          }, 1000);
+        }
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
