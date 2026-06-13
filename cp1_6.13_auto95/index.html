@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四季流转拼贴</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="loading-text">正在唤醒四季…</div>
+  </div>
+
+  <div id="app" class="hidden">
+    <div class="season-icons">
+      <button class="season-icon spring" data-season="spring" title="春季">
+        <span class="icon-content">🌸</span>
+      </button>
+      <button class="season-icon summer" data-season="summer" title="夏季">
+        <span class="icon-content">🪷</span>
+      </button>
+      <button class="season-icon autumn" data-season="autumn" title="秋季">
+        <span class="icon-content">🍁</span>
+      </button>
+      <button class="season-icon winter" data-season="winter" title="冬季">
+        <span class="icon-content">❄️</span>
+      </button>
+    </div>
+
+    <div class="hint-text">点击季节，感受四时光影</div>
+
+    <div class="puzzle-container">
+      <div class="scroll-frame">
+        <canvas id="puzzle-canvas"></canvas>
+      </div>
+    </div>
+
+    <div class="opacity-slider-container">
+      <input type="range" id="opacity-slider" min="0.2" max="1" step="0.05" value="1" orient="vertical">
+    </div>
+
+    <div class="timeline-container">
+      <div class="timeline-track">
+        <div class="timeline-point spring" data-season="spring">
+          <span class="timeline-label">春</span>
+        </div>
+        <div class="timeline-point summer" data-season="summer">
+          <span class="timeline-label">夏</span>
+        </div>
+        <div class="timeline-point autumn" data-season="autumn">
+          <span class="timeline-label">秋</span>
+        </div>
+        <div class="timeline-point winter" data-season="winter">
+          <span class="timeline-label">冬</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
