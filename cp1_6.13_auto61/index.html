@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素拼贴墙</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #ffffff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s ease;
+    }
+
+    .loading-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-icon {
+      width: 60px;
+      height: 60px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      background: rgba(22, 33, 62, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hamburger-btn {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .hamburger-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .app-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+
+    .header-right {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .header-right .count {
+      color: #4da8ff;
+      font-weight: 600;
+    }
+
+    .main-container {
+      position: absolute;
+      top: 48px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+    }
+
+    .thumbnail-sidebar {
+      width: 200px;
+      background: #16213e;
+      border-right: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 12px;
+      gap: 12px;
+      overflow-y: auto;
+      flex-shrink: 0;
+      transition: transform 0.3s ease;
+    }
+
+    .thumbnail-sidebar::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .thumbnail-sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .thumbnail-sidebar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+
+    .upload-btn {
+      width: 100%;
+      height: 48px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+      flex-shrink: 0;
+    }
+
+    .upload-btn:hover {
+      background: linear-gradient(135deg, #4da8ff, #3d8bd4);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .upload-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .thumbnail-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .thumbnail-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .thumbnail-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .thumbnail-item.selected {
+      border: 2px solid #4da8ff;
+      box-shadow: 0 0 12px rgba(77, 168, 255, 0.5);
+      animation: pulse-glow 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+      0%, 100% {
+        box-shadow: 0 0 12px rgba(77, 168, 255, 0.5);
+      }
+      50% {
+        box-shadow: 0 0 24px rgba(77, 168, 255, 0.8);
+      }
+    }
+
+    .thumbnail-item.dragging {
+      opacity: 0.4;
+    }
+
+    .thumbnail-item.drag-over {
+      border-top: 3px solid #4da8ff;
+    }
+
+    .thumbnail-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumbnail-delete {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(233, 69, 96, 0.9);
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .thumbnail-item:hover .thumbnail-delete {
+      display: flex;
+    }
+
+    .placeholder-line {
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      margin: 4px 0;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #1a1a2e;
+    }
+
+    #mainCanvas {
+      display: block;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+    }
+
+    .filter-toolbar {
+      width: 100px;
+      background: rgba(22, 33, 62, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-left: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      padding: 16px 10px;
+      gap: 12px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .filter-toolbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .filter-toolbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+    }
+
+    .filter-title {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    .filter-item {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .filter-item.active {
+      border-color: #4da8ff;
+    }
+
+    .filter-item canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .filter-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 4px;
+      background: rgba(0, 0, 0, 0.6);
+      font-size: 10px;
+      text-align: center;
+      color: #fff;
+    }
+
+    .reset-filter-btn {
+      width: 100%;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #e94560, #533483);
+      color: #fff;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .reset-filter-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .export-wrapper {
+      position: fixed;
+      right: 130px;
+      bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 50;
+    }
+
+    .export-success {
+      padding: 8px 16px;
+      background: rgba(76, 175, 80, 0.9);
+      color: #fff;
+      border-radius: 8px;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .export-success.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .export-btn {
+      position: relative;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    .export-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transform: scale(0);
+      animation: ripple-effect 0.6s ease-out;
+      pointer-events: none;
+    }
+
+    @keyframes ripple-effect {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 90;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .sidebar-overlay.show {
+      opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+      .hamburger-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .thumbnail-sidebar {
+        position: fixed;
+        top: 48px;
+        left: 0;
+        bottom: 0;
+        z-index: 95;
+        transform: translateX(-100%);
+        width: 240px;
+      }
+
+      .thumbnail-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        display: block;
+      }
+
+      .filter-toolbar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: auto;
+        height: 110px;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 10px;
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 80;
+      }
+
+      .filter-title {
+        display: none;
+      }
+
+      .filter-item {
+        width: 72px;
+        height: 72px;
+        aspect-ratio: auto;
+        flex-shrink: 0;
+      }
+
+      .reset-filter-btn {
+        width: auto;
+        padding: 0 16px;
+        height: 72px;
+        flex-shrink: 0;
+      }
+
+      .canvas-wrapper {
+        padding-bottom: 120px;
+      }
+
+      .export-wrapper {
+        right: 16px;
+        bottom: 130px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading-overlay" id="loadingOverlay">
+      <svg class="loading-icon" viewBox="0 0 24 24" fill="none" stroke="#4da8ff" stroke-width="2">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56" stroke-linecap="round"/>
+        <rect x="9" y="9" width="6" height="6" rx="1" fill="#4da8ff" stroke="none"/>
+      </svg>
+    </div>
+
+    <header class="header">
+      <div class="header-left">
+        <button class="hamburger-btn" id="hamburgerBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <span class="app-title">像素拼贴墙</span>
+      </div>
+      <div class="header-right">
+        已添加：<span class="count" id="imgCount">0</span>/8
+      </div>
+    </header>
+
+    <div class="main-container">
+      <aside class="thumbnail-sidebar" id="thumbnailSidebar">
+        <button class="upload-btn" id="uploadBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="12" y1="5" x2="12" y2="19"/>
+            <line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          <span>添加图片</span>
+        </button>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg" multiple style="display:none"/>
+        <div class="thumbnail-list" id="thumbnailList"></div>
+      </aside>
+
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+      <div class="canvas-wrapper">
+        <canvas id="mainCanvas" width="960" height="540"></canvas>
+      </div>
+
+      <aside class="filter-toolbar" id="filterToolbar">
+        <div class="filter-title">滤镜</div>
+      </aside>
+    </div>
+
+    <div class="export-wrapper">
+      <div class="export-success" id="exportSuccess">导出成功！</div>
+      <button class="export-btn" id="exportBtn">导出海报</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
