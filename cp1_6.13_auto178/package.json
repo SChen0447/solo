@@ -1,0 +1,18 @@
+{
+  "name": "weaving-star-tidal-tapestry",
+  "version": "1.0.0",
+  "description": "织星·潮汐毯 - 沉浸式浏览器交互艺术装置",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}
