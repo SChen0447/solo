@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>翎羽·卷轴</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    #scroll-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.4s ease;
+    }
+
+    #scroll-wrapper {
+      position: relative;
+      width: 85vw;
+      height: 55vh;
+      min-width: 800px;
+      min-height: 400px;
+      background: linear-gradient(to bottom, #fdf6e3 0%, #eee4d9 100%);
+      border-left: 2px solid #8b0000;
+      border-right: 2px solid #8b0000;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .scroll-rod {
+      position: absolute;
+      top: 0;
+      width: 20px;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        #3d2817 0%,
+        #6b4423 30%,
+        #8b5a2b 50%,
+        #6b4423 70%,
+        #3d2817 100%
+      );
+      border-radius: 4px;
+      z-index: 10;
+    }
+
+    .scroll-rod.left {
+      left: -20px;
+    }
+
+    .scroll-rod.right {
+      right: -20px;
+    }
+
+    .scroll-cap {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: radial-gradient(
+        circle at 35% 35%,
+        #fff8dc 0%,
+        #ffd700 30%,
+        #b8860b 70%,
+        #8b6914 100%
+      );
+      border-radius: 50%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      z-index: 11;
+    }
+
+    .scroll-cap.left-top {
+      left: -25px;
+      top: -15px;
+    }
+
+    .scroll-cap.left-bottom {
+      left: -25px;
+      bottom: -15px;
+    }
+
+    .scroll-cap.right-top {
+      right: -25px;
+      top: -15px;
+    }
+
+    .scroll-cap.right-bottom {
+      right: -25px;
+      bottom: -15px;
+    }
+
+    #scroll-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    #controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .control-btn {
+      background-color: rgba(85, 85, 85, 0.6);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(4px);
+      font-family: inherit;
+      letter-spacing: 1px;
+    }
+
+    .control-btn:hover {
+      background-color: #777777;
+      transform: scale(1.05);
+    }
+
+    .control-btn:active {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 768px) {
+      #scroll-wrapper {
+        width: 90vw;
+        height: 75vh;
+        min-width: 0;
+        min-height: 0;
+        border-left: none;
+        border-right: none;
+        border-top: 2px solid #8b0000;
+        border-bottom: 2px solid #8b0000;
+      }
+
+      #scroll-container {
+        transform: none;
+      }
+
+      .scroll-rod {
+        left: 0 !important;
+        right: 0 !important;
+        top: auto;
+        width: 100%;
+        height: 20px;
+        background: linear-gradient(
+          to bottom,
+          #3d2817 0%,
+          #6b4423 30%,
+          #8b5a2b 50%,
+          #6b4423 70%,
+          #3d2817 100%
+        );
+      }
+
+      .scroll-rod.left {
+        top: -20px;
+      }
+
+      .scroll-rod.right {
+        bottom: -20px;
+      }
+
+      .scroll-cap.left-top {
+        left: -15px;
+        top: -25px;
+      }
+
+      .scroll-cap.left-bottom {
+        right: -15px;
+        top: -25px;
+        left: auto;
+        bottom: auto;
+      }
+
+      .scroll-cap.right-top {
+        left: -15px;
+        bottom: -25px;
+        top: auto;
+        right: auto;
+      }
+
+      .scroll-cap.right-bottom {
+        right: -15px;
+        bottom: -25px;
+        top: auto;
+      }
+
+      #controls {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .control-btn {
+        width: 160px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="scroll-container">
+      <div id="scroll-wrapper">
+        <div class="scroll-rod left"></div>
+        <div class="scroll-cap left-top"></div>
+        <div class="scroll-cap left-bottom"></div>
+        <canvas id="scroll-canvas"></canvas>
+        <div class="scroll-rod right"></div>
+        <div class="scroll-cap right-top"></div>
+        <div class="scroll-cap right-bottom"></div>
+      </div>
+    </div>
+    <div id="controls">
+      <button class="control-btn" id="btn-reset">重置</button>
+      <button class="control-btn" id="btn-save">保存</button>
+      <button class="control-btn" id="btn-random">随机</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
