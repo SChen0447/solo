@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>镜·诗棱镜</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Roboto Mono', monospace;
+      background: linear-gradient(to bottom, #0b0b1a, #1a1a2e);
+    }
+
+    canvas#mainCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    canvas#mainCanvas:active {
+      cursor: grabbing;
+    }
+
+    .control-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      min-width: 240px;
+    }
+
+    .control-panel label {
+      color: #999;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-panel label span.val {
+      color: #ccc;
+      font-size: 12px;
+    }
+
+    .control-panel input[type="text"] {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+      padding: 8px 10px;
+      color: #ccc;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .control-panel input[type="text"]:focus {
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .control-panel input[type="range"] {
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .control-panel input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #ccc;
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .control-panel button {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #ccc;
+      font-family: 'Roboto Mono', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .control-panel button:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: rgba(255, 255, 255, 0.35);
+    }
+
+    .control-panel button:active {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .control-panel button.primary {
+      background: rgba(120, 100, 255, 0.3);
+      border-color: rgba(120, 100, 255, 0.5);
+    }
+
+    .control-panel button.primary:hover {
+      background: rgba(120, 100, 255, 0.45);
+    }
+
+    @media (max-width: 767px) {
+      .control-panel {
+        top: 10px;
+        bottom: auto;
+        right: 10px;
+        left: 10px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        min-width: unset;
+        padding: 10px;
+        gap: 8px;
+      }
+
+      .control-panel input[type="text"] {
+        flex: 1;
+        min-width: 120px;
+      }
+
+      .control-panel label {
+        flex: 0 0 45%;
+      }
+
+      .btn-row {
+        flex: 0 0 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mainCanvas"></canvas>
+
+  <div class="control-panel" id="controlPanel">
+    <input type="text" id="textInput" placeholder="输入短诗或文字..." maxlength="100" />
+    <div class="btn-row">
+      <button class="primary" id="generateBtn">生成</button>
+      <button id="resetBtn">重置</button>
+    </div>
+    <label>
+      扩散速度
+      <span class="val" id="diffSpeedVal">1.0</span>
+    </label>
+    <input type="range" id="diffSpeed" min="0.1" max="2" step="0.1" value="1" />
+    <label>
+      变色速度
+      <span class="val" id="colorSpeedVal">1.0</span>
+    </label>
+    <input type="range" id="colorSpeed" min="0.1" max="5" step="0.1" value="1" />
+    <label>
+      旋转灵敏度
+      <span class="val" id="rotSensVal">1.0</span>
+    </label>
+    <input type="range" id="rotSens" min="0.1" max="2" step="0.1" value="1" />
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
