@@ -1,0 +1,20 @@
+{
+  "name": "tidal-rainbow-bridge",
+  "version": "1.0.0",
+  "description": "潮汐·虹桥 - 交互式动态彩虹桥",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0",
+    "@types/three": "0.160.0",
+    "gsap": "^3.12.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}

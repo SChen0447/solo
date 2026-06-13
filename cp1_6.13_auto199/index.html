@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>潮汐·虹桥</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0a0e27 0%, #1b1c3a 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    .title {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.8);
+      font-family: 'Georgia', serif;
+      font-size: 24px;
+      letter-spacing: 8px;
+      z-index: 100;
+      text-shadow: 0 0 20px rgba(255, 236, 210, 0.5);
+      pointer-events: none;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.5);
+      font-family: 'Arial', sans-serif;
+      font-size: 14px;
+      letter-spacing: 2px;
+      z-index: 100;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="title">潮 汐 · 虹 桥</div>
+    <div class="hint">悬停桥面 · 点击互动 · 驻足平台</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
