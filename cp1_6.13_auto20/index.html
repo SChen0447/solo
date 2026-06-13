@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星云粒子画廊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: Georgia, 'Times New Roman', serif;
+    }
+
+    #canvas-container {
+      width: 100vw;
+      height: 95vh;
+      position: relative;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a1a 70%);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+    }
+
+    #loading-title {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 4rem;
+      color: rgba(255, 255, 255, 0);
+      font-family: Georgia, 'Times New Roman', serif;
+      letter-spacing: 0.3em;
+      text-align: center;
+      pointer-events: none;
+      z-index: 100;
+      animation: fadeInOut 3s ease-in-out forwards;
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.9);
+      }
+      30% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      70% {
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+    }
+
+    #control-panel {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 16px 24px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 14px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      z-index: 50;
+      min-width: 180px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      gap: 24px;
+    }
+
+    .panel-label {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 12px;
+    }
+
+    .panel-value {
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      transition: all 0.3s ease;
+      min-width: 60px;
+      text-align: right;
+    }
+
+    .panel-value.fps-good {
+      color: #10b981;
+    }
+
+    .panel-value.fps-warn {
+      color: #f59e0b;
+    }
+
+    .panel-value.fps-bad {
+      color: #ef4444;
+    }
+
+    .hint {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 13px;
+      font-family: Georgia, 'Times New Roman', serif;
+      pointer-events: none;
+      z-index: 50;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-title">星云粒子画廊</div>
+  
+  <div id="canvas-container">
+    <canvas id="main-canvas"></canvas>
+  </div>
+
+  <div id="control-panel">
+    <div class="panel-item">
+      <span class="panel-label">粒子数量</span>
+      <span class="panel-value" id="particle-count">0</span>
+    </div>
+    <div class="panel-item">
+      <span class="panel-label">帧率 FPS</span>
+      <span class="panel-value fps-good" id="fps">60</span>
+    </div>
+    <div class="panel-item">
+      <span class="panel-label">鼠标坐标</span>
+      <span class="panel-value" id="mouse-pos">0, 0</span>
+    </div>
+  </div>
+
+  <div class="hint">移动鼠标操控涡旋 · 点击产生爆炸</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
