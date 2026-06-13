@@ -1,0 +1,19 @@
+{
+  "name": "rhythm-sound-trace",
+  "version": "1.0.0",
+  "description": "律动·声痕 - 交互式声波画布音乐可视化工具",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "tone": "^14.8.49"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11"
+  }
+}
