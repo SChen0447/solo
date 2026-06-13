@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CYBER GRID DEFENSE // 赛博网格防御</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0016;
+      font-family: 'Courier New', 'Consolas', monospace;
+      color: #00ffff;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(139, 0, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 50%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(180deg, #0a0016 0%, #12002a 50%, #0a0016 100%);
+    }
+
+    #matrix-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.25;
+    }
+
+    #game-wrapper {
+      position: relative;
+      z-index: 1;
+      width: min(1200px, 98vw);
+      height: min(800px, 96vh);
+      padding: 12px;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border: 2px solid transparent;
+      border-image: linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff) 1;
+      background: rgba(20, 5, 40, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow:
+        0 0 40px rgba(0, 255, 255, 0.25),
+        inset 0 0 60px rgba(139, 0, 255, 0.15);
+      clip-path: polygon(
+        0 18px, 18px 0,
+        calc(100% - 18px) 0, 100% 18px,
+        100% calc(100% - 18px), calc(100% - 18px) 100%,
+        18px 100%, 0 calc(100% - 18px)
+      );
+    }
+
+    #game-canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(10, 0, 22, 0.95);
+      z-index: 10;
+      transition: opacity 0.6s ease;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .cyber-title {
+      font-size: clamp(24px, 4vw, 42px);
+      font-weight: bold;
+      letter-spacing: 4px;
+      color: #00ffff;
+      text-shadow:
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        2px 2px 0 #ff00ff;
+      margin-bottom: 32px;
+      animation: glitch 2.4s infinite;
+    }
+
+    .cyber-title .accent {
+      color: #ff00ff;
+      text-shadow:
+        0 0 10px #ff00ff,
+        0 0 20px #ff00ff,
+        -2px -2px 0 #00ffff;
+    }
+
+    .loader-bar {
+      width: clamp(240px, 40%, 380px);
+      height: 8px;
+      background: rgba(0, 255, 255, 0.1);
+      border: 1px solid #00ffff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+    }
+
+    .loader-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00ffff, #ff00ff);
+      box-shadow: 0 0 12px #00ffff;
+      animation: fill 2s ease-in-out forwards;
+    }
+
+    .loader-text {
+      margin-top: 18px;
+      font-size: 14px;
+      letter-spacing: 3px;
+      color: #00ffff;
+      opacity: 0.8;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-1px, 1px); }
+      40% { transform: translate(1px, -1px); }
+      60% { transform: translate(-1px, -1px); }
+      80% { transform: translate(1px, 1px); }
+    }
+
+    @keyframes fill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.2; }
+    }
+
+    @media (max-width: 768px) {
+      #game-wrapper {
+        width: 99vw;
+        height: 98vh;
+        padding: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-bg"></canvas>
+
+  <div id="game-wrapper">
+    <div id="game-container">
+      <canvas id="game-canvas"></canvas>
+
+      <div id="loading-overlay">
+        <div class="cyber-title">CYBER<span class="accent">::</span>GRID<span class="accent">::</span>DEFENSE</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+        <div class="loader-text">// INITIALIZING NEURAL LINK //</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 二进制代码雨背景
+    (function () {
+      const canvas = document.getElementById('matrix-bg');
+      const ctx = canvas.getContext('2d');
+      let w, h, cols, drops;
+      const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+      const fontSize = 14;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+        cols = Math.floor(w / fontSize);
+        drops = new Array(cols).fill(1);
+      }
+
+      function draw() {
+        ctx.fillStyle = 'rgba(10, 0, 22, 0.08)';
+        ctx.fillRect(0, 0, w, h);
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+          const text = chars[Math.floor(Math.random() * chars.length)];
+          const gradient = Math.random();
+          ctx.fillStyle = gradient > 0.9
+            ? '#ff00ff'
+            : gradient > 0.7
+              ? '#ffffff'
+              : '#00ffff';
+          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i] = 0;
+          drops[i]++;
+        }
+      }
+
+      resize();
+      window.addEventListener('resize', resize);
+      setInterval(draw, 50);
+    })();
+
+    // 隐藏加载层
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loading-overlay');
+        if (loader) loader.classList.add('hidden');
+      }, 2200);
+    });
+  </script>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
