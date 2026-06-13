@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晶格·光距幻境</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #1a0f2e 0%, #0d0b1a 100%);
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #info-panel {
+      position: absolute;
+      left: 20px;
+      bottom: 20px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      color: #e0e0e0;
+      font-size: 14px;
+      line-height: 1.8;
+      text-shadow: 0 0 6px #48dbfb;
+      min-width: 220px;
+      z-index: 10;
+    }
+
+    #info-panel .label {
+      color: #8a8a9a;
+      text-shadow: none;
+      margin-right: 8px;
+    }
+
+    #info-panel .value {
+      color: #48dbfb;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="info-panel">
+      <div><span class="label">鼠标3D坐标:</span><span id="mouse-pos" class="value">X: 0.00 Y: 0.00 Z: 0.00</span></div>
+      <div><span class="label">最近距离:</span><span id="nearest-dist" class="value">0.00</span></div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
