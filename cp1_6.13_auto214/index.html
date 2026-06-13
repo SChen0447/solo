@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍵</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>星雾·记忆茶屋</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: #1a0e08;
+        overflow: hidden;
+        font-family: 'KaiTi', 'STKaiti', serif;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+      }
+      .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        background: #1a0e08;
+        color: #d4a373;
+      }
+      .loading-teacup {
+        width: 80px;
+        height: 80px;
+        border: 3px solid #d4a373;
+        border-radius: 0 0 40px 40px;
+        position: relative;
+        margin-bottom: 24px;
+        animation: steam 2s ease-in-out infinite;
+      }
+      .loading-teacup::before {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        right: 10px;
+        height: 20px;
+        background: #d4a373;
+        border-radius: 50%;
+      }
+      @keyframes steam {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+      }
+      .loading-text {
+        font-size: 24px;
+        letter-spacing: 4px;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="loading-container">
+        <div class="loading-teacup"></div>
+        <div class="loading-text">星雾·记忆茶屋</div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
