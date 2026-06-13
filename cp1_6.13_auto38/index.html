@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>投石机攻城战 - 物理模拟</title>
+  <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #F5E6C8;
+      overflow: hidden;
+      font-family: 'UnifrakturMaguntia', cursive;
+      min-width: 800px;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: #F5E6C8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-icon {
+      font-size: 72px;
+      animation: spin 1.5s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 24px;
+      color: #5C4033;
+      margin-top: 20px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    #game-canvas {
+      display: block;
+    }
+
+    #control-panel {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 240px;
+      background: rgba(210, 180, 140, 0.9);
+      border-radius: 16px;
+      padding: 24px 20px;
+      border: 2px solid #8B7355;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    #control-panel h2 {
+      font-family: 'UnifrakturMaguntia', cursive;
+      color: #5C4033;
+      text-align: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #8B7355;
+      padding-bottom: 10px;
+    }
+
+    .control-group {
+      margin-bottom: 18px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-family: sans-serif;
+      font-size: 13px;
+      color: #3E2723;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .control-group label span {
+      color: #8B0000;
+      font-weight: normal;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-track {
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(to right, #FFD700, #FF4500);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #5C4033;
+      border: 2px solid #FFD700;
+      cursor: pointer;
+      margin-top: -6px;
+    }
+
+    #fire-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      font-family: 'UnifrakturMaguntia', cursive;
+      font-size: 22px;
+      color: #FFD700;
+      background: #5C4033;
+      border: 2px solid #FFD700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+
+    #fire-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4);
+    }
+
+    #fire-btn:active {
+      transform: scale(0.97);
+    }
+
+    #fire-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    #reset-btn {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      font-family: sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      color: #5C4033;
+      background: rgba(245, 230, 200, 0.8);
+      border: 1px solid #8B7355;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    #reset-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="loading-icon">🏰</div>
+    <div class="loading-text">准备攻城...</div>
+  </div>
+
+  <canvas id="game-canvas"></canvas>
+
+  <div id="control-panel">
+    <h2>⚔ 控制台</h2>
+    <div class="control-group">
+      <label>发射角度 <span id="angle-val">45°</span></label>
+      <input type="range" id="angle-slider" min="30" max="75" value="45" step="1" />
+    </div>
+    <div class="control-group">
+      <label>弹射力度 <span id="force-val">300 N</span></label>
+      <input type="range" id="force-slider" min="100" max="500" value="300" step="10" />
+    </div>
+    <div class="control-group">
+      <label>弹药重量 <span id="weight-val">25 kg</span></label>
+      <input type="range" id="weight-slider" min="10" max="50" value="25" step="1" />
+    </div>
+    <button id="fire-btn">🔥 发射</button>
+    <button id="reset-btn">🔄 重置城墙</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
