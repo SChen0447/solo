@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>云澜·浪涌纪元 - 海洋粒子气候模拟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0B1A2A 0%, #0D2818 100%);
+      color: #E0E0E0;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60vw;
+      height: 60vh;
+      min-width: 400px;
+      min-height: 400px;
+    }
+
+    #title {
+      position: absolute;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+    }
+
+    #title h1 {
+      font-size: 32px;
+      font-weight: 600;
+      background: linear-gradient(90deg, #00BFFF, #7FD8E6, #4682B4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    #title p {
+      font-size: 14px;
+      color: rgba(180, 210, 230, 0.7);
+      letter-spacing: 2px;
+    }
+
+    #control-panel {
+      position: absolute;
+      left: 30px;
+      bottom: 30px;
+      width: 320px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 191, 255, 0.5);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                  0 0 20px rgba(0, 191, 255, 0.15);
+      z-index: 20;
+    }
+
+    #control-panel h2 {
+      font-size: 16px;
+      font-weight: 500;
+      color: #00BFFF;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(0, 191, 255, 0.3);
+    }
+
+    .slider-group {
+      margin-bottom: 16px;
+    }
+
+    .slider-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: #D0D8E0;
+    }
+
+    .slider-value {
+      font-weight: 600;
+      color: #00BFFF;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .slider-unit {
+      font-size: 11px;
+      color: rgba(180, 210, 230, 0.6);
+      margin-left: 4px;
+    }
+
+    .slider-wrapper {
+      position: relative;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      overflow: hidden;
+    }
+
+    .slider-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #0077BE, #00BFFF, #FF6347, #FF4500);
+      opacity: 0.6;
+    }
+
+    input[type="range"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00BFFF;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.8),
+                  0 2px 6px rgba(0, 0, 0, 0.3);
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 0 16px rgba(0, 191, 255, 1),
+                  0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #00BFFF;
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(0, 191, 255, 0.8);
+      cursor: grab;
+    }
+
+    #instructions {
+      position: absolute;
+      right: 30px;
+      bottom: 30px;
+      max-width: 260px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 191, 255, 0.3);
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.8;
+      color: rgba(200, 220, 240, 0.85);
+      z-index: 20;
+    }
+
+    #instructions h3 {
+      font-size: 13px;
+      color: #00BFFF;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+
+    #instructions .hint {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    #instructions .hint-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      opacity: 0.8;
+    }
+
+    #status-bar {
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 24px;
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(0, 191, 255, 0.25);
+      border-radius: 20px;
+      font-size: 12px;
+      color: rgba(200, 220, 240, 0.9);
+      z-index: 10;
+    }
+
+    #status-bar .status-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    #status-bar .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    #status-bar .dot-calm { background: #4682B4; }
+    #status-bar .dot-wave { background: #00BFFF; }
+    #status-bar .dot-tornado { background: #FF8C00; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="title">
+      <h1>云澜 · 浪涌纪元</h1>
+      <p>OCEAN PARTICLE CLIMATE SIMULATOR</p>
+    </div>
+
+    <div id="status-bar">
+      <div class="status-item">
+        <span class="status-dot dot-calm"></span>
+        <span id="state-label">风平浪静</span>
+      </div>
+      <div class="status-item">
+        <span>粒子数: 10,000</span>
+      </div>
+      <div class="status-item">
+        <span id="fps-label">FPS: 60</span>
+      </div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="control-panel">
+      <h2>⚙ 环境参数控制</h2>
+      
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🌬 风速 Wind Speed</span>
+          <span><span class="slider-value" id="wind-value">0</span><span class="slider-unit">m/s</span></span>
+        </div>
+        <div class="slider-wrapper">
+          <div class="slider-gradient"></div>
+          <input type="range" id="wind-slider" min="0" max="100" value="0" step="0.1" />
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🌡 温度 Temperature</span>
+          <span><span class="slider-value" id="temp-value">20</span><span class="slider-unit">°C</span></span>
+        </div>
+        <div class="slider-wrapper">
+          <div class="slider-gradient"></div>
+          <input type="range" id="temp-slider" min="-20" max="40" value="20" step="0.5" />
+        </div>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">
+          <span>🧂 盐度 Salinity</span>
+          <span><span class="slider-value" id="salinity-value">35</span><span class="slider-unit">ppt</span></span>
+        </div>
+        <div class="slider-wrapper">
+          <div class="slider-gradient"></div>
+          <input type="range" id="salinity-slider" min="0" max="50" value="35" step="0.1" />
+        </div>
+      </div>
+    </div>
+
+    <div id="instructions">
+      <h3>📖 操作指南</h3>
+      <div class="hint">🖱 拖动水晶球 → 旋转视角</div>
+      <div class="hint">🔄 滚轮 → 缩放远近</div>
+      <div class="hint">🎚 调整滑块 → 改变海洋状态</div>
+      <div class="hint">💧 风速60+ → 水龙卷模式</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
