@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-12T23:33:37.376Z",
+  "task_name": "auto263",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位自由插画师希望在浏览器中创建一个在线画廊，能让访客通过拖拽和点击，像翻阅实体水彩本一样浏览她的数字画作，每幅画翻动时带有真实纸页的卷曲动画和轻微沙沙声，画作本身在悬停时会像被风吹动一样泛起微弱的波纹光效。\n\n构建一个名为「纸间·光痕画廊」的全栈web应用，使用TypeScript、React（前端）、Node.js + Express（后端）和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react、react-dom、express、cors、uuid、typescript、vite、@vitejs/plugin-react、concurrently、react-router-dom，启动脚本：npm run dev 同时启动前后端）\n - vite.config.js（构建配置，指向前端入口index.html，代理/api到后端端口3001）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（前端入口，全屏布局，内嵌字体加载）\n - src/frontend/App.tsx（根组件，管理路由和全局状态，接收后端画作列表数据→渲染GalleryView组件）\n - src/frontend/GalleryView.tsx（画廊主视图，以瀑布流网格展示画作缩略图，处理鼠标拖拽翻页和悬停波纹动画→调用后端API获取画作详情）\n - src/backend/server.ts（Express服务器，提供GET /api/paintings列表和GET /api/paintings/:id详情的REST接口，从内存数组返回数据→跨域响应给前端）\n\n功能需求：\n1) 画廊主页以三列瀑布流布局展示所有画作缩略图，每张缩略图尺寸随机在240-320px宽之间，高度按原图比例自适应，缩略图带有轻微阴影（box-shadow: 0 4px 20px rgba(0,0,0,0.3)）和2px圆角。\n2) 鼠标悬停在缩略图上时，画作表面产生从中心向外扩散的波纹光效（使用CSS radial-gradient动画，颜色从#f0e6d3到#d4c5a9，周期1.5秒），同时缩略图略微放大（scale 1.05）并增加亮度（filter: brightness(1.2)），过渡时间0.3秒。\n3) 点击缩略图进入画作详情页，详情页模拟实体水彩本翻页效果：点击时画作从右侧以卷曲动画翻入（使用CSS clip-path和transform: perspective(1000px) rotateY(-30deg)），同时播放一段短促的沙沙声（使用Web Audio API生成白噪声，时长0.5秒）。详情页背景保持深米色（#f5f0e6），画作下方显示标题、创作日期和一段文字描述。\n4) 画廊支持用户注册和登录（仅前端模拟，无需数据库），登录后可收藏画作，收藏按钮从空心心形图标（#c9b99a）变为实心金色（#d4af37）并伴有0.2秒的弹跳动画。\n5) 所有画作数据初始化时包含至少8幅预设作品（主题为水彩风景、花卉和抽象，URL使用占位图如https://picsum.photos/seed/art1/600/800），数据从后端API返回。\n6) 页面整体视觉统一：左侧垂直导航栏（宽度60px，半透明磨砂玻璃效果backdrop-filter:blur(8px)，背景rgba(245,240,230,0.6)，包含logo和导航图标），剩余空间为内容区。底部浮动一个“回到顶部”按钮（圆形，直径40px，背景#c9b99a，悬停时变为#b8a88a）。\n\n界面要求：整体配色采用暖色调水彩风格，主色为米白（#f5f0e6）和浅金（#d4af37），辅以淡墨绿（#7a9e7e）作为强调色。页面背景是细腻的纸纹理（使用CSS background-image: repeating-linear-gradient模拟）。所有交互元素（按钮、链接、卡片）的悬停和点击都有平滑过渡（transition: all 0.3s ease）和微妙的阴影变化。响应式适配：在宽度小于768px时，瀑布流变为单列，导航栏变为底部栏；在宽度小于480px时，缩略图圆角减小到4px，阴影淡化。\n\n性能约束：画廊页面渲染8张缩略图时，首屏加载时间不超过2秒（使用懒加载和图片预压缩），翻页动画的帧率稳定在30fps以上，悬停波纹动画的响应延迟不超过50ms。",
+  "session_id": null,
+  "trace": "null"
+}

@@ -1,0 +1,182 @@
+:root {
+  --color-bg: #f5f0e6;
+  --color-bg-dark: #e8e0d0;
+  --color-gold: #d4af37;
+  --color-gold-light: #e6c84a;
+  --color-bronze: #c9b99a;
+  --color-bronze-dark: #b8a88a;
+  --color-ink-green: #7a9e7e;
+  --color-text: #3d3529;
+  --color-text-light: #6b5d4b;
+  --color-cream: #f0e6d3;
+  --color-warm-beige: #d4c5a9;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 4px 20px var(--color-shadow);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.25);
+  --nav-width: 60px;
+  --radius-card: 2px;
+  --transition-base: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(201, 185, 154, 0.03) 2px,
+      rgba(201, 185, 154, 0.03) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(201, 185, 154, 0.03) 2px,
+      rgba(201, 185, 154, 0.03) 4px
+    );
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Noto Serif SC', serif;
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+  transition: var(--transition-base);
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  transition: var(--transition-base);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--nav-width);
+  padding: 40px;
+  overflow-x: hidden;
+}
+
+.page-title {
+  font-size: 2rem;
+  color: var(--color-text);
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+  position: relative;
+  display: inline-block;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-gold), transparent);
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes pageFlipIn {
+  0% {
+    transform: perspective(1000px) rotateY(-30deg) translateX(100%);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: perspective(1000px) rotateY(0deg) translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounce-heart {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0;
+    margin-bottom: 60px;
+    padding: 20px;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 16px;
+  }
+
+  :root {
+    --radius-card: 4px;
+  }
+}
