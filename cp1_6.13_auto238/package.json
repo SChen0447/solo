@@ -1,0 +1,19 @@
+{
+  "name": "fungus-glow-jungle",
+  "version": "1.0.0",
+  "description": "菌隙·荧光丛林 - 沉浸式发光真菌森林浏览器互动体验",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "tone": "^14.8.49"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.12"
+  }
+}
