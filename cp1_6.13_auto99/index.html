@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>墨迹·气象站</title>
+    <style>
+      @keyframes inkSpin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes inkPulse {
+        0%, 100% { opacity: 0.6; }
+        50% { opacity: 1; }
+      }
+      body {
+        margin: 0;
+        padding: 0;
+        background: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+      }
+      #loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+      }
+      #loading .ink-dot {
+        width: 24px;
+        height: 24px;
+        background: #2c2c2c;
+        border-radius: 50%;
+        animation: inkSpin 1.2s ease-in-out infinite, inkPulse 1.5s ease-in-out infinite;
+      }
+      #loading .ink-text {
+        color: #2c2c2c;
+        font-size: 14px;
+        letter-spacing: 4px;
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading">
+      <div class="ink-dot"></div>
+      <div class="ink-text">墨迹·气象站</div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/client.tsx"></script>
+  </body>
+</html>
