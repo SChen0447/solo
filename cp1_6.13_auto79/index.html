@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>考古拼图 - 彩陶罐修复</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-width: 1024px;
+      overflow: hidden;
+      font-family: 'Times New Roman', serif;
+      background: #2a1810;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #game-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, #3d2817 0%, #1a0f08 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .pottery-icon {
+      width: 120px;
+      height: 150px;
+      opacity: 0;
+      transform: rotate(-360deg) scale(0.5);
+      animation: potteryFadeIn 2s ease-out forwards;
+    }
+
+    @keyframes potteryFadeIn {
+      0% {
+        opacity: 0;
+        transform: rotate(-360deg) scale(0.5);
+      }
+      60% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1.1);
+      }
+      100% {
+        opacity: 1;
+        transform: rotate(0deg) scale(1);
+      }
+    }
+
+    .loading-text {
+      position: absolute;
+      bottom: 25%;
+      color: #D4A76A;
+      font-size: 18px;
+      letter-spacing: 4px;
+      opacity: 0;
+      animation: textFadeIn 1s ease-out 1.5s forwards;
+    }
+
+    @keyframes textFadeIn {
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <svg class="pottery-icon" viewBox="0 0 120 150">
+      <defs>
+        <linearGradient id="potteryGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#E8C48A"/>
+          <stop offset="50%" stop-color="#D4A76A"/>
+          <stop offset="100%" stop-color="#A67C44"/>
+        </linearGradient>
+      </defs>
+      <path d="M35 15 Q60 5 85 15 L90 30 Q95 35 88 40 L95 70 Q100 100 85 125 L75 140 Q60 148 45 140 L35 125 Q20 100 25 70 L32 40 Q25 35 30 30 Z"
+            fill="url(#potteryGrad)" stroke="#8B6914" stroke-width="1.5"/>
+      <path d="M30 55 Q60 50 90 55" stroke="#2a1810" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M28 80 Q40 75 50 82 Q60 89 70 82 Q80 75 92 80" stroke="#2a1810" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M32 105 Q45 100 55 108 Q65 116 75 108 Q85 100 88 105" stroke="#2a1810" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div class="loading-text">文物修复中...</div>
+  </div>
+
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
