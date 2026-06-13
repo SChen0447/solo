@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Particle Web · 粒子蛛网</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html, body {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: radial-gradient(ellipse at center, #0b0e1a 0%, #000000 100%);
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        color: rgba(255, 255, 255, 0.85);
+      }
+      #app {
+        width: 100%;
+        height: 100%;
+        position: relative;
+      }
+      canvas {
+        display: block;
+      }
+      #hud {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        font-size: 12px;
+        line-height: 1.8;
+        color: rgba(255, 255, 255, 0.65);
+        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+        pointer-events: none;
+        user-select: none;
+        z-index: 10;
+      }
+      #panel {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        width: 220px;
+        padding: 16px 18px;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 8px;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        z-index: 10;
+        user-select: none;
+      }
+      #panel .label {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 8px;
+        letter-spacing: 0.5px;
+      }
+      #panel .row + .row {
+        margin-top: 14px;
+      }
+      .color-picker-wrap {
+        width: 100%;
+        height: 28px;
+        position: relative;
+        border-radius: 14px;
+        background: linear-gradient(
+          to right,
+          #ff0000 0%,
+          #ffff00 17%,
+          #00ff00 33%,
+          #00ffff 50%,
+          #0000ff 67%,
+          #ff00ff 83%,
+          #ff0000 100%
+        );
+        cursor: pointer;
+      }
+      .color-picker-wrap .thumb {
+        position: absolute;
+        top: 50%;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid rgba(0, 0, 0, 0.4);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+        pointer-events: none;
+      }
+      .slider-wrap {
+        width: 100%;
+        height: 28px;
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .slider-wrap .track {
+        width: 100%;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 2px;
+        position: relative;
+      }
+      .slider-wrap .fill {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        border-radius: 2px;
+        background: linear-gradient(90deg, #88ccff, #aaddff);
+      }
+      .slider-wrap .thumb {
+        position: absolute;
+        top: 50%;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid rgba(136, 204, 255, 0.9);
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 6px rgba(136, 204, 255, 0.8);
+        cursor: pointer;
+      }
+      .slider-wrap .value {
+        position: absolute;
+        right: 0;
+        top: -18px;
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+      #hint {
+        position: absolute;
+        left: 16px;
+        top: 16px;
+        font-size: 11px;
+        line-height: 1.7;
+        color: rgba(255, 255, 255, 0.45);
+        z-index: 10;
+        user-select: none;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <div id="hint">
+        左键拖拽 · 推开粒子<br/>
+        右键拖拽 · 旋转视角<br/>
+        滚轮 · 缩放 · 双击 · 脉冲波<br/>
+        W 螺旋 · S 立方体 · D 球体
+      </div>
+      <div id="hud">
+        <div>PARTICLES: <span id="stat-count">0</span></div>
+        <div>FPS: <span id="stat-fps">0</span></div>
+        <div>LINES: <span id="stat-lines">0</span></div>
+      </div>
+      <div id="panel">
+        <div class="row">
+          <div class="label">PARTICLE COLOR</div>
+          <div class="color-picker-wrap" id="colorPicker">
+            <div class="thumb" id="colorThumb" style="left: 50%"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="label">PUSH AMPLITUDE</div>
+          <div class="slider-wrap" id="ampSlider">
+            <div class="track">
+              <div class="fill" id="ampFill" style="width: 50%"></div>
+            </div>
+            <div class="thumb" id="ampThumb" style="left: 50%"></div>
+            <div class="value" id="ampValue">80 px</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
