@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>浮光·音痕墙</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+  <canvas id="trail-canvas"></canvas>
+  <div id="control-panel">
+    <button id="reset-btn">重置</button>
+    <div class="control-item">
+      <label for="rhythm-toggle">律动模式</label>
+      <label class="switch">
+        <input type="checkbox" id="rhythm-toggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+    <div class="control-item">
+      <label for="frequency-slider">律动频率: <span id="frequency-value">1.5</span> Hz</label>
+      <input type="range" id="frequency-slider" min="0.5" max="3" step="0.1" value="1.5" disabled>
+    </div>
+    <div class="control-item">
+      <label for="volume-slider">音量: <span id="volume-value">50</span>%</label>
+      <input type="range" id="volume-slider" min="0" max="100" step="1" value="50">
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
