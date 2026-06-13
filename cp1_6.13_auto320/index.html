@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>光脉·岩层回响</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #c0c0c0;
+      background: linear-gradient(180deg, #0a0a1a 0%, #1a0a2e 100%);
+    }
+
+    #app {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #info-panel {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      width: 320px;
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    #info-panel .title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #00d2d3;
+      margin-bottom: 16px;
+      letter-spacing: 1px;
+    }
+
+    #info-panel .era-name {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      background: linear-gradient(90deg, #d35400, #8e44ad);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #info-panel .stats {
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    #info-panel .stats .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    #info-panel .stats .label {
+      color: #888;
+    }
+
+    #info-panel .stats .value {
+      color: #e0e0e0;
+      font-family: 'Consolas', monospace;
+    }
+
+    #info-panel .color-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    #info-panel .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+    }
+
+    #info-panel .color-swatch::after {
+      content: attr(data-hex);
+      position: absolute;
+      top: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 9px;
+      color: #888;
+      white-space: nowrap;
+    }
+
+    #timeline-container {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      max-width: 800px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #play-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #00d2d3;
+      background: rgba(0, 210, 211, 0.1);
+      color: #00d2d3;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 15px rgba(0, 210, 211, 0.3);
+    }
+
+    #play-btn:hover {
+      background: rgba(0, 210, 211, 0.25);
+      box-shadow: 0 0 25px rgba(0, 210, 211, 0.5);
+      transform: scale(1.05);
+    }
+
+    #play-btn:active {
+      transform: scale(0.98);
+    }
+
+    .timeline-wrapper {
+      flex: 1;
+      position: relative;
+      padding: 20px 0;
+    }
+
+    #timeline-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      outline: none;
+      cursor: pointer;
+      position: relative;
+      z-index: 2;
+    }
+
+    #timeline-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #00d2d3;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 210, 211, 0.8),
+                  0 0 24px rgba(0, 210, 211, 0.4);
+      border: 2px solid #fff;
+      position: relative;
+      z-index: 3;
+      transition: transform 0.2s ease;
+    }
+
+    #timeline-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    #timeline-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #00d2d3;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(0, 210, 211, 0.8);
+      border: 2px solid #fff;
+    }
+
+    .timeline-track {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      margin-top: 17px;
+      border-radius: 3px;
+      background: linear-gradient(90deg,
+        rgba(211, 84, 0, 0.4) 0%,
+        rgba(230, 126, 34, 0.4) 25%,
+        rgba(142, 68, 173, 0.4) 75%,
+        rgba(52, 152, 219, 0.4) 100%
+      );
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .timeline-glow-point {
+      position: absolute;
+      top: 50%;
+      width: 4px;
+      height: 4px;
+      margin-top: 18px;
+      border-radius: 50%;
+      background: #00d2d3;
+      box-shadow: 0 0 8px #00d2d3, 0 0 16px #00d2d3;
+      pointer-events: none;
+      z-index: 4;
+      animation: glow-flow 1.5s ease-in-out infinite;
+    }
+
+    @keyframes glow-flow {
+      0%, 100% {
+        opacity: 0.4;
+        transform: translateY(0) scale(1);
+      }
+      50% {
+        opacity: 1;
+        transform: translateY(-2px) scale(1.4);
+      }
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    .timeline-year-display {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #00d2d3;
+      font-family: 'Consolas', monospace;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="info-panel">
+      <div class="title">⛰ 光脉·岩层回响</div>
+      <div class="era-name" id="era-name">前寒武纪</div>
+      <div class="stats">
+        <div class="row">
+          <span class="label">当前年代</span>
+          <span class="value" id="current-era">前寒武纪</span>
+        </div>
+        <div class="row">
+          <span class="label">距今年代</span>
+          <span class="value" id="year-value">5.0 亿年前</span>
+        </div>
+        <div class="row">
+          <span class="label">可见岩层</span>
+          <span class="value" id="layer-count">0 / 12</span>
+        </div>
+        <div class="row">
+          <span class="label">平均色值</span>
+          <span class="value" id="avg-color">#8e44ad</span>
+        </div>
+      </div>
+      <div class="color-swatches" id="color-swatches"></div>
+    </div>
+
+    <div id="timeline-container">
+      <button id="play-btn" title="播放/暂停">
+        <span id="play-icon">▶</span>
+      </button>
+      <div class="timeline-wrapper">
+        <div class="timeline-track"></div>
+        <div class="timeline-glow-point" id="glow-point"></div>
+        <input type="range" id="timeline-slider" min="0" max="100" value="0" step="0.1" />
+        <div class="timeline-labels">
+          <span>5亿年前</span>
+          <span>2.5亿年前</span>
+          <span>现代</span>
+        </div>
+        <div class="timeline-year-display" id="year-display">5.0 亿年前</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
