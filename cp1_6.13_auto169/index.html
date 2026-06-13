@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>符文·石刻天文钟</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+      font-family: 'Georgia', serif;
+      color: #e0e0e0;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+    }
+
+    #clockCanvas {
+      display: block;
+      cursor: grab;
+      transition: transform 0.2s ease;
+    }
+
+    #clockCanvas:active {
+      cursor: grabbing;
+    }
+
+    #starMapCanvas {
+      display: block;
+    }
+
+    .auto-rotate-btn {
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #4a4a4a 0%, #3a3a3a 100%);
+      border: 2px solid #6a6a6a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 10;
+    }
+
+    .auto-rotate-btn:hover {
+      width: 35px;
+      height: 35px;
+      border-color: #d4af37;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .auto-rotate-btn.active {
+      background: radial-gradient(circle, #d4af37 0%, #b8860b 100%);
+      border-color: #ffd700;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    }
+
+    .auto-rotate-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #aaa;
+      transition: stroke 0.2s ease;
+    }
+
+    .auto-rotate-btn:hover svg,
+    .auto-rotate-btn.active svg {
+      stroke: #fff;
+    }
+
+    .constellation-info {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 5;
+    }
+
+    .constellation-info.visible {
+      opacity: 1;
+    }
+
+    .constellation-info h3 {
+      font-size: 20px;
+      color: #d4af37;
+      margin-bottom: 5px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+    }
+
+    .constellation-info p {
+      font-size: 14px;
+      color: #c0c0c0;
+      max-width: 400px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        transform: scale(0.7);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="container">
+      <canvas id="clockCanvas"></canvas>
+      <canvas id="starMapCanvas"></canvas>
+      <div class="constellation-info" id="constellationInfo">
+        <h3 id="constellationName"></h3>
+        <p id="constellationDesc"></p>
+      </div>
+      <button class="auto-rotate-btn" id="autoRotateBtn" title="自动旋转">
+        <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+          <path d="M21 3v6h-6"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
