@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>墨韵留声</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a0e08;
+      font-family: 'Georgia', 'SimSun', serif;
+    }
+
+    body {
+      background-image:
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 2px,
+          rgba(40, 20, 10, 0.3) 2px,
+          rgba(40, 20, 10, 0.3) 4px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 8px,
+          rgba(30, 15, 5, 0.2) 8px,
+          rgba(30, 15, 5, 0.2) 10px
+        ),
+        linear-gradient(
+          135deg,
+          #1a0e08 0%,
+          #2a1a10 25%,
+          #1e120a 50%,
+          #2c1c12 75%,
+          #1a0e08 100%
+        );
+      background-size: 100% 100%, 100% 100%, 100% 100%;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #loading-pulse {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #loading-pulse::before,
+    #loading-pulse::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    #loading-pulse::before {
+      width: 200px;
+      height: 200px;
+      border: 2px solid rgba(200, 170, 120, 0.4);
+      box-shadow: 0 0 20px rgba(200, 170, 120, 0.2), inset 0 0 20px rgba(200, 170, 120, 0.1);
+    }
+
+    #loading-pulse::after {
+      width: 300px;
+      height: 300px;
+      border: 1px solid rgba(200, 170, 120, 0.2);
+      box-shadow: 0 0 30px rgba(200, 170, 120, 0.1);
+      animation-delay: 0.5s;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0.3;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    .loaded #loading-pulse {
+      opacity: 0;
+      transition: opacity 0.8s ease-out;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading-pulse"></div>
+    <canvas id="canvas"></canvas>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
