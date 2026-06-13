@@ -1,0 +1,95 @@
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: all var(--transition-duration) ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.mobile-toolbar {
+  width: 100%;
+  height: 100px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.mobile-toolbar :global(.toolbar-container) {
+  width: max-content;
+  flex-direction: row;
+  height: 100%;
+  padding: 12px;
+  gap: 12px;
+}
+
+.mobile-toolbar :global(.toolbar-item) {
+  width: 80px;
+  height: 76px;
+  flex-shrink: 0;
+}
+
+.mobile-drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+
+.mobile-drawer {
+  width: 100%;
+  max-height: 70vh;
+  background: var(--bg-color);
+  border-radius: 16px 16px 0 0;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.mobile-drawer-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  color: #fff;
+  font-size: 12px;
+  box-shadow: var(--shadow);
+  z-index: 90;
+  transition: transform 0.2s ease;
+}
+
+.mobile-drawer-toggle:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 1023px) {
+  .main-content {
+    flex-direction: column;
+  }
+}
