@@ -1,0 +1,20 @@
+{
+  "name": "light-rhythm-forest",
+  "version": "1.0.0",
+  "description": "光隙·琴韵森林 - 3D交互式光线与音乐合成可视化应用",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.160.0",
+    "gsap": "^3.12.5"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
