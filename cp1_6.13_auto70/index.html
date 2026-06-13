@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>机械蜘蛛攀爬 - Mech Spider Climber</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: 'Courier New', monospace;
+    }
+
+    #game-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #game-canvas {
+      display: block;
+      cursor: crosshair;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .gear {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      animation: rotate 2s linear infinite;
+    }
+
+    .gear::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 50px;
+      height: 50px;
+      border: 6px solid #e94560;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px rgba(233, 69, 96, 0.5);
+    }
+
+    .gear::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      background: #16213e;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .gear-teeth {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .gear-tooth {
+      position: absolute;
+      width: 8px;
+      height: 16px;
+      background: #e94560;
+      left: 50%;
+      top: -4px;
+      transform-origin: 50% 44px;
+      box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      color: #0f3460;
+      font-size: 16px;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(15, 52, 96, 0.8);
+    }
+
+    #ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #game-over-panel, #victory-panel {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(26, 26, 46, 0.95);
+      border: 2px solid #e94560;
+      border-radius: 12px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(233, 69, 96, 0.3);
+      display: none;
+      z-index: 50;
+      pointer-events: auto;
+    }
+
+    #victory-panel {
+      border-color: #ffd700;
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+    }
+
+    .panel-title {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #e94560;
+      text-shadow: 0 0 20px rgba(233, 69, 96, 0.8);
+      letter-spacing: 4px;
+    }
+
+    #victory-panel .panel-title {
+      color: #ffd700;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+    }
+
+    .panel-stat {
+      color: #0f3460;
+      font-size: 18px;
+      margin: 10px 0;
+      text-shadow: 0 0 8px rgba(15, 52, 96, 0.6);
+    }
+
+    .restart-btn {
+      margin-top: 30px;
+      padding: 12px 30px;
+      background: transparent;
+      border: 2px solid #0f3460;
+      color: #0f3460;
+      font-size: 16px;
+      font-family: 'Courier New', monospace;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-shadow: 0 0 8px rgba(15, 52, 96, 0.6);
+      box-shadow: 0 0 15px rgba(15, 52, 96, 0.2);
+    }
+
+    .restart-btn:hover {
+      border-color: #e94560;
+      color: #e94560;
+      border-width: 3px;
+      box-shadow: 0 0 25px rgba(233, 69, 96, 0.4);
+      animation: neon-blink 0.5s ease-in-out;
+    }
+
+    @keyframes neon-blink {
+      0%, 100% { box-shadow: 0 0 25px rgba(233, 69, 96, 0.4); }
+      50% { box-shadow: 0 0 40px rgba(233, 69, 96, 0.8); }
+    }
+
+    #damage-flash {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+      opacity: 0;
+      box-shadow: inset 0 0 100px rgba(255, 0, 0, 0.6);
+    }
+
+    #damage-flash.active {
+      animation: damage-flash 0.3s ease-out;
+    }
+
+    @keyframes damage-flash {
+      0% { opacity: 0.8; }
+      100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    
+    <div id="loading-screen">
+      <div class="gear">
+        <div class="gear-teeth">
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(0deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(30deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(60deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(90deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(120deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(150deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(180deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(210deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(240deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(270deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(300deg);"></div>
+          <div class="gear-tooth" style="transform: translateX(-50%) rotate(330deg);"></div>
+        </div>
+      </div>
+      <div class="loading-text">LOADING...</div>
+    </div>
+
+    <div id="ui-overlay"></div>
+    
+    <div id="damage-flash"></div>
+
+    <div id="game-over-panel">
+      <div class="panel-title">GAME OVER</div>
+      <div class="panel-stat">收集水晶: <span id="final-crystals">0</span></div>
+      <div class="panel-stat">攀登高度: <span id="final-height">0</span>m</div>
+      <div class="panel-stat">用时: <span id="final-time">0</span>s</div>
+      <button class="restart-btn" onclick="window.location.reload()">重新开始</button>
+    </div>
+
+    <div id="victory-panel">
+      <div class="panel-title">VICTORY</div>
+      <div class="panel-stat">收集水晶: <span id="victory-crystals">0</span></div>
+      <div class="panel-stat">攀登高度: <span id="victory-height">0</span>m</div>
+      <div class="panel-stat">用时: <span id="victory-time">0</span>s</div>
+      <button class="restart-btn" onclick="window.location.reload()">再来一次</button>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
