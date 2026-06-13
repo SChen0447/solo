@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>萤火·光痕</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      cursor: crosshair;
+    }
+    
+    body {
+      background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
+    }
+    
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    
+    canvas {
+      display: block;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 1;
+      transition: opacity 0.8s ease-out;
+      pointer-events: none;
+    }
+    
+    .loading-overlay.fade-out {
+      opacity: 0;
+    }
+    
+    .loading-particles {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+    
+    .loading-particle {
+      position: absolute;
+      border-radius: 50%;
+      background: #FFD700;
+      box-shadow: 0 0 10px #FFD700, 0 0 20px #FFD700;
+      opacity: 0;
+      animation: particleFadeIn 0.8s ease-out forwards;
+    }
+    
+    @keyframes particleFadeIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .hint {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.4);
+      font-family: 'Microsoft YaHei', sans-serif;
+      font-size: 14px;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loading-overlay">
+    <div class="loading-particles" id="loading-particles"></div>
+  </div>
+  <div id="canvas-container"></div>
+  <div class="hint">按住鼠标左键绘制 · 松开后旋转观赏 · 空格键重置</div>
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    (function() {
+      var container = document.getElementById('loading-particles');
+      var count = 12;
+      for (var i = 0; i < count; i++) {
+        var p = document.createElement('div');
+        p.className = 'loading-particle';
+        var size = 4 + Math.random() * 8;
+        var angle = (i / count) * Math.PI * 2 + Math.random() * 0.3;
+        var radius = 20 + Math.random() * 30;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.left = (60 + Math.cos(angle) * radius - size / 2) + 'px';
+        p.style.top = (60 + Math.sin(angle) * radius - size / 2) + 'px';
+        p.style.animationDelay = (Math.random() * 0.5) + 's';
+        p.style.background = Math.random() > 0.5 ? '#FFD700' : '#00FFFF';
+        p.style.boxShadow = '0 0 10px ' + (Math.random() > 0.5 ? '#FFD700' : '#00FFFF');
+        container.appendChild(p);
+      }
+      
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          var overlay = document.getElementById('loading-overlay');
+          overlay.classList.add('fade-out');
+          setTimeout(function() {
+            overlay.style.display = 'none';
+          }, 800);
+        }, 800);
+      });
+    })();
+  </script>
+</body>
+</html>
