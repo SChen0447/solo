@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>细胞有丝分裂3D可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a1628;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      color: #c8e0ff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0a1628;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .dna-loader {
+      width: 60px;
+      height: 80px;
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .dna-strand {
+      position: absolute;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, #4fc3f7 0%, #29b6f6 50%, #0288d1 100%);
+      border-radius: 2px;
+      animation: dnaRotate 2s ease-in-out infinite;
+    }
+
+    .dna-strand.left {
+      left: 10px;
+      animation-delay: 0s;
+    }
+
+    .dna-strand.right {
+      right: 10px;
+      animation-delay: 1s;
+    }
+
+    .dna-rung {
+      position: absolute;
+      width: 40px;
+      height: 2px;
+      background: linear-gradient(90deg, #4fc3f7, #0288d1);
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.6;
+    }
+
+    .dna-rung:nth-child(3) { top: 15%; animation: rungScale 2s ease-in-out infinite; animation-delay: 0s; }
+    .dna-rung:nth-child(4) { top: 30%; animation: rungScale 2s ease-in-out infinite; animation-delay: 0.2s; }
+    .dna-rung:nth-child(5) { top: 45%; animation: rungScale 2s ease-in-out infinite; animation-delay: 0.4s; }
+    .dna-rung:nth-child(6) { top: 60%; animation: rungScale 2s ease-in-out infinite; animation-delay: 0.6s; }
+    .dna-rung:nth-child(7) { top: 75%; animation: rungScale 2s ease-in-out infinite; animation-delay: 0.8s; }
+    .dna-rung:nth-child(8) { top: 90%; animation: rungScale 2s ease-in-out infinite; animation-delay: 1s; }
+
+    @keyframes dnaRotate {
+      0%, 100% { transform: scaleX(1); }
+      50% { transform: scaleX(0.3); }
+    }
+
+    @keyframes rungScale {
+      0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.6; }
+      50% { transform: translateX(-50%) scaleX(0.3); opacity: 0.2; }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: #8ab4f8;
+      letter-spacing: 2px;
+    }
+
+    #stage-label {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 28px;
+      font-weight: 300;
+      color: rgba(200, 224, 255, 0.7);
+      letter-spacing: 4px;
+      text-shadow: 0 0 20px rgba(79, 195, 247, 0.3);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #control-panel {
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      width: 160px;
+      padding: 20px;
+      background: rgba(10, 22, 40, 0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(79, 195, 247, 0.15);
+      z-index: 10;
+    }
+
+    .panel-section {
+      margin-bottom: 18px;
+    }
+
+    .panel-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      color: #8ab4f8;
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .play-pause-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .play-pause-btn.playing {
+      background: linear-gradient(135deg, #ef5350, #e53935);
+    }
+
+    .play-pause-btn.paused {
+      background: linear-gradient(135deg, #66bb6a, #43a047);
+    }
+
+    .play-pause-btn:active {
+      transform: scale(0.92);
+    }
+
+    .play-pause-btn .icon {
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .play-pause-btn.playing .icon {
+      width: 16px;
+      height: 16px;
+      border: none;
+      background: white;
+      border-radius: 2px;
+    }
+
+    .play-pause-btn.paused .icon {
+      border-width: 10px 0 10px 16px;
+      border-color: transparent transparent transparent white;
+      margin-left: 3px;
+    }
+
+    .speed-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .speed-btn {
+      flex: 1;
+      padding: 6px 4px;
+      border: 1px solid rgba(79, 195, 247, 0.3);
+      background: rgba(79, 195, 247, 0.1);
+      color: #8ab4f8;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s ease;
+    }
+
+    .speed-btn:hover {
+      background: rgba(79, 195, 247, 0.2);
+    }
+
+    .speed-btn.active {
+      background: rgba(79, 195, 247, 0.3);
+      border-color: #4fc3f7;
+      color: #e3f2fd;
+    }
+
+    .reset-btn {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid rgba(79, 195, 247, 0.3);
+      background: rgba(79, 195, 247, 0.1);
+      color: #8ab4f8;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .reset-btn:hover {
+      background: rgba(79, 195, 247, 0.2);
+    }
+
+    .stage-dots {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .stage-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(138, 180, 248, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .stage-dot.active {
+      background: #4fc3f7;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+    }
+
+    #timeline-container {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      max-width: 600px;
+      z-index: 10;
+    }
+
+    .timeline-track {
+      position: relative;
+      width: 100%;
+      height: 6px;
+      background: rgba(79, 195, 247, 0.15);
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .timeline-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #4fc3f7, #29b6f6, #0288d1);
+      border-radius: 3px;
+      width: 0%;
+    }
+
+    .timeline-thumb {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 18px;
+      height: 18px;
+      background: #e3f2fd;
+      border-radius: 50%;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      cursor: grab;
+      left: 0%;
+    }
+
+    .timeline-thumb:active {
+      cursor: grabbing;
+    }
+
+    .timeline-tooltip {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 22, 40, 0.9);
+      color: #8ab4f8;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+
+    .timeline-track:hover .timeline-tooltip,
+    .timeline-thumb:hover + .timeline-tooltip {
+      opacity: 1;
+    }
+
+    .timeline-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      font-size: 10px;
+      color: rgba(138, 180, 248, 0.5);
+    }
+
+    .timeline-labels span {
+      flex: 1;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading-screen">
+      <div class="dna-loader">
+        <div class="dna-strand left"></div>
+        <div class="dna-strand right"></div>
+        <div class="dna-rung"></div>
+        <div class="dna-rung"></div>
+        <div class="dna-rung"></div>
+        <div class="dna-rung"></div>
+        <div class="dna-rung"></div>
+        <div class="dna-rung"></div>
+      </div>
+      <div class="loading-text">LOADING...</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="stage-label">间期</div>
+
+    <div id="control-panel">
+      <div class="panel-section">
+        <div class="panel-label">播放控制</div>
+        <button class="play-pause-btn paused" id="playPauseBtn">
+          <div class="icon"></div>
+        </button>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">速度</div>
+        <div class="speed-buttons">
+          <button class="speed-btn" data-speed="0.5">慢速</button>
+          <button class="speed-btn active" data-speed="1">常速</button>
+          <button class="speed-btn" data-speed="2">快速</button>
+        </div>
+      </div>
+      <div class="panel-section">
+        <button class="reset-btn" id="resetBtn">重置</button>
+      </div>
+      <div class="panel-section">
+        <div class="panel-label">阶段</div>
+        <div class="stage-dots" id="stageDots">
+          <div class="stage-dot active" data-stage="0"></div>
+          <div class="stage-dot" data-stage="1"></div>
+          <div class="stage-dot" data-stage="2"></div>
+          <div class="stage-dot" data-stage="3"></div>
+          <div class="stage-dot" data-stage="4"></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="timeline-container">
+      <div class="timeline-track" id="timelineTrack">
+        <div class="timeline-fill" id="timelineFill"></div>
+        <div class="timeline-thumb" id="timelineThumb"></div>
+        <div class="timeline-tooltip" id="timelineTooltip">0.0 μs</div>
+      </div>
+      <div class="timeline-labels">
+        <span>间期</span>
+        <span>前期</span>
+        <span>中期</span>
+        <span>后期</span>
+        <span>末期</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
