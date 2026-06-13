@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --amber-dark: #3e2723;
+  --amber-medium: #5d4037;
+  --amber-light: #8d6e63;
+  --cream: #f5f0e1;
+  --cream-dark: #d7ccc8;
+  --gold: #ffd54f;
+  --navy: #0d1b2a;
+  --navy-light: #1b263b;
+  --glow-white: #ffffff80;
+  --glow-dark: #1b000080;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: linear-gradient(135deg, #2c1810 0%, #3e2723 50%, #1a0f0a 100%);
+  color: var(--cream);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+@keyframes flow {
+  0% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) translateY(-20px);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(1.03);
+  }
+}
+
+@keyframes bounce-star {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.4);
+  }
+  60% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(var(--slide-x, 0));
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px currentColor);
+  }
+  50% {
+    filter: drop-shadow(0 0 12px currentColor);
+  }
+}
