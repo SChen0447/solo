@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>引力·连珠</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a12;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #0f0f1a 50%, #0a0a12 100%);
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+    }
+
+    #gameCanvas:active {
+      cursor: grabbing;
+    }
+
+    .ui-overlay {
+      position: absolute;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .game-title {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      font-family: 'Brush Script MT', 'KaiTi', 'STKaiti', cursive;
+      font-size: 24px;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5),
+                   0 0 20px rgba(255, 215, 0, 0.3);
+      letter-spacing: 2px;
+    }
+
+    .hud-left {
+      position: absolute;
+      top: 80px;
+      left: 30px;
+      pointer-events: none;
+    }
+
+    .progress-text {
+      font-size: 20px;
+      color: #ffd700;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+      margin-bottom: 8px;
+    }
+
+    .steps-text {
+      font-size: 18px;
+      color: #87ceeb;
+      text-shadow: 0 0 6px rgba(135, 206, 235, 0.5);
+    }
+
+    .reset-btn {
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(78, 205, 196, 0.3);
+      border: 2px solid rgba(78, 205, 196, 0.6);
+      color: #4ecdc4;
+      font-size: 14px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(4px);
+      font-family: inherit;
+    }
+
+    .reset-btn:hover {
+      width: 64px;
+      height: 64px;
+      background: rgba(78, 205, 196, 0.5);
+      transform: translate(-2px, -2px);
+    }
+
+    .constellation-hint {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 14px;
+      color: rgba(135, 206, 235, 0.7);
+      text-align: right;
+      pointer-events: none;
+    }
+
+    .constellation-hint .name {
+      font-size: 16px;
+      color: #ffd700;
+      margin-bottom: 4px;
+    }
+
+    @media (max-width: 800px) {
+      .hud-left {
+        display: none;
+      }
+
+      .game-title {
+        font-size: 18px;
+        top: 15px;
+        left: 15px;
+      }
+
+      .constellation-hint {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="gameCanvas" width="1400" height="900"></canvas>
+    <div class="ui-overlay">
+      <div class="game-title">引力·连珠</div>
+      <div class="hud-left">
+        <div class="progress-text" id="progressText">0/4</div>
+        <div class="steps-text" id="stepsText">剩余 15 步</div>
+      </div>
+      <div class="constellation-hint">
+        <div class="name" id="constellationName">大熊座</div>
+        <div>拖拽矿块排列成指定星座</div>
+      </div>
+      <button class="reset-btn" id="resetBtn">重置</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
