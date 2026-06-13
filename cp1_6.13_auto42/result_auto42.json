@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T16:55:53.009Z",
+  "task_name": "auto42",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助小型独立音乐人（如贝斯手、吉他手）在线进行多轨混音和效果器预览的应用，主要解决在录音棚外无法便捷试听不同效果链组合、以及远程协同修改混音参数的问题。\n\n它应当具备以下能力：\n1) 用户上传一个音频文件（WAV/MP3，最长5分钟）后，页面展示一个多轨混音台界面，支持最多4个音轨（初始仅一个主音轨），每个音轨显示波形缩略图、音量滑块（0-100，调值时有渐变竖条颜色从绿到红变化）、静音/独奏按钮（按钮点击时圆角卡片有按下动画），以及一个可拖入的任意效果器插槽（最大3个插槽，拖入效果器时插槽高亮发光）。\n2) 内置4种数字效果器：均衡器（3段，带可拖拽的圆形旋钮控制频段增益，旋钮上显示当前数值）、压缩器（阈值和比率滑块）、混响（房间大小和干湿比滑块，滑块轨道粒子动画）、延迟（时间和反馈滑块），每个效果器拖入插槽后显示一个可展开的配置面板（展开时有平滑高度过渡动画），调整参数时实时对播放音频生效，延迟<100ms。\n3) 用户可将当前所有音轨和效果器参数保存为一个预设方案（JSON格式），方案列表以卡片形式展示在右侧，卡片上有方案名称、创建时间和截图缩略图（音轨状态快照），点击加载时所有音轨和效果器恢复至保存状态，切换有淡入效果。\n4) 支持通过WebSocket实时同步混音状态给其他协作者——点击协作按钮生成一个6位邀请码，对方输入邀请码后双方看到相同的混音台界面，任何一方调整参数（音量、效果器旋钮等）另一方即时同步，同步延迟<500ms，同步时参数控件有轻微闪烁指示。\n\n界面方面要求：整体采用深色专业音频工作室风格（背景深灰#1a1a2e，主控面板深蓝#16213e，高亮细节用金色#e2a93b），混音台面板有金属拉丝纹理（CSS gradient模拟），控件带微弱的发光阴影，拖拽交互有弹性动画，音频文件上传有进度条和取消按钮，响应式适配桌面和中屏平板（1024px以上），所有文本使用系统字体（-apple-system, sans-serif），元素间距统一使用8px网格。性能上需要：实时音频处理延迟<100ms（播放器与效果器链），WebSocket同步延迟<500ms，页面初始加载时间<3秒。\n\n实现采用TypeScript、React（Vite + SWC）和Node.js Express（WebSocket用ws库），按以下文件组织代码：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@vitejs/plugin-react-swc、@types/react、@types/react-dom、axios、dnd-kit、howler；后端依赖：express、typescript、ws、@types/express、@types/ws、ts-node-dev、multer；启动脚本：前端npm run dev，后端npm run dev，以及根目录的concurrently脚本）\n - vite.config.ts（Vite构建配置，指向index.html，配置代理到后端端口3001）\n - tsconfig.json（严格模式，ES模块目标，jsx: react-jsx）\n - index.html（入口页面，深色背景，加载时显示均衡器图标旋转动画）\n - src/main.tsx（前端入口，挂载React根组件）\n - src/components/MixingConsole.tsx（混音台主组件，包含音频播放控制、音轨列表、效果器插槽渲染，接收效果器参数变化回调并通过WebSocket发送同步数据）\n - src/components/EffectRack.tsx（效果器架子组件，渲染拖拽插槽、效果器配置面板，使用dnd-kit实现拖拽交互，计算实时参数）\n - src/websocket.ts（WebSocket客户端封装，负责连接、重连、发送/接收同步消息，消息类型为JSON：{type: 'paramUpdate', trackIndex, effectIndex, paramName, value}）\n - server/index.ts（Express后端，提供文件上传API和WebSocket服务，处理音频文件存储和预设方案的CRUD）\n\n运行方式：在项目根目录执行 npm install，然后运行 npm run dev（前端端口5173，后端端口3001），打开浏览器访问http://localhost:5173即可。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:16baa1617d8c321beba25da6f54c573b_6a2c39b6391ef191d77d9d9b.6a2c3a0d391ef191d77d9de2.6a2c3a0c2e9d11db962662a2:Trae CN.T(2026/6/13 00:55:41)",
+    "user_id": "3986207660317399",
+    "trace_id": "16baa1617d8c321beba25da6f54c573b",
+    "session_id": "6a2c39b6391ef191d77d9d9b",
+    "task_id": "6a2c3a0d391ef191d77d9de2",
+    "message_id": "6a2c3a0c2e9d11db962662a2",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 00:55:41",
+    "format": "full"
+  },
+  "trace": "null"
+}

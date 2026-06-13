@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MixStudio - 多轨混音工作站</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        background: #1a1a2e;
+        font-family: -apple-system, sans-serif;
+        color: #e0e0e0;
+        min-height: 100vh;
+      }
+      #loading-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #1a1a2e;
+        z-index: 9999;
+        transition: opacity 0.5s ease;
+      }
+      #loading-screen.fade-out {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .eq-icon {
+        width: 64px;
+        height: 64px;
+        animation: spin 1.5s linear infinite;
+      }
+      .eq-bar {
+        fill: #e2a93b;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .loading-text {
+        margin-top: 16px;
+        color: #e2a93b;
+        font-size: 14px;
+        letter-spacing: 2px;
+      }
+      #root {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+      #root.visible {
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-screen">
+      <svg class="eq-icon" viewBox="0 0 64 64">
+        <rect class="eq-bar" x="8" y="20" width="8" height="24" rx="2" />
+        <rect class="eq-bar" x="20" y="10" width="8" height="34" rx="2" />
+        <rect class="eq-bar" x="32" y="16" width="8" height="28" rx="2" />
+        <rect class="eq-bar" x="44" y="8" width="8" height="36" rx="2" />
+      </svg>
+      <div class="loading-text">MIX STUDIO</div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
