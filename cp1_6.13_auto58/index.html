@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>霓虹都市脉动 | Neon City Pulse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(180deg, #0a0015 0%, #1a0030 50%, #000510 100%);
+      color: #ffffff;
+      user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #loading-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #0a0015 0%, #1a0030 50%, #000510 100%);
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    #loading-wireframe {
+      width: 200px;
+      height: 200px;
+      animation: spin 4s linear infinite;
+      filter: drop-shadow(0 0 20px #9d4edd) drop-shadow(0 0 40px #c77dff);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg) rotateX(15deg); }
+      to { transform: rotate(360deg) rotateX(15deg); }
+    }
+
+    #loading-text {
+      margin-top: 30px;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: 4px;
+      color: #c77dff;
+      text-shadow: 0 0 10px #9d4edd, 0 0 20px #7b2cbf;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    #loading-progress {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #9d4edd;
+      opacity: 0.8;
+    }
+
+    #navbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 64px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      background: rgba(20, 0, 40, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+    }
+
+    #app-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #c77dff 0%, #9d4edd 50%, #e0aaff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: none;
+      filter: drop-shadow(0 0 8px rgba(199, 125, 255, 0.5));
+    }
+
+    #app-title span {
+      font-size: 14px;
+      font-weight: 300;
+      margin-left: 12px;
+      opacity: 0.7;
+      -webkit-text-fill-color: #c77dff;
+      letter-spacing: 1px;
+    }
+
+    #cycle-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 18px;
+      background: rgba(157, 78, 221, 0.15);
+      border: 1px solid rgba(157, 78, 221, 0.3);
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #e0aaff;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    #cycle-toggle:hover {
+      background: rgba(157, 78, 221, 0.3);
+      box-shadow: 0 0 20px rgba(199, 125, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    #cycle-toggle .icon {
+      font-size: 18px;
+      transition: transform 0.4s ease;
+    }
+
+    #cycle-toggle.paused .icon {
+      transform: rotate(180deg);
+    }
+
+    #stats-panel {
+      position: absolute;
+      top: 88px;
+      left: 24px;
+      z-index: 10;
+      padding: 18px 22px;
+      background: rgba(10, 0, 30, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(157, 78, 221, 0.25);
+      border-radius: 12px;
+      min-width: 200px;
+    }
+
+    #stats-panel h3 {
+      font-size: 13px;
+      font-weight: 500;
+      color: #c77dff;
+      margin-bottom: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(157, 78, 221, 0.12);
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #a78bfa;
+      opacity: 0.8;
+    }
+
+    .stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #ffffff;
+      text-shadow: 0 0 6px rgba(199, 125, 255, 0.5);
+    }
+
+    #time-control {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      width: 60%;
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+    }
+
+    #time-label {
+      font-size: 15px;
+      font-weight: 500;
+      color: #e0aaff;
+      text-shadow: 0 0 10px rgba(199, 125, 255, 0.6);
+      letter-spacing: 3px;
+    }
+
+    #time-slider-container {
+      position: relative;
+      width: 100%;
+      height: 44px;
+      display: flex;
+      align-items: center;
+    }
+
+    #time-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #ffd54f 0%, #ff6b6b 33%, #7b2cbf 66%, #1a0030 100%);
+      outline: none;
+      cursor: pointer;
+      box-shadow: 0 0 15px rgba(199, 125, 255, 0.4), inset 0 0 4px rgba(0,0,0,0.3);
+      transition: box-shadow 0.3s ease;
+    }
+
+    #time-slider:hover {
+      box-shadow: 0 0 25px rgba(199, 125, 255, 0.6), inset 0 0 4px rgba(0,0,0,0.3);
+    }
+
+    #time-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, #c77dff 60%, #7b2cbf 100%);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 15px #c77dff, 0 0 30px #9d4edd;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    #time-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 25px #e0aaff, 0 0 50px #c77dff;
+    }
+
+    #time-slider::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, #c77dff 60%, #7b2cbf 100%);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 0 15px #c77dff, 0 0 30px #9d4edd;
+    }
+
+    #time-marks {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0 8px;
+      margin-top: -4px;
+    }
+
+    .time-mark {
+      font-size: 10px;
+      color: #a78bfa;
+      opacity: 0.6;
+      letter-spacing: 1px;
+    }
+
+    #vehicle-info {
+      position: absolute;
+      bottom: 130px;
+      right: 24px;
+      z-index: 10;
+      padding: 16px 20px;
+      background: rgba(10, 0, 30, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 213, 79, 0.35);
+      border-radius: 12px;
+      min-width: 160px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(10px);
+      transition: all 0.35s ease;
+    }
+
+    #vehicle-info.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    #vehicle-info h4 {
+      font-size: 12px;
+      font-weight: 500;
+      color: #ffd54f;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+      text-shadow: 0 0 8px rgba(255, 213, 79, 0.5);
+    }
+
+    #vehicle-info .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+    }
+
+    #vehicle-info .info-label {
+      font-size: 11px;
+      color: #a78bfa;
+      opacity: 0.8;
+    }
+
+    #vehicle-info .info-value {
+      font-size: 13px;
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    #performance-warning {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 50;
+      padding: 14px 28px;
+      background: rgba(255, 107, 107, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      border-radius: 10px;
+      color: #ff8787;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 1.5px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+    }
+
+    #performance-warning.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    @keyframes waveGlow {
+      0%, 100% { filter: drop-shadow(0 0 3px #9d4edd); }
+      50% { filter: drop-shadow(0 0 15px #c77dff); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+
+    <div id="loading-screen">
+      <svg id="loading-wireframe" viewBox="0 0 200 200" fill="none">
+        <g stroke="#9d4edd" stroke-width="1" fill="none">
+          <line x1="20" y1="180" x2="20" y2="120" />
+          <line x1="40" y1="180" x2="40" y2="80" />
+          <line x1="60" y1="180" x2="60" y2="140" />
+          <line x1="80" y1="180" x2="80" y2="60" />
+          <line x1="100" y1="180" x2="100" y2="40" />
+          <line x1="120" y1="180" x2="120" y2="100" />
+          <line x1="140" y1="180" x2="140" y2="90" />
+          <line x1="160" y1="180" x2="160" y2="130" />
+          <line x1="180" y1="180" x2="180" y2="70" />
+          <line x1="20" y1="120" x2="40" y2="80" />
+          <line x1="40" y1="80" x2="60" y2="140" />
+          <line x1="60" y1="140" x2="80" y2="60" />
+          <line x1="80" y1="60" x2="100" y2="40" />
+          <line x1="100" y1="40" x2="120" y2="100" />
+          <line x1="120" y1="100" x2="140" y2="90" />
+          <line x1="140" y1="90" x2="160" y2="130" />
+          <line x1="160" y1="130" x2="180" y2="70" />
+        </g>
+        <g stroke="#c77dff" stroke-width="0.5" fill="none" opacity="0.5">
+          <line x1="10" y1="180" x2="190" y2="180" />
+          <line x1="20" y1="150" x2="180" y2="150" />
+          <line x1="30" y1="120" x2="170" y2="120" />
+          <line x1="40" y1="90" x2="160" y2="90" />
+          <line x1="50" y1="60" x2="150" y2="60" />
+        </g>
+      </svg>
+      <div id="loading-text">霓虹都市加载中</div>
+      <div id="loading-progress">0%</div>
+    </div>
+
+    <nav id="navbar">
+      <div id="app-title">霓虹都市脉动<span>NEON CITY PULSE</span></div>
+      <div id="cycle-toggle" title="暂停/恢复昼夜循环">
+        <span class="icon">🌙</span>
+        <span class="toggle-text">自动循环</span>
+      </div>
+    </nav>
+
+    <div id="stats-panel">
+      <h3>实时监控</h3>
+      <div class="stat-item">
+        <span class="stat-label">建筑总数</span>
+        <span class="stat-value" id="stat-buildings">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">活跃车流</span>
+        <span class="stat-value" id="stat-traffic">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">当前时间</span>
+        <span class="stat-value" id="stat-clock">00:00</span>
+      </div>
+    </div>
+
+    <div id="time-control">
+      <div id="time-label">日出 06:00</div>
+      <div id="time-slider-container">
+        <input type="range" id="time-slider" min="0" max="1" step="0.01" value="0" />
+      </div>
+      <div id="time-marks">
+        <span class="time-mark">日出</span>
+        <span class="time-mark">正午</span>
+        <span class="time-mark">黄昏</span>
+        <span class="time-mark">午夜</span>
+      </div>
+    </div>
+
+    <div id="vehicle-info">
+      <h4>🚗 车辆信息</h4>
+      <div class="info-row">
+        <span class="info-label">ID</span>
+        <span class="info-value" id="vehicle-id">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">速度</span>
+        <span class="info-value" id="vehicle-speed">-</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">方向</span>
+        <span class="info-value" id="vehicle-direction">-</span>
+      </div>
+    </div>
+
+    <div id="performance-warning">⚠ 性能下降，已自动优化</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
