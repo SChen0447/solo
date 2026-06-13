@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+$paper-bg: #f5e6c8;
+$paper-bg-dark: #e8d5a8;
+$ink-dark: #2d1f15;
+$bamboo-light: #f8eed5;
+$gold-primary: #d4a017;
+$gold-light: #f5d060;
+$seal-red: #8b0000;
+$text-primary: #4a3520;
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
+  font-family: "Noto Serif SC", "KaiTi", "STKaiti", "楷体", "SimSun", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: $text-primary;
+  background-color: $paper-bg;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 20% 30%, rgba(218, 165, 32, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(139, 90, 43, 0.06) 0%, transparent 50%),
+    linear-gradient(180deg, #faf0d8 0%, $paper-bg 30%, #f0dcb0 100%);
+  background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+}
+
+a {
+  color: $gold-primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea {
+  font-family: inherit;
+}

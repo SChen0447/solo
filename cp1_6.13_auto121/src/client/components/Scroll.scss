@@ -1,0 +1,492 @@
+.scroll {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 80vh;
+  min-height: 500px;
+  padding: 20px 10px;
+  perspective: 1500px;
+
+  &__rod {
+    width: 24px;
+    height: 85%;
+    min-height: 450px;
+    background: linear-gradient(
+      90deg,
+      #3d2817 0%,
+      #5c3a21 20%,
+      #6b4424 50%,
+      #5c3a21 80%,
+      #3d2817 100%
+    );
+    border-radius: 12px;
+    position: relative;
+    z-index: 10;
+    box-shadow:
+      inset 2px 0 4px rgba(0, 0, 0, 0.4),
+      inset -2px 0 4px rgba(255, 200, 150, 0.1),
+      0 4px 16px rgba(0, 0, 0, 0.4);
+
+    &-cap {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 12px;
+      background: linear-gradient(180deg, #c9a46c 0%, #8b6914 50%, #5c4a1a 100%);
+      border-radius: 6px;
+      box-shadow:
+        inset 0 2px 3px rgba(255, 230, 180, 0.5),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.3),
+        0 2px 6px rgba(0, 0, 0, 0.5);
+
+      &:first-of-type {
+        top: -6px;
+      }
+    }
+
+    &--left {
+      transform: translateX(8px);
+      animation: rodLeft 3s ease-in-out forwards;
+    }
+
+    &--right {
+      transform: translateX(-8px);
+      animation: rodRight 3s ease-in-out forwards;
+    }
+  }
+
+  &__bamboos {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    height: 85%;
+    min-height: 450px;
+    position: relative;
+    z-index: 5;
+    padding: 0 4px;
+    box-shadow:
+      0 0 40px rgba(255, 215, 140, 0.15),
+      0 0 80px rgba(255, 200, 120, 0.08),
+      inset 0 0 30px rgba(255, 220, 180, 0.05);
+  }
+
+  &--unrolled {
+    .scroll__rod--left {
+      animation: rodLeftUnroll 3s ease-in-out forwards;
+    }
+    .scroll__rod--right {
+      animation: rodRightUnroll 3s ease-in-out forwards;
+    }
+    .scroll__bamboos {
+      gap: 3px;
+    }
+  }
+
+  &__seal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    pointer-events: none;
+    animation: sealFadeIn 1s ease-out forwards;
+    animation-delay: 2.5s;
+    opacity: 0;
+  }
+
+  &__seal-caption {
+    font-family: "KaiTi", "STKaiti", "楷体", serif;
+    font-size: 20px;
+    color: #8b0000;
+    letter-spacing: 4px;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(255, 100, 100, 0.3);
+  }
+}
+
+@keyframes rodLeftUnroll {
+  0% { transform: translateX(8px); }
+  100% { transform: translateX(-40px); }
+}
+
+@keyframes rodRightUnroll {
+  0% { transform: translateX(-8px); }
+  100% { transform: translateX(40px); }
+}
+
+@keyframes rodLeft {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(8px); }
+}
+
+@keyframes rodRight {
+  0% { transform: translateX(0px); }
+  100% { transform: translateX(-8px); }
+}
+
+@keyframes sealFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  50% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.seal {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #a52a2a 0%, #8b0000 50%, #6b0000 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 20px rgba(139, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 2px 6px rgba(255, 100, 100, 0.3),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid #6b0000;
+
+  &__text {
+    font-family: "KaiTi", "STKaiti", "楷体", serif;
+    font-size: 30px;
+    color: #fff8dc;
+    font-weight: bold;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+    transform: rotate(-5deg);
+  }
+}
+
+.bamboo {
+  position: relative;
+  width: 30px;
+  min-width: 30px;
+  background: linear-gradient(
+    90deg,
+    #e8dcc0 0%,
+    #f5ead0 15%,
+    #f8eed5 50%,
+    #f5ead0 85%,
+    #e8dcc0 100%
+  );
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: box-shadow 0.8s ease-in-out;
+
+  &__texture {
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      rgba(139, 101, 56, 0.04) 1px,
+      transparent 2px,
+      transparent 5px
+    );
+    pointer-events: none;
+  }
+
+  &__grain {
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 30% 20%, rgba(139, 101, 56, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(139, 101, 56, 0.05) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 80%, rgba(139, 101, 56, 0.04) 0%, transparent 45%);
+    pointer-events: none;
+  }
+
+  &__knot {
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    height: 6px;
+    background: linear-gradient(
+      180deg,
+      rgba(139, 101, 56, 0.3) 0%,
+      rgba(180, 140, 80, 0.5) 50%,
+      rgba(139, 101, 56, 0.3) 100%
+    );
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.2),
+      inset 0 1px 1px rgba(255, 230, 180, 0.2);
+
+    &--top { top: 20px; }
+    &--bottom { bottom: 20px; }
+  }
+
+  &__slots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 40px 2px;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  &__edge {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    pointer-events: none;
+
+    &--left {
+      left: 0;
+      background: linear-gradient(180deg, 
+        rgba(139, 101, 56, 0.15) 0%, 
+        rgba(139, 101, 56, 0.25) 50%, 
+        rgba(139, 101, 56, 0.15) 100%);
+    }
+
+    &--right {
+      right: 0;
+      background: linear-gradient(180deg, 
+        rgba(139, 101, 56, 0.15) 0%, 
+        rgba(139, 101, 56, 0.25) 50%, 
+        rgba(139, 101, 56, 0.15) 100%);
+    }
+  }
+
+  &--glowing {
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.4),
+      0 0 40px rgba(255, 200, 80, 0.25),
+      0 0 60px rgba(255, 180, 60, 0.15),
+      inset 0 0 20px rgba(255, 230, 140, 0.2);
+    animation: bambooGlow 2s ease-in-out;
+  }
+}
+
+@keyframes bambooGlow {
+  0% {
+    box-shadow: 0 0 0px rgba(255, 215, 0, 0);
+  }
+  30% {
+    box-shadow:
+      0 0 30px rgba(255, 215, 0, 0.5),
+      0 0 60px rgba(255, 200, 80, 0.35),
+      0 0 90px rgba(255, 180, 60, 0.2),
+      inset 0 0 30px rgba(255, 230, 140, 0.3);
+  }
+  100% {
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.4),
+      0 0 40px rgba(255, 200, 80, 0.25),
+      0 0 60px rgba(255, 180, 60, 0.15),
+      inset 0 0 20px rgba(255, 230, 140, 0.2);
+  }
+}
+
+.slot {
+  width: 25px;
+  height: 25px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
+
+  &__placeholder {
+    width: 100%;
+    height: 100%;
+    border: 1.5px dashed rgba(100, 70, 40, 0.5);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 245, 220, 0.3);
+
+    &-text {
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      font-size: 10px;
+      color: rgba(100, 70, 40, 0.3);
+    }
+  }
+
+  &__character {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: charAppear 1.5s ease-out forwards;
+  }
+
+  &__canvas {
+    image-rendering: auto;
+  }
+
+  &__meaning {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    padding: 10px 14px;
+    background: linear-gradient(135deg, #fdf6e3 0%, #f5e6c8 100%);
+    border: 1px solid #c9a46c;
+    border-radius: 6px;
+    box-shadow:
+      0 4px 16px rgba(0, 0, 0, 0.2),
+      0 0 20px rgba(255, 200, 100, 0.2);
+    z-index: 50;
+    animation: meaningFadeIn 0.4s ease-out forwards;
+
+    &-text {
+      font-family: "KaiTi", "STKaiti", "楷体", serif;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #4a3520;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+
+    &-arrow {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%) rotate(45deg);
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(135deg, transparent 45%, #f5e6c8 45%, #f5e6c8 100%);
+      border-right: 1px solid #c9a46c;
+      border-bottom: 1px solid #c9a46c;
+    }
+  }
+
+  &--filled {
+    .slot__placeholder {
+      display: none;
+    }
+  }
+
+  &--wrong {
+    animation: slotWrong 0.3s ease-in-out;
+    
+    .slot__placeholder {
+      border-color: #c62828;
+      border-style: solid;
+      background: rgba(198, 40, 40, 0.1);
+    }
+  }
+}
+
+@keyframes charAppear {
+  0% {
+    opacity: 0;
+    filter: blur(4px);
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 0.6;
+    filter: blur(1.5px);
+    transform: scale(0.95);
+  }
+  70% {
+    opacity: 0.9;
+    filter: blur(0.5px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
+}
+
+@keyframes meaningFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@keyframes slotWrong {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
+@media (max-width: 768px) {
+  .scroll {
+    height: auto;
+    min-height: 400px;
+    flex-direction: column;
+    gap: 12px;
+
+    &__rod {
+      width: 80%;
+      height: 20px;
+      min-height: auto;
+      border-radius: 10px;
+      flex-direction: row;
+
+      &-cap {
+        top: 50%;
+        left: auto;
+        transform: translateY(-50%);
+        width: 12px;
+        height: 28px;
+        border-radius: 6px;
+
+        &:first-of-type {
+          top: 50%;
+          left: -8px;
+        }
+      }
+
+      &--left, &--right {
+        transform: translateY(0) !important;
+      }
+    }
+
+    &__bamboos {
+      height: auto;
+      min-height: 350px;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1px;
+      padding: 8px;
+    }
+  }
+
+  .bamboo {
+    width: 26px;
+    min-width: 26px;
+    height: auto;
+    min-height: 300px;
+
+    &__slots {
+      gap: 10px;
+      padding: 30px 2px;
+    }
+  }
+
+  .slot {
+    width: 22px;
+    height: 22px;
+  }
+}

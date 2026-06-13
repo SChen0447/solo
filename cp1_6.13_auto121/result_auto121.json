@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T19:15:59.475Z",
+  "task_name": "auto121",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个名为‘尘封·书简解密’的全栈web应用，用户可以通过鼠标拖拽和点击，在一个虚拟的古代书简上，将散落的墨迹碎片拼合回正确的文字位置，每成功拼合一个字，书简就会泛起淡金光芒并浮现一段对应的先秦典故释义，最终形成一幅可完整展开阅读的古老文献。使用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建。文件结构如下：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite@5、@types/react、@types/react-dom、axios、react-router-dom、sass，后端依赖：express@4、cors、typescript、ts-node，启动脚本：npm run dev）\n - vite.config.js（构建配置，指向index.html）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（入口页面，浅米色仿古纸背景）\n - src/client/main.tsx（React入口，包含路由和状态管理）\n - src/client/App.tsx（主应用组件，管理书简展示区与墨迹碎片区的交互逻辑）\n - src/client/components/Scroll.tsx（书简组件，渲染可展开的虚拟竹简，每个竹简片上显示已拼合的汉字与对应释义）\n - src/client/components/Fragment.tsx（墨迹碎片组件，渲染可拖拽的单个墨迹碎片，每个碎片包含一部分汉字的笔划，通过CSS clip-path模拟不规则形状）\n - src/client/utils/api.ts（封装与后端的API通信）\n - src/server/index.ts（Express后端入口，提供模拟AI端点用于验证碎片拼合是否正确并返回典故释义）\n - src/server/routes/decode.ts（路由文件，处理拼合验证请求，返回匹配结果和释义文本）\n - src/types/scroll.ts（共享类型定义，如Fragment、DecodeResult等）\n\n具体需求：\n1. 主界面分为左右两区：左侧为“碎片库”，以网格（4列）展示所有散落的墨迹碎片（约30个），每个碎片大小40x40px，形状不规则（用CSS clip-path实现多边形），颜色为深褐色到黑色渐变，边缘有轻微的羽化模糊；右侧为“书简区”，展示一张由15根竹简组成的半卷书简（每根竹简宽30px，高占屏幕80%，颜色为浅米色带深色木纹纹理），竹简之间略有缝隙，上面用灰色虚线标出每个字的占位框（25x25px）。\n2. 用户从左侧拖拽一个碎片到右侧的某个占位框上，若碎片与该位置对应的汉字笔划匹配（后端模拟验证），则碎片吸附并逐渐渲染成完整的黑色汉字（使用Canvas绘制笔划，从模糊到清晰，耗时1.5秒），同时该竹简片泛起淡金色光芒（CSS box-shadow径向扩散，持续2秒），并在竹简上方弹出一句简短的先秦典故释义（如“《尚书·尧典》：乃命羲和，钦若昊天”），释义显示5秒后自动淡出。\n3. 若碎片与占位框不匹配，碎片将以跳动反馈（上下移动5px，重复2次）并弹回左侧碎片库，同时占位框短暂变为红色（0.3秒）并播放一个低沉的“咚”声反馈（用Web Audio生成）。\n4. 全部15个碎片拼合正确后，整卷书简从半卷状态缓慢展开至完全展开（展开动画持续3秒，竹简向两侧平移），所有汉字同时浮现并发出柔和金光（box-shadow发光持续3秒），页面中央显示一个“典籍复原完成”的印章图案（圆形，直径60px，暗红色，用CSS绘制，带篆书“解”字），印章从透明渐变为不透明，持续1秒。\n5. 页面上方有一个进度指示器（占屏幕宽50%，水平居中），以竹简状长条表示当前拼合进度（每拼对一个字，长条上对应的一段从灰色变为金色），并显示当前完成数/总数（如“7/15”）。\n6. 后端提供一个模拟AI验证端点（POST /api/decode），接收碎片ID和位置坐标，返回一个包含是否匹配、匹配的汉字、释义文本和下一碎片提示（可选）的对象。该端点模拟0.5-1.5秒的随机延迟以模拟AI处理时延。\n\n界面方面：整体采用仿古黄褐色调，主背景为细腻的宣纸纹理（CSS background-image配合SVG filter），碎片库区域有轻微内阴影模拟凹陷感，书简区有微弱的外发光模拟光源照射。拖拽交互有平滑的跟随和吸附效果，使用GSAP实现。所有动画时长在0.3-3秒之间，采用ease-in-out缓动。页面在宽度低于768px时，碎片库和书简区由上到下堆叠排列，碎片变小至30x30px。\n\n性能要求：页面加载时间不超过2秒（首屏），拖拽交互帧率不低于50fps，动画不出现卡顿。运行方式：npm install && npm run dev。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:7496cd9acd480178d68618eea4533173_6a2c5ab369f4f9d6dee42c1f.6a2c5ae369f4f9d6dee42c2f.6a2c5ae32d24b9790471544d:Trae CN.T(2026/6/13 03:15:47)",
+    "user_id": "3986207660317399",
+    "trace_id": "7496cd9acd480178d68618eea4533173",
+    "session_id": "6a2c5ab369f4f9d6dee42c1f",
+    "task_id": "6a2c5ae369f4f9d6dee42c2f",
+    "message_id": "6a2c5ae32d24b9790471544d",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 03:15:47",
+    "format": "full"
+  },
+  "trace": "null"
+}
