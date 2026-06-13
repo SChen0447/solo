@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晶格·星尘迷宫</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      min-width: 800px;
+      min-height: 600px;
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .hud-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 16px 20px;
+      backdrop-filter: blur(10px);
+      color: #ffffff;
+      font-size: 14px;
+      z-index: 100;
+      min-width: 160px;
+    }
+
+    .hud-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .hud-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .hud-label {
+      color: rgba(255, 255, 255, 0.7);
+      letter-spacing: 1px;
+    }
+
+    .hud-value {
+      font-weight: 600;
+      font-size: 16px;
+      color: #48dbfb;
+      text-shadow: 0 0 10px rgba(72, 219, 251, 0.5);
+    }
+
+    .hud-value.hit {
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #ffffff;
+      font-size: 18px;
+      letter-spacing: 2px;
+      z-index: 200;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      margin-left: 8px;
+      background: #48dbfb;
+      border-radius: 50%;
+      animation: pulse 1s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="loading">正在加载星尘迷宫</div>
+    <div id="canvas-container"></div>
+    <div class="hud-panel">
+      <div class="hud-item">
+        <span class="hud-label">FPS</span>
+        <span class="hud-value" id="fps">--</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">核心探索</span>
+        <span class="hud-value hit" id="hit-count">0</span>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
