@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>像素烟花秀 - Pixel Fireworks Show</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #050a14;
+      color: #e0e5ec;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 80vw;
+      height: 90vh;
+    }
+
+    #canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-color: #0a1628;
+      cursor: crosshair;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(58, 95, 122, 0.15);
+    }
+
+    #canvas-glow {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      box-shadow: inset 0 0 80px 30px rgba(58, 95, 122, 0.15);
+      border-radius: 8px;
+    }
+
+    .panel {
+      position: absolute;
+      background-color: rgba(20, 20, 40, 0.7);
+      border: 1px solid #3a5f7a;
+      border-radius: 12px;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      z-index: 10;
+    }
+
+    #left-panel {
+      left: 2vw;
+      top: 5vh;
+      width: 14vw;
+      min-width: 200px;
+    }
+
+    #right-panel {
+      right: 2vw;
+      bottom: 5vh;
+      width: 16vw;
+      min-width: 220px;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #7ec8e3;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .control-group {
+      margin-bottom: 16px;
+    }
+
+    .control-label {
+      font-size: 12px;
+      color: #a0a8b8;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-value {
+      color: #7ec8e3;
+      font-weight: 600;
+    }
+
+    .slider {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, #2a3a4a, #4a7f9a);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #e0f0ff;
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease;
+    }
+
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      background: #e0f0ff;
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .color-wheel-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    #color-wheel {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      cursor: crosshair;
+      border: 2px solid #3a5f7a;
+      box-shadow: 0 0 15px rgba(126, 200, 227, 0.3);
+    }
+
+    .color-preview {
+      width: 60px;
+      height: 30px;
+      border-radius: 6px;
+      margin-top: 8px;
+      border: 2px solid #3a5f7a;
+    }
+
+    .preset-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .preset-btn {
+      padding: 10px 14px;
+      background-color: rgba(42, 58, 74, 0.6);
+      border: 1px solid #3a5f7a;
+      border-radius: 8px;
+      color: #c0c8d8;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: left;
+    }
+
+    .preset-btn:hover {
+      background-color: #4a7f9a;
+      color: #ffffff;
+      transform: translateX(4px);
+    }
+
+    .preset-btn.active {
+      background-color: #5a9fba;
+      color: #ffffff;
+      border-color: #7ec8e3;
+    }
+
+    .mode-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .mode-btn {
+      flex: 1 1 calc(50% - 3px);
+      padding: 8px 10px;
+      background-color: rgba(42, 58, 74, 0.6);
+      border: 1px solid #3a5f7a;
+      border-radius: 6px;
+      color: #c0c8d8;
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mode-btn:hover {
+      background-color: #4a7f9a;
+      color: #ffffff;
+    }
+
+    .mode-btn.active {
+      background-color: #5a9fba;
+      color: #ffffff;
+      border-color: #7ec8e3;
+    }
+
+    .hint {
+      position: absolute;
+      bottom: 1vh;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(160, 168, 184, 0.6);
+      pointer-events: none;
+    }
+
+    .fps-counter {
+      position: absolute;
+      top: 1vh;
+      right: 2vw;
+      font-size: 12px;
+      color: #7ec8e3;
+      font-family: 'Consolas', monospace;
+      z-index: 20;
+    }
+
+    .shake {
+      animation: shake 0.3s ease-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0); }
+      25% { transform: translate(-3px, 2px); }
+      50% { transform: translate(2px, -2px); }
+      75% { transform: translate(-2px, 3px); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="canvas"></canvas>
+      <div id="canvas-glow"></div>
+    </div>
+
+    <div class="panel" id="left-panel">
+      <div class="panel-title">烟花参数</div>
+      
+      <div class="control-group">
+        <div class="control-label">
+          <span>爆炸半径</span>
+          <span class="control-value" id="radius-value">120px</span>
+        </div>
+        <input type="range" class="slider" id="radius-slider" min="50" max="200" value="120" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>粒子数量</span>
+          <span class="control-value" id="count-value">45</span>
+        </div>
+        <input type="range" class="slider" id="count-slider" min="20" max="80" value="45" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>生命时长</span>
+          <span class="control-value" id="lifetime-value">3.0s</span>
+        </div>
+        <input type="range" class="slider" id="lifetime-slider" min="2" max="5" value="3" step="0.1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>重力强度</span>
+          <span class="control-value" id="gravity-value">0.5</span>
+        </div>
+        <input type="range" class="slider" id="gravity-slider" min="0" max="2" value="0.5" step="0.1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">
+          <span>色相偏移</span>
+          <span class="control-value" id="hue-value">0°</span>
+        </div>
+        <input type="range" class="slider" id="hue-slider" min="-30" max="30" value="0" step="1">
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">发射模式</div>
+        <div class="mode-buttons">
+          <button class="mode-btn active" data-mode="single">单发</button>
+          <button class="mode-btn" data-mode="multi">多发射</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="right-panel">
+      <div class="panel-title">色彩与预设</div>
+      
+      <div class="color-wheel-container">
+        <canvas id="color-wheel" width="100" height="100"></canvas>
+        <div class="color-preview" id="color-preview" style="background-color: #ff6b6b;"></div>
+      </div>
+
+      <div class="control-group">
+        <div class="control-label">烟花模式</div>
+        <div class="preset-buttons">
+          <button class="preset-btn active" data-preset="normal">🎆 标准绽放</button>
+          <button class="preset-btn" data-preset="meteor">🌠 流星雨</button>
+          <button class="preset-btn" data-preset="rings">💫 同心圆</button>
+          <button class="preset-btn" data-preset="spiral">🌀 螺旋升天</button>
+          <button class="preset-btn" data-preset="fountain">🌈 七彩喷泉</button>
+          <button class="preset-btn" data-preset="heart">❤️ 心形绽放</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="fps-counter" id="fps-counter">FPS: 60</div>
+    <div class="hint">点击画布发射烟花 | 多发射模式：按住Alt+点击添加发射点 | 点击木桩删除发射点</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
