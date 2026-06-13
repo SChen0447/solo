@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>绘梦·星尘织机</title>
+  <link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+  <div id="app"></div>
+  <div id="control-panel" class="control-panel">
+    <div class="panel-title">控制面板</div>
+    <div class="control-group">
+      <label>粒子大小: <span id="size-value">3.0</span>px</label>
+      <input type="range" id="particle-size" min="1" max="6" step="0.1" value="3">
+    </div>
+    <div class="control-group">
+      <label>波浪振幅: <span id="wave-value">15.0</span>px</label>
+      <input type="range" id="wave-amplitude" min="5" max="30" step="0.5" value="15">
+    </div>
+    <div class="control-group">
+      <label>颜色速度: <span id="color-value">3.0</span>s</label>
+      <input type="range" id="color-speed" min="1" max="5" step="0.1" value="3">
+    </div>
+    <button id="reset-btn" class="reset-btn">重置参数</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
