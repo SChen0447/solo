@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古树年轮生长模拟</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --panel-bg: rgba(62, 39, 20, 0.72);
+      --panel-border: rgba(180, 140, 90, 0.35);
+      --text-cream: #f5e6c8;
+      --text-muted: #bfa882;
+      --accent-glow: rgba(218, 165, 80, 0.55);
+      --slider-track: #5c3d1e;
+      --slider-thumb: #d4a04a;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Serif SC', 'Georgia', serif;
+      color: var(--text-cream);
+      background: linear-gradient(
+        135deg,
+        #1a0e06 0%,
+        #2c1a0e 20%,
+        #3d2515 40%,
+        #2e1a0b 60%,
+        #1f1008 80%,
+        #140b04 100%
+      );
+      background-size: 400% 400%;
+      animation: woodGrainShift 20s ease infinite;
+    }
+
+    @keyframes woodGrainShift {
+      0% { background-position: 0% 0%; }
+      50% { background-position: 100% 100%; }
+      100% { background-position: 0% 0%; }
+    }
+
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      background: radial-gradient(circle, #2c1a0e 0%, #1a0e06 100%);
+      transition: opacity 0.8s ease;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .ring-loader {
+      width: 120px;
+      height: 120px;
+      position: relative;
+    }
+
+    .ring-loader .ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      animation: ringExpand 2s ease-out infinite;
+    }
+
+    .ring-loader .ring:nth-child(1) {
+      inset: 50px;
+      border-color: rgba(212, 160, 74, 0.9);
+      animation-delay: 0s;
+    }
+
+    .ring-loader .ring:nth-child(2) {
+      inset: 40px;
+      border-color: rgba(180, 130, 60, 0.7);
+      animation-delay: 0.3s;
+    }
+
+    .ring-loader .ring:nth-child(3) {
+      inset: 30px;
+      border-color: rgba(150, 100, 40, 0.5);
+      animation-delay: 0.6s;
+    }
+
+    .ring-loader .ring:nth-child(4) {
+      inset: 20px;
+      border-color: rgba(120, 80, 30, 0.3);
+      animation-delay: 0.9s;
+    }
+
+    .ring-loader .ring:nth-child(5) {
+      inset: 10px;
+      border-color: rgba(90, 60, 20, 0.2);
+      animation-delay: 1.2s;
+    }
+
+    @keyframes ringExpand {
+      0% {
+        transform: scale(0.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(3);
+        opacity: 0;
+      }
+    }
+
+    #canvas-container {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .panel {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 240px;
+      padding: 24px 20px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+    }
+
+    .panel:hover {
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px var(--accent-glow);
+    }
+
+    #left-panel {
+      left: 20px;
+    }
+
+    #right-panel {
+      right: 20px;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-cream);
+      margin-bottom: 18px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid var(--panel-border);
+      padding-bottom: 10px;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .control-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-cream);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--slider-track);
+      outline: none;
+      cursor: pointer;
+      transition: box-shadow 0.3s ease;
+    }
+
+    input[type="range"]:hover {
+      box-shadow: 0 0 10px var(--accent-glow);
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      transition: box-shadow 0.3s ease, transform 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 12px var(--accent-glow);
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--slider-thumb);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+    }
+
+    #histogram-canvas {
+      width: 100%;
+      height: 160px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 12px;
+      line-height: 1.5;
+      opacity: 0.7;
+    }
+
+    @media (max-width: 768px) {
+      .panel {
+        position: fixed;
+        top: auto;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transform: none;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        max-height: 45vh;
+        overflow-y: auto;
+        transition: transform 0.4s ease, box-shadow 0.3s ease;
+      }
+
+      .panel.collapsed {
+        transform: translateY(calc(100% - 48px));
+      }
+
+      #left-panel {
+        left: 0;
+        z-index: 11;
+      }
+
+      #right-panel {
+        right: 0;
+        z-index: 10;
+      }
+
+      .panel-toggle {
+        display: block;
+        width: 40px;
+        height: 4px;
+        background: var(--text-muted);
+        border-radius: 2px;
+        margin: 0 auto 12px;
+        cursor: pointer;
+        opacity: 0.6;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .panel-toggle {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-overlay">
+    <div class="ring-loader">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+    </div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div id="left-panel" class="panel">
+    <div class="panel-toggle"></div>
+    <div class="panel-title">生长参数</div>
+    <div class="control-group">
+      <div class="control-label">
+        <span>生长年份</span>
+        <span class="control-value" id="year-value">15</span>
+      </div>
+      <input type="range" id="year-slider" min="1" max="30" step="1" value="15" />
+    </div>
+    <div class="control-group">
+      <div class="control-label">
+        <span>季节水分</span>
+        <span class="control-value" id="moisture-value">50</span>
+      </div>
+      <input type="range" id="moisture-slider" min="0" max="100" step="5" value="50" />
+    </div>
+    <div class="hint-text">点击树干任意位置可切开截面查看年轮</div>
+  </div>
+
+  <div id="right-panel" class="panel collapsed">
+    <div class="panel-toggle"></div>
+    <div class="panel-title">年轮宽度统计</div>
+    <canvas id="histogram-canvas"></canvas>
+    <div class="hint-text" id="ring-stats">共 15 层年轮，平均宽度 0.012</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+
+  <script>
+    document.querySelectorAll('.panel-toggle').forEach(function(toggle) {
+      toggle.addEventListener('click', function() {
+        var panel = toggle.closest('.panel');
+        if (panel) panel.classList.toggle('collapsed');
+      });
+    });
+  </script>
+</body>
+</html>
