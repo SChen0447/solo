@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>深海声呐地形可视化工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a1628 0%, #000510 100%);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #e0f0ff;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      z-index: 100;
+    }
+
+    #loading .spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(100, 200, 255, 0.2);
+      border-top-color: #64c8ff;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    #loading .text {
+      font-size: 14px;
+      color: #64c8ff;
+      letter-spacing: 2px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #info-panel {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 260px;
+      padding: 18px 20px;
+      background: rgba(10, 40, 80, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(100, 180, 255, 0.4);
+      border-radius: 12px;
+      z-index: 50;
+      transition: transform 0.3s ease, width 0.3s ease, bottom 0.3s ease, right 0.3s ease;
+    }
+
+    #info-panel.collapsed {
+      transform: translateY(calc(100% + 20px));
+    }
+
+    #info-panel .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #7fd0ff;
+      margin-bottom: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-bottom: 1px solid rgba(100, 180, 255, 0.25);
+      padding-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #info-panel .collapse-btn {
+      cursor: pointer;
+      font-size: 16px;
+      color: #64c8ff;
+      padding: 0 4px;
+      user-select: none;
+      transition: transform 0.3s ease;
+    }
+
+    #info-panel.collapsed .collapse-btn {
+      transform: rotate(180deg);
+    }
+
+    #info-panel .panel-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    #info-panel .panel-row:last-child {
+      margin-bottom: 0;
+    }
+
+    #info-panel .label {
+      color: #8ab4d8;
+    }
+
+    #info-panel .value {
+      font-weight: 600;
+      color: #b0e0ff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #info-panel .value.positive {
+      color: #5eff9c;
+    }
+
+    #info-panel .value.negative {
+      color: #ff7b7b;
+    }
+
+    #info-panel .depth-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(0, 50, 100, 0.5);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 6px;
+    }
+
+    #info-panel .depth-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0055aa, #00d4ff);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    #panel-toggle {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 44px;
+      height: 44px;
+      background: rgba(10, 40, 80, 0.6);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(100, 180, 255, 0.4);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 49;
+      color: #7fd0ff;
+      font-size: 20px;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    #panel-toggle.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      #info-panel {
+        width: calc(100% - 40px);
+        left: 20px;
+        right: 20px;
+        bottom: 20px;
+      }
+
+      #info-panel.collapsed {
+        transform: translateY(calc(100% + 20px));
+      }
+    }
+
+    @media (max-width: 768px) and (orientation: landscape) {
+      #info-panel {
+        width: 200px;
+        left: auto;
+        right: 16px;
+        bottom: 16px;
+        padding: 12px 14px;
+      }
+
+      #info-panel .panel-title {
+        font-size: 11px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+      }
+
+      #info-panel .panel-row {
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div id="loading">
+      <div class="spinner"></div>
+      <div class="text">声呐系统启动中...</div>
+    </div>
+    <div id="info-panel" class="collapsed">
+      <div class="panel-title">
+        <span>探测数据</span>
+        <span class="collapse-btn">▾</span>
+      </div>
+      <div class="panel-row">
+        <span class="label">海拔深度</span>
+        <span class="value negative" id="altitude-value">-- m</span>
+      </div>
+      <div class="panel-row">
+        <span class="label">经度</span>
+        <span class="value" id="lon-value">--</span>
+      </div>
+      <div class="panel-row">
+        <span class="label">纬度</span>
+        <span class="value" id="lat-value">--</span>
+      </div>
+      <div class="panel-row" style="flex-direction: column; align-items: stretch; gap: 4px;">
+        <div style="display: flex; justify-content: space-between;">
+          <span class="label">探测深度</span>
+          <span class="value" id="depth-percent">--%</span>
+        </div>
+        <div class="depth-bar">
+          <div class="depth-bar-fill" id="depth-bar-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+    </div>
+    <div id="panel-toggle" class="hidden">
+      ◉
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
