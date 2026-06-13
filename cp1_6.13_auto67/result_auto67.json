@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T17:37:00.647Z",
+  "task_name": "auto67",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助手工艺人展示和销售限量版手工皮革制品的应用，主要解决独立匠人无法像大品牌一样便捷地建立定制化线上展厅和订单管理的问题。\n\n它应当具备以下能力：\n1) 一个公开的皮具展示页面，包含5种不同类别（钱包、背包、腰带、手环、钥匙扣）的皮具卡片，每张卡片展示成品图、名称、价格和库存状态（在售/已售罄）。卡片在鼠标悬停时向上浮起5px并增加投影深度，点击可进入详情页。详情页显示高清大图（支持鼠标滚轮缩放查看皮质纹理细节）、匠人亲笔描述、可选颜色（至少4种：原色植鞣、深棕、酒红、墨绿）和缝线颜色（白、米黄、深棕），用户选择后图片需实时替换为对应颜色的成品渲染图。\n2) 后台订单面板，匠人登录后可查看所有订单列表，每行显示订单号、顾客姓名、下单时间、订单状态（待确认/制作中/已完成/已寄出）。匠人可点击进入订单详情，详情页展示顾客选择的皮具款型、颜色、缝线颜色以及个性化烫印文字（顾客在购买时输入）。匠人完成制作后，可点击“标记为已完成”按钮，按钮点击时先弹出确认对话框，确认后状态更新并发送页面顶部的绿色toast提示“订单状态已更新”。\n3) 购买流程：顾客在详情页选择好款式和个性化设置后，点击“加入购物车”按钮（按钮在点击时变为“已加入”状态，2秒后恢复），购物车右上角显示角标数字（红色圆形，字体白色），点击购物车图标展开侧边栏，侧边栏以0.3秒从右滑入，展示商品缩略图、名称、数量、单价和小计，底部显示总价和“去结算”按钮。点击结算跳转到模拟支付页，页面展示订单摘要和一个“确认支付”按钮，按钮点击后模拟3秒延迟并显示旋转加载动画，完成后显示“支付成功”页面，并自动跳转到订单成功页。\n4) 用户注册和登录功能，登录后用户中心页面展示订单历史列表，每个订单项可展开/收起（展开动画0.3秒，内容从0高度自动扩展），展开后显示订单详情和当前状态。\n5) 搜索与筛选功能：首页顶部提供一个搜索框（输入时显示下拉建议，建议列表滑动出现），支持按皮具名称搜索，同时提供下拉筛选框按类别和价格范围筛选。\n\n界面方面要求：整体采用暖色调（米白、浅棕色、深褐色）配合细腻的皮革纹理背景（通过CSS重复背景图实现），字体使用serif字体（衬线体）营造复古手作氛围。页头导航栏固定顶部，半透明毛玻璃效果，滚动时保持可见。卡片列表采用网格布局，在平板和手机上自动变为两列/一列。所有按钮带圆角（8px）和微弱的悬停缩放效果（1.02倍），页面间过渡使用0.2秒淡入动画。性能上需要首页首屏加载时间不超过1.5秒，图片懒加载，列表滚动时帧率不低于55fps。\n\n实现采用TypeScript（前端React@18，后端Node.js Express），使用Vite构建。按以下文件组织代码：\n - package.json（前端依赖：react@18、react-dom@18、typescript@5.0、vite@5、@types/react、@types/react-dom、axios、react-router-dom；后端依赖：express、cors、uuid、typescript、ts-node-dev、@types/express、@types/cors、@types/uuid；启动脚本：npm run dev:front 和 npm run dev:back 或使用concurrently同时启动）\n - vite.config.js（构建配置，指向index.html）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（入口页面，包含meta viewport和标题“革物工坊”）\n - src/backend/server.ts（Express服务器，提供RESTful API：GET /api/products、GET /api/products/:id、POST /api/orders、GET /api/orders、GET /api/orders/:id、PATCH /api/orders/:id/status、POST /api/auth/register、POST /api/auth/login；使用内存存储数据，返回JSON格式）\n - src/frontend/main.tsx（React入口，初始化路由和全局状态）\n - src/frontend/App.tsx（主应用组件，定义路由：/首页展示产品列表，/product/:id 产品详情，/cart 购物车页面（或购物车侧边栏），/checkout 结算页，/orders 订单历史，/admin 后台订单面板，/login 登录页，/register 注册页）\n - src/frontend/components/ProductCard.tsx（产品卡片组件，接收产品数据，渲染卡片布局，处理悬停动画和点击跳转）\n - src/frontend/components/CartSidebar.tsx（购物车侧边栏组件，管理购物车状态，显示商品列表和总价，含从右滑入动画）\n\n运行方式：在项目根目录下依次运行 npm install && npm run dev，即可同时启动前端和后端服务，在浏览器打开 http://localhost:5173 查看效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:6a7fc0cdaae00399db341ce9801e7604_6a2c4352f3aa1737ab2a0b81.6a2c43b0f3aa1737ab2a0bf1.6a2c43b08c45f26cee7046c5:Trae CN.T(2026/6/13 01:36:48)",
+    "user_id": "3986207660317399",
+    "trace_id": "6a7fc0cdaae00399db341ce9801e7604",
+    "session_id": "6a2c4352f3aa1737ab2a0b81",
+    "task_id": "6a2c43b0f3aa1737ab2a0bf1",
+    "message_id": "6a2c43b08c45f26cee7046c5",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 01:36:48",
+    "format": "full"
+  },
+  "trace": "null"
+}
