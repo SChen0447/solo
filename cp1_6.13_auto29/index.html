@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>折纸模拟器</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Sans SC', sans-serif;
+      background: linear-gradient(135deg, #f5f5f0 0%, #e8e6e0 100%);
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #angle-labels {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .angle-label {
+      position: absolute;
+      font-size: 11px;
+      font-weight: 500;
+      color: #888;
+      background: rgba(255,255,255,0.85);
+      padding: 2px 7px;
+      border-radius: 8px;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      white-space: nowrap;
+    }
+
+    #tool-panel {
+      position: fixed;
+      right: 28px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 220px;
+      background: rgba(255, 255, 255, 0.62);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 16px;
+      padding: 22px 18px;
+      z-index: 100;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #tool-panel h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #444;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-section label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #777;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 0;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.7);
+      color: #555;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Noto Sans SC', sans-serif;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.95);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .color-swatches {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .color-swatch {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .color-swatch:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    }
+
+    .color-swatch.active {
+      border-color: #888;
+      box-shadow: 0 0 0 2px rgba(136,136,136,0.3);
+    }
+
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #555;
+      min-width: 36px;
+      text-align: right;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(90deg, #ddd 0%, #bbb 100%);
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #aaa;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #aaa;
+      cursor: pointer;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+    }
+
+    #fold-hint {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: #aaa;
+      pointer-events: none;
+      z-index: 50;
+      transition: opacity 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container">
+    <div id="angle-labels"></div>
+  </div>
+
+  <div id="tool-panel">
+    <h3>工具面板</h3>
+
+    <div class="panel-section">
+      <label>操作</label>
+      <div class="btn-row">
+        <button class="btn" id="btn-reset">重置</button>
+        <button class="btn" id="btn-undo" disabled>撤销</button>
+        <button class="btn" id="btn-redo" disabled>重做</button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      <label>纸张颜色</label>
+      <div class="color-swatches" id="color-swatches"></div>
+    </div>
+
+    <div class="panel-section">
+      <div class="slider-container">
+        <div class="slider-header">
+          <label>折叠角度</label>
+          <span class="slider-value" id="angle-display">0°</span>
+        </div>
+        <input type="range" id="angle-slider" min="0" max="180" value="0" step="1" />
+      </div>
+    </div>
+  </div>
+
+  <div id="fold-hint">拖拽纸张边缘开始折叠</div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
