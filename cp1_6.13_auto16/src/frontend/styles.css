@@ -1,0 +1,33 @@
+@media (max-width: 1024px) and (min-width: 769px) {
+  .course-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+  .course-grid > div {
+    padding: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .course-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .course-grid > div {
+    padding: 14px !important;
+  }
+  .booking-modal-content {
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    min-height: 100vh;
+    padding: 20px !important;
+  }
+  .booking-modal-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .course-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

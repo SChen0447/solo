@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-13T00:35:18.571Z",
+  "task_name": "auto16",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "开发一个面向小型健身工作室的团体课程预约与成员进度追踪应用，实现教练发布课程、学员预约上课并记录个人训练数据。使用TypeScript、React、Node.js和Vite构建（前端React+TypeScript，后端Express+TypeScript）。文件结构如下：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom、axios，后端依赖：express、typescript、ts-node、@types/express、cors、body-parser，启动脚本：npm run dev）\n - vite.config.js（Vite构建配置，代理/api到后端端口）\n - tsconfig.json（前后端共用严格模式配置）\n - index.html（React入口页面）\n - src/frontend/App.tsx（前端主组件，包含路由和全局状态管理）\n - src/frontend/components/CourseList.tsx（课程列表卡片，从后端获取课程数据并渲染为网格布局）\n - src/frontend/components/BookingModal.tsx（预约弹窗，显示课程详情、时间、名额，提交预约请求）\n - src/frontend/components/ProgressChart.tsx（学员进度图表，使用Canvas绘制周训练打卡热力图）\n - src/backend/server.ts（Express服务端，提供课程CRUD和预约接口，数据暂存内存）\n\n具体需求：\n1. 课程发布与展示：教练可以在后台添加课程，包含课程名称（如\"HIIT燃脂\"）、教练名、时间（日期+时段）、最大容纳人数（5-20人），前端以卡片网格展示所有课程，卡片背景为渐变蓝色（#1a73e8到#4fc3f7），悬停时卡片上浮6px并显示阴影加深动画。\n2. 预约与取消预约：学员点击课程卡片弹出预约弹窗（Modal），弹窗中央显示课程完整信息和当前已预约人数/总名额，点击\"预约\"按钮后名额减少并触发按钮变为\"已预约\"状态（绿色勾选动画），再次点击可取消预约（弹出确认提示），取消时名额恢复并伴有淡出动画。\n3. 全端状态同步：前端每30秒自动轮询后端/api/courses获取最新预约数据，同时支持手动下拉刷新（刷新按钮旋转加载动画），数据变化时课程卡片上的剩余名额数字以变色和跳动动画更新。\n4. 个人进度追踪：学员可在个人页面查看本周打卡日历，以热力图形式展示每天锻炼时长（0-120分钟），每个格子颜色从浅绿到深绿渐变（#e8f5e9到#2e7d32），点击某天弹出当日详细记录（如课程名称和时长），热力图下方显示本周总时长和日均时长，数字变换时带有计数递增动画。\n5. 界面响应式：在桌面端（>1024px）课程卡片按4列网格显示，平板端（768-1024px）改为3列并缩小卡片内边距，手机端（<768px）改为2列且弹窗全屏显示，所有屏幕下顶部导航栏固定并伴有背景模糊效果（backdrop-filter: blur(10px)）。\n6. 视觉与交互统一：整体采用深色主题（背景#121212），配以蓝色和青色渐变作为强调色，按钮和卡片均有圆角（12px）和柔和阴影，按钮点击时有涟漪波纹动画，页面切换使用淡入淡出过渡（0.3s），所有加载状态显示骨架屏占位（灰色脉冲闪烁动画）。\n7. 性能约束：页面初始加载时间不超过2秒（首屏可交互），预约提交后前端状态更新延迟不超过500ms，热力图渲染帧率稳定在30fps以上。",
+  "session_id": null,
+  "trace": "null"
+}
