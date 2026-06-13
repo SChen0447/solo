@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <title>光轨·星幕拼图</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="top-bar">
+      <button id="shuffleBtn" class="glass-btn shuffle-btn">重新洗牌</button>
+      <select id="difficultySelect" class="glass-select">
+        <option value="8">简单（8块）</option>
+        <option value="12" selected>普通（12块）</option>
+        <option value="18">困难（18块）</option>
+      </select>
+    </header>
+
+    <main class="puzzle-container">
+      <canvas id="puzzleCanvas"></canvas>
+      <div id="completionTime" class="completion-time hidden"></div>
+    </main>
+
+    <footer class="bottom-bar">
+      <div class="timer-container">
+        <span class="timer-label">剩余时间</span>
+        <span id="timer" class="timer-display">60</span>
+      </div>
+    </footer>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
