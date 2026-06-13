@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>光织·星尘交响</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 50%, #0d0b1a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+      cursor: grab;
+    }
+
+    #canvas-container canvas:active {
+      cursor: grabbing;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      padding: 20px;
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-width: 200px;
+    }
+
+    .panel-title {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      letter-spacing: 1px;
+    }
+
+    .music-btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #1a0a3e 0%, #0a0a2e 100%);
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      letter-spacing: 0.5px;
+    }
+
+    .music-btn:hover {
+      color: rgba(255, 255, 255, 1);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .music-btn.active {
+      background: linear-gradient(135deg, #2a1a5e 0%, #1a0a4e 100%);
+      box-shadow: 0 0 15px rgba(255, 107, 107, 0.5);
+      border-color: rgba(255, 107, 107, 0.4);
+      color: #ffffff;
+    }
+
+    .progress-container {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #ff6b6b 0%, #48dbfb 100%);
+      border-radius: 2px;
+      transition: width 0.1s linear;
+      position: relative;
+    }
+
+    .progress-dot {
+      position: absolute;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ffffff;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+      transform: translateY(-50%);
+    }
+
+    .progress-dot.start {
+      left: 0;
+    }
+
+    .progress-dot.end {
+      right: 0;
+    }
+
+    .progress-dot.current {
+      left: 100%;
+      transform: translate(-50%, -50%);
+      background: #48dbfb;
+      box-shadow: 0 0 8px rgba(72, 219, 251, 0.8);
+    }
+
+    @media (max-width: 1200px) {
+      .control-panel {
+        top: 16px;
+        left: 16px;
+        padding: 16px;
+        min-width: 180px;
+      }
+
+      .music-btn {
+        padding: 10px 14px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .control-panel {
+        top: 12px;
+        left: 12px;
+        padding: 12px;
+        min-width: 150px;
+      }
+
+      .panel-title {
+        font-size: 12px;
+      }
+
+      .music-btn {
+        padding: 8px 12px;
+        font-size: 11px;
+      }
+
+      .progress-container {
+        width: 80%;
+        bottom: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container"></div>
+    <div class="control-panel" id="control-panel">
+      <div class="panel-title">星尘乐章</div>
+      <button class="music-btn" data-music="waltz">星尘圆舞曲</button>
+      <button class="music-btn" data-music="march">光粒进行曲</button>
+      <button class="music-btn" data-music="ballad">银河叙事诗</button>
+    </div>
+    <div class="progress-container">
+      <div class="progress-bar" id="progress-bar">
+        <div class="progress-dot start"></div>
+        <div class="progress-dot current"></div>
+        <div class="progress-dot end"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
