@@ -1,0 +1,12 @@
+{
+  "name": "green-mirror-hybrid-workshop",
+  "version": "1.0.0",
+  "description": "绿镜·杂交工坊 - 盆栽植物虚拟杂交社区平台",
+  "scripts": {
+    "dev": "concurrently \"cd server && node index.js\" \"cd client && vite\"",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
