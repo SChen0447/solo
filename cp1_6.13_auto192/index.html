@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>流辉·律动画板</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #1a1a2e;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #ffffff;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #1a1a2e;
+      overflow: hidden;
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #0d0d1a;
+      cursor: crosshair;
+    }
+
+    #guide-text {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      font-size: 16px;
+      color: #ffffff;
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 10;
+      animation: fadeOutGuide 8s ease-out 4s forwards;
+      letter-spacing: 0.5px;
+    }
+
+    @keyframes fadeOutGuide {
+      0% { opacity: 0.5; }
+      100% { opacity: 0; }
+    }
+
+    #control-panel {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      background: rgba(42, 42, 78, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 12px;
+      padding: 20px;
+      z-index: 100;
+      min-width: 280px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
+      transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+    }
+
+    #control-panel.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .panel-section {
+      margin-bottom: 18px;
+    }
+
+    .panel-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .panel-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    .upload-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      gap: 8px;
+    }
+
+    .upload-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .upload-btn:active {
+      transform: scale(0.95);
+    }
+
+    .upload-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    #audio-file {
+      display: none;
+    }
+
+    .preset-beats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .beat-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #6c63ff;
+      border: none;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.3);
+      flex-direction: column;
+      line-height: 1;
+    }
+
+    .beat-btn:hover {
+      background: #7c73ff;
+      box-shadow: 0 4px 14px rgba(108, 99, 255, 0.5);
+    }
+
+    .beat-btn:active {
+      transform: scale(0.95);
+    }
+
+    .beat-btn.active {
+      background: #ff6c9b;
+      box-shadow: 0 4px 14px rgba(255, 108, 155, 0.5);
+      animation: beatPulse 0.5s ease infinite alternate;
+    }
+
+    @keyframes beatPulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); }
+    }
+
+    .beat-btn .beat-sub {
+      font-size: 8px;
+      opacity: 0.75;
+      margin-top: 2px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .slider-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-label {
+      width: 56px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+      flex-shrink: 0;
+    }
+
+    .slider-track {
+      flex: 1;
+      position: relative;
+      height: 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.12);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c63ff, #9b5de5);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(108, 99, 255, 0.4);
+      transition: transform 0.15s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6c63ff, #9b5de5);
+      cursor: pointer;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 6px rgba(108, 99, 255, 0.4);
+    }
+
+    .slider-value {
+      width: 32px;
+      text-align: right;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      font-variant-numeric: tabular-nums;
+      flex-shrink: 0;
+    }
+
+    .panel-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 16px 0;
+    }
+
+    #fps-indicator {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 10;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    #particle-count {
+      position: absolute;
+      top: 28px;
+      right: 12px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      z-index: 10;
+      pointer-events: none;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        bottom: auto;
+        min-width: unset;
+        width: calc(100% - 24px);
+        padding: 14px;
+      }
+
+      .preset-beats {
+        justify-content: center;
+      }
+
+      #guide-text {
+        left: 16px;
+        bottom: 16px;
+        right: 16px;
+        font-size: 13px;
+      }
+
+      .panel-section {
+        margin-bottom: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+
+    <div id="guide-text">点击释放粒子，拖拽绘画，上传音频让粒子随节拍舞动</div>
+
+    <div id="fps-indicator">-- FPS</div>
+    <div id="particle-count">0 / 1200</div>
+
+    <div id="control-panel">
+      <div class="panel-section">
+        <div class="panel-label">音频</div>
+        <label class="upload-btn" for="audio-file">
+          <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <span id="upload-label">上传音乐 (WAV / MP3)</span>
+        </label>
+        <input type="file" id="audio-file" accept=".wav,.mp3,audio/mpeg,audio/wav" />
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <div class="panel-section">
+        <div class="panel-label">预设节拍</div>
+        <div class="preset-beats">
+          <button class="beat-btn" data-beat="4/4" title="4/4拍">
+            <span>4/4</span>
+          </button>
+          <button class="beat-btn" data-beat="3/4" title="3/4拍">
+            <span>3/4</span>
+          </button>
+          <button class="beat-btn" data-beat="electronic" title="电子">
+            <span>E</span>
+            <span class="beat-sub">电音</span>
+          </button>
+          <button class="beat-btn" data-beat="jazz" title="爵士">
+            <span>J</span>
+            <span class="beat-sub">爵士</span>
+          </button>
+          <button class="beat-btn" data-beat="hiphop" title="嘻哈">
+            <span>H</span>
+            <span class="beat-sub">嘻哈</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="panel-divider"></div>
+
+      <div class="panel-section">
+        <div class="panel-label">参数调节</div>
+        <div class="slider-row">
+          <span class="slider-label">音量</span>
+          <div class="slider-track">
+            <input type="range" id="volume-slider" min="0" max="100" value="50" />
+          </div>
+          <span class="slider-value" id="volume-value">50</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">粒子</span>
+          <div class="slider-track">
+            <input type="range" id="size-slider" min="5" max="20" value="10" />
+          </div>
+          <span class="slider-value" id="size-value">10</span>
+        </div>
+        <div class="slider-row">
+          <span class="slider-label">密度</span>
+          <div class="slider-track">
+            <input type="range" id="density-slider" min="10" max="50" value="25" />
+          </div>
+          <span class="slider-value" id="density-value">25</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
