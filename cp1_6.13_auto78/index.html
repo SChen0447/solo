@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星市·轨迹 - 3D城市通勤热力可视化</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+    }
+
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .earth-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+    }
+
+    .earth-outline {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border: 2px solid #00d2ff;
+      border-radius: 50%;
+      animation: rotate 2s linear infinite;
+    }
+
+    .earth-outline::before,
+    .earth-outline::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(0, 210, 255, 0.5);
+      border-radius: 50%;
+    }
+
+    .earth-outline::before {
+      width: 80%;
+      height: 40%;
+    }
+
+    .earth-outline::after {
+      width: 40%;
+      height: 80%;
+    }
+
+    .loading-text {
+      margin-top: 24px;
+      color: #00d2ff;
+      font-size: 16px;
+      letter-spacing: 4px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotateY(0deg) rotateX(20deg); }
+      to { transform: rotateY(360deg) rotateX(20deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    #time-panel {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 8px 32px rgba(0, 210, 255, 0.15);
+      z-index: 100;
+    }
+
+    .panel-title {
+      color: #00d2ff;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .time-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .time-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e0e0e0;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .time-btn:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .time-btn:active {
+      transform: scale(0.95);
+    }
+
+    .time-btn.active {
+      background: rgba(0, 210, 255, 0.2);
+      border-color: rgba(0, 210, 255, 0.5);
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot.morning {
+      background: linear-gradient(135deg, #ff6b35, #ff9f1c);
+      box-shadow: 0 0 8px rgba(255, 107, 53, 0.6);
+    }
+
+    .dot.noon {
+      background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+      box-shadow: 0 0 8px rgba(0, 210, 255, 0.6);
+    }
+
+    .dot.evening {
+      background: linear-gradient(135deg, #ff4757, #ff6b81);
+      box-shadow: 0 0 8px rgba(255, 71, 87, 0.6);
+    }
+
+    .dot.night {
+      background: linear-gradient(135deg, #a55eea, #8854d0);
+      box-shadow: 0 0 8px rgba(165, 94, 234, 0.6);
+    }
+
+    .time-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-left: auto;
+    }
+
+    #info-panel {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e0e0e0;
+      font-size: 12px;
+      z-index: 100;
+    }
+
+    #info-panel .title {
+      color: #00d2ff;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
+
+    #info-panel .hint {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      margin-top: 4px;
+    }
+
+    #status-indicator {
+      position: fixed;
+      top: 24px;
+      left: 24px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #00d2ff;
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes statusPulse {
+      0%, 100% { opacity: 0.5; box-shadow: 0 0 5px #00d2ff; }
+      50% { opacity: 1; box-shadow: 0 0 15px #00d2ff; }
+    }
+
+    .status-text {
+      color: #e0e0e0;
+      font-size: 13px;
+    }
+
+    .status-time {
+      color: #00d2ff;
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      #time-panel {
+        top: 16px;
+        right: 16px;
+        padding: 16px;
+      }
+
+      .time-btn {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      #info-panel {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+      }
+
+      #status-indicator {
+        top: 16px;
+        left: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="loading">
+      <div class="earth-container">
+        <div class="earth-outline"></div>
+      </div>
+      <div class="loading-text">LOADING</div>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <div id="status-indicator">
+      <div class="status-dot"></div>
+      <div class="status-text">
+        当前时段: <span class="status-time" id="current-time">早高峰</span>
+      </div>
+    </div>
+
+    <div id="time-panel">
+      <div class="panel-title">时段切换</div>
+      <div class="time-buttons">
+        <button class="time-btn active" data-time="morning">
+          <span class="dot morning"></span>
+          早高峰
+          <span class="time-label">07:00-09:00</span>
+        </button>
+        <button class="time-btn" data-time="noon">
+          <span class="dot noon"></span>
+          午间
+          <span class="time-label">11:00-13:00</span>
+        </button>
+        <button class="time-btn" data-time="evening">
+          <span class="dot evening"></span>
+          晚高峰
+          <span class="time-label">18:00-20:00</span>
+        </button>
+        <button class="time-btn" data-time="night">
+          <span class="dot night"></span>
+          深夜
+          <span class="time-label">23:00-05:00</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="info-panel">
+      <div class="title">星市·轨迹</div>
+      <div>3D城市通勤热力可视化系统</div>
+      <div class="hint">鼠标拖拽旋转 · 滚轮缩放 · 点击时段切换</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
