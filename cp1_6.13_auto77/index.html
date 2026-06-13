@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>云巅护盾对决</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #FFFFFF 100%);
+    }
+
+    #gameCanvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #loadingScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #87CEEB 0%, #B0E0E6 50%, #FFFFFF 100%);
+      z-index: 100;
+      transition: opacity 0.5s ease-out;
+    }
+
+    #loadingScreen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .airship-loader {
+      width: 80px;
+      height: 80px;
+      position: relative;
+      animation: float 2s ease-in-out infinite;
+    }
+
+    .airship-loader svg {
+      width: 100%;
+      height: 100%;
+      animation: rotate 3s linear infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #1e3a5f;
+      font-weight: 500;
+    }
+
+    .loading-dots {
+      display: inline-block;
+      animation: dots 1.4s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: "."; }
+      40% { content: ".."; }
+      60%, 100% { content: "..."; }
+    }
+
+    .cloud {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    .cloud-1 {
+      width: 120px;
+      height: 40px;
+      top: 15%;
+      left: -120px;
+      animation: drift 30s linear infinite;
+    }
+
+    .cloud-2 {
+      width: 160px;
+      height: 50px;
+      top: 35%;
+      right: -160px;
+      animation: drift-right 40s linear infinite;
+    }
+
+    .cloud-3 {
+      width: 100px;
+      height: 35px;
+      top: 60%;
+      left: -100px;
+      animation: drift 35s linear infinite;
+      animation-delay: 5s;
+    }
+
+    @keyframes drift {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(100vw + 200px)); }
+    }
+
+    @keyframes drift-right {
+      from { transform: translateX(0); }
+      to { transform: translateX(calc(-100vw - 200px)); }
+    }
+  </style>
+</head>
+<body>
+  <div id="loadingScreen">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+    <div class="airship-loader">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="50" rx="35" ry="20" fill="#1e3a5f"/>
+        <ellipse cx="50" cy="48" rx="30" ry="16" fill="#2d5a8a"/>
+        <polygon points="20,50 5,45 5,55" fill="#1e3a5f"/>
+        <polygon points="80,50 95,42 95,58" fill="#1e3a5f"/>
+        <rect x="40" y="55" width="20" height="12" rx="3" fill="#1e3a5f"/>
+        <circle cx="35" cy="48" r="4" fill="#87CEEB" opacity="0.8"/>
+        <circle cx="50" cy="48" r="4" fill="#87CEEB" opacity="0.8"/>
+        <circle cx="65" cy="48" r="4" fill="#87CEEB" opacity="0.8"/>
+        <path d="M15 50 Q 0 50 5 50 Q 0 50 -5 50" stroke="#FFD700" stroke-width="2" fill="none"/>
+      </svg>
+    </div>
+    <div class="loading-text">正在加载<span class="loading-dots">...</span></div>
+  </div>
+
+  <canvas id="gameCanvas"></canvas>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
