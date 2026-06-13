@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>记忆迷宫·回声回廊</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+    #loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      z-index: 100;
+      transition: opacity 0.8s ease;
+    }
+    #loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .progress-ring {
+      width: 120px;
+      height: 120px;
+      transform: rotate(-90deg);
+      margin-bottom: 24px;
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .progress-ring .track {
+      stroke: rgba(0, 180, 255, 0.15);
+    }
+    .progress-ring .bar {
+      stroke: url(#progressGradient);
+      stroke-dasharray: 326.73;
+      stroke-dashoffset: 326.73;
+      filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.8));
+      transition: stroke-dashoffset 0.3s ease;
+    }
+    .loader-text {
+      color: rgba(0, 200, 255, 0.9);
+      font-size: 14px;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px rgba(0, 200, 255, 0.6);
+    }
+    .loader-title {
+      color: rgba(180, 220, 255, 0.85);
+      font-size: 22px;
+      letter-spacing: 8px;
+      margin-bottom: 16px;
+      text-shadow: 0 0 20px rgba(0, 180, 255, 0.5);
+    }
+    #game-container {
+      position: fixed;
+      inset: 0;
+      display: none;
+    }
+    #game-container.active {
+      display: block;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="loader">
+    <svg class="progress-ring" viewBox="0 0 120 120">
+      <defs>
+        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#00ffff" />
+          <stop offset="50%" stop-color="#4080ff" />
+          <stop offset="100%" stop-color="#a040ff" />
+        </linearGradient>
+      </defs>
+      <circle class="track" cx="60" cy="60" r="52" />
+      <circle class="bar" cx="60" cy="60" r="52" />
+    </svg>
+    <div class="loader-title">记忆迷宫</div>
+    <div class="loader-text" id="progress-text">0%</div>
+  </div>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
