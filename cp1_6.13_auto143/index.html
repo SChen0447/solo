@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>烛影·纸嫁衣 - 交互式剪纸皮影戏</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a0a0a 0%, #0d0505 50%, #000000 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'SimSun', 'STSong', serif;
+      overflow: hidden;
+    }
+
+    #logo-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0d0505;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    #logo-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .logo-container {
+      text-align: center;
+      position: relative;
+    }
+
+    .logo-title {
+      font-size: 72px;
+      color: #ffdd77;
+      text-shadow: 0 0 30px rgba(255, 221, 119, 0.8),
+                   0 0 60px rgba(255, 221, 119, 0.4),
+                   4px 4px 8px rgba(0, 0, 0, 0.8);
+      opacity: 0;
+      transform: scale(0.8);
+      animation: logoAppear 2s ease-out forwards;
+      letter-spacing: 12px;
+    }
+
+    .logo-subtitle {
+      font-size: 24px;
+      color: #c9a85c;
+      margin-top: 20px;
+      opacity: 0;
+      animation: subtitleAppear 1.5s ease-out 1s forwards;
+      letter-spacing: 8px;
+    }
+
+    .logo-divider {
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ffdd77, transparent);
+      margin: 20px auto;
+      opacity: 0;
+      animation: dividerAppear 1.5s ease-out 0.8s forwards;
+    }
+
+    @keyframes logoAppear {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(10px);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes subtitleAppear {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes dividerAppear {
+      0% {
+        opacity: 0;
+        width: 0;
+      }
+      100% {
+        opacity: 1;
+        width: 200px;
+      }
+    }
+
+    #app {
+      position: relative;
+      width: 1400px;
+      height: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stage-container {
+      position: relative;
+      width: 1200px;
+      height: 720px;
+    }
+
+    .wooden-frame {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 30px solid;
+      border-image: linear-gradient(135deg, 
+        #8b0000 0%, 
+        #6b0000 25%, 
+        #4a0000 50%, 
+        #6b0000 75%, 
+        #8b0000 100%) 1;
+      box-shadow: 
+        inset 0 0 20px rgba(0, 0, 0, 0.5),
+        0 10px 40px rgba(0, 0, 0, 0.8),
+        0 5px 15px rgba(0, 0, 0, 0.6);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .wooden-frame::before {
+      content: '';
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      right: -30px;
+      bottom: -30px;
+      background: linear-gradient(135deg, 
+        rgba(139, 0, 0, 0.3) 0%, 
+        transparent 50%,
+        rgba(139, 0, 0, 0.3) 100%);
+      z-index: -1;
+    }
+
+    .corner-nail {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+      border-radius: 50%;
+      box-shadow: 
+        0 0 5px rgba(255, 215, 0, 0.6),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      z-index: 20;
+    }
+
+    .corner-nail.tl { top: 10px; left: 10px; }
+    .corner-nail.tr { top: 10px; right: 10px; }
+    .corner-nail.bl { bottom: 10px; left: 10px; }
+    .corner-nail.br { bottom: 10px; right: 10px; }
+
+    #stage-canvas {
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      width: calc(100% - 60px);
+      height: calc(100% - 60px);
+      display: block;
+      cursor: pointer;
+    }
+
+    .stage-platform {
+      position: relative;
+      width: 1200px;
+      height: 60px;
+      background: linear-gradient(180deg, 
+        #5c3d2e 0%, 
+        #3d2817 50%, 
+        #2a1a0f 100%);
+      border-radius: 0 0 8px 8px;
+      box-shadow: 
+        0 -5px 15px rgba(0, 0, 0, 0.5),
+        0 10px 30px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 40px;
+    }
+
+    .candle-icon {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .candle-icon .flame {
+      width: 20px;
+      height: 30px;
+      background: radial-gradient(ellipse at bottom, #ffdd77, #ff8c00, #ff4500);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      animation: flameFlicker 1.5s ease-in-out infinite alternate;
+      filter: blur(1px);
+      box-shadow: 0 0 15px rgba(255, 221, 119, 0.8);
+    }
+
+    @keyframes flameFlicker {
+      0% { transform: scaleY(1) scaleX(1); }
+      50% { transform: scaleY(1.2) scaleX(0.9); }
+      100% { transform: scaleY(0.9) scaleX(1.1); }
+    }
+
+    .candle-icon .candle-body {
+      width: 8px;
+      height: 25px;
+      background: linear-gradient(90deg, #f5f5dc, #e8e8d0, #d4d4b8);
+      border-radius: 2px;
+      margin-top: -5px;
+    }
+
+    .script-btn {
+      padding: 12px 30px;
+      background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+      color: #ffdd77;
+      border: 2px solid #c9a85c;
+      border-radius: 4px;
+      font-size: 18px;
+      font-family: 'SimSun', 'STSong', serif;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 4px;
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .script-btn:hover {
+      background: linear-gradient(180deg, #a50000 0%, #6b0000 100%);
+      transform: translateY(-2px);
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(255, 221, 119, 0.3);
+    }
+
+    .script-btn:active {
+      transform: translateY(0);
+    }
+
+    .script-sidebar {
+      position: fixed;
+      top: 0;
+      right: -400px;
+      width: 380px;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        #2a1a0f 0%, 
+        #1a0f08 100%);
+      border-left: 3px solid #8b4513;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: auto;
+    }
+
+    .script-sidebar.open {
+      right: 0;
+    }
+
+    .sidebar-header {
+      padding: 30px 25px;
+      border-bottom: 2px solid #8b4513;
+      background: linear-gradient(180deg, #3d2817 0%, #2a1a0f 100%);
+    }
+
+    .sidebar-title {
+      font-size: 28px;
+      color: #ffdd77;
+      text-align: center;
+      letter-spacing: 8px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .sidebar-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      background: transparent;
+      border: 1px solid #c9a85c;
+      color: #c9a85c;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-close:hover {
+      background: #8b0000;
+      color: #ffdd77;
+      border-color: #ffdd77;
+    }
+
+    .script-list {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .script-item {
+      padding: 20px;
+      background: linear-gradient(135deg, 
+        rgba(139, 69, 19, 0.3) 0%, 
+        rgba(74, 36, 10, 0.3) 100%);
+      border: 1px solid #8b4513;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .script-item:hover {
+      background: linear-gradient(135deg, 
+        rgba(139, 69, 19, 0.5) 0%, 
+        rgba(74, 36, 10, 0.5) 100%);
+      border-color: #c9a85c;
+      transform: translateX(-5px);
+    }
+
+    .script-item.active {
+      background: linear-gradient(135deg, 
+        rgba(139, 0, 0, 0.5) 0%, 
+        rgba(92, 0, 0, 0.5) 100%);
+      border-color: #ffdd77;
+      box-shadow: 0 0 20px rgba(255, 221, 119, 0.2);
+    }
+
+    .script-name {
+      font-size: 22px;
+      color: #ffdd77;
+      margin-bottom: 8px;
+      letter-spacing: 4px;
+    }
+
+    .script-desc {
+      font-size: 14px;
+      color: #c9a85c;
+      line-height: 1.6;
+      opacity: 0.8;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="logo-overlay">
+    <div class="logo-container">
+      <div class="logo-title">烛影·纸嫁衣</div>
+      <div class="logo-divider"></div>
+      <div class="logo-subtitle">交互式剪纸皮影戏</div>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="stage-container">
+      <div class="wooden-frame"></div>
+      <div class="corner-nail tl"></div>
+      <div class="corner-nail tr"></div>
+      <div class="corner-nail bl"></div>
+      <div class="corner-nail br"></div>
+      <canvas id="stage-canvas"></canvas>
+    </div>
+    <div class="stage-platform">
+      <div class="candle-icon">
+        <div class="flame"></div>
+        <div class="candle-body"></div>
+      </div>
+      <button class="script-btn" id="script-btn">皮影剧本</button>
+      <div class="candle-icon">
+        <div class="flame"></div>
+        <div class="candle-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+  <div class="script-sidebar" id="script-sidebar">
+    <button class="sidebar-close" id="sidebar-close">×</button>
+    <div class="sidebar-header">
+      <div class="sidebar-title">皮影剧本</div>
+    </div>
+    <div class="script-list" id="script-list">
+      <div class="script-item" data-script="baishezhuan">
+        <div class="script-name">白蛇传片段</div>
+        <div class="script-desc">断桥相遇，白素贞与许仙的千古情缘</div>
+      </div>
+      <div class="script-item" data-script="sanda">
+        <div class="script-name">三打白骨精</div>
+        <div class="script-desc">孙悟空火眼金睛，识破妖魔三次化身</div>
+      </div>
+      <div class="script-item" data-script="liangzhu">
+        <div class="script-name">梁祝</div>
+        <div class="script-desc">楼台相会，化蝶双飞的凄美爱情</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "zhuying-paper-wedding",
+  "version": "1.0.0",
+  "description": "烛影·纸嫁衣 - 交互式剪纸皮影戏",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "gsap": "^3.12.5"
+  }
+}
