@@ -1,0 +1,373 @@
+.events-page {
+  padding-top: 100px;
+  padding-bottom: 60px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.events-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.events-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.events-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.calendar-container {
+  padding: 32px;
+  margin-bottom: 48px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.calendar-nav-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.calendar-title {
+  font-size: 20px;
+  font-weight: 600;
+  min-width: 150px;
+  text-align: center;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.weekday-header {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  padding: 8px 0;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  min-height: 80px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  transition: background 0.2s ease;
+}
+
+.calendar-day:not(.empty):hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.calendar-day.empty {
+  background: transparent;
+}
+
+.day-number {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  display: block;
+}
+
+.day-events {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.event-dot {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(139, 92, 246, 0.3);
+  color: #c4b5fd;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.event-dot:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+.event-dot-marker {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-violet);
+  flex-shrink: 0;
+}
+
+.event-dot-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.events-list-section {
+  margin-top: 48px;
+}
+
+.events-list-section h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.events-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.event-card {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  gap: 24px;
+}
+
+.event-card:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-md);
+}
+
+.event-date-block {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-width: 70px;
+}
+
+.event-month {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.event-day {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-violet);
+}
+
+.event-info {
+  flex: 1;
+}
+
+.event-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.event-venue {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.event-time {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.event-price {
+  color: var(--accent-violet);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.event-modal {
+  max-width: 500px;
+}
+
+.event-modal-header {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.event-modal-date {
+  text-align: center;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+  border-radius: 16px;
+  padding: 16px 20px;
+  min-width: 80px;
+}
+
+.event-modal-day {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--accent-violet);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.event-modal-month {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.event-modal-info h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.event-modal-venue {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.event-modal-time {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.event-modal-body {
+  margin-bottom: 24px;
+}
+
+.event-modal-section {
+  margin-bottom: 20px;
+}
+
+.event-modal-section h4 {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.event-modal-price {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--accent-violet);
+}
+
+.event-modal-section p {
+  color: var(--text-primary);
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.event-modal-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.ticket-btn {
+  padding: 12px 48px;
+  font-size: 16px;
+  border-radius: 8px;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .events-page {
+    padding-top: 90px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  
+  .calendar-container {
+    padding: 16px;
+  }
+  
+  .calendar-day {
+    min-height: 60px;
+    padding: 4px;
+  }
+  
+  .event-dot-title {
+    display: none;
+  }
+  
+  .event-dot {
+    justify-content: center;
+  }
+  
+  .event-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+  }
+  
+  .event-date-block {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: auto;
+    padding: 8px 12px;
+  }
+  
+  .event-day {
+    font-size: 20px;
+  }
+  
+  .event-modal-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .event-modal-date {
+    min-width: auto;
+  }
+}
