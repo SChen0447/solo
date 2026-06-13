@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>宇宙秩序 · Cosmic Order</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0a0520 0%, #1a0a2e 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      color: #e8e0ff;
+      touch-action: none;
+    }
+
+    #page-title {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 18px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: #b4a7ff;
+      opacity: 0;
+      animation: fadeInTitle 2.5s ease-out 0.3s forwards;
+      text-shadow: 0 0 20px rgba(150, 130, 255, 0.5);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @keyframes fadeInTitle {
+      0% { opacity: 0; transform: translate(-50%, -10px); }
+      100% { opacity: 0.9; transform: translate(-50%, 0); }
+    }
+
+    #gameCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #chaos-indicator {
+      position: fixed;
+      left: 20px;
+      bottom: 20px;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.2);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    #chaos-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, #ff3355, #ff3355);
+      box-shadow: 0 0 16px rgba(255, 51, 85, 0.5);
+      position: relative;
+      transition: background 0.8s ease, box-shadow 0.8s ease;
+    }
+
+    #chaos-circle::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(26, 10, 46, 0.9);
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #chaos-count {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 2;
+      color: #fff;
+    }
+
+    #chaos-label {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    #reset-btn {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      padding: 10px 20px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #c4b8ff;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 20;
+      letter-spacing: 2px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      user-select: none;
+    }
+
+    #reset-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      border-color: rgba(180, 167, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(150, 130, 255, 0.2);
+    }
+
+    #reset-btn:active {
+      transform: scale(0.96);
+    }
+
+    #hint {
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 12px;
+      color: rgba(180, 167, 255, 0.5);
+      letter-spacing: 4px;
+      opacity: 0;
+      animation: fadeInTitle 3s ease-out 1.5s forwards;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @media (max-width: 480px) {
+      #page-title {
+        font-size: 14px;
+        letter-spacing: 4px;
+        top: 16px;
+      }
+      #hint {
+        font-size: 10px;
+        top: 48px;
+      }
+      #chaos-indicator {
+        width: 64px;
+        height: 64px;
+        left: 12px;
+        bottom: 12px;
+      }
+      #chaos-circle {
+        width: 44px;
+        height: 44px;
+      }
+      #chaos-circle::after {
+        width: 28px;
+        height: 28px;
+      }
+      #chaos-count {
+        font-size: 11px;
+      }
+      #chaos-label {
+        font-size: 8px;
+      }
+      #reset-btn {
+        padding: 8px 14px;
+        font-size: 11px;
+        right: 12px;
+        bottom: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="page-title">宇 · 宙 · 秩 · 序</div>
+  <div id="hint">拖拽星球进入中心轨道</div>
+  <canvas id="gameCanvas"></canvas>
+  <div id="chaos-indicator">
+    <div id="chaos-circle">
+      <span id="chaos-count">12</span>
+    </div>
+    <div id="chaos-label">CHAOS</div>
+  </div>
+  <button id="reset-btn">重置 RESET</button>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
