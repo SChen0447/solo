@@ -1,0 +1,19 @@
+{
+  "name": "paper-lamp-generator",
+  "version": "1.0.0",
+  "description": "光影纸灯 - 交互式折纸灯饰生成器",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "0.160.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.160.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10"
+  }
+}
