@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T17:38:39.655Z",
+  "task_name": "auto71",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我想做一个叫'味觉星球'的众包菜谱口味地图项目，想法是让用户给一道菜的口味打上多个维度的标签（比如辣度、酸度、甜度、咸度、鲜度、油脂感），然后这些标签会汇聚到一张交互式雷达图上，并在地图上以气泡形式展示不同地区菜品的口味特征，让食客能轻松找到符合自己口味的菜。希望它能做到：第一，支持用户注册和登录，登录后可以创建新的菜谱条目，每个菜谱需要填写名称、地区、简短描述和上传一张菜品图片，图片上传后自动压缩成200KB以内并在卡片上显示缩略图；提交后会生成一个六维度口味的雷达图（六边形，每个顶点对应一种口味，用0到10的滑块交互式调节，滑块拖拽时有弹性缓动动画，雷达图的填充色从中心向外由浅橙渐变到深红），雷达图下方自动计算并展示一个'口味综合指数'（满分10分，数字伴随脉冲光效）；第二，首页是一个中国地图（用纯CSS和SVG绘制，各省份按区域着色，颜色从蓝渐变到红表示该地区所有菜品的平均辣度），地图上悬浮着直径可变的半透明气泡（气泡大小代表该地区菜品种类数量，气泡边缘有缓慢的脉动光晕），点击任意省份气泡会放大并弹出一个列表，列出该省份所有菜谱卡片，卡片为白色圆角矩形，带轻微阴影，鼠标悬停时卡片向上浮起5px并显示配料信息；第三，所有菜谱支持关键词搜索和按口味维度过滤（比如筛选辣度大于6的菜品），搜索结果以瀑布流布局展示，每张卡片都包含菜品名称、地区标签、生成的雷达图缩略图和综合指数，加载时卡片依次从底部淡入并上移；界面采用暖色调主题（主色#E88540搭配辅色#F4D03F），页面顶部有固定式导航栏（左侧是应用logo带星球图标旋转动画，中间是搜索框，右侧是登录/注册按钮），底部有页脚显示版权信息，所有页面元素在移动端自动响应式布局，卡片变为单列排列，导航栏变为汉堡菜单；性能上要求首页地图数据和菜谱列表在1秒内完成加载和渲染，雷达图交互滑块调节时帧率保持在60FPS。实现用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建，把代码拆成以下文件：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom、axios、react-router-dom；后端依赖：express、cors、uuid、multer、sharp、typescript、ts-node-dev、@types/express、@types/cors、@types/multer、@types/sharp；启动脚本：npm run dev 同时启动前后端）\n - index.html（入口页面，加载时显示星球旋转的SVG动画）\n - tsconfig.json（严格模式）\n - vite.config.js（构建配置，设置代理转发/api到后端端口）\n - src/client/App.tsx（主应用组件，配置路由，管理全局状态，初始化时请求口味地图数据）\n - src/client/RadarChart.tsx（六维度口味雷达图组件，接收口味数据并绘制Canvas，支持滑块交互，计算综合指数）\n - src/client/MapView.tsx（SVG中国地图组件，渲染各省份颜色和气旋气泡，点击事件处理）\n - src/server/index.ts（Express服务器，处理用户注册登录、菜谱CRUD、图片上传和口味统计API）\n跑 npm install && npm run dev 就能直接看到效果。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:41797ac3b15740dfce32fcb8cbdba197_6a2c4358f3aa1737ab2a0b89.6a2c4413f3aa1737ab2a0c49.6a2c4413c881183bdfda2c80:Trae CN.T(2026/6/13 01:38:27)",
+    "user_id": "3986207660317399",
+    "trace_id": "41797ac3b15740dfce32fcb8cbdba197",
+    "session_id": "6a2c4358f3aa1737ab2a0b89",
+    "task_id": "6a2c4413f3aa1737ab2a0c49",
+    "message_id": "6a2c4413c881183bdfda2c80",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 01:38:27",
+    "format": "full"
+  },
+  "trace": "null"
+}
