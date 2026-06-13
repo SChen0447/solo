@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-13T00:59:11.374Z",
+  "task_name": "auto278",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助用户创建并管理一个名为'音纹·星语画布'的在线社群绘画画布的全栈web应用，主要解决用户在浏览器中缺乏一种通过协作绘画与实时音乐共鸣来创作集体视听作品的问题。\n\n它应当具备以下能力：\n1) 用户注册/登录（前端表单验证，后端JWT鉴权），登录后进入一个较大的画布（宽1200px，高900px），画布背景为深紫到墨蓝的径向渐变（从中心#1a0f2e到边缘#0d0b1a），中间有微弱的星点闪烁。\n2) 用户在画布上通过鼠标拖动绘制彩色光轨（颜色从预设的12色调色板选取，含#ff6b6b、#48dbfb、#feca57、#ff9ff3等），光轨带有高斯模糊和发光效果（shadowBlur 15px, shadowColor跟随颜色），绘制后光轨缓慢衰减（2秒内透明度从1降到0.2），并产生粒子跟随（每个笔画产生30个随机小粒子，大小3-5px，颜色同笔画，飘散速度0.3px/帧，生命周期1秒）。\n3) 每5秒，后端汇总当前画布上所有活跃光轨的颜色分布，计算出主色调，并返回给前端；前端据此生成一段简短的音乐旋律（使用Web Audio API，根据主色调的RGB值映射到音符频率，如红色对应C4(261.63Hz)、蓝色对应E4(329.63Hz)、绿色对应G4(392.00Hz)，旋律以琶音形式播放，每1秒一个音符）。\n4) 画布右下角显示最近10位用户的绘制记录和当前活跃人数（从后端轮询，每2秒一次）。用户可点击“导出画布”按钮将当前画布内容（含所有光轨的末端轨迹）保存为PNG图片。\n\n界面方面：整体使用毛玻璃风格，导航栏半透明（背景rgba(255,255,255,0.05)，backdrop-filter:blur(12px)），颜色跟随当前主色调变化（导航栏底部边框颜色渐变，从主色调1到主色调2，周期3秒）。画布区域有微弱的辐射网格（线条rgba(255,255,255,0.05)），鼠标悬停在颜色选择器上时，色块会放大1.2倍并带有0.3px发光。响应式适配：画布在屏幕小于768px时自动缩放至宽度100%且高度按比例缩小，但保持最小高度600px。性能上要求FPS稳定在55以上，后端响应时间不超过50ms。\n\n实现采用TypeScript、React（前端）、Node.js + Express（后端）和Vite，按以下文件组织代码：\n - package.json（含依赖：react、react-dom、express、cors、jsonwebtoken、uuid、typescript、vite、@vitejs/plugin-react、concurrently，启动脚本：npm run dev）\n - vite.config.js（构建配置，指向index.html）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（入口页面，全屏深色背景，标题'音纹·星语画布'）\n - src/frontend/App.tsx（主组件，管理画布Canvas、颜色选择器、用户列表、音乐合成，集成Web Audio API和Canvas绘制逻辑）\n - src/frontend/components/Canvas.tsx（Canvas组件，处理鼠标事件绘制光轨和粒子，每帧通过requestAnimationFrame更新衰减和粒子，并向父组件传递当前颜色数据）\n - src/backend/server.ts（Express服务器，提供注册、登录、GET /api/canvas/colors返回颜色统计、POST /api/canvas/submit接收新光轨数据、GET /api/users/active返回活跃用户数，使用JWT中间件，数据暂存于内存Map）\n\n运行方式：npm install && npm run dev。",
+  "session_id": null,
+  "trace": "null"
+}
