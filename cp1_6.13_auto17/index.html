@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>太空站能量通路 - Energy Path Puzzle</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div class="game-container">
+    <h1 class="game-title">太空站能量通路</h1>
+    
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-label">⏱ 时间</span>
+        <span class="stat-value" id="timer">0</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">⭐ 得分</span>
+        <span class="stat-value" id="score">0</span>
+      </div>
+    </div>
+    
+    <button id="resetBtn" class="reset-btn">🔄 重置游戏</button>
+    
+    <div class="canvas-wrapper">
+      <canvas id="gameCanvas"></canvas>
+    </div>
+    
+    <div class="message" id="message"></div>
+    
+    <div class="instructions">
+      <p>🎯 点击格子放置能量通路，连接黄色传送门</p>
+      <p>⚠ 红色风暴会摧毁通路，注意躲避！</p>
+    </div>
+  </div>
+  
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
