@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>深空采矿</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(to bottom, #0a0a0f 0%, #1a0a2e 100%);
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+
+    #game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      animation: fadeIn 1.5s ease-in forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    #game-title {
+      font-size: 36px;
+      color: #ffffff;
+      text-shadow: 
+        0 0 10px #4da6ff,
+        0 0 20px #4da6ff,
+        0 0 30px #4da6ff,
+        0 0 40px #2a5c99;
+      margin-bottom: 20px;
+      letter-spacing: 8px;
+      font-weight: bold;
+    }
+
+    #game-canvas {
+      border: 2px solid rgba(77, 166, 255, 0.3);
+      border-radius: 8px;
+      box-shadow: 
+        0 0 20px rgba(77, 166, 255, 0.2),
+        inset 0 0 50px rgba(0, 0, 0, 0.5);
+      background: #000;
+    }
+
+    #instructions {
+      margin-top: 15px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <h1 id="game-title">深空采矿</h1>
+    <canvas id="game-canvas" width="900" height="600"></canvas>
+    <div id="instructions">方向键控制飞船移动 &nbsp;|&nbsp; 收集能量晶体 &nbsp;|&nbsp; 躲避陨石与黑洞</div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
