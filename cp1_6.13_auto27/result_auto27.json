@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T16:29:40.846Z",
+  "task_name": "auto27",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：小型创业团队需要一个轻量级的内部公告板，让成员能发布带标签的公告、按时间线或标签筛选，并实时看到阅读状态和互动反馈。\n\n构建一个全栈团队公告板应用，使用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（前端依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom、axios、moment；后端依赖：express、typescript、ts-node-dev、@types/express、cors、body-parser、uuid；启动脚本：npm run dev:front和npm run dev:back，建议concurrently合并）\n - vite.config.js（代理后端API到localhost:3001）\n - tsconfig.json（前端和后端各自配置）\n - index.html（入口页面，顶部导航栏+中央公告流）\n - src/frontend/App.tsx（主组件，管理全局状态和路由，数据流向：接收后端公告列表→展示→用户交互→发送更新请求）\n - src/frontend/components/AnnouncementCard.tsx（单条公告卡片组件，显示标题、内容摘要、标签列表、发布者头像、阅读数，点击展开详情）\n - src/backend/server.ts（Express服务器，提供RESTful API：GET /api/announcements（支持标签过滤和排序）、POST /api/announcements、PATCH /api/announcements/:id/read）\n - src/backend/dataStore.ts（内存存储模块，以Map存储公告数据，支持增删改查）\n\n功能需求：\n1) 公告发布区：顶部提供表单，用户输入标题（最多50字）、内容（富文本，支持换行和简单Markdown如加粗和链接）、选择0-3个预设标签（紧急、技术、团建、通知、其他），提交后公告立即出现在流顶部，并伴随一个从上方滑入的动画。\n2) 标签筛选与排序：左侧或顶部提供一排彩色标签按钮（每个标签颜色不同：紧急红色、技术蓝色、团建绿色、通知橙色、其他灰色），点击标签后流只显示带该标签的公告（多选），同时排序切换按钮支持按最新发布或最多阅读排序（切换时公告位置变化有交错动画）。\n3) 阅读状态与计数：每条公告卡片右下角显示一个眼睛图标和阅读人数（初始为0），当前登录用户点击卡片展开详情后眼睛图标变为实心状（表示已读），阅读计数+1，并且卡片底部出现一个模糊的已读用户头像列表（最多显示5个头像）。\n4) 实时新公告提示：当新公告被发布（模拟定时轮询或WebSocket），顶部出现一个横幅提示“有N条新公告”，点击后平滑滚动到最新公告位置并高亮闪烁。\n\n界面要求：整体采用深色模式（背景#1a1a2e，卡片#16213e），标签颜色饱和但柔和，卡片圆角12px带微弱阴影（hover时阴影加深并上移3px）。公告标题用白字，正文用浅灰(#ccc)，标签为小型药丸形状。阅读计数图标在右下角淡出显示。列表加载时显示骨架屏动画（三个灰色矩形渐变闪烁）。响应式：宽度小于768px时标签按钮变为横向可滚动的胶囊条，卡片全宽。\n\n性能约束：公告列表初始加载应在500ms内完成（模拟50条数据），列表滚动时卡顿不超过16ms（60FPS），使用虚拟列表或分页机制，每次只渲染20条。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:ae14e2a5db791f3dbf8c8cccbfd0f52b_6a2c337b9aa3bf2bd6dc738a.6a2c33e89aa3bf2bd6dc73dc.6a2c33e884090674efb90822:Trae CN.T(2026/6/13 00:29:28)",
+    "user_id": "3986207660317399",
+    "trace_id": "ae14e2a5db791f3dbf8c8cccbfd0f52b",
+    "session_id": "6a2c337b9aa3bf2bd6dc738a",
+    "task_id": "6a2c33e89aa3bf2bd6dc73dc",
+    "message_id": "6a2c33e884090674efb90822",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 00:29:28",
+    "format": "full"
+  },
+  "trace": "null"
+}
