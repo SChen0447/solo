@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T18:52:08.221Z",
+  "task_name": "auto112",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "我需要一个能够帮助美食爱好者根据冰箱里的现有食材，自动生成一份可定制的、带有3D展示效果的创意食谱的应用，主要解决在家做饭时面对一堆食材不知做什么、如何搭配以及缺乏烹饪灵感的问题。\n\n它应当具备以下能力：\n1) 用户在首页的搜索栏中输入或从预设列表中选择3-5种食材（如鸡蛋、洋葱、番茄、鸡胸肉），点击“生成食谱”按钮后，后端模拟AI逻辑，基于食材组合返回3条不同的食谱建议，每条包含：菜名、所需全部食材列表（含用量）、烹饪步骤（分步骤带编号）、预估烹饪时间（分钟）和卡路里估算（大卡）。\n2) 每条食谱结果以卡片形式展示在结果区域，卡片不打开平铺，每张卡片左上角有一个“3D预览”小图标，点击后页面中央弹出一个半透明模态框，模态框中用Three.js渲染一道对应的3D菜品模型（如一份番茄炒蛋：将鸡蛋块模拟为不规则椭球体，表面带光泽，番茄块为红色不规则多面体，两者混在一起，背景为浅色桌面纹理）。模型可被鼠标拖拽旋转查看（360度，绕Y轴自由旋转）。\n3) 每张食谱卡片下方有一个“收藏”按钮，点击后该食谱被保存到本地localStorage，并在页面顶部导航栏右侧显示已收藏数量。点击收藏数量图标，下拉显示收藏列表（只显示菜名），点击菜名可跳转到该食谱的详情查看页（可以查看完整步骤和3D模型）。\n4) 页面有一个“食材替代”功能：在每张食谱卡片的食材列表下方，每个食材旁边有一个可点击的“替代”按钮，点击后弹出一小段文字提示该食材的1-2种常见替代品（如“洋葱可用韭葱替代，或者用少量蒜末提味”）。如果用户点击了替代按钮并用替代品替换，页面上的食材列表动态更新，并自动重新计算预估烹饪时间和卡路里（加或减5-10%）。\n5) 提供按“烹饪时间（小于30分钟/30-60分钟/大于60分钟）”和“菜系（中餐/西餐/日料/其他）”的筛选项，位于食材输入区域下方。筛选后，生成结果只保留符合条件的食谱。\n\n界面方面要求：整体采用暖色调，主色奶油白（#FDF5E6）搭配橙红（#E05A3F）和深灰（#3E3E3E）。首页顶部为固定导航栏，左中右布局：左侧Logo，中间搜索框，右侧收藏图标和数量的徽章。食材输入区位于页面中央靠上，使用圆角输入框和标签化的已选食材展示（每个食材显示为一个带删除按钮的小圆角标签）。食谱结果区为响应式网格布局（大屏3列，中屏2列，小屏1列），每个卡片圆角20px，带浅阴影，鼠标hover时阴影加深并向上平移4px的过渡动画（0.3s ease）。3D预览模态框弹出时背景有半透明黑色遮罩（opacity 0.6），模态框居中，带淡入缩放动画（0.4s cubic-bezier）。页面整体滚动时顶部导航栏保持吸顶并带毛玻璃效果（backdrop-filter: blur(8px)）。所有按钮hover时颜色微变（如从橙红变为深橙 #C94A2F），点击时有0.1s的轻微缩放反馈。收藏下拉列表使用平滑展开和收起动画。整个应用在移动端适配良好（使用媒体查询或flex布局，字体大小在320px宽度下不小于14px）。\n\n性能上需要在用户点击“3D预览”后，模态框在1秒内弹出，3D模型在2秒内渲染完毕并开始旋转，帧率不低于45FPS。\n\n实现采用TypeScript、React（前端）和Node.js Express（后端）以及Vite构建。依赖：前端：react@18、react-dom@18、typescript、vite@5、@types/react、@types/react-dom、axios、three、@types/three、react-router-dom、sass；后端：express、typescript、ts-node、@types/express、cors。按以下文件组织代码：\n - package.json（含上述前后端依赖和启动脚本，如前端scripts: \"dev\": \"vite\"，后端scripts: \"dev\": \"ts-node server.ts\"）\n - index.html（入口，加载时展示一个旋转的橙红色圆环加载动画，字体使用系统默认无衬线）\n - tsconfig.json（strict模式，ESModule目标）\n - vite.config.js（配置代理 /api 到 localhost:3001，以及SCSS支持）\n - src/server/server.ts（Node.js Express后端，提供三个GET端点：/api/generate?ingredients=...，返回3个食谱json数组；/api/suggest?ingredient=xx，返回替代品json数组；/api/cuisine-filter返回筛选选项。每个端点模拟1秒延迟）\n - src/components/App.tsx（React主组件，包含导航栏、搜索区、结果区、收藏功能、筛选功能、模态框管理，使用useState和useEffect处理状态和异步请求）\n - src/components/RecipeCard.tsx（展示单条食谱的卡片组件，含3D预览按钮、收藏按钮、食材替代功能，接收食谱对象和回调函数）\n - src/components/Modal3D.tsx（Three.js 3D预览模态框组件，使用useRef和useEffect初始化Three.js场景、相机、灯光和渲染器，在组件卸载时清理；渲染一个简单的盘子模型（半径50px的圆盘，浅色材质）和几个随机颜色和形状的简单几何体模拟菜品，并实现鼠标拖拽旋转，使用OrbitControls）\n\n运行方式：npm install && cd src/server && npm install && cd ../.. && npm run dev（前后端同时启动，前端请求代理到后端）。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:3bf3d27e04a20377307812878cb162e8_6a2c54428a13d93d79bda003.6a2c554c8a13d93d79bda10b.6a2c554b19329f8916be7748:Trae CN.T(2026/6/13 02:51:56)",
+    "user_id": "3986207660317399",
+    "trace_id": "3bf3d27e04a20377307812878cb162e8",
+    "session_id": "6a2c54428a13d93d79bda003",
+    "task_id": "6a2c554c8a13d93d79bda10b",
+    "message_id": "6a2c554b19329f8916be7748",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 02:51:56",
+    "format": "full"
+  },
+  "trace": "null"
+}
