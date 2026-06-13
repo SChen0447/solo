@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1a0a2e" />
+  <title>弦上·流光调色盘</title>
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0d0519;
+      font-family: 'PingFang SC', 'Microsoft YaHei', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      cursor: crosshair;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #app {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .navbar .menu-icon {
+      width: 28px;
+      height: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .navbar .menu-icon:hover {
+      transform: rotate(90deg);
+    }
+
+    .navbar .menu-icon span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      border-radius: 2px;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar .title {
+      font-size: 24px;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      transition: color 0.5s ease;
+    }
+
+    .navbar .fullscreen-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .navbar .fullscreen-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .navbar .fullscreen-btn svg {
+      width: 20px;
+      height: 20px;
+      transition: stroke 0.5s ease;
+    }
+
+    .color-value {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      z-index: 100;
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        text-shadow: 0 0 8px currentColor, 0 0 16px currentColor;
+        opacity: 0.85;
+      }
+      50% {
+        text-shadow: 0 0 16px currentColor, 0 0 32px currentColor;
+        opacity: 1;
+      }
+    }
+
+    .waveform-indicator {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      width: 80px;
+      height: 60px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .theme-buttons {
+      position: fixed;
+      z-index: 100;
+    }
+
+    .theme-btn {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      position: absolute;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.12);
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .theme-btn .tooltip {
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.7);
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .theme-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    .theme-btn.warm {
+      top: 80px;
+      left: 20px;
+      background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+    }
+
+    .theme-btn.cool {
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, #48dbfb 0%, #54a0ff 100%);
+    }
+
+    .theme-btn.contrast {
+      bottom: 100px;
+      left: 20px;
+      background: linear-gradient(135deg, #ff9ff3 0%, #a29bfe 100%);
+    }
+
+    .theme-btn.random {
+      bottom: 100px;
+      right: 20px;
+      background: conic-gradient(from 0deg, #ff6b6b, #feca57, #48dbfb, #a29bfe, #ff9ff3, #ff6b6b);
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        height: 50px;
+        padding: 0 16px;
+      }
+
+      .navbar .title {
+        font-size: 18px;
+      }
+
+      .color-value {
+        left: 16px;
+        bottom: 100px;
+        font-size: 12px;
+      }
+
+      .waveform-indicator {
+        right: 16px;
+        bottom: 100px;
+      }
+
+      .theme-buttons {
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 16px;
+        display: flex;
+        gap: 10px;
+      }
+
+      .theme-btn {
+        width: 40px;
+        height: 40px;
+        position: relative;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+      }
+
+      .theme-btn .tooltip {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="main-canvas"></canvas>
+
+    <nav class="navbar">
+      <div class="menu-icon" id="menu-icon">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+      <div class="title" id="nav-title">弦上·流光调色盘</div>
+      <div class="fullscreen-btn" id="fullscreen-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+      </div>
+    </nav>
+
+    <div class="color-value" id="color-value">#8B5CF6</div>
+
+    <div class="waveform-indicator" id="waveform-indicator"></div>
+
+    <div class="theme-buttons">
+      <div class="theme-btn warm" data-theme="warm">
+        <span class="tooltip">暖色系</span>
+      </div>
+      <div class="theme-btn cool" data-theme="cool">
+        <span class="tooltip">冷色系</span>
+      </div>
+      <div class="theme-btn contrast" data-theme="contrast">
+        <span class="tooltip">对比色</span>
+      </div>
+      <div class="theme-btn random" data-theme="random">
+        <span class="tooltip">随机模式</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
