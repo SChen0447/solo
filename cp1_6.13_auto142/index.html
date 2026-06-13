@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="积木·平衡大师 - 微缩景观沙盘布局辅助工具" />
+    <title>积木·平衡大师</title>
+    <style>
+      html, body, #root { margin: 0; padding: 0; height: 100%; }
+      body { background: #f9f6ee; font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif; }
+      #jimu-loading {
+        position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+        background: #f9f6ee; z-index: 9999; flex-direction: column; gap: 20px;
+        transition: opacity 0.4s ease;
+      }
+      #jimu-loading .spinner {
+        width: 48px; height: 48px; border: 4px solid #d0b491; border-top-color: #3b5998;
+        border-radius: 50%; animation: jimu-spin 0.9s linear infinite;
+      }
+      #jimu-loading .text { font-size: 16px; color: #3b5998; letter-spacing: 2px; }
+      @keyframes jimu-spin { to { transform: rotate(360deg); } }
+      #jimu-loading.hidden { opacity: 0; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <div id="jimu-loading">
+      <div class="spinner" aria-hidden="true"></div>
+      <div class="text">积木·平衡大师 加载中...</div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/client/main.tsx"></script>
+    <script>
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const el = document.getElementById('jimu-loading');
+          if (el) { el.classList.add('hidden'); setTimeout(() => el.remove(), 500); }
+        }, 400);
+      });
+    </script>
+  </body>
+</html>

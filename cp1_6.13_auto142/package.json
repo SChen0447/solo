@@ -1,0 +1,34 @@
+{
+  "name": "jimu-balance-master",
+  "private": true,
+  "version": "1.0.0",
+  "description": "积木·平衡大师 - 微缩景观沙盘布局工具",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "vite",
+    "start": "ts-node-dev --respawn --transpile-only src/server/index.ts",
+    "client:build": "tsc -p tsconfig.json --noEmit && vite build",
+    "client:preview": "vite preview",
+    "check": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.server.json --noEmit"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "gsap": "^3.12.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "sass": "^1.80.6",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "~5.6.3",
+    "vite": "^5.4.10"
+  }
+}
