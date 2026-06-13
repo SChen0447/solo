@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>机械方块舞</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #1a1a1a;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: none;
+    }
+    h1 {
+      color: #ffffff;
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    #canvas-wrapper {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+    canvas {
+      background-color: #2b2b2b;
+      border: 1px solid #666;
+      border-radius: 12px;
+      display: block;
+    }
+    .choreo-panel {
+      position: absolute;
+      top: 0;
+      right: -260px;
+      width: 250px;
+      background: #1e1e1e;
+      border: 1px solid #555;
+      border-radius: 12px;
+      padding: 12px;
+      color: #fff;
+      font-size: 12px;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .choreo-panel.hidden {
+      display: none;
+    }
+    .choreo-panel h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #4a90d9;
+    }
+    .block-choreo {
+      margin-bottom: 12px;
+      padding: 8px;
+      background: #2a2a2a;
+      border-radius: 6px;
+    }
+    .block-choreo-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      cursor: pointer;
+    }
+    .block-choreo-header .label {
+      font-family: monospace;
+      font-size: 13px;
+    }
+    .block-choreo-header .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      display: inline-block;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+    .keyframe-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .keyframe-row {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .keyframe-row input {
+      width: 50px;
+      padding: 3px;
+      background: #333;
+      border: 1px solid #555;
+      border-radius: 3px;
+      color: #fff;
+      font-size: 11px;
+      font-family: monospace;
+    }
+    .keyframe-row input:focus {
+      outline: none;
+      border-color: #4a90d9;
+    }
+    .keyframe-row button {
+      padding: 2px 6px;
+      font-size: 11px;
+      background: #e74c3c;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .add-kf-btn {
+      margin-top: 4px;
+      padding: 4px;
+      width: 100%;
+      background: #4a90d9;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+    }
+    .add-kf-btn:hover {
+      background: #357abd;
+      transition: background-color 0.2s;
+    }
+    .random-form-btn {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      padding: 8px 14px;
+      background: #e67e22;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      z-index: 10;
+      transition: background-color 0.2s;
+    }
+    .random-form-btn:hover {
+      background: #d35400;
+    }
+    .random-form-btn:active {
+      background: #c25e17;
+    }
+    @media (max-width: 900px) {
+      .choreo-panel {
+        right: -210px;
+        width: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>机械方块舞</h1>
+  <div id="app">
+    <div id="canvas-wrapper">
+      <button class="random-form-btn" id="randomFormBtn">随机队形</button>
+      <canvas id="canvas"></canvas>
+      <div class="choreo-panel hidden" id="choreoPanel">
+        <h3>编舞设置</h3>
+        <div id="choreoList"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
