@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-13T02:13:04.280Z",
+  "task_name": "auto326",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位微型博物馆策展人希望在线创建一个虚拟展览空间，让参观者通过浏览器自由探索由发光展台包围的互动展品，每件展品附带动态光晕和可点击的文字说明卡。\n\n构建一个名为「光界·微物回廊」的全栈web应用，使用TypeScript、React（前端）、Node.js + Express（后端）和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（依赖：react、react-dom、express、cors、uuid、typescript、vite、@vitejs/plugin-react、tslib，启动脚本：npm run dev）\n - vite.config.js（构建配置，指向index.html，代理/api到localhost:3001）\n - tsconfig.json（严格模式，target:ES2020，module:ESNext，jsx:react-jsx）\n - index.html（入口页面，加载#root容器）\n - server.js（后端服务，职责：提供静态文件服务和REST API，数据流向：接收前端GET /api/exhibits请求，返回JSON格式展品列表，每个展品包含id、名称、描述、颜色、旋转速度）\n - src/App.tsx（前端主组件，职责：管理全局状态，调用后端API获取展品数据，渲染展品回廊布局，数据流向：挂载时fetch(/api/exhibits)→更新state→传递给ExhibitCard组件）\n - src/ExhibitCard.tsx（展品卡片组件，职责：接收展品数据，渲染发光展台、旋转光晕和点击后的说明卡动画，数据流向：从App接收props→渲染带CSS动画的发光圆台→点击时展开说明卡）\n - src/styles.css（全局样式，职责：定义深色主题、展台光晕动画、说明卡弹出过渡）\n\n功能需求：\n1) 展台展示：页面加载后，从后端获取展品列表，每个展品以圆形发光展台（直径80px）呈现，展台颜色由后端数据指定（例如#ff6b6b、#48dbfb、#a29bfe、#feca57），展台底部有半透明底座（rgba(255,255,255,0.1)），展台本身带有缓慢呼吸光晕效果（脉动周期3秒）。\n2) 展品旋转：每个展台围绕其中心点以不同速度（由后端rotationSpeed字段控制，0.5-2 rad/s）持续旋转，旋转时光晕会形成拖尾效果（使用box-shadow模拟）。\n3) 点击展台：用户点击任一展台，从底部弹出半透明毛玻璃说明卡（backdrop-filter:blur(8px)，背景rgba(255,255,255,0.08)，圆角12px，宽300px，高200px），卡内显示展品名称（字号20px，白色）、描述（字号14px，灰色rgba(255,255,255,0.7)）、关闭按钮（点击后卡片以0.3秒fadeOut动画消失）。\n4) 卡片联动：点击某个展台后，其他展台透明度降低至0.3并暂停旋转，被点击展台光晕放大至1.5倍且脉动速度加倍，松开（关闭卡片）后恢复。\n5) 布局适配：展台以3行重复排列，每行4个，整体居中，间距均等（gap:60px），页面滚动时展台保持原位（sticky top:20%），背景为深空渐变（从#0f0a2e到#1a1a3e）。\n\n界面要求：页面布局为全屏深空渐变背景，展台网格排列，每行展台在横向滚动时有轻微视差效果（滚动时展台以不同速度平移）。颜色主题以深紫蓝为基调，展台颜色与背景形成高对比度发光感。每个展台在悬停时有放大1.1倍并增加亮度（filter:brightness(1.3)）的过渡（0.2秒ease-out）。说明卡弹出时伴随一个从底部向上的滑动动画（0.4秒cubic-bezier过渡）和光晕扩散特效。整体设计统一使用圆角、半透明材质和微光效，确保所有元素在深色背景上清晰可辨。响应式适配：当视口宽度小于768px时，每行改为2个展台，展台缩小至60px。\n\n性能约束：页面60fps渲染，展台旋转动画使用CSS transform而非JavaScript原生日志，确保滚动和点击操作响应时间低于200ms。",
+  "session_id": null,
+  "trace": "null"
+}
