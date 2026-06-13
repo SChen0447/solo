@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水晶骰子塔 - 数字占卜</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #0D0D2B;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0D0D2B;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease;
+    }
+
+    #loading.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .crystal-icon {
+      width: 80px;
+      height: 80px;
+      animation: spin 2s linear infinite;
+      filter: drop-shadow(0 0 20px rgba(138, 180, 248, 0.6));
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 20px;
+      color: #E8D5B7;
+      font-size: 18px;
+      letter-spacing: 4px;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #log-toggle {
+      position: fixed;
+      top: 30px;
+      right: 0;
+      width: 50px;
+      height: 70px;
+      background: linear-gradient(to left, #F5E6C8, #D4C4A0);
+      border: 2px solid #B8956E;
+      border-right: none;
+      border-radius: 10px 0 0 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: right 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    #log-toggle:hover {
+      right: 5px;
+      box-shadow: -4px 0 15px rgba(245, 230, 200, 0.4);
+    }
+
+    #log-toggle.open {
+      right: 320px;
+    }
+
+    .book-icon {
+      font-size: 24px;
+      color: #6B4E2B;
+    }
+
+    #log-panel {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 320px;
+      height: 100%;
+      background: #F5E6C8;
+      z-index: 99;
+      transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+    }
+
+    #log-panel.open {
+      right: 0;
+    }
+
+    .log-header {
+      padding: 20px;
+      border-bottom: 2px solid #D4C4A0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .log-title {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 28px;
+      color: #6B4E2B;
+    }
+
+    .log-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .log-btn {
+      padding: 6px 12px;
+      background: #D4C4A0;
+      border: 1px solid #B8956E;
+      border-radius: 4px;
+      color: #6B4E2B;
+      cursor: pointer;
+      font-family: 'Noto Serif SC', serif;
+      font-size: 12px;
+      transition: background 0.2s;
+    }
+
+    .log-btn:hover {
+      background: #C4B490;
+    }
+
+    .log-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+
+    .log-content::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .log-content::-webkit-scrollbar-track {
+      background: #E8D5B7;
+    }
+
+    .log-content::-webkit-scrollbar-thumb {
+      background: #B8956E;
+      border-radius: 3px;
+    }
+
+    .log-item {
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid #D4C4A0;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .log-card {
+      width: 50px;
+      height: 75px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      border: 2px solid;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .log-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border: 1px solid rgba(255, 215, 0, 0.6);
+      border-radius: 2px;
+      margin: 2px;
+    }
+
+    .log-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .log-time {
+      font-size: 11px;
+      color: #8B7355;
+      margin-bottom: 4px;
+    }
+
+    .log-number {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 18px;
+      color: #6B4E2B;
+      margin-bottom: 4px;
+    }
+
+    .log-symbol {
+      font-size: 13px;
+      color: #5D4037;
+      margin-bottom: 4px;
+    }
+
+    .log-meaning {
+      font-size: 12px;
+      color: #7B5B3A;
+      line-height: 1.4;
+    }
+
+    .empty-log {
+      text-align: center;
+      color: #A08968;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 18px;
+      padding: 40px 0;
+    }
+
+    #wisdom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      padding: 15px 30px;
+      background: linear-gradient(to top, rgba(212, 175, 55, 0.3), transparent);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      text-align: center;
+      z-index: 50;
+    }
+
+    .wisdom-text {
+      color: #E8D5B7;
+      font-size: 16px;
+      letter-spacing: 2px;
+      opacity: 0.9;
+      font-family: 'Noto Serif SC', serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">
+    <svg class="crystal-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50,5 80,35 65,90 35,90 20,35" fill="url(#crystalGrad)" stroke="#8AB4F8" stroke-width="1.5"/>
+      <polygon points="50,5 65,35 50,90 35,35" fill="rgba(255,255,255,0.2)"/>
+      <defs>
+        <linearGradient id="crystalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#B8D4E8;stop-opacity:0.8" />
+          <stop offset="50%" style="stop-color:#8AB4F8;stop-opacity:0.6" />
+          <stop offset="100%" style="stop-color:#5C8BC9;stop-opacity:0.7" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="loading-text">水晶正在凝聚...</div>
+  </div>
+
+  <div id="canvas-container"></div>
+
+  <div id="log-toggle" title="占卜日志">
+    <span class="book-icon">📖</span>
+  </div>
+
+  <div id="log-panel">
+    <div class="log-header">
+      <span class="log-title">占卜日志</span>
+      <div class="log-actions">
+        <button class="log-btn" id="sort-btn">按日期</button>
+        <button class="log-btn" id="clear-btn">清空</button>
+      </div>
+    </div>
+    <div class="log-content" id="log-content">
+      <div class="empty-log">尚无占卜记录</div>
+    </div>
+  </div>
+
+  <div id="wisdom-bar">
+    <span class="wisdom-text" id="wisdom-text">命运之轮，永不停息</span>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
