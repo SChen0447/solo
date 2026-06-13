@@ -1,0 +1,16 @@
+{
+  "name": "star-orbit-racing",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0"
+  },
+  "dependencies": {
+    "gsap": "^3.12.0"
+  }
+}
