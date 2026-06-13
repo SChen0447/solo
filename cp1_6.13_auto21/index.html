@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蛋白质分子3D可视化</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Noto+Sans+SC:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a1a;
+      font-family: 'Noto Sans SC', sans-serif;
+      color: #e0e0e0;
+    }
+
+    #canvas-container {
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+    }
+
+    #canvas-container canvas {
+      display: block;
+    }
+
+    #loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #0a0a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    #loading-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .helix-loader {
+      width: 60px;
+      height: 60px;
+      position: relative;
+      animation: helix-rotate 1.5s linear infinite;
+    }
+
+    .helix-loader::before,
+    .helix-loader::after {
+      content: '';
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      top: 50%;
+      animation: helix-bounce 1.5s ease-in-out infinite;
+    }
+
+    .helix-loader::before {
+      left: 8px;
+      background: #00e5ff;
+      box-shadow: 0 0 12px #00e5ff88;
+    }
+
+    .helix-loader::after {
+      right: 8px;
+      background: #ff4466;
+      box-shadow: 0 0 12px #ff446688;
+      animation-delay: -0.75s;
+    }
+
+    @keyframes helix-rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes helix-bounce {
+      0%, 100% { transform: translateY(-10px); }
+      50% { transform: translateY(10px); }
+    }
+
+    .loading-text {
+      margin-top: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      color: #00e5ff88;
+      letter-spacing: 2px;
+      animation: pulse-text 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-text {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    #residue-info {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(10, 10, 26, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      border-radius: 12px;
+      padding: 16px 20px;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+      pointer-events: none;
+      min-width: 220px;
+    }
+
+    #residue-info.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #residue-info h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 600;
+      color: #00e5ff;
+      margin-bottom: 8px;
+    }
+
+    #residue-info p {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #b0b0c0;
+    }
+
+    #residue-info .info-label {
+      color: #888;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="loading-overlay">
+    <div class="helix-loader"></div>
+    <div class="loading-text">LOADING PROTEIN STRUCTURE</div>
+  </div>
+
+  <div id="residue-info">
+    <h3 id="residue-name"></h3>
+    <p>
+      <span class="info-label">Position</span><br>
+      <span id="residue-position"></span>
+    </p>
+    <p style="margin-top: 8px;">
+      <span class="info-label">Index</span><br>
+      <span id="residue-index"></span>
+    </p>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
