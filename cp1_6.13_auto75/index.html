@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>暗影棋局·迷雾对弈</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #212121;
+      background-image: 
+        linear-gradient(45deg, #333 25%, transparent 25%),
+        linear-gradient(-45deg, #333 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #333 75%),
+        linear-gradient(-45deg, transparent 75%, #333 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+      opacity: 0.95;
+      font-family: 'Microsoft YaHei', 'SimHei', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    #app {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      padding: 20px;
+      animation: fadeIn 1s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .game-title {
+      font-size: 28px;
+      font-weight: bold;
+      color: #FFD54F;
+      text-shadow: 0 0 20px rgba(255, 213, 79, 0.5);
+      letter-spacing: 8px;
+      margin-bottom: 5px;
+    }
+
+    .game-container {
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .side-panel {
+      width: 180px;
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border: 2px solid #8D6E63;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .panel-title {
+      color: #FFD54F;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #5D4037;
+    }
+
+    .turn-indicator {
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+    }
+
+    .turn-red {
+      color: #EF5350;
+      text-shadow: 0 0 15px rgba(239, 83, 80, 0.8);
+      background: rgba(239, 83, 80, 0.1);
+    }
+
+    .turn-blue {
+      color: #42A5F5;
+      text-shadow: 0 0 15px rgba(66, 165, 245, 0.8);
+      background: rgba(66, 165, 245, 0.1);
+    }
+
+    .piece-count {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #E0E0E0;
+      font-size: 13px;
+    }
+
+    .count-red { color: #EF5350; font-weight: bold; }
+    .count-blue { color: #42A5F5; font-weight: bold; }
+
+    .timer-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+
+    .timer-ring {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+
+    .timer-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .timer-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #FFD54F;
+      font-size: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 213, 79, 0.5);
+    }
+
+    .log-panel {
+      width: 220px;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      color: #BDBDBD;
+      font-size: 12px;
+      padding: 8px 10px;
+      margin-bottom: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      border-left: 3px solid #5D4037;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .log-attack { border-left-color: #EF5350; }
+    .log-move { border-left-color: #4CAF50; }
+
+    .top-bar {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+
+    .btn {
+      padding: 10px 25px;
+      font-size: 14px;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .btn-end {
+      background: linear-gradient(145deg, #c62828, #b71c1c);
+      color: white;
+      box-shadow: 0 4px 15px rgba(198, 40, 40, 0.4);
+    }
+
+    .btn-end:hover {
+      background: linear-gradient(145deg, #d32f2f, #c62828);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(198, 40, 40, 0.6);
+    }
+
+    .btn-restart {
+      background: linear-gradient(145deg, #2e7d32, #1b5e20);
+      color: white;
+      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
+    }
+
+    .btn-restart:hover {
+      background: linear-gradient(145deg, #388e3c, #2e7d32);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.6);
+    }
+
+    canvas {
+      display: block;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeInModal 0.3s ease-out;
+    }
+
+    @keyframes fadeInModal {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal-content {
+      background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
+      border: 3px solid #FFD54F;
+      border-radius: 15px;
+      padding: 40px 60px;
+      text-align: center;
+      box-shadow: 0 0 50px rgba(255, 213, 79, 0.3);
+      animation: scaleIn 0.4s ease-out;
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .modal-title {
+      font-size: 36px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      text-shadow: 0 0 30px currentColor;
+    }
+
+    .modal-message {
+      color: #E0E0E0;
+      font-size: 18px;
+      margin-bottom: 30px;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .btn-modal {
+      padding: 12px 35px;
+      font-size: 16px;
+    }
+
+    .menu-toggle {
+      display: none;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(145deg, #5D4037, #3E2723);
+      border: 2px solid #8D6E63;
+      border-radius: 8px;
+      color: #FFD54F;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    @media (max-width: 768px) {
+      .game-container {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .side-panel {
+        width: 100%;
+        max-width: 360px;
+      }
+
+      .log-panel {
+        display: none;
+        width: 100%;
+        max-width: 360px;
+        max-height: 200px;
+      }
+
+      .log-panel.open {
+        display: block;
+      }
+
+      .menu-toggle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .game-title {
+        font-size: 20px;
+        letter-spacing: 4px;
+      }
+
+      body {
+        overflow-y: auto;
+      }
+    }
+
+    .log-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .log-panel::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .log-panel::-webkit-scrollbar-thumb {
+      background: #5D4037;
+      border-radius: 3px;
+    }
+
+    .log-panel::-webkit-scrollbar-thumb:hover {
+      background: #8D6E63;
+    }
+  </style>
+</head>
+<body>
+  <button class="menu-toggle" id="menuToggle">☰</button>
+  
+  <div id="app">
+    <h1 class="game-title">暗影棋局 · 迷雾对弈</h1>
+    
+    <div class="top-bar">
+      <button class="btn btn-end" id="endBtn">结束游戏</button>
+      <button class="btn btn-restart" id="restartBtn">重新开始</button>
+    </div>
+    
+    <div class="game-container">
+      <div class="side-panel">
+        <div class="panel-title">游戏信息</div>
+        <div class="turn-indicator turn-red" id="turnIndicator">当前回合：红方</div>
+        
+        <div class="piece-count">
+          <span>红方剩余：</span>
+          <span class="count-red" id="redCount">5</span>
+        </div>
+        <div class="piece-count">
+          <span>蓝方剩余：</span>
+          <span class="count-blue" id="blueCount">5</span>
+        </div>
+        
+        <div class="timer-container">
+          <div class="panel-title" style="margin-top: 15px;">回合倒计时</div>
+          <div class="timer-ring">
+            <svg width="80" height="80">
+              <circle cx="40" cy="40" r="35" stroke="#5D4037" stroke-width="6" fill="none"/>
+              <circle id="timerProgress" cx="40" cy="40" r="35" stroke="#FFD54F" stroke-width="6" fill="none"
+                      stroke-dasharray="220" stroke-dashoffset="0"
+                      stroke-linecap="round" style="transition: stroke-dashoffset 0.1s linear;"/>
+            </svg>
+            <div class="timer-text" id="timerText">30</div>
+          </div>
+        </div>
+      </div>
+      
+      <canvas id="gameCanvas" width="500" height="500"></canvas>
+      
+      <div class="side-panel log-panel" id="logPanel">
+        <div class="panel-title">游戏日志</div>
+        <div id="logContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalContainer"></div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
