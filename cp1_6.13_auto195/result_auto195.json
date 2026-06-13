@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T21:30:07.897Z",
+  "task_name": "auto195",
+  "task_type": "0-1代码生成",
+  "business_domain": "3D/交互可视化",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一位数字地质学家希望在浏览器中虚拟重建一个由用户交互驱动的动态水晶洞，洞壁上的水晶会随鼠标移动产生生长、共振和破碎的奇幻效果。\n\n构建一个名为'晶穴·地脉脉动'的3D交互式水晶洞可视化应用，使用TypeScript、Three.js和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：three@0.160、@types/three、typescript、vite、gsap，启动脚本：npm run dev）\n - vite.config.js（构建配置，指向index.html）\n - tsconfig.json（严格模式，ES模块目标）\n - index.html（入口页面，深灰到黑色径向渐变背景，无滚动条）\n - src/main.ts（应用入口：初始化Three.js场景、相机、灯光，加载水晶洞DataManager并启动动画循环，数据流向：接收MouseController的交互事件→更新CrystalCaveData→调用CrystalRenderer重绘）\n - src/data/CrystalCaveData.ts（定义水晶洞的数据模型，包括洞壁顶点网格、每颗水晶的位置/旋转/缩放/颜色/生长进度，以及鼠标影响区域的引力场矩阵，数据流向：被main.ts读取构造场景，被MouseController写入交互偏移量）\n - src/controllers/MouseController.ts（监听鼠标移动和点击事件，计算鼠标在3D空间中的射线投影，生成影响区域的引力向量和破碎触发标记，数据流向：输出交互数据到CrystalCaveData和RenderManager）\n - src/renderers/CrystalRenderer.ts（负责Three.js渲染，包含洞壁材质（半透明发光灰岩texture）、水晶模型（六棱柱或八面体，带光泽和边缘发光效果）、粒子系统（洞穴中漂浮的萤火虫光点），方法包括：initScene()、updateCrystals(data)、updateWall(data)、emitParticles(position, color)，数据流向：从CrystalCaveData读取状态，更新Three.js对象属性，并在动画循环中被main.ts调用）\n\n功能需求：\n1) 洞壁为一个半球形洞穴（半径5单位），由500个三角面构成，材质为半透明灰岩纹理（颜色#3a4a5a，透明度0.7），洞顶悬挂着80-120颗水晶（每颗为随机六棱柱或八面体，高度0.5-2.0单位随机，颜色从#7cfc00精灵绿到#00bfff深蓝渐变），水晶根部有发光基底。\n2) 鼠标移动时，以鼠标射线与洞壁的交点为圆心，半径2单位内的水晶会向鼠标方向弯曲（旋转角度最大15度，GSAP弹性动画0.3秒），同时生长进度从当前值向100%增加（生长速度0.1/s），弯曲和生长完成后水晶颜色向高饱和色相偏移（如从#7cfc00变为#ff69b4）。\n3) 鼠标点击时，点击位置影响半径3单位内的所有水晶触发破碎效果：每颗水晶分解为8-12个碎片（使用Three.js BufferGeometry碎片），碎片沿随机方向飞散（速度1-3单位/秒），并伴有发光粒子喷射（50个粒子，直径0.05-0.1单位，颜色与破碎水晶一致，生命周期2秒），2秒后水晶原地重新生长（GSAP 1秒从0到100%）。\n4) 场景中持续有60个漂浮的萤火虫光点（粒子系统，直径0.02-0.05单位，颜色#ffffaa到#ffaa00渐变，半透明），光点沿随机路径缓慢漂浮（速度0.02单位/秒），当鼠标靠近（距离<0.5单位）时，附近5个光点会短暂加速飞离（速度0.2单位/秒持续0.5秒）然后返回。\n5) 相机控制：鼠标拖拽绕Y轴旋转（旋转速度0.005弧度/像素），滚轮前后缩放（缩放范围3-10单位，缩放速度0.1单位/帧），相机始终围绕洞穴中心（0,0,0）运动。\n\n界面方面：页面背景为纯黑色，洞穴发出柔和青蓝色环境光（强度0.3），水晶自身发光（强度1.5），洞壁接收环境光和点光源（点光源位于洞穴中心上方2单位处，颜色#ffffff，强度1）。所有水晶生长和弯曲过程使用GSAP弹性easeOutBack动画（持续时间0.3-0.5秒），碎片飞散使用easeOutQuad（持续时间2秒）。视觉风格统一为暗色奇幻地质风格：洞穴纹理为深色岩石，水晶高饱和亮色，粒子为暖色调荧光。页面无其他UI元素，全屏显示3D场景。\n\n性能约束：在60FPS下维持场景渲染，水晶数量不超过120颗，粒子总数控制在200以内，使用BufferGeometry和合并渲染减少draw calls。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:fe5ad290a4d55177c42c665d4f0d394d_6a2c79bfe9065b5df9f12345.6a2c7a53e9065b5df9f123b6.6a2c7a53ac12a9d12cfcab64:Trae CN.T(2026/6/13 05:29:55)",
+    "user_id": "3986207660317399",
+    "trace_id": "fe5ad290a4d55177c42c665d4f0d394d",
+    "session_id": "6a2c79bfe9065b5df9f12345",
+    "task_id": "6a2c7a53e9065b5df9f123b6",
+    "message_id": "6a2c7a53ac12a9d12cfcab64",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 05:29:55",
+    "format": "full"
+  },
+  "trace": "null"
+}
