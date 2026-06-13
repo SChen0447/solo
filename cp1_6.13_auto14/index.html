@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>光影涂鸦画板 - Light Painting</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      color: #fff;
+      user-select: none;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #canvas-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      cursor: crosshair;
+    }
+
+    #main-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 18px;
+      color: rgba(140, 160, 255, 0.8);
+      letter-spacing: 2px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .loading.hidden {
+      display: none;
+    }
+
+    .toolbar {
+      position: fixed;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 12px;
+      background: rgba(20, 20, 30, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      z-index: 100;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .toolbar.bottom {
+      left: 50%;
+      top: auto;
+      bottom: 20px;
+      transform: translateX(-50%);
+      flex-direction: row;
+      padding: 12px 16px;
+    }
+
+    .brush-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brush-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.9);
+      transform: translateY(-2px);
+    }
+
+    .brush-btn.active {
+      background: linear-gradient(135deg, rgba(100, 150, 255, 0.3), rgba(180, 100, 255, 0.3));
+      color: #fff;
+      box-shadow: 0 0 20px rgba(140, 120, 255, 0.3);
+    }
+
+    .brush-btn svg {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .brush-btn.active svg {
+      transform: rotateY(360deg) scale(1.1);
+    }
+
+    .brush-btn .tooltip {
+      position: absolute;
+      left: 60px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(20, 20, 30, 0.9);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .toolbar.bottom .brush-btn .tooltip {
+      left: 50%;
+      top: auto;
+      bottom: 60px;
+      transform: translateX(-50%);
+    }
+
+    .brush-btn:hover .tooltip {
+      opacity: 1;
+    }
+
+    .toolbar-divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 4px 0;
+    }
+
+    .toolbar.bottom .toolbar-divider {
+      width: 1px;
+      height: 100%;
+      margin: 0 4px;
+    }
+
+    .action-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover:not(:disabled) {
+      background: rgba(255, 255, 255, 0.12);
+      color: #fff;
+      transform: translateY(-2px);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .action-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .color-picker-wrap {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 100;
+      background: rgba(20, 20, 30, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s ease;
+    }
+
+    .color-picker-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-bottom: 10px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .hue-ring {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      cursor: crosshair;
+    }
+
+    .hue-ring canvas {
+      display: block;
+    }
+
+    .hue-indicator {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.3);
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: left 0.05s linear, top 0.05s linear;
+    }
+
+    .preview-strip {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      margin-top: 12px;
+      background: linear-gradient(90deg, #4096ff, #9254de);
+      transition: background 0.3s ease;
+    }
+
+    .hint-text {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.35);
+      letter-spacing: 1px;
+      z-index: 50;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .hint-text {
+        font-size: 11px;
+        top: 16px;
+      }
+      .color-picker-wrap {
+        right: 16px;
+        bottom: 100px;
+        padding: 12px;
+      }
+      .hue-ring {
+        width: 96px;
+        height: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="main-canvas"></canvas>
+      <div class="loading" id="loading">加载光影画布中...</div>
+    </div>
+
+    <div class="hint-text">按住鼠标左键拖动画画 ・ Ctrl+Z 撤销</div>
+
+    <div class="toolbar" id="toolbar">
+      <button class="brush-btn active" data-brush="standard" title="标准光迹">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+          <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+          <path d="M2 2l7.586 7.586"/>
+          <circle cx="11" cy="11" r="2"/>
+        </svg>
+        <span class="tooltip">标准光迹</span>
+      </button>
+
+      <button class="brush-btn" data-brush="spiral" title="螺旋光迹">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 12m-10 0a10 10 0 1 0 20 0a10 10 0 1 0 -20 0"/>
+          <path d="M12 12m-6 0a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"/>
+          <path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>
+        </svg>
+        <span class="tooltip">螺旋光迹</span>
+      </button>
+
+      <button class="brush-btn" data-brush="spike" title="毛刺光迹">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2 L14 9 L21 9 L16 14 L18 21 L12 17 L6 21 L8 14 L3 9 L10 9 Z"/>
+        </svg>
+        <span class="tooltip">毛刺光迹</span>
+      </button>
+
+      <button class="brush-btn" data-brush="sparkle" title="碎星光迹">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5z"/>
+          <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8z"/>
+          <path d="M5 15l.6 1.6L7 17l-1.4.4L5 19l-.6-1.6L3 17l1.4-.4z"/>
+        </svg>
+        <span class="tooltip">碎星光迹</span>
+      </button>
+
+      <div class="toolbar-divider"></div>
+
+      <button class="action-btn" id="undo-btn" title="撤销 (Ctrl+Z)" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7v6h6"/>
+          <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="color-picker-wrap" id="color-picker">
+      <div class="color-picker-label">主色调</div>
+      <div class="hue-ring" id="hue-ring">
+        <canvas id="hue-canvas" width="120" height="120"></canvas>
+        <div class="hue-indicator" id="hue-indicator"></div>
+      </div>
+      <div class="preview-strip" id="preview-strip"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
