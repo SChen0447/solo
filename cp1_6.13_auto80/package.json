@@ -1,0 +1,36 @@
+{
+  "name": "echo-post-office",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "server": "ts-node server/app.ts",
+    "server:dev": "nodemon server/app.ts"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.2",
+    "react-router-dom": "^6.20.1",
+    "jwt-decode": "^4.0.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/uuid": "^9.0.7",
+    "@types/node": "^20.10.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "@vitejs/plugin-react": "^4.2.1",
+    "ts-node": "^10.9.2",
+    "nodemon": "^3.0.2"
+  }
+}

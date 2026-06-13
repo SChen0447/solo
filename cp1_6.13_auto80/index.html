@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>回声邮局 - Echo Post Office</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body, #root {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: 'Georgia', serif;
+      }
+      body {
+        background: linear-gradient(180deg, #b8c4d4 0%, #e8d5e8 100%);
+      }
+      .loader {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #b8c4d4 0%, #e8d5e8 100%);
+        z-index: 9999;
+        animation: fadeOut 0.8s ease 2.5s forwards;
+      }
+      .envelope-loader {
+        position: relative;
+        width: 120px;
+        height: 80px;
+      }
+      .envelope-body {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(255, 215, 0, 0.5);
+        border-radius: 4px;
+        backdrop-filter: blur(10px);
+      }
+      .envelope-flap {
+        position: absolute;
+        top: 0;
+        width: 0;
+        height: 0;
+        border-left: 60px solid transparent;
+        border-right: 60px solid transparent;
+        border-top: 45px solid rgba(255, 255, 255, 0.85);
+        transform-origin: top center;
+        animation: flapFold 2s ease-in-out forwards;
+        z-index: 2;
+      }
+      .envelope-top {
+        position: absolute;
+        top: 0;
+        width: 100%;
+        height: 50%;
+        overflow: hidden;
+      }
+      .envelope-top-inner {
+        width: 100%;
+        height: 200%;
+        background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 255, 255, 0.6));
+        transform-origin: top center;
+        transform: rotateX(180deg);
+        animation: flapFoldInner 2s ease-in-out forwards;
+      }
+      .envelope-seal {
+        position: absolute;
+        top: 38%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        width: 24px;
+        height: 24px;
+        background: radial-gradient(circle, #ffd700, #ff8c00);
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(255, 140, 0, 0.4);
+        animation: sealAppear 0.6s ease 1.4s forwards;
+        z-index: 3;
+      }
+      @keyframes flapFold {
+        0% { transform: rotateX(0deg); }
+        50% { transform: rotateX(0deg); }
+        100% { transform: rotateX(180deg); }
+      }
+      @keyframes flapFoldInner {
+        0% { transform: rotateX(180deg); }
+        50% { transform: rotateX(180deg); }
+        100% { transform: rotateX(0deg); }
+      }
+      @keyframes sealAppear {
+        0% { transform: translate(-50%, -50%) scale(0); }
+        60% { transform: translate(-50%, -50%) scale(1.2); }
+        100% { transform: translate(-50%, -50%) scale(1); }
+      }
+      @keyframes fadeOut {
+        to { opacity: 0; visibility: hidden; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loader">
+      <div class="envelope-loader">
+        <div class="envelope-body"></div>
+        <div class="envelope-top">
+          <div class="envelope-top-inner"></div>
+        </div>
+        <div class="envelope-flap"></div>
+        <div class="envelope-seal"></div>
+      </div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
