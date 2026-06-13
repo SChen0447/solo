@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>幻镜·回声棋</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    body {
+      background: radial-gradient(ellipse at center, #0a0015 0%, #000510 100%);
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 60% 70%, rgba(255,255,255,0.2), transparent),
+        radial-gradient(2px 2px at 50% 50%, rgba(123,104,238,0.3), transparent),
+        radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.3), transparent),
+        radial-gradient(1px 1px at 10% 80%, rgba(123,104,238,0.2), transparent),
+        radial-gradient(2px 2px at 30% 50%, rgba(0,245,212,0.2), transparent),
+        radial-gradient(1px 1px at 90% 60%, rgba(255,255,255,0.25), transparent),
+        radial-gradient(1px 1px at 15% 25%, rgba(255,255,255,0.2), transparent),
+        radial-gradient(1px 1px at 75% 85%, rgba(0,245,212,0.15), transparent);
+      background-size: 300px 300px;
+      animation: twinkle 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 1; }
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #game-canvas {
+      display: block;
+      cursor: pointer;
+    }
+
+    .hud {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #score {
+      top: 20px;
+      right: 20px;
+      color: #ffffff;
+      font-size: 24px;
+      font-weight: 600;
+      text-shadow: 0 0 10px rgba(123, 104, 238, 0.8),
+                   0 2px 4px rgba(0, 0, 0, 0.5);
+      letter-spacing: 1px;
+    }
+
+    #piece-count {
+      bottom: 20px;
+      left: 20px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 400;
+      text-shadow: 0 0 8px rgba(0, 245, 212, 0.6),
+                   0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    #instructions {
+      top: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      line-height: 1.6;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    #instructions span {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .glow-text {
+      animation: glowPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { filter: brightness(1); }
+      50% { filter: brightness(1.3); }
+    }
+  </style>
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="game-canvas"></canvas>
+    <div id="score" class="hud glow-text">得分: 0</div>
+    <div id="piece-count" class="hud">棋子: 0 / 50</div>
+    <div id="instructions" class="hud">
+      <span>点击空格放置棋子</span>
+      <span>拖拽棋子到相邻格产生镜像</span>
+      <span>点击棋子收集得分</span>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
