@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>光痕·音律涟漪</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1042 50%, #0a0a0a 100%);
+      color: #ffffff;
+      user-select: none;
+    }
+
+    .app-container {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 80%;
+      height: 90%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #visualizer-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border: 1px solid rgba(72, 219, 251, 0.3);
+      border-radius: 8px;
+      background: linear-gradient(180deg, #0a0a2e 0%, #1a1042 50%, #0a0a0a 100%);
+      box-shadow: 0 0 60px rgba(72, 219, 251, 0.1), inset 0 0 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .preset-buttons {
+      position: absolute;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 16px;
+      z-index: 10;
+    }
+
+    .preset-btn {
+      padding: 12px 24px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.3s ease-out;
+      letter-spacing: 1px;
+    }
+
+    .preset-btn:hover {
+      background: rgba(72, 219, 251, 0.2);
+      border-color: rgba(72, 219, 251, 0.5);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(72, 219, 251, 0.3);
+    }
+
+    .preset-btn:active {
+      transform: scale(0.95);
+      background: rgba(72, 219, 251, 0.35);
+    }
+
+    .preset-btn.active {
+      background: rgba(72, 219, 251, 0.3);
+      border-color: rgba(72, 219, 251, 0.7);
+      box-shadow: 0 0 20px rgba(72, 219, 251, 0.4);
+    }
+
+    .info-panel {
+      position: absolute;
+      bottom: 24px;
+      left: 24px;
+      width: 260px;
+      padding: 20px;
+      background: rgba(10, 10, 30, 0.7);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.11);
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .track-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      letter-spacing: 0.5px;
+    }
+
+    .progress-container {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.13);
+      border-radius: 2px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: height 0.3s ease-out;
+    }
+
+    .progress-bar:hover {
+      height: 6px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #48dbfb;
+      border-radius: 2px;
+      transition: background 0.1s linear;
+    }
+
+    .time-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 6px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .freq-preview {
+      width: 100%;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    #freq-preview-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .upload-card {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      z-index: 10;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .upload-label {
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(72, 219, 251, 0.2);
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      letter-spacing: 0.5px;
+    }
+
+    .upload-label:hover {
+      background: rgba(72, 219, 251, 0.4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(72, 219, 251, 0.3);
+    }
+
+    .upload-label:active {
+      transform: scale(0.95);
+      background: rgba(72, 219, 251, 0.5);
+    }
+
+    #audio-upload {
+      display: none;
+    }
+
+    .upload-hint {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 8px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .canvas-wrapper {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1 / 1;
+        padding: 12px;
+      }
+
+      #visualizer-canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      .preset-buttons {
+        top: 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+        width: 90%;
+      }
+
+      .preset-btn {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+
+      .info-panel {
+        top: 12px;
+        left: 12px;
+        bottom: auto;
+        width: 200px;
+        padding: 14px;
+      }
+
+      .track-name {
+        font-size: 13px;
+        margin-bottom: 10px;
+      }
+
+      .freq-preview {
+        height: 48px;
+      }
+
+      .upload-card {
+        bottom: 12px;
+        right: 12px;
+        padding: 12px 14px;
+      }
+
+      .upload-label {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="preset-buttons">
+      <button class="preset-btn" data-preset="bass">低音脉冲</button>
+      <button class="preset-btn" data-preset="mid">中音和弦</button>
+      <button class="preset-btn" data-preset="treble">高音旋律</button>
+    </div>
+
+    <div class="canvas-wrapper">
+      <canvas id="visualizer-canvas"></canvas>
+    </div>
+
+    <div class="info-panel">
+      <div class="track-name" id="track-name">等待播放...</div>
+      <div class="progress-container">
+        <div class="progress-bar" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <div class="time-info">
+          <span id="current-time">0:00</span>
+          <span id="total-time">0:00</span>
+        </div>
+      </div>
+      <div class="freq-preview">
+        <canvas id="freq-preview-canvas" width="220" height="60"></canvas>
+      </div>
+    </div>
+
+    <div class="upload-card">
+      <label class="upload-label" for="audio-upload">选择文件</label>
+      <input type="file" id="audio-upload" accept="audio/mpeg,audio/wav,audio/mp3,.mp3,.wav" />
+      <div class="upload-hint">MP3 / WAV · 最大10MB</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
