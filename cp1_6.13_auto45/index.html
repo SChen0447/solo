@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>复古像素艺术生成器</title>
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="loading-screen">
+      <div class="loader">
+        <div class="loader-pixel lp1"></div>
+        <div class="loader-pixel lp2"></div>
+        <div class="loader-pixel lp3"></div>
+        <div class="loader-pixel lp4"></div>
+      </div>
+      <div class="loader-text">LOADING...</div>
+    </div>
+
+    <div id="main-content" class="hidden">
+      <header class="toolbar">
+        <div class="toolbar-left">
+          <div class="tool-btn" data-tool="pencil" title="铅笔">
+            <div class="tool-icon pencil-icon"></div>
+          </div>
+          <div class="tool-btn" data-tool="eraser" title="橡皮擦">
+            <div class="tool-icon eraser-icon"></div>
+          </div>
+          <div class="tool-btn" data-tool="bucket" title="油漆桶">
+            <div class="tool-icon bucket-icon"></div>
+          </div>
+          <div class="tool-btn" data-tool="eyedropper" title="吸管">
+            <div class="tool-icon eyedropper-icon"></div>
+          </div>
+        </div>
+        <div class="toolbar-center">
+          <h1 class="app-title">RETRO PIXEL STUDIO</h1>
+        </div>
+        <div class="toolbar-right">
+          <div class="action-btn" id="undo-btn" title="撤销">
+            <div class="action-icon undo-icon"></div>
+            <span>UNDO</span>
+          </div>
+          <div class="action-btn" id="redo-btn" title="重做">
+            <div class="action-icon redo-icon"></div>
+            <span>REDO</span>
+          </div>
+          <div class="action-btn save-btn" id="save-btn" title="保存">
+            <div class="action-icon save-icon"></div>
+            <span>SAVE</span>
+          </div>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="canvas-section">
+          <div class="canvas-container">
+            <canvas id="pixel-canvas" width="512" height="512"></canvas>
+          </div>
+
+          <div class="preview-section">
+            <div class="preview-label">CRT PREVIEW</div>
+            <div class="preview-container">
+              <div class="preview-scale-selector">
+                <button class="scale-btn active" data-scale="2">2x</button>
+                <button class="scale-btn" data-scale="4">4x</button>
+                <button class="scale-btn" data-scale="8">8x</button>
+              </div>
+              <div class="crt-frame">
+                <canvas id="preview-canvas" width="256" height="256"></canvas>
+                <div class="crt-overlay"></div>
+                <div class="crt-glow"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="color-panel">
+            <div class="panel-title">PALETTE</div>
+            <div class="color-grid" id="color-grid"></div>
+          </div>
+
+          <div class="tool-settings">
+            <div class="panel-title">SETTINGS</div>
+            <div class="setting-row">
+              <label class="setting-label">SCANLINES</label>
+              <div class="toggle-switch active" id="scanline-toggle"></div>
+            </div>
+            <div class="setting-row">
+              <label class="setting-label">RGB SPLIT</label>
+              <div class="toggle-switch active" id="rgb-toggle"></div>
+            </div>
+            <div class="setting-row">
+              <label class="setting-label">CURRENT</label>
+              <div class="color-preview" id="current-color"></div>
+            </div>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <div id="save-dialog" class="dialog hidden">
+      <div class="dialog-box">
+        <div class="dialog-title">SAVE PIXEL ART</div>
+        <div class="dialog-body">
+          <label class="dialog-label">FILE NAME</label>
+          <input type="text" id="filename-input" class="dialog-input" placeholder="pixel_art" maxlength="30" />
+          <div class="dialog-option">
+            <label>INCLUDE SCANLINES</label>
+            <div class="toggle-switch active" id="export-scanline-toggle"></div>
+          </div>
+          <div class="dialog-option">
+            <label>EXPORT SIZE</label>
+            <select id="export-size-select" class="dialog-select">
+              <option value="10">10x per pixel (320x320)</option>
+              <option value="5">5x per pixel (160x160)</option>
+              <option value="1">1x per pixel (32x32)</option>
+            </select>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <button class="dialog-btn cancel-btn" id="cancel-save">CANCEL</button>
+          <button class="dialog-btn confirm-btn" id="confirm-save">EXPORT PNG</button>
+        </div>
+        <div class="dialog-cursor"></div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
