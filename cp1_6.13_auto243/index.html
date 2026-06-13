@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>蜃楼·镜像花园</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: linear-gradient(180deg, #1a0b2e 0%, #0f172a 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: #fff;
+    }
+
+    #app {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .control-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      padding: 16px 20px;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 13px;
+      z-index: 100;
+      min-width: 200px;
+    }
+
+    .control-panel h3 {
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #c084fc;
+      letter-spacing: 1px;
+    }
+
+    .control-panel .info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .control-panel .info-row .label {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .control-panel .info-row .value {
+      font-weight: 500;
+      color: #7dd3fc;
+    }
+
+    .control-panel .reset-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #7dd3fc, #c084fc);
+      border: none;
+      border-radius: 8px;
+      color: #0f172a;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .control-panel .reset-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(125, 211, 252, 0.4);
+    }
+
+    .control-panel .reset-btn:active {
+      transform: translateY(0);
+    }
+
+    .fps-counter {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+      color: #fcd34d;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="control-panel">
+      <h3>蜃楼·镜像花园</h3>
+      <div class="info-row">
+        <span class="label">方位角</span>
+        <span class="value" id="azimuth">0°</span>
+      </div>
+      <div class="info-row">
+        <span class="label">仰角</span>
+        <span class="value" id="elevation">30°</span>
+      </div>
+      <div class="info-row">
+        <span class="label">缩放距离</span>
+        <span class="value" id="distance">10.0</span>
+      </div>
+      <button class="reset-btn" id="resetBtn">重置视角</button>
+      <div class="fps-counter" id="fpsCounter">FPS: --</div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
