@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>光斑·星尘追逐</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0b16;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: none;
+    }
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+    #timer {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      text-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
+      font-weight: 300;
+      letter-spacing: 1px;
+    }
+    #score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #ffd700;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+    }
+    #combo {
+      position: absolute;
+      top: 55px;
+      right: 20px;
+      color: #ff4757;
+      font-size: 18px;
+      font-weight: bold;
+      text-shadow: 0 0 6px rgba(255, 71, 87, 0.6);
+      opacity: 0;
+      transform: scale(1);
+      transition: opacity 0.2s ease;
+    }
+    #combo.visible {
+      opacity: 1;
+    }
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
+      display: none;
+      pointer-events: auto;
+    }
+    #gameOver h2 {
+      font-size: 36px;
+      margin-bottom: 20px;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+    }
+    #finalScore {
+      font-size: 48px;
+      color: #ffd700;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+    }
+    #maxCombo {
+      font-size: 20px;
+      color: #ff4757;
+      margin-bottom: 30px;
+    }
+    #restartBtn {
+      padding: 15px 40px;
+      font-size: 18px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+    #restartBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="ui">
+    <div id="timer">60</div>
+    <div id="score">0</div>
+    <div id="combo">x1</div>
+    <div id="gameOver">
+      <h2>游戏结束</h2>
+      <div id="finalScore">0</div>
+      <div id="maxCombo">最高连击: 0</div>
+      <button id="restartBtn">再来一局</button>
+    </div>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
