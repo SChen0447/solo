@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>碎星·陨落挑战</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0f0c29;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    #gameCanvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      cursor: grab;
+    }
+
+    #gameCanvas:active {
+      cursor: grabbing;
+    }
+
+    .game-over-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(4px);
+    }
+
+    .game-over-overlay.active {
+      display: flex;
+    }
+
+    .final-score {
+      font-size: 64px;
+      font-weight: bold;
+      color: #feca57;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      text-shadow: 0 0 12px #feca57, 0 0 24px rgba(254, 202, 87, 0.6), 0 0 48px rgba(254, 202, 87, 0.3);
+      margin-bottom: 40px;
+      letter-spacing: 2px;
+    }
+
+    .restart-btn {
+      padding: 16px 48px;
+      font-size: 22px;
+      font-weight: bold;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #ffffff;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .restart-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    }
+
+    .restart-btn:active {
+      transform: scale(0.95);
+    }
+
+    .restart-btn .burst-particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: burst 0.6s ease-out forwards;
+    }
+
+    @keyframes burst {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) scale(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas"></canvas>
+  <div id="gameOverOverlay" class="game-over-overlay">
+    <div id="finalScore" class="final-score"></div>
+    <button id="restartBtn" class="restart-btn">重新开始</button>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
