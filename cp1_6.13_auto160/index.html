@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>古代星象仪 - Ancient Astrolabe</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+KuaiLe&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Serif SC', serif;
+      background: linear-gradient(180deg, #0d1b2a 0%, #1b263b 50%, #0d1b2a 100%);
+      color: #e8d4b8;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 左上角星相罗盘 */
+    .compass-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .compass {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(168, 118, 58, 0.3);
+      border: 2px solid rgba(168, 118, 58, 0.7);
+      position: relative;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(168, 118, 58, 0.3);
+    }
+
+    .compass-dots {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .compass-dot {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #ffd700;
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+      opacity: 0.8;
+    }
+
+    .compass-needle {
+      position: absolute;
+      width: 2px;
+      height: 24px;
+      background: linear-gradient(to top, #ffd700, transparent);
+      top: 6px;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(0deg);
+      transition: transform 0.05s linear;
+    }
+
+    .compass-value {
+      position: absolute;
+      bottom: 8px;
+      width: 100%;
+      text-align: center;
+      font-size: 10px;
+      color: #ffd700;
+      font-family: monospace;
+    }
+
+    .current-constellation-name {
+      font-size: 18px;
+      color: #ffd700;
+      font-family: 'Ma Shan Zheng', cursive;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+      min-height: 24px;
+    }
+
+    /* 右上角提示框 */
+    .toast {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 200px;
+      height: 80px;
+      background: rgba(13, 27, 42, 0.9);
+      border: 2px solid #ffd700;
+      border-radius: 12px;
+      box-shadow: 0 0 6px #ffd700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 22px;
+      color: #ffd700;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 20;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    /* 主画布容器 */
+    .canvas-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #mainCanvas {
+      cursor: grab;
+      display: block;
+    }
+
+    #mainCanvas:active {
+      cursor: grabbing;
+    }
+
+    /* 四季按钮 */
+    .season-buttons {
+      display: flex;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .season-btn {
+      width: 90px;
+      height: 44px;
+      background: linear-gradient(180deg, #6b4423 0%, #3e2c16 100%);
+      border: 2px solid #8b5a2b;
+      border-radius: 8px;
+      color: #e8d4b8;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #2a1a0a, inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: all 0.1s ease;
+    }
+
+    .season-btn:hover {
+      background: linear-gradient(180deg, #7b5433 0%, #4e3c26 100%);
+      border-color: #ffd700;
+      color: #ffd700;
+    }
+
+    .season-btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 #2a1a0a, inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* 星座故事文字 */
+    .constellation-story {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 160px;
+      max-width: 600px;
+      text-align: center;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 16px;
+      color: #e8d4b8;
+      line-height: 1.8;
+      opacity: 0;
+      pointer-events: none;
+      padding: 16px 24px;
+      background: rgba(13, 27, 42, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(168, 118, 58, 0.3);
+      z-index: 5;
+    }
+
+    /* 底部图鉴栏 */
+    .codex-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 120px;
+      background: #3e2c16;
+      border-top: 2px solid #5a3e1e;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      gap: 12px;
+      overflow-x: auto;
+      z-index: 15;
+      background-image: 
+        repeating-linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.05) 0px,
+          rgba(0, 0, 0, 0.05) 2px,
+          transparent 2px,
+          transparent 8px
+        ),
+        repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.03) 0px,
+          rgba(0, 0, 0, 0.03) 1px,
+          transparent 1px,
+          transparent 12px
+        );
+    }
+
+    .codex-bar::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .codex-bar::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 3px;
+    }
+
+    .codex-bar::-webkit-scrollbar-thumb {
+      background: rgba(168, 118, 58, 0.6);
+      border-radius: 3px;
+    }
+
+    .codex-title {
+      flex-shrink: 0;
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 20px;
+      color: #ffd700;
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+      padding: 0 8px;
+      border-right: 1px solid rgba(255, 215, 0, 0.3);
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .codex-card {
+      flex-shrink: 0;
+      width: 80px;
+      height: 100px;
+      background: linear-gradient(180deg, #1b263b 0%, #0d1b2a 100%);
+      border: 1px solid rgba(168, 118, 58, 0.5);
+      border-radius: 8px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .codex-card.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .codex-card:hover {
+      border-color: #ffd700;
+      box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .codex-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 4px;
+      background: rgba(13, 27, 42, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .codex-name {
+      font-family: 'Ma Shan Zheng', cursive;
+      font-size: 13px;
+      color: #ffd700;
+      text-align: center;
+    }
+
+    .codex-info {
+      font-size: 9px;
+      color: #a8763a;
+      text-align: center;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 768px) {
+      .compass-panel {
+        top: 10px;
+        left: 10px;
+        gap: 6px;
+      }
+
+      .compass {
+        width: 48px;
+        height: 48px;
+      }
+
+      .compass-needle {
+        height: 18px;
+        top: 6px;
+      }
+
+      .compass-value {
+        font-size: 8px;
+      }
+
+      .current-constellation-name {
+        font-size: 14px;
+      }
+
+      .season-buttons {
+        gap: 10px;
+      }
+
+      .season-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        font-size: 14px;
+        padding: 0;
+      }
+
+      .codex-bar {
+        height: 100px;
+        padding: 8px 12px;
+        gap: 8px;
+      }
+
+      .codex-title {
+        font-size: 16px;
+      }
+
+      .codex-card {
+        width: 68px;
+        height: 84px;
+      }
+
+      .codex-thumb {
+        width: 52px;
+        height: 52px;
+      }
+
+      .codex-name {
+        font-size: 11px;
+      }
+
+      .codex-info {
+        font-size: 8px;
+      }
+
+      .constellation-story {
+        font-size: 13px;
+        max-width: 90%;
+        bottom: 130px;
+        padding: 12px 16px;
+      }
+
+      .toast {
+        width: 160px;
+        height: 64px;
+        font-size: 18px;
+        top: 10px;
+        right: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 左上角罗盘 -->
+    <div class="compass-panel">
+      <div class="compass">
+        <div class="compass-dots" id="compassDots"></div>
+        <div class="compass-needle" id="compassNeedle"></div>
+        <div class="compass-value" id="compassValue">0.0°</div>
+      </div>
+      <div class="current-constellation-name" id="currentName">拖动指针观测星象</div>
+    </div>
+
+    <!-- 右上角提示 -->
+    <div class="toast" id="toast">星座已显形</div>
+
+    <!-- 主画布区域 -->
+    <div class="canvas-container">
+      <canvas id="mainCanvas" width="800" height="700"></canvas>
+      <div class="constellation-story" id="constellationStory"></div>
+      <div class="season-buttons">
+        <button class="season-btn" data-season="spring">春分</button>
+        <button class="season-btn" data-season="summer">夏至</button>
+        <button class="season-btn" data-season="autumn">秋分</button>
+        <button class="season-btn" data-season="winter">冬至</button>
+      </div>
+    </div>
+
+    <!-- 底部图鉴栏 -->
+    <div class="codex-bar" id="codexBar">
+      <div class="codex-title">星象图鉴</div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
