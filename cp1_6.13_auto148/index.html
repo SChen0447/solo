@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>流光·笔触</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "STKaiti", "KaiTi", "楷体", serif;
+      background: #f5f0e1;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8%;
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(139, 90, 43, 0.04) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(139, 90, 43, 0.04) 0%, transparent 50%),
+        repeating-linear-gradient(
+          45deg,
+          transparent,
+          transparent 2px,
+          rgba(139, 90, 43, 0.015) 2px,
+          rgba(139, 90, 43, 0.015) 4px
+        ),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 3px,
+          rgba(139, 90, 43, 0.01) 3px,
+          rgba(139, 90, 43, 0.01) 6px
+        ),
+        #f5f0e1;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at center, transparent 40%, rgba(139, 90, 43, 0.08) 100%);
+      z-index: 1;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.06'/%3E%3C/svg%3E");
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    #app {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-width: 800px;
+      min-height: 600px;
+      z-index: 2;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      border-radius: 4px;
+      box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.05),
+        0 4px 16px rgba(0, 0, 0, 0.04),
+        inset 0 0 80px rgba(139, 90, 43, 0.03);
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 25% 25%, rgba(255, 253, 245, 1) 0%, transparent 60%),
+        radial-gradient(ellipse at 75% 75%, rgba(255, 250, 238, 1) 0%, transparent 60%),
+        linear-gradient(135deg, #faf6ea 0%, #f5f0e1 50%, #f0e9d6 100%);
+    }
+
+    #canvas-container::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.4 0 0 0 0 0.25 0 0 0 0 0.1 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.55;
+    }
+
+    #canvas-container::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse at top left, rgba(180, 140, 80, 0.15) 0%, transparent 20%),
+        radial-gradient(ellipse at top right, rgba(180, 140, 80, 0.12) 0%, transparent 18%),
+        radial-gradient(ellipse at bottom left, rgba(180, 140, 80, 0.1) 0%, transparent 22%),
+        radial-gradient(ellipse at bottom right, rgba(180, 140, 80, 0.13) 0%, transparent 20%);
+      filter: blur(2px);
+    }
+
+    #drawing-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: none;
+      touch-action: none;
+    }
+
+    #preview-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #ui-panel {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      background: rgba(255, 255, 240, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      user-select: none;
+    }
+
+    #ui-panel h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #3a2e1f;
+      letter-spacing: 2px;
+      margin-bottom: 2px;
+      text-align: center;
+    }
+
+    .panel-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .panel-label {
+      font-size: 11px;
+      color: #6b5b45;
+      letter-spacing: 1px;
+    }
+
+    #color-palette {
+      display: flex;
+      gap: 8px;
+    }
+
+    .color-swatch {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      border: 2px solid transparent;
+      position: relative;
+    }
+
+    .color-swatch:hover {
+      transform: scale(1.05);
+    }
+
+    .color-swatch.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.15);
+      transform: scale(1.05);
+    }
+
+    #brush-slider {
+      width: 140px;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(90deg, #d4c8ae, #a89674);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    #brush-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #a89674;
+      cursor: pointer;
+      transition: transform 0.2s ease-out;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    #brush-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    #brush-slider::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #a89674;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(120, 110, 90, 0.25);
+      color: #3a2e1f;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-out;
+      font-size: 14px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(120, 110, 90, 0.4);
+      transform: scale(1.05);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+    }
+
+    .icon-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    #export-btn {
+      padding: 0 14px;
+      height: 32px;
+      border-radius: 6px;
+      border: none;
+      background: #4a90d9;
+      color: #ffffff;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s ease-out;
+      font-family: inherit;
+    }
+
+    #export-btn:hover {
+      background: #3a7fc4;
+      transform: scale(1.05);
+    }
+
+    #export-btn:active {
+      transform: scale(0.95);
+    }
+
+    #custom-cursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.15s ease;
+    }
+
+    #custom-cursor.hidden {
+      opacity: 0;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 4%;
+      }
+
+      #app {
+        min-width: 100%;
+        min-height: 100%;
+      }
+
+      #ui-panel {
+        top: 12px;
+        left: 12px;
+        padding: 12px;
+        gap: 10px;
+      }
+
+      #ui-panel h1 {
+        font-size: 14px;
+      }
+
+      .panel-label {
+        display: none;
+      }
+
+      #brush-slider {
+        width: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container">
+      <canvas id="drawing-canvas"></canvas>
+      <canvas id="preview-canvas"></canvas>
+    </div>
+    <div id="ui-panel">
+      <h1>流光·笔触</h1>
+      <div class="panel-section">
+        <span class="panel-label">墨色</span>
+        <div id="color-palette"></div>
+      </div>
+      <div class="panel-section">
+        <span class="panel-label">笔锋</span>
+        <input type="range" id="brush-slider" min="2" max="20" value="8" step="0.5" />
+      </div>
+      <div class="button-row">
+        <button class="icon-btn" id="undo-btn" title="撤销">↶</button>
+        <button class="icon-btn" id="redo-btn" title="重做">↷</button>
+        <button id="export-btn">导出 SVG</button>
+      </div>
+    </div>
+  </div>
+  <div id="custom-cursor" class="hidden"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
