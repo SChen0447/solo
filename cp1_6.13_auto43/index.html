@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="天气调色盘 - 交互式天气情绪可视化应用" />
+  <title>天气调色盘 | Weather Palette</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      position: relative;
+      background: #0a1628;
+    }
+
+    #app {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .ui-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .ui-layer > * {
+      pointer-events: auto;
+    }
+
+    .search-wrapper {
+      position: absolute;
+      top: 8%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(480px, 80%);
+      z-index: 20;
+    }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .search-box:hover {
+      background: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    }
+
+    .search-box:focus-within {
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    }
+
+    .search-icon {
+      font-size: 20px;
+      opacity: 0.9;
+      flex-shrink: 0;
+    }
+
+    #cityInput {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-color, #ffffff);
+      font-size: 16px;
+      font-weight: 400;
+      font-family: inherit;
+    }
+
+    #cityInput::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .locate-btn, .search-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 14px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      color: var(--text-color, #ffffff);
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .locate-btn:hover, .search-btn:hover {
+      background: rgba(255, 255, 255, 0.32);
+      transform: translateY(-1px);
+    }
+
+    .locate-btn:active, .search-btn:active {
+      transform: translateY(0);
+    }
+
+    .locate-icon {
+      margin-right: 6px;
+    }
+
+    .weather-card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: min(440px, 85%);
+      padding: 36px 32px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow:
+        0 16px 64px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.28),
+        0 0 80px rgba(255, 255, 255, 0.08);
+      color: var(--text-color, #ffffff);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 15;
+    }
+
+    .weather-card.visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -52%);
+    }
+
+    .card-city {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-align: center;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .card-desc {
+      font-size: 15px;
+      font-weight: 400;
+      opacity: 0.85;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .card-temp {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .temp-icon {
+      font-size: 36px;
+      filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+    }
+
+    .temp-value {
+      font-size: 64px;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -2px;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .temp-unit {
+      font-size: 24px;
+      font-weight: 300;
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    .card-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .detail-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .detail-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .detail-label {
+      font-size: 11px;
+      opacity: 0.65;
+      letter-spacing: 0.3px;
+    }
+
+    .detail-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .theme-bar {
+      position: absolute;
+      bottom: 5%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 22px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      z-index: 20;
+    }
+
+    .theme-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-color, #ffffff);
+      opacity: 0.75;
+      margin-right: 4px;
+      white-space: nowrap;
+    }
+
+    .theme-btn {
+      position: relative;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .theme-btn::after {
+      content: attr(data-name);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%) translateY(4px);
+      padding: 4px 10px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      color: #fff;
+      font-size: 11px;
+      font-family: inherit;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.22);
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .theme-btn:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .theme-btn.active {
+      transform: scale(1.15);
+      border-color: #fff;
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35), 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(10, 22, 40, 0.35);
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 50;
+    }
+
+    .loading-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .color-wheel {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: conic-gradient(
+        from 0deg,
+        #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #5f27cd,
+        #00d2d3, #1dd1a1, #ff9f43, #ee5253, #ff6b6b
+      );
+      animation: spin 1.2s linear infinite;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 60px rgba(255, 107, 107, 0.3);
+      position: relative;
+    }
+
+    .color-wheel::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(4px);
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .error-toast {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      padding: 12px 24px;
+      background: rgba(239, 68, 68, 0.85);
+      backdrop-filter: blur(10px);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 100;
+    }
+
+    .error-toast.active {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 640px) {
+      .search-wrapper {
+        top: 6%;
+        width: 88%;
+      }
+      .search-box {
+        padding: 12px 16px;
+        gap: 8px;
+      }
+      .locate-btn span { display: none; }
+      .locate-btn { padding: 8px 10px; }
+      .locate-icon { margin-right: 0; }
+      .weather-card {
+        width: 88%;
+        padding: 28px 22px;
+      }
+      .card-city { font-size: 22px; }
+      .temp-value { font-size: 52px; }
+      .temp-icon { font-size: 30px; }
+      .theme-bar {
+        gap: 10px;
+        padding: 12px 16px;
+        overflow-x: auto;
+        max-width: 92%;
+      }
+      .theme-btn {
+        width: 32px;
+        height: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <canvas id="canvas"></canvas>
+
+    <div class="ui-layer">
+      <div class="search-wrapper">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            id="cityInput"
+            type="text"
+            placeholder="输入城市名称（支持中英文）"
+            autocomplete="off"
+            maxlength="50"
+          />
+          <button class="search-btn" id="searchBtn">搜索</button>
+          <button class="locate-btn" id="locateBtn" title="使用当前位置">
+            <span class="locate-icon">📍</span><span>当前定位</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="weather-card" id="weatherCard">
+        <div class="card-city" id="cardCity">—</div>
+        <div class="card-desc" id="cardDesc">正在获取天气信息</div>
+        <div class="card-temp">
+          <span class="temp-icon">🌡️</span>
+          <span class="temp-value" id="cardTemp">--</span>
+          <span class="temp-unit">°C</span>
+        </div>
+        <div class="card-details">
+          <div class="detail-item">
+            <span class="detail-icon">💧</span>
+            <div class="detail-info">
+              <span class="detail-label">湿度</span>
+              <span class="detail-value" id="cardHumidity">--%</span>
+            </div>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🎐</span>
+            <div class="detail-info">
+              <span class="detail-label">风速</span>
+              <span class="detail-value" id="cardWind">-- m/s</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="theme-bar" id="themeBar">
+        <span class="theme-label">配色主题</span>
+      </div>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="color-wheel"></div>
+    </div>
+
+    <div class="error-toast" id="errorToast">获取天气信息失败，请稍后重试</div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
