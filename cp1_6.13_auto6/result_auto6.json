@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-06-12T16:03:07.456Z",
+  "task_name": "auto6",
+  "task_type": "0-1代码生成",
+  "business_domain": "全栈web应用",
+  "modification_scope": "模块内多文件",
+  "prompt": "场景：一家小型在线教育机构需要一个内部使用的练习题编辑器，教师可以创建包含选择题和填空题的试卷，并实时预览排版效果。\n\n构建一个练习卷编辑器应用，使用TypeScript、React和Vite实现。文件结构按职责模块化，并注明各文件间的调用关系和数据流向：\n - package.json（含依赖：react@18、react-dom@18、typescript、vite、@types/react、@types/react-dom，启动脚本：npm run dev）\n - vite.config.js（构建配置，指向index.html）\n - tsconfig.json（严格模式，jsx: react-jsx）\n - index.html（入口页面，挂载#root容器）\n - src/main.tsx（ReactDOM渲染入口，引入App组件）\n - src/App.tsx（主组件，管理试卷数据结构，接收编辑器输入→更新试卷对象→传递到预览组件渲染）\n - src/components/Editor.tsx（编辑器面板，添加/删除题目，数据流向：用户交互→触发App传递的回调更新试卷对象）\n - src/components/Preview.tsx（预览面板，纯展示，接收试卷对象→渲染为格式化排版，数据单向流入）\n - src/data/types.ts（定义试卷接口：题目、选项、答案等类型，被App和Editor引入）\n\n功能需求：\n1) 编辑器左侧为题目列表，右侧为实时预览区域，拖动左侧题目可调整题目顺序，排序变化时预览区立即以100ms淡入动画更新。\n2) 支持添加选择题（单选和多选）和填空题，选择题选项数量2-6个可动态增减，每个选项可编辑文字和设置是否为正确答案。\n3) 填空题支持插入多个空位（用{{blank}}标记），答案可设置为多个备选正确词，保存时自动生成带编号的空位标签。\n4) 预览区域严格模拟A4纸张排版（宽高比1:1.414），题目使用衬线字体（Georgia），标题用深蓝#1a365d，正文黑色，选项前用圆括号()渲染，填空题空位用下划线加虚线边框，整体有轻微纸张纹理背景。\n\n界面要求：整体布局采用左右分栏（左侧编辑区占40%，右侧预览区占60%），编辑区背景使用浅灰#f7f7f7，卡片式题目区块带圆角和轻微阴影，颜色主题以深蓝和白色为主点缀金色#d69e2e作为选中高亮。添加题目按钮带有弹性缩放悬停效果（transform: scale 1.05 transition 200ms ease），删除题目时题目卡片以滑动并淡出（translateX -50px + opacity 0）动画移除。预览区的渲染在窗口宽度低于900px时自动转为上下布局（编辑区在上，预览区在下），所有过渡和动画使用CSS ease-out缓动函数。\n\n性能约束：编辑区任何操作（添加/删除/拖拽排序/修改选项）后，预览区重新渲染应在20ms内完成，确保拖拽排序时动画帧率稳定在60fps。",
+  "session_id": {
+    "valid": true,
+    "full_id": ".3986207660317399:5a887f7f527951caa3bee1bbd6092574_6a2c2d0a9cdfd789457ad2c1.6a2c2daf9cdfd789457ad352.6a2c2daf712f07d4937989e5:Trae CN.T(2026/6/13 00:02:55)",
+    "user_id": "3986207660317399",
+    "trace_id": "5a887f7f527951caa3bee1bbd6092574",
+    "session_id": "6a2c2d0a9cdfd789457ad2c1",
+    "task_id": "6a2c2daf9cdfd789457ad352",
+    "message_id": "6a2c2daf712f07d4937989e5",
+    "app_name": "Trae CN",
+    "timestamp": "2026/6/13 00:02:55",
+    "format": "full"
+  },
+  "trace": "null"
+}
