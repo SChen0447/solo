@@ -1,0 +1,378 @@
+@font-face {
+  font-family: 'KaiTi';
+  src: local('KaiTi'), local('楷体'), local('STKaiti');
+}
+
+@font-face {
+  font-family: 'LiShu';
+  src: local('LiSu'), local('隶书'), local('STLiti');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'KaiTi', '楷体', serif;
+  color: #3E2723;
+  background: #FAF3E0;
+}
+
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app-header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 10px;
+}
+
+.app-title {
+  font-family: 'LiShu', '隶书', serif;
+  font-size: 36px;
+  color: #3E2723;
+  letter-spacing: 8px;
+  margin-bottom: 12px;
+  text-shadow: 1px 1px 2px rgba(62, 39, 35, 0.2);
+}
+
+.progress-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.progress-label {
+  font-family: 'KaiTi', '楷体', serif;
+  font-size: 16px;
+  color: #3E2723;
+}
+
+.progress-bar {
+  position: relative;
+  width: 250px;
+  height: 12px;
+  background: rgba(62, 39, 35, 0.15);
+  border-radius: 6px;
+  overflow: visible;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #B87333 0%, #D4AF37 100%);
+  border-radius: 6px;
+  transition: width 0.5s ease-out;
+}
+
+.progress-cap {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(135deg, #B87333 0%, #D4AF37 100%);
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(212, 175, 55, 0.6);
+}
+
+.progress-cap-left {
+  left: -4px;
+}
+
+.progress-cap-right {
+  right: -4px;
+}
+
+.app-main {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 140px);
+  padding: 0 30px;
+  gap: 30px;
+}
+
+.step-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.step-btn {
+  width: 60px;
+  height: 140px;
+  border: 2px solid #8B5E3C;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #F5E6D3 0%, #E8D5B7 100%);
+  color: #3E2723;
+  font-family: 'LiShu', '隶书', serif;
+  font-size: 18px;
+  letter-spacing: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.step-btn:hover:not(.locked) {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+  transform: translateY(-2px);
+}
+
+.step-btn.active {
+  background: linear-gradient(180deg, #D4AF37 0%, #B8941F 100%);
+  color: #FFF8E1;
+  border-color: #8B6914;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+}
+
+.step-btn.locked {
+  color: #9E9E9E;
+  border-color: #BDBDBD;
+  cursor: not-allowed;
+  background: repeating-linear-gradient(
+    45deg,
+    #F5F5F5,
+    #F5F5F5 6px,
+    #E0E0E0 6px,
+    #E0E0E0 12px
+  );
+}
+
+.step-text {
+  display: inline-block;
+}
+
+.scroll-container {
+  flex: 0 0 60%;
+  max-width: 60%;
+  height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 20px solid;
+  border-image: linear-gradient(180deg, #5D3A1A 0%, #8B5E3C 50%, #5D3A1A 100%) 1;
+  border-radius: 4px;
+  box-shadow: 
+    inset 0 0 30px rgba(93, 58, 26, 0.3),
+    0 8px 30px rgba(0, 0, 0, 0.3);
+  background: #E8D5B7;
+  overflow: hidden;
+}
+
+.scroll-frame::before,
+.scroll-frame::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 30px;
+  left: 0;
+  background: linear-gradient(180deg, #5D3A1A 0%, #8B5E3C 50%, #5D3A1A 100%);
+  z-index: 5;
+}
+
+.scroll-frame::before {
+  top: -20px;
+}
+
+.scroll-frame::after {
+  bottom: -20px;
+}
+
+#scrollCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M4 28 L8 24 L24 8 L28 12 L12 28 Z' fill='%233E2723' stroke='%23D4AF37' stroke-width='1'/><circle cx='26' cy='10' r='3' fill='%23D4AF37' opacity='0.6'/></svg>") 4 28, auto;
+}
+
+.story-panel {
+  flex: 0 0 350px;
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(100px);
+}
+
+.story-panel.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+.story-card {
+  position: relative;
+  width: 350px;
+  height: 200px;
+  background: rgba(62, 39, 35, 0.85);
+  border-radius: 16px;
+  padding: 24px 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #F5E6D3;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+
+.story-title {
+  font-family: 'LiShu', '隶书', serif;
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: #D4AF37;
+  margin-bottom: 16px;
+  position: absolute;
+  top: 24px;
+  left: 30px;
+  writing-mode: horizontal-tb;
+}
+
+.story-content {
+  font-family: 'KaiTi', '楷体', serif;
+  font-size: 14px;
+  line-height: 2;
+  color: #E8D5B7;
+  letter-spacing: 2px;
+  margin-left: 60px;
+  height: calc(100% - 20px);
+  overflow: hidden;
+}
+
+.listen-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #3E2723;
+  border: 2px solid #D4AF37;
+  color: #FFF8E1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.listen-btn:hover {
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.6);
+  transform: scale(1.05);
+}
+
+.play-icon {
+  width: 18px;
+  height: 18px;
+  margin-left: 2px;
+}
+
+.sound-wave {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 175, 55, 0.8);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.sound-wave.playing {
+  animation: wave-pulse 1.5s ease-out infinite;
+}
+
+@keyframes wave-pulse {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.8;
+    border-color: rgba(212, 175, 55, 0.9);
+  }
+  100% {
+    transform: scale(1.75);
+    opacity: 0;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .app-title {
+    font-size: 28px;
+    letter-spacing: 4px;
+  }
+
+  .progress-bar {
+    width: 180px;
+  }
+
+  .app-main {
+    flex-direction: column;
+    height: auto;
+    padding: 15px;
+    gap: 15px;
+    overflow-y: auto;
+  }
+
+  .step-nav {
+    flex-direction: row;
+    writing-mode: horizontal-tb;
+    gap: 12px;
+  }
+
+  .step-btn {
+    width: 100px;
+    height: 50px;
+    writing-mode: horizontal-tb;
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+
+  .scroll-container {
+    flex: 0 0 auto;
+    max-width: 100%;
+    width: 100%;
+    height: 60vh;
+  }
+
+  .story-panel {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 350px;
+    height: 180px;
+  }
+
+  .story-card {
+    width: 100%;
+    max-width: 350px;
+    height: 180px;
+  }
+}

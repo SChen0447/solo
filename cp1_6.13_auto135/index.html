@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>缮·文澜卷</title>
+  <link rel="stylesheet" href="./src/styles.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <header class="app-header">
+    <h1 class="app-title">缮·文澜卷</h1>
+    <div class="progress-wrap">
+      <div class="progress-label" id="progressLabel">已完成 0%</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-cap progress-cap-left"></div>
+        <div class="progress-cap progress-cap-right"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <nav class="step-nav" id="stepNav">
+      <button class="step-btn active" data-step="0">
+        <span class="step-text">修补撕裂</span>
+      </button>
+      <button class="step-btn locked" data-step="1">
+        <span class="step-text">去除污渍</span>
+      </button>
+      <button class="step-btn locked" data-step="2">
+        <span class="step-text">补全缺字</span>
+      </button>
+    </nav>
+
+    <section class="scroll-container" id="scrollContainer">
+      <div class="scroll-frame">
+        <canvas id="scrollCanvas"></canvas>
+      </div>
+    </section>
+
+    <aside class="story-panel" id="storyPanel">
+      <div class="story-card" id="storyCard">
+        <div class="story-title" id="storyTitle"></div>
+        <div class="story-content" id="storyContent"></div>
+        <button class="listen-btn" id="listenBtn" aria-label="聆听">
+          <svg viewBox="0 0 24 24" class="play-icon">
+            <path d="M8 5v14l11-7z" fill="currentColor"/>
+          </svg>
+        </button>
+        <div class="sound-wave" id="soundWave"></div>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
