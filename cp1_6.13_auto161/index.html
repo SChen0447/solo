@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>织雾·露径</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+      cursor: none;
+    }
+
+    #canvas-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #custom-cursor {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(136, 204, 255, 0.5);
+      pointer-events: none;
+      z-index: 1000;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px 5px rgba(136, 204, 255, 0.3);
+      transition: width 0.3s ease-out, height 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out;
+    }
+
+    #control-panel {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      z-index: 100;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      user-select: none;
+    }
+
+    .control-group input[type="range"] {
+      width: 120px;
+      height: 4px;
+      appearance: none;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #88ccff;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(136, 204, 255, 0.6);
+      transition: transform 0.2s ease-out;
+    }
+
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .control-group input[type="color"] {
+      width: 40px;
+      height: 28px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .control-group input[type="color"]::-webkit-color-swatch-wrapper {
+      padding: 2px;
+    }
+
+    .control-group input[type="color"]::-webkit-color-swatch {
+      border-radius: 4px;
+      border: none;
+    }
+
+    #reset-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, rgba(136, 204, 255, 0.3), rgba(204, 136, 255, 0.3));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+      font-family: inherit;
+    }
+
+    #reset-btn:hover {
+      background: linear-gradient(135deg, rgba(136, 204, 255, 0.5), rgba(204, 136, 255, 0.5));
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(136, 204, 255, 0.3);
+    }
+
+    #reset-btn:active {
+      transform: translateY(0);
+    }
+
+    #hint {
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      user-select: none;
+      z-index: 50;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">拖动鼠标让植物生长 · 点击茎节调整角度 · 点击花朵触发花瓣飘散</div>
+  <div id="canvas-container"></div>
+  <div id="custom-cursor"></div>
+  
+  <div id="control-panel">
+    <div class="control-group">
+      <label for="speed-slider">生长速度</label>
+      <input type="range" id="speed-slider" min="0.5" max="3" step="0.1" value="1" />
+    </div>
+    <div class="control-group">
+      <label for="color-picker">花朵颜色</label>
+      <input type="color" id="color-picker" value="#ff6699" />
+    </div>
+    <button id="reset-btn">重置植物</button>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
