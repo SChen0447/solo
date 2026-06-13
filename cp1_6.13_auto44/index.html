@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>银河系旋臂结构模拟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Exo 2', sans-serif;
+      background: #000510;
+      color: #ffffff;
+    }
+
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    #loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #000510 0%, #0a0e27 50%, #0d1233 100%);
+      transition: opacity 0.5s ease;
+    }
+
+    .loader-icon {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+
+    .loader-icon .ring {
+      position: absolute;
+      inset: 0;
+      border: 2px solid transparent;
+      border-top-color: #4fc3f7;
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+    }
+
+    .loader-icon .ring:nth-child(2) {
+      inset: 8px;
+      border-top-color: #ffcc66;
+      animation-duration: 2s;
+      animation-direction: reverse;
+    }
+
+    .loader-icon .ring:nth-child(3) {
+      inset: 16px;
+      border-top-color: #4fc3f7;
+      animation-duration: 1s;
+    }
+
+    .loader-icon .core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 12px;
+      background: radial-gradient(circle, #ffcc66, #ff9900);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px #ffcc66, 0 0 40px #ff990088;
+    }
+
+    .loader-text {
+      margin-top: 24px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: #4fc3f7;
+      letter-spacing: 3px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    #control-panel {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 280px;
+      z-index: 100;
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(79, 195, 247, 0.15);
+      border-radius: 12px;
+      padding: 24px 20px;
+      transition: all 0.3s ease;
+    }
+
+    .panel-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 20px;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 8px;
+    }
+
+    .control-value {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      color: #4fc3f7;
+      font-weight: 600;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(79, 195, 247, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4fc3f7;
+      cursor: pointer;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.5);
+      transition: box-shadow 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 16px rgba(79, 195, 247, 0.8);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #4fc3f7;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.5);
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      cursor: pointer;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(79, 195, 247, 0.15);
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch input:checked + .toggle-slider {
+      background: rgba(79, 195, 247, 0.5);
+    }
+
+    .toggle-switch input:checked + .toggle-slider::before {
+      transform: translateX(20px);
+      background: #4fc3f7;
+      box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+    }
+
+    .hint-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(79, 195, 247, 0.1);
+    }
+
+    .hint-text {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      line-height: 1.6;
+    }
+
+    .hint-text kbd {
+      display: inline-block;
+      background: rgba(79, 195, 247, 0.12);
+      border: 1px solid rgba(79, 195, 247, 0.2);
+      border-radius: 3px;
+      padding: 1px 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      color: #4fc3f7;
+    }
+
+    #panel-toggle {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 101;
+      background: rgba(10, 14, 39, 0.85);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(79, 195, 247, 0.15);
+      border-radius: 30px;
+      padding: 12px 24px;
+      color: #4fc3f7;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    #panel-toggle:hover {
+      background: rgba(79, 195, 247, 0.15);
+    }
+
+    @media (max-width: 1200px) and (min-width: 769px) {
+      #control-panel {
+        width: 240px;
+        right: 15px;
+        padding: 20px 16px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      #control-panel {
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        height: 60px;
+        border-radius: 12px 12px 0 0;
+        padding: 12px 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      #control-panel.panel-expanded {
+        height: auto;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      #panel-toggle {
+        display: block;
+      }
+
+      .panel-title {
+        margin-bottom: 12px;
+        font-size: 14px;
+      }
+
+      .control-group {
+        margin-bottom: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+
+  <div id="loader">
+    <div class="loader-icon">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="core"></div>
+    </div>
+    <div class="loader-text">INITIALIZING GALAXY</div>
+  </div>
+
+  <div id="control-panel">
+    <div class="panel-title">GALAXY CONTROL</div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>恒星数量</span>
+        <span class="control-value" id="star-count-value">5000</span>
+      </div>
+      <input type="range" id="star-count" min="2000" max="10000" step="100" value="5000" />
+    </div>
+
+    <div class="control-group">
+      <div class="control-label">
+        <span>旋转速度</span>
+        <span class="control-value" id="speed-value">1.0x</span>
+      </div>
+      <input type="range" id="rotation-speed" min="0.1" max="2" step="0.1" value="1" />
+    </div>
+
+    <div class="control-group">
+      <div class="toggle-container">
+        <span class="control-label" style="margin-bottom: 0;">显示旋臂标签</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="arm-labels-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <div class="hint-section">
+      <div class="hint-text">
+        <kbd>拖拽</kbd> 旋转视角 &nbsp; <kbd>滚轮</kbd> 缩放<br/>
+        <kbd>Shift+拖拽</kbd> 平移 &nbsp; <kbd>WASD</kbd> 飞行<br/>
+        <kbd>空格</kbd> 探索模式 &nbsp; <kbd>Esc</kbd> 中断
+      </div>
+    </div>
+  </div>
+
+  <button id="panel-toggle">▼ 展开控制面板</button>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
