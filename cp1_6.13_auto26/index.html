@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>深渊潜航</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000510;
+      font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+    }
+
+    #game-container {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    #game-container canvas {
+      display: block;
+    }
+
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #001a33 0%, #000510 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #loading-screen.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .submarine-icon {
+      width: 120px;
+      height: 120px;
+      position: relative;
+      animation: rotate 3s linear infinite;
+    }
+
+    .submarine-icon svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 0 20px rgba(100, 200, 255, 0.6));
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      margin-top: 30px;
+      color: #64c8ff;
+      font-size: 18px;
+      letter-spacing: 4px;
+      text-shadow: 0 0 10px rgba(100, 200, 255, 0.8);
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    .loading-bubbles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), rgba(100, 200, 255, 0.1));
+      border-radius: 50%;
+      animation: float-up linear infinite;
+    }
+
+    @keyframes float-up {
+      0% {
+        transform: translateY(0) scale(1);
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-100vh) scale(1.5);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading-screen">
+    <div class="loading-bubbles" id="loading-bubbles"></div>
+    <div class="submarine-icon">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="50" cy="50" rx="35" ry="18" fill="#a0b8c8" stroke="#64c8ff" stroke-width="2"/>
+        <circle cx="50" cy="42" r="12" fill="#003355" stroke="#64c8ff" stroke-width="1.5"/>
+        <ellipse cx="50" cy="42" rx="8" ry="6" fill="#64c8ff" opacity="0.5"/>
+        <rect x="15" y="47" width="8" height="6" rx="2" fill="#64c8ff"/>
+        <polygon points="85,50 95,42 95,58" fill="#8090a0" stroke="#64c8ff" stroke-width="1"/>
+        <line x1="50" y1="32" x2="50" y2="20" stroke="#64c8ff" stroke-width="2"/>
+        <circle cx="50" cy="18" r="3" fill="#ff6b6b"/>
+        <circle cx="35" cy="50" r="3" fill="#ffd93d"/>
+        <circle cx="65" cy="50" r="3" fill="#ffd93d"/>
+      </svg>
+    </div>
+    <div class="loading-text">LOADING</div>
+  </div>
+  <div id="game-container"></div>
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    const bubblesContainer = document.getElementById('loading-bubbles');
+    for (let i = 0; i < 20; i++) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      const size = Math.random() * 20 + 10;
+      bubble.style.width = size + 'px';
+      bubble.style.height = size + 'px';
+      bubble.style.left = Math.random() * 100 + '%';
+      bubble.style.bottom = '-' + size + 'px';
+      bubble.style.animationDuration = (Math.random() * 4 + 3) + 's';
+      bubble.style.animationDelay = (Math.random() * 3) + 's';
+      bubblesContainer.appendChild(bubble);
+    }
+
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        loadingScreen.classList.add('fade-out');
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 800);
+      }, 1500);
+    });
+  </script>
+</body>
+</html>
